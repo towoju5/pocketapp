@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.1'
+          php-version: '8.3'
 
       - uses: actions/checkout@v2
 
@@ -22,7 +22,7 @@ jobs:
         run: cp .env.example .env
 
       - name: Install Composer Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        run: composer update -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
 
       - name: Install Node Dependencies
         run: npm ci
