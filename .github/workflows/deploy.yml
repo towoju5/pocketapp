@@ -1,0 +1,27 @@
+name: Deploy Pocket Option Application
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to Server
+        run: |
+          ssh root@203.161.63.75 <<EOF
+          cd /var/www/polarisoption.io
+          git pull origin main
+          composer install --no-dev
+          php artisan migrate --seed --force
+          php artisan config:cache
+          php artisan route:cache
+          php artisan view:cache
+          EOF
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
