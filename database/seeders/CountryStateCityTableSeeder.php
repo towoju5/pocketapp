@@ -20,7 +20,7 @@ class CountryStateCityTableSeeder extends Seeder
     {
         Country::insertOrIgnore(CountryDataProvider::data());
         State::insertOrIgnore(StateDataProvider::data());
-            foreach (collect(CityDataProvider::data())->chunk(15000) as $chunkCities) {
+            foreach (collect(CityDataProvider::data())->chunk(5000) as $chunkCities) {
                 City::insertOrIgnore($chunkCities->toArray());
         }
     }
