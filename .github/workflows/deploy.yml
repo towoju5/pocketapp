@@ -3,6 +3,9 @@ name: Deploy
 on:
   push:
     branches: [main]
+  pull_request :
+    branches: [main]
+    
 
 jobs:
   deploy:
@@ -38,3 +41,6 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /var/www/polarisoption.io
+            git pull
