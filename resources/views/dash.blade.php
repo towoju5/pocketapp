@@ -38,8 +38,8 @@
         const socket = new WebSocket("wss://finnhub.io/ws");
 
         // Define the ticker symbol
-        // const ticker = "OANDA:GBP_USD";
-        const ticker = "COINBASE:BTC-USD"; //"OANDA:GBP_USD";
+        const ticker = "OANDA:GBP_USD";
+        // const ticker = "COINBASE:BTC-USD"; //"OANDA:GBP_USD";
         $("#tickerTitle").text(ticker);
         // Setup the Lightweight Chart
         const chartContainer = document.getElementById('chart');

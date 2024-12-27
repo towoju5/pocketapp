@@ -15,8 +15,8 @@ class TradeController extends Controller
 {
     public function index(Request $request)
     {
-        $trades = Trade::latest()->all();
-        return response()->json($trades);
+        $trades = Trade::latest()->cursorPaginate(10);
+        return view('trades.index', compact('trades'));
     }
 
     public function placeTrade(Request $request)
@@ -72,5 +72,11 @@ class TradeController extends Controller
         }
         $finalPrice = $asset->getMeta()?->regularMarketPrice;
 
+    }
+
+    public function show($id)
+    {
+        $trade = Trade::findOrFail($id);
+        return view('trades.show', compact('trade'));
     }
 }

@@ -180,7 +180,6 @@
 
 @push('js')
     <script src="//s3.tradingview.com/tv.js"></script>
-
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', () => {
             const assetTypeSelector = document.getElementById('assetType');

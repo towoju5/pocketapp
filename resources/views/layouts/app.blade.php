@@ -11,7 +11,7 @@
     <meta name="author" content="Bootstrap Gallery" />
     <link rel="canonical" href="{{ url('/') }}">
     <meta property="og:url" content="{{ url('/') }}">
-    <meta property="og:title" content="Admin Templates - Dashboard Templates | Bootstrap Gallery">
+    <meta property="og:title" content="Polaris Option | Your Gateway to Profitable Trading" />
     <meta property="og:description" content="Marketplace for Bootstrap Admin Dashboards">
     <meta property="og:type" content="Website">
     <meta property="og:site_name" content="Bootstrap Gallery">

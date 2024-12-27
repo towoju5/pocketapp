@@ -27,6 +27,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('deposit-stats', [DepositController::class, 'getDepositStats']);
 
     Route::resource('payout', PayoutController::class)->names('withdrawals');
+    Route::resource('deposit', DepositController::class)->names('deposit');
+    Route::resource('payout', PayoutController::class)->names('payout');
     // });
 
 

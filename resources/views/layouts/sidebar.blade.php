@@ -29,15 +29,44 @@
 
             <li @if(Route::is('dashboard-2')) class="active current-page" @endif>
                 <a href="{{ route('dashboard-2') }}">
-                    <i class="bi bi-activity"></i>
+                    <i class="bi bi-terminal-fill"></i>
                     <span class="menu-text">Trade chart 2</span>
                 </a>
+            </li>
+
+            <li class="treeview  @if(Route::is('deposit.*') || Route::is('payout.*')) active current-page @endif">
+                <a href="#!">
+                    <i class="bi bi-cash-coin"></i>
+                    <span class="menu-text">Finance</span>
+                </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a href="{{ route('deposit.index') }}">Deposit</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('payout.index') }}">Withdrawal</a>
+                    </li>
+                </ul>
             </li>
 
             <li @if(Route::is('profile.edit')) class="active current-page" @endif>
                 <a href="{{ route('profile.edit') }}">
                     <i class="bi bi-person"></i>
                     <span class="menu-text">Profile</span>
+                </a>
+            </li>
+
+            <li @if(Route::is(config('chatify.routes.prefix'))) class="active current-page" @endif>
+                <a href="{{ route(config('chatify.routes.prefix')) }}">
+                    <i class="bi bi-chat"></i>
+                    <span class="menu-text">Chats</span>
+                </a>
+            </li>
+
+            <li @if(Route::is('trade.index')) class="active current-page" @endif>
+                <a href="{{ route('trade.index') }}">
+                    <i class="bi bi-activity"></i>
+                    <span class="menu-text">Trades</span>
                 </a>
             </li>
 
@@ -82,41 +111,6 @@
                     <i class="bi bi-layout-sidebar"></i>
                     <span class="menu-text">Forex MT4 Trading</span>
                 </a>
-            </li>
-            <li class="treeview">
-                <a href="#!">
-                    <i class="bi bi-stickies"></i>
-                    <span class="menu-text">Demo MT4 Trading</span>
-                </a>
-                <ul class="treeview-menu">
-                    <li>
-                        <a href="accordions.html">Accordions</a>
-                    </li>
-                    <li>
-                        <a href="alerts.html">Alerts</a>
-                    </li>
-                    <li>
-                        <a href="buttons.html">Buttons</a>
-                    </li>
-                    <li>
-                        <a href="badges.html">Badges</a>
-                    </li>
-                    <li>
-                        <a href="carousel.html">Carousel</a>
-                    </li>
-                    <li>
-                        <a href="list-items.html">List Items</a>
-                    </li>
-                    <li>
-                        <a href="progress.html">Progress Bars</a>
-                    </li>
-                    <li>
-                        <a href="popovers.html">Popovers</a>
-                    </li>
-                    <li>
-                        <a href="tooltips.html">Tooltips</a>
-                    </li>
-                </ul>
             </li> --}}
 
 
