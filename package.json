@@ -20,6 +20,10 @@
     },
     "dependencies": {
         "@alpinejs/focus": "^3.14.8",
-        "preline": "^2.6.0"
+        "http": "^0.0.1-security",
+        "http-proxy": "^1.18.1",
+        "preline": "^2.6.0",
+        "websocket": "^1.0.35",
+        "ws": "^8.18.0"
     }
 }

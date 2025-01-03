@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Deposit;
 use App\Models\User;
-use App\Models\Wallet;
+// use App\Models\Wallet;
+use Bavix\Wallet\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -12,9 +13,15 @@ use Flasher\Laravel\Facade\Flasher;
 
 class DepositController extends Controller
 {
+    public $wallets;
     public function __construct()
     {
-        // $this->middleware('auth');
+        $this->wallets = auth()->user()->wallets();
+        if (empty($this->wallets)) {
+            // then create the user wallets
+            create_user_wallet();
+            var_dump($this->wallets);
+        }
     }
 
     public function index()
@@ -22,13 +29,13 @@ class DepositController extends Controller
         $deposits = Deposit::where('user_id', Auth::id())
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-            
+
         return view('deposits.index', compact('deposits'));
     }
 
     public function create()
     {
-        $wallets = Auth::user()->wallets;
+        return $wallets = Auth::user()->wallets;
         return view('deposits.create', compact('wallets'));
     }
 
@@ -41,7 +48,7 @@ class DepositController extends Controller
         ]);
 
         $wallet = Wallet::findOrFail($request->wallet_id);
-        
+
         // Calculate bonus (example: 5% bonus for deposits over 1000)
         $bonus = $request->deposit_amount >= 1000 ? $request->deposit_amount * 0.05 : 0;
 
@@ -62,12 +69,12 @@ class DepositController extends Controller
         try {
             $user = Auth::user();
             $user->deposit($request->deposit_amount + $bonus);
-            
+
             $deposit->update(['deposit_status' => 'completed']);
-            
+
             Flasher::addSuccess('Deposit processed successfully!');
             return redirect()->route('deposits.show', $deposit->id);
-            
+
         } catch (\Exception $e) {
             $deposit->update(['deposit_status' => 'failed']);
             Flasher::addError('Deposit processing failed. Please try again.');
@@ -80,7 +87,7 @@ class DepositController extends Controller
         if ($deposit->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         return view('deposits.show', compact('deposit'));
     }
 

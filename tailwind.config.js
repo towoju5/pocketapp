@@ -15,8 +15,13 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                'lightHouse': '#20273f',
+                'lightHouse-text': '#8ea5c0'
+            }
+
         },
     },
 
-    plugins: [forms,  require('preline/plugin'),],
+    plugins: [forms, require('preline/plugin'),],
 };

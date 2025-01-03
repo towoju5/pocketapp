@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Bavix\Wallet\Traits\HasWallet;
+use Bavix\Wallet\Traits\HasWalletFloat;
 use Bavix\Wallet\Traits\HasWallets;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -13,7 +15,7 @@ use Yadahan\AuthenticationLog\AuthenticationLogable;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, AuthenticationLogable, SoftDeletes, HasWallets;
+    use HasFactory, Notifiable, AuthenticationLogable, SoftDeletes, HasWallets, HasWallet, HasWalletFloat;
 
     /**
      * The attributes that are mass assignable.

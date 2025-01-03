@@ -6,6 +6,9 @@ use App\Http\Controllers\ProfileController;
 use App\Models\User;
 use App\Jobs\EvaluateTrade;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\GitHubArtifactController;
+
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,7 +21,7 @@ Route::get('/dashboard', function () {
 
 Route::get('/dashboard-2', function () {
     return view('dash');
-})->middleware(['auth', 'verified'])->name('dashboard-2');
+}); //->middleware(['auth', 'verified'])->name('dashboard-2');
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('deposits', DepositController::class);
@@ -39,6 +42,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::get('/delete-artifacts', [GitHubArtifactController::class, 'deleteArtifacts']);
+
 
 
 
@@ -47,3 +52,13 @@ require __DIR__ . '/temp.php';
 require __DIR__ . '/chat.php';
 require __DIR__ . '/trade.php';
 require __DIR__ . '/admin.php';
+
+
+Route::fallback(function () {
+    sleep(10);
+    return response()->json([
+        "status" => "error",
+        "message" => "Route not found",
+        "data" => null
+    ], 404);
+});
