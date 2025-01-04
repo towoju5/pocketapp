@@ -42,5 +42,16 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           script: |
             cd /var/www/polarisoption.io
+            
+            # Fetch and reset to remote main branch
             git fetch origin
             git reset --hard origin/main
+
+            # Ensure proper permissions for logs directory and its files (append mode)
+            sudo chown -R www-data:www-data storage
+            sudo chmod -R 775 storage
+            sudo chmod -R g+s storage/logs
+
+            # Verify the logs directory is writable
+            touch storage/logs/laravel.log
+            echo "Log file is ready and writable" >> storage/logs/laravel.log
