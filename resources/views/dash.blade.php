@@ -162,42 +162,48 @@
         {{-- // left sidebar --}}
         <div id="sideMenu" class="bg-[#1c1f26] w-20 min-h-screen lg:w-20 items-center">
             <!-- Menu Items -->
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white" data-tooltip="Analytics">
+            <a href="{{ route('trade.index') }}" class="menu-item p-3 w-full text-gray-400 hover:text-white"
+                data-tooltip="Analytics">
                 <i class="fa-solid fa-chart-line"></i>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
+                <span class="hidden_text hidden lg:block">Trading</span>
+            </a>
 
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white" data-tooltip="Finance">
+            <a href="{{ route('deposit.index') }}" class="menu-item p-3 w-full text-gray-400 hover:text-white"
+                data-tooltip="Finance">
                 <i class="fa-solid fa-dollar-sign"></i>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
+                <span class="hidden_text hidden lg:block">Finance</span>
+            </a>
 
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white" data-tooltip="Profile">
+            <a href="{{ route('profile.edit') }}" class="menu-item p-3 w-full text-gray-400 hover:text-white"
+                data-tooltip="Profile">
                 <i class="fa-solid fa-user"></i>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
+                <span class="hidden_text hidden lg:block">Profile</span>
+            </a>
 
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white relative" data-tooltip="Cart">
+            <a href="#" class="menu-item p-3 w-full text-gray-400 hover:text-white relative"
+                data-tooltip="Cart">
                 <i class="fa-solid fa-cart-shopping"></i>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
+                <span class="hidden_text hidden lg:block">Market</span>
+            </a>
 
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white relative" data-tooltip="Notifications">
+            <a href="#" class="menu-item p-3 w-full text-gray-400 hover:text-white relative"
+                data-tooltip="Notifications">
                 <i class="fa-regular fa-gem"></i>
                 <span class="absolute top-2 right-2 bg-[#0c69a9] text-xs rounded-md text-white px-2 py-1">6</span>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
+                <span class="hidden_text hidden lg:block">Achievements</span>
+            </a>
 
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white relative" data-tooltip="Chat">
+            <a href="#" class="menu-item p-3 w-full text-gray-400 hover:text-white relative"
+                data-tooltip="Chat">
                 <i class="fa-regular fa-comment"></i>
                 <span class="absolute top-2 right-2 bg-[#0c69a9] text-xs rounded-md text-white px-2 py-1">6</span>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
+                <span class="hidden_text hidden lg:block">Chat</span>
+            </a>
 
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white" data-tooltip="Help">
+            <a href="#" class="menu-item p-3 w-full text-gray-400 hover:text-white" data-tooltip="Help">
                 <i class="fa-solid fa-circle-question"></i>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
+                <span class="hidden_text hidden lg:block">Help</span>
+            </a>
 
             <div class="bottom-3 fixed items-center mx-0 px-0 space-y-2">
                 <button onclick="$('#UserLogoutForm').submit()"
@@ -232,7 +238,7 @@
         <div class="bg-gray-800 w-60 flex min-h-screen">
             <div class="column-1 w-full">
                 {{-- // add form for trading --}}
-                <form method="POST" action="/your-action-route" class="p-3 rounded-lg text-white space-y-4">
+                <form method="POST" action="{{ route('trade.store') }}" class="p-3 rounded-lg text-white space-y-4">
                     @csrf
 
                     <!-- Time Input -->
@@ -242,7 +248,7 @@
                             <div class="relative">
                                 <input type="text" id="hs-trailing-icon" name="trading_time"
                                     class="p-2 pe-11 block w-full border-[#293341] rounded-lg text-sm bg-[#1f2334]"
-                                    id="timeInput" maxlength="8" placeholder="00:00:00">
+                                    id="timeInput" maxlength="8" placeholder="00:01:00" value="00:01:00">
                                 <div
                                     class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-10 border-l p-3 border-[#293341]">
                                     <i class="fa-regular fa-clock bg-[#23283b]"></i>
@@ -258,7 +264,7 @@
                             <div class="relative">
                                 <input type="text" id="hs-trailing-icon" name="trading_amount"
                                     class="p-2 pe-11 block w-full border-[#293341] rounded-lg text-sm bg-[#1f2334]"
-                                    placeholder="1">
+                                    placeholder="1" value="1">
                                 <div
                                     class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-10 border-l p-3 border-[#293341]">
                                     <svg class="currency-icon currency-icon--usd" width="18" height="18"
@@ -286,12 +292,12 @@
                         <!-- Buy and Sell Buttons -->
                         <div class="gap-2 space-y-2">
                             <button type="submit" name="action" value="buy"
-                                class="_hover-up gap-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 w-full">
+                                class="_hover-up buy-button transition duration-300 ease-in-out gap-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 w-full">
                                 <i class="fas fa-arrow-up"></i>
                                 BUY
                             </button>
                             <button type="submit" name="action" value="sell"
-                                class="_hover-down gap-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 w-full">
+                                class="_hover-down buy-button transition duration-300 ease-in-out gap-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 w-full">
                                 <i class="fas fa-arrow-up"></i>
                                 SELL
                             </button>
@@ -347,8 +353,24 @@
     <!-- Custom JS files -->
     <script src="{{ asset('assets/js/custom.js') }}"></script>
     <script src="//s3.tradingview.com/tv.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
     <script>
         $(document).ready(function() {
+            // input mask for time.
+            $("#hs-trailing-icon").inputmask(
+                "99:59:59", {
+                    placeholder: "00:01:00",
+                    insertMode: false,
+                    showMaskOnHover: false,
+                    definitions: {
+                        '5': {
+                            validator: "[0-5]",
+                            cardinality: 1
+                        }
+                    }
+                });
+
+
             let activeMenu = null; // Currently active menu element
             let isLoading = false; // Prevent multiple simultaneous requests
             const menuPanel = $('#hideShowMenu');
@@ -397,7 +419,8 @@
 
                 // Show a preloader (Blade-rendered or fallback HTML)
                 const preloader = `{!! view('components.preloader-main')->render() !!}`;
-                menuPanel.html("<div class='flex justify-center items-center h-full'>" + preloader + "</div>");
+                menuPanel.html("<div class='flex justify-center items-center h-full'>" + preloader +
+                    "</div>");
 
                 // Fetch content dynamically from the route
                 $.get(route, function(data) {
@@ -505,7 +528,7 @@
 
 
         // Add Area Series
-        const lineSeries = chart.addLineSeries({
+        const lineSeries = chart.addAreaSeries({
             topColor: 'rgba(33, 150, 243, 0.56)',
             bottomColor: 'rgba(33, 150, 243, 0.04)',
             lineColor: '#2196f3',
@@ -525,29 +548,54 @@
         });
 
         // Function to fetch initial data from API
+        // const fetchInitialData = async () => {
+        //     try {
+        //         const response = await fetch("./c?q=BTC-USD");
+        //         if (!response.ok) {
+        //             throw new Error(`HTTP error! Status: ${response.status}`);
+        //         }
+        //         const initialData = await response.json();
+
+        //         // Assuming the response format is like:
+        //         // { "timestamp": [...], "values": [...] }
+        //         if (initialData.timestamp && initialData.values) {
+        //             const formattedInitialData = initialData.timestamp
+        //                 .map((time, index) => ({
+        //                     time,
+        //                     value: initialData.values[index],
+        //                 }))
+        //                 .filter(item => item.time !== null && item.value !== null); // Skip null values
+
+        //             // Populate the chart with initial data
+        //             lineSeries.setData(formattedInitialData);
+        //             // console.log('Initial data loaded successfully:', formattedInitialData);
+        //             setTimeout(() => {
+        //                 $(".__hidePreLoader").toggleClass("hidden")
+        //             }, 3000);
+        //         } else {
+        //             console.error('Unexpected response format:', initialData);
+        //         }
+        //     } catch (error) {
+        //         console.error('Error fetching initial data:', error);
+        //     }
+        // };
+
+        // Function to fetch initial data from Olymp API
         const fetchInitialData = async () => {
             try {
-                const response = await fetch("./c?q=BTC-USD");
-                if (!response.ok) {
-                    throw new Error(`HTTP error! Status: ${response.status}`);
-                }
-                const initialData = await response.json();
-
-                // Assuming the response format is like:
-                // { "timestamp": [...], "values": [...] }
-                if (initialData.timestamp && initialData.values) {
-                    const formattedInitialData = initialData.timestamp
-                        .map((time, index) => ({
-                            time,
-                            value: initialData.values[index],
+                let $candles = "{!! fetchPreChartData("USDCAD_OTC") !!}"
+                if ($candles) {
+                    const formattedInitialData = $candles
+                        .map(candle => ({
+                            time: candle.ts,
+                            value: candle.c,
                         }))
-                        .filter(item => item.time !== null && item.value !== null); // Skip null values
-
-                    // Populate the chart with initial data
+                        .filter(item => item.time !== null && item.value !== null);
                     lineSeries.setData(formattedInitialData);
-                    // console.log('Initial data loaded successfully:', formattedInitialData);
+
+                    // Optional: Hide the preloader after 3 seconds
                     setTimeout(() => {
-                        $(".__hidePreLoader").toggleClass("hidden")
+                        $(".__hidePreLoader").toggleClass("hidden");
                     }, 3000);
                 } else {
                     console.error('Unexpected response format:', initialData);
@@ -556,6 +604,7 @@
                 console.error('Error fetching initial data:', error);
             }
         };
+
 
 
         // Function to update chart with incremental data
@@ -610,7 +659,7 @@
             var channel = Echo.channel('trade.created');
             if (channel) {
                 console.log('Echo connected successfully');
-                
+
             }
             channel.listen('.trade.created', function(data) { // Ensure the event name matches
                 console.log('Trade Created:', data);
@@ -620,6 +669,38 @@
     </script>
 
 
+    <script src="https://cdn.jsdelivr.net/npm/protobufjs/dist/protobuf.min.js"></script>
+
+
+    <script>
+        protobuf.load('./PricingData.proto', (err, root) => {
+            if (err) {
+                console.error('Error loading protobuf file:', err);
+                return;
+            }
+            Message = root.lookupType('PricingData');
+            loadMessage();
+        });
+        let loadMessage = () => {
+            const url = 'wss://streamer.finance.yahoo.com'
+            const connection = new WebSocket(url)
+            connection.onopen = () => {
+                connection.send(
+                    '{"subscribe":["TSLA"]}'
+                )
+            }
+
+            connection.onerror = (error) => {
+                console.log(`WebSocket error: ${error}`)
+            }
+
+            connection.onmessage = (e) => {
+                let msg = Message.decode(e.data)
+                alert(e.data)
+                console.log('Decoded message', msg)
+            }
+        }
+    </script>
 </body>
 
 </html>

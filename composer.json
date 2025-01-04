@@ -10,6 +10,7 @@
         "bacon/bacon-qr-code": "*",
         "bavix/laravel-wallet": "*",
         "dipeshsukhia/laravel-country-state-city-data": "*",
+        "google/protobuf": "^4.29",
         "laravel/breeze": "^2.3",
         "laravel/framework": "^11.31",
         "laravel/reverb": "^1.4",
@@ -21,6 +22,7 @@
         "pragmarx/google2fa-laravel": "^2.2",
         "pragmarx/google2fa-qrcode": "^3.0",
         "prevailexcel/laravel-nowpayments": "^1.0",
+        "ratchet/pawl": "^0.4.1",
         "textalk/websocket": "^1.5",
         "yadahan/laravel-authentication-log": "^1.7",
         "yoeunes/toastr": "^3.1"

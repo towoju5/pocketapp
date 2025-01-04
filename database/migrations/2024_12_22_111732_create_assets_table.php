@@ -17,8 +17,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('display_symbol');
             $table->string('asset_group');
+            $table->string('yahoo_ticker')->comment('Used to generate inital chart and the acutal trade data');
+            $table->string('olymptrade_ticker')->comment('To generate the live chart data');
             $table->enum('exchange_float_type', ['fixed', 'float', 'combine']);
             $table->string('exchange_float');
+            $table->json('extra_data')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

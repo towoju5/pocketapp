@@ -3,6 +3,7 @@
 use App\Models\Assets;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 
 if (!function_exists('get_assets')) {
@@ -109,5 +110,32 @@ if (!function_exists('checkMultipleTables')) {
         );
 
         return collect($existingTables)->pluck('table_name')->toArray();
+    }
+}
+
+
+if(!function_exists('fetchPreChartData')) {
+    function fetchPreChartData($cryptoPair)
+    {
+        // External API URL
+        $apiUrl = "https://plus.olymptrade.com/api/v1/assets/pair?locale=en_US&pair={$cryptoPair}";
+
+        try {
+            $response = Http::get($apiUrl);
+            if ($response->successful()) {
+                $resp = $response->json();
+                if(isset($respo['charts'][0]['candles'])) {
+                    $data = $resp['charts'][0]['candles'];
+                    return response()->json($data);
+                }
+            }
+
+            // Handle failed response
+            return response()->json(['error' => 'Failed to fetch data from API'], 500);
+        } catch (\Exception $e) {
+            // Catch any exceptions and return an error
+            Log::error('Error fetching data from API: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }
