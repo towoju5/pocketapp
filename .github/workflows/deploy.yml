@@ -52,6 +52,12 @@ jobs:
             sudo chmod -R 775 storage
             sudo chmod -R g+s storage/logs
 
+            #ensure proper permissions for database directory and its files (overwrite mode)
+            sudo chown -R www-data:www-data database
+            sudo chmod -R 775 database
+            sudo chmod -R g+s database/database.sqlite
+
             # Verify the logs directory is writable
+            touch database/database.sqlite
             touch storage/logs/laravel.log
             echo "Log file is ready and writable" >> storage/logs/laravel.log
