@@ -238,7 +238,7 @@
         <div class="bg-gray-800 w-60 flex min-h-screen">
             <div class="column-1 w-full">
                 {{-- // add form for trading --}}
-                <form method="POST" action="{{ route('trade.store') }}" class="p-3 rounded-lg text-white space-y-4">
+                <form method="POST" action="{{ route('trade.store') }}" class="p-3 rounded-lg text-white space-y-4" id="tradeForm">
                     @csrf
 
                     <!-- Time Input -->
@@ -307,6 +307,8 @@
 
             </div>
         </div>
+
+
 
         {{-- right side toggle --}}
         <div class="min-w-[20rem] p-2 hidden" id="hideShowMenu"></div>
@@ -431,6 +433,11 @@
                     isLoading = false; // Reset loading flag
                 });
             }
+
+            $(".buy-button").click(function() {
+                var action = $(this).val();
+                $("#tradeForm").submit();
+            });
         });
 
         // new TradingView.widget({
@@ -498,33 +505,6 @@
                 rightBarStaysOnScroll: true,
             },
         });
-
-        // document.querySelector('._hover-up').addEventListener('mouseenter', () => {
-        //     lineSeries.createPriceLine({
-        //         price: lineSeries.lastPrice(), // Current market price
-        //         color: 'rgba(0, 255, 0, 0.2)', // Green shade for "up".
-        //         lineWidth: 0, // No visible line.
-        //         axisLabelVisible: false, // Hide the axis label.
-        //     });
-        // });
-
-        // document.querySelector('._hover-down').addEventListener('mouseenter', () => {
-        //     lineSeries.createPriceLine({
-        //         price: lineSeries.lastPrice(),
-        //         color: 'rgba(255, 0, 0, 0.2)', // Red shade for "down".
-        //         lineWidth: 0,
-        //         axisLabelVisible: false,
-        //     });
-        // });
-
-        // // Remove the price line on mouse leave
-        // document.querySelector('._hover-up').addEventListener('mouseleave', () => {
-        //     chart.removePriceLine(upPriceLine); // Remove the "up" price line
-        // });
-        // document.querySelector('._hover-down').addEventListener('mouseleave', () => {
-        //     chart.removePriceLine(downPriceLine); // Remove the "down" price line
-        // });
-
 
 
         // Add Area Series
