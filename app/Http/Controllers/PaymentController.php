@@ -24,7 +24,7 @@ class PaymentController extends Controller
             // Now you have the payment details,
             // you can then redirect or do whatever you want
 
-            return Redirect::back()->with(['msg'=>"Payment created successfully", 'type'=>'success'], 'data'=>$paymentDetails);
+            return Redirect::back()->with(['msg'=>"Payment created successfully", 'type'=>'success'], $paymentDetails);
         }catch(\Exception $e) {
             return Redirect::back()->withMessage(['msg'=>"There's an error in the data", 'type'=>'error']);
         }   
