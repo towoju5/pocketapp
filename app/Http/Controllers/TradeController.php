@@ -6,6 +6,7 @@ use App\Events\NewTradeCreated;
 use App\Models\Assets;
 use App\Models\Trade;
 use App\Jobs\EvaluateTrade;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +17,8 @@ class TradeController extends Controller
     public function index(Request $request)
     {
         $trades = Trade::latest()->cursorPaginate(10);
-        return view('trades.index', compact('trades'));
+        // return view('trades.index', compact('trades'));
+        return view('dash', compact('trades'));
     }
 
     public function placeTrade(Request $request)
@@ -34,32 +36,36 @@ class TradeController extends Controller
 
         $validated = $validated->validated();
 
-        $x = explode(":", $validated['asset']);
-        $asset = Assets::where('symbol', $x[1] ?? $x[0])->first();
+        // $x = explode(":", $validated['asset']);
+        // $asset = Assets::where('symbol', $x[1] ?? $x[0])->first();
+
+        // Convert duration from HH:MM:SS to seconds
+        $timeParts = explode(':', $validated['duration']);
+        $validated['duration'] = ($timeParts[0] * 3600) + ($timeParts[1] * 60) + $timeParts[2];
 
 
-        $validated['asset'] = str_replace("/", "-", $asset->symbol);
+        $validated['asset'] = str_replace("/", "-", $validated['asset']);
 
         // Fetch initial market price
-        $currentPrice = $this->getMarketPrice($asset->symbol);
+        $currentPrice = $chartData = fetchPreChartData($validated['asset'], true);
 
         // Create the leader's trade
         $trade = Trade::create([
-            "trade_currency" => $asset->symbol,
+            "trade_currency" => $validated['asset'],
             "trade_direction" => $validated['direction'],
             "trade_amount" => $validated['amount'],
             "trade_close_time" => 10 ?? $validated['duration'],
-            "trade_extra_info" => $validated,
+            "trade_extra_info" => array_merge($validated, ['currentPrice' => $currentPrice]),
             "trade_status" => "pending",
             "trade_copied_count" => 0,
-            'user_id' => auth()->id(),
+            'user_id' => auth()->id() ?? User::first()->id,
         ]);
 
         // Dispatch the NewTradeCreated event
         // event(new NewTradeCreated($trade)); // This broadcasts the event
 
         // // Dispatch job for trade evaluation
-        // EvaluateTrade::dispatch($trade)->delay(now()->addSeconds($validated['duration']));
+        EvaluateTrade::dispatch($trade)->delay(now()->addSeconds($validated['duration']));
 
         return response()->json(['status' => true, 'message' => 'Trade placed successfully!', 'trade' => $trade]);
     }
@@ -78,5 +84,10 @@ class TradeController extends Controller
     {
         $trade = Trade::findOrFail($id);
         return view('trades.show', compact('trade'));
+    }
+
+    public function store(Request $request)
+    {
+        return $this->placeTrade($request);
     }
 }

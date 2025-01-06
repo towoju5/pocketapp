@@ -1,198 +1,105 @@
-<div class="app-header">
-
-    <!-- Toggle buttons start -->
-    <div class="d-flex">
-        <button class="btn btn-outline-info btn-sm me-3 toggle-sidebar" id="toggle-sidebar">
-            <i class="bi bi-list fs-5"></i>
-        </button>
-        <button class="btn btn-outline-info btn-sm me-3 pin-sidebar" id="pin-sidebar">
-            <i class="bi bi-list fs-5"></i>
-        </button>
-    </div>
-    <!-- Toggle buttons end -->
-
-    <!-- App brand start -->
-    <div class="app-brand-sm">
-        <a href="index.html" class="d-lg-none d-md-block">
-            <img src="assets/images/logo-sm.svg" class="logo" alt="Bootstrap Gallery">
+<header class="w-full py-2 px-4 flex justify-between border-b border-[#293341] items-center">
+    <div class="flex gap-3 justify-left items-center">
+        <a href="{{ url('/') }}" class="home_url">
+            <img src="{{ asset('assets/svg/logo.svg') }}" alt="Website Logo">
         </a>
+        <a href="#" class="border rounded-lg p-2 border-[#293341]" onclick="alert('You clicked me')">
+            <img src="{{ asset('assets/svg/star.svg') }}" alt="Favourites">
+        </a>
+        <div class="bg-lightHouse flex gap-2 rounded-lg py-1 px-3 items-center">
+            //
+            <div class="group text-lightHouse-text text-[10px]">
+                <p>In progress:</p>
+                <p>Top up your account</p>
+            </div>
+        </div>
     </div>
-    <!-- App brand end -->
-
-    <!-- App header actions start -->
-    <div class="header-actions gap-3">
-
-        <!-- Search container starts -->
-        <div class="search-container d-lg-flex d-none">
-            <input type="text" class="form-control" id="searchData" placeholder="Search">
-            <i class="bi bi-search"></i>
-        </div>
-        <!-- Search container ends -->
-
-        <!-- Header action starts -->
-        <div class="header-actions-block rounded-5 p-2 gap-2 d-sm-flex d-none">
-            <div class="dropdown">
-                <a class="dropdown-toggle action-icon" href="#!" role="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    <i class="bi bi-clipboard-check"></i>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end dropdown-menu-md">
-
-                    <h5 class="p-3 pb-0">Activity</h5>
-                    <!-- Activity start -->
-                    <div class="scroll300">
-                        <div class="header-activity d-grid p-3">
-                            <div class="activity-details info">
-                                <div class="ms-4">
-                                    <p class="mb-1">2 hours ago</p>
-                                    <p>Messages accepted with attachments.</p>
-                                </div>
-                            </div>
-                            <div class="activity-details danger">
-                                <div class="ms-4">
-                                    <p class="mb-1">3 hours ago</p>
-                                    <p>Send email notifications of subscriptions and
-                                        deletions to list owner.</p>
-                                </div>
-                            </div>
-                            <div class="activity-details success">
-                                <div class="ms-4">
-                                    <p class="mb-1">6 hours ago</p>
-                                    <p>Required change logs activity reports.</p>
-                                </div>
-                            </div>
-                            <div class="activity-details warning">
-                                <div class="ms-4">
-                                    <p class="mb-1">9 hours ago</p>
-                                    <p>Strategic partnership plan.</p>
-                                </div>
-                            </div>
-                            <div class="activity-details info">
-                                <div class="ms-4">
-                                    <p class="mb-1">3 days ago</p>
-                                    <p>Send email notifications of subscriptions and
-                                        deletions to list product manager.</p>
-                                </div>
-                            </div>
-                            <div class="activity-details danger">
-                                <div class="ms-4">
-                                    <p class="mb-1">5 days ago</p>
-                                    <p>Sharing change logs and activity reports with
-                                        customer.</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Activity end -->
+    <div class="flex gap-3 justify-left items-center">
+        <a href="{{ url('/') }}" class="home_url">
+            <img src="{{ asset('assets/svg/logo.svg') }}" alt="Website Logo">
+        </a>
+        <!-- Dropdown Container -->
+        <div class="relative text-white w-40">
+            <!-- Dropdown Box -->
+            <div class="relative border border-gray-600 rounded-lg bg-[#1c1f26]">
+                <!-- Replace Top Border with QT Real and USD -->
+                <div
+                    class="absolute flex -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap gap-2 bg-[#1c1f26] px-3">
+                    <span class="text-sm text-gray-400">QT Real USD</span>
                 </div>
+
+                <!-- Dropdown Button -->
+                <button id="dropdownButton" class="w-full flex justify-between items-center p-3">
+                    <span class="text-lg font-bold">0</span>
+                    <svg id="dropdownArrow" xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
+                    </svg>
+                </button>
             </div>
-            <div class="dropdown">
-                <a class="dropdown-toggle action-icon" href="#!" role="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    <i class="bi bi-handbag"></i>
-                    <span class="count-label info">6</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end dropdown-menu-md">
-                    <div class="d-grid gap-2 p-3">
-                        <div class="p-3 border rounded-2">
-                            <h3 class="mb-1">$35,000</h3>
-                            <div class="mb-1 d-flex justify-content-between">
-                                <span>Revenue</span>
-                                <span class="text-primary">+2%</span>
-                            </div>
-                            <div class="progress small">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: 25%"
-                                    aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
+
+            <!-- Dropdown Content -->
+            <div id="dropdownContent"
+                class="hidden absolute top-full mt-2 w-80 -left-[50%] bg-[#1c1f26] rounded-lg border border-[#31353f] shadow-lg z-10">
+                <div class="p-4 space-y-4">
+                    <!-- Quick Trading Real -->
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="text-sm text-gray-300">Quick Trading Real</p>
+                            <p class="text-xs text-gray-500">$0</p>
                         </div>
-                        <div class="p-3 border rounded-2">
-                            <h3 class="mb-1">$48,000</h3>
-                            <div class="mb-1 d-flex justify-content-between">
-                                <span>Income</span>
-                                <span class="text-primary">+7%</span>
-                            </div>
-                            <div class="progress small">
-                                <div class="progress-bar bg-primary" role="progressbar" style="width: 50%"
-                                    aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="p-3 border rounded-2">
-                            <h3 class="mb-1">2800</h3>
-                            <div class="mb-1 d-flex justify-content-between">
-                                <span>Sales</span>
-                                <span class="text-danger">+3%</span>
-                            </div>
-                            <div class="progress small">
-                                <div class="progress-bar bg-danger" role="progressbar" style="width: 75%"
-                                    aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <a href="javascript:void(0)" class="btn btn-primary">View
-                            all</a>
+                        <button
+                            class="px-2 py-1 text-xs text-gray-400 border border-gray-600 rounded-md">USD</button>
                     </div>
-                </div>
-            </div>
-            <div class="dropdown">
-                <a class="dropdown-toggle action-icon" href="#!" role="button" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    <i class="bi bi-exclamation-triangle"></i>
-                    <span class="count-label danger">9</span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-end dropdown-menu-md">
-                    <div class="d-grid gap-4 p-3">
-                        <div class="d-flex">
-                            <img src="assets/images/user.png" class="img-3x me-3 rounded-2"
-                                alt="Dark Admin Template" />
-                            <div class="m-0">
-                                <h6>Alexandra Santos</h6>
-                                <p class="mb-2">Membership has been ended.</p>
-                                <span class="badge bg-danger">Important</span>
-                            </div>
-                        </div>
-                        <div class="d-flex">
-                            <img src="assets/images/user2.png" class="img-3x me-3 rounded-2"
-                                alt="Dark Admin Template" />
-                            <div class="m-0">
-                                <h6>Oliver Hardin</h6>
-                                <p class="mb-1">Congratulate, James for new job.</p>
-                                <span class="badge bg-info">Remainder</span>
-                            </div>
-                        </div>
-                        <div class="d-flex">
-                            <img src="assets/images/user1.png" class="img-3x me-3 rounded-2"
-                                alt="Dark Admin Template" />
-                            <div class="m-0">
-                                <h6>Murray Patrick</h6>
-                                <p class="mb-1">Lewis added new schedule release.</p>
-                                <span class="badge bg-success">Network</span>
-                            </div>
-                        </div>
-                        <a href="javascript:void(0)" class="btn btn-primary">View
-                            all</a>
+
+                    <!-- Top Up Button -->
+                    <button
+                        class="w-full py-2 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
+                            stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 4v16m8-8H4" />
+                        </svg>
+                        Top up
+                    </button>
+
+                    <!-- Quick Trading Demo -->
+                    <div>
+                        <p class="text-sm text-gray-300">Quick Trading Demo</p>
+                        <p class="text-xs text-gray-500">$49,993.60</p>
+                    </div>
+
+                    <!-- Forex Section -->
+                    <div class="flex justify-between items-center">
+                        <p class="text-sm text-gray-300">Forex</p>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
+                            viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+
+                    <!-- My Safe Section -->
+                    <div class="flex justify-between items-center">
+                        <p class="text-sm text-gray-300">My Safe</p>
+                        <button class="px-3 py-1 text-xs bg-green-600 rounded-md hover:bg-green-700">Open</button>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Header action ends -->
 
-        <!-- Header settings starts -->
-        <div class="dropdown">
-            <a id="userSettings" class="dropdown-toggle d-flex py-2 align-items-center text-decoration-none"
-                href="#!" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <div class="icon-box md bg-info text-white rounded-5">YM</div>
-            </a>
-            <div class="dropdown-menu dropdown-menu-end">
-                <a class="dropdown-item d-flex align-items-center" href="{{ route('profile.edit') }}"><i
-                        class="bi bi-person fs-4 me-2"></i>Profile</a>
-                {{-- <a class="dropdown-item d-flex align-items-center" href="settings.html"><i
-                        class="bi bi-gear fs-4 me-2"></i>Settings</a> --}}
-                <a class="dropdown-item d-flex align-items-center" href="javascript:;" onclick="$('#UserLogoutForm').submit()"><i
-                        class="bi bi-escape fs-4 me-2"></i>Logout</a>
-            </div>
+        <a href="#"
+            class="bg-gradient-to-r from-[#047838] to-[#0a5c45] flex gap-3 rounded-lg py-2 px-3 items-center border-2 border-[#047838]">
+            <i class="fas fa-wallet text-[#5aa86b]"></i>
+            <span class="text-white uppercase text-[13px] font-bold">Top up</span>
+        </a>
+        <div class="relative inline-block  border border-yellow-500 text-yellow-500 p-1 rounded-full">
+            <img class="inline-block size-[46px] rounded-full"
+                src="//images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80"
+                alt="Avatar">
+            <span
+                class="absolute top-0 end-0 block size-3 rounded-full ring-2 ring-white bg-yellow-400 dark:ring-neutral-900"></span>
         </div>
-        <!-- Header settings starts -->
-
     </div>
-    <!-- App header actions end -->
-
-</div>
+</header>

@@ -21,13 +21,24 @@ class EvaluateTrade implements ShouldQueue
         $this->trade = $trade;
     }
 
-    public function handle()
+    public function _handle()
     {
         $asset = new FinanceAsset($this->trade->trade_currency);
         if($asset->getMeta() == null){
             return response()->json(["error" => "Asset not found"]);
         }
         $finalPrice = $asset->getMeta()?->regularMarketPrice;
+
+        
+
+    }
+
+    public function handle()
+    {
+        $data = fetchPreChartData($this->trade->trade_currency);
+        $trade = $this->trade;
+        $finalPrice = $data['c'] ?? 0;
+
 
         // Evaluate trade
         if ($this->trade->direction === 'up' && $finalPrice > $this->trade->start_price) {
@@ -62,6 +73,5 @@ class EvaluateTrade implements ShouldQueue
         //     $participant->user->wallet_balance += $reward;
         //     $participant->user->save();
         // }
-
     }
 }

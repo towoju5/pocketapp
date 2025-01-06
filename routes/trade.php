@@ -14,3 +14,8 @@ Route::get('/api/assets', function() {
     $assets = get_assets();
     return response()->json($assets);
 });
+
+Route::get('api/stream/chart/{coin}', function($coin) {
+    $chartData = fetchPreChartData($coin);
+    return $chartData;
+})->name('stream.chart');
