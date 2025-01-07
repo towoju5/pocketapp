@@ -31,7 +31,7 @@ jobs:
           if [ ! -f "database/database.sqlite" ]; then
             echo "SQLite database does not exist. Creating..."
             touch database/database.sqlite
-            chmod 775 database/database.sqlite
+            chmod 644 database/database.sqlite
             echo "SQLite database created at database/database.sqlite"
           else
             echo "SQLite database already exists."
@@ -39,6 +39,7 @@ jobs:
 
       - name: Setup Project
         run: |
+          touch database/database.sqlite
           php artisan migrate:fresh --force --seed
           php artisan config:clear
           php artisan cache:clear
@@ -64,7 +65,7 @@ jobs:
 
             # Ensure proper permissions for database directory and its files (overwrite mode)
             sudo chown -R www-data:www-data database
-            sudo chmod -R 775 database
+            sudo chmod -R 644 database
             sudo chmod -R g+s database/database.sqlite
 
             # Verify the logs directory is writable
