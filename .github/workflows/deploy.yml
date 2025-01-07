@@ -55,7 +55,7 @@ jobs:
             cd /var/www/polarisoption.io
             # Fetch and reset to remote main branch
             git fetch origin
-            git reset --hard origin/main
+            git reset --hard origin/master
 
             # Ensure proper permissions for logs directory and its files (append mode)
             sudo chown -R www-data:www-data storage
