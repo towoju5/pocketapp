@@ -34,6 +34,18 @@ if (!function_exists('_floatAmount')) {
     }
 }
 
+if (!function_exists('formatPrice')) {
+    /**
+     * convert amount to float in multiple of 100s
+     * @param mixed $amount
+     * @return 
+     */
+    function formatPrice($amount)
+    {
+        return floatval($amount * 100);
+    }
+}
+
 if (!function_exists('create_user_wallet')) {
     /**
      * Create all user wallets balance

@@ -1,5 +1,5 @@
 <div class="bg-[#1c1f26] w-20">
-    <div class="right-menu-item py-2 w-full" data-route="{{ route('api.trades') }}">
+    <div class="right-menu-item py-2 w-full" data-route="/api/trades">
         <span class="icon">🔄</span>
         <span class="hidden_text hidden lg:block">Trades</span>
     </div>

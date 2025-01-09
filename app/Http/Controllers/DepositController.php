@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Bitgo;
 use App\Models\Deposit;
 use App\Models\User;
 // use App\Models\Wallet;
@@ -35,8 +36,13 @@ class DepositController extends Controller
 
     public function create()
     {
-        return $wallets = Auth::user()->wallets;
-        return view('deposits.create', compact('wallets'));
+        $user = Auth::user();
+        $wallets = $user->wallets;
+        if (empty($wallets)) {
+            create_user_wallet($user->id);
+        }
+        $methods = Bitgo::where('can_deposit', true)->get();
+        return view('deposits.create', compact('wallets', 'methods'));
     }
 
     public function store(Request $request)

@@ -8,6 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Necmicolak\YahooFinance\FinanceAsset;
 
 class EvaluateTrade implements ShouldQueue
@@ -21,44 +22,36 @@ class EvaluateTrade implements ShouldQueue
         $this->trade = $trade;
     }
 
-    public function _handle()
-    {
-        $asset = new FinanceAsset($this->trade->trade_currency);
-        if($asset->getMeta() == null){
-            return response()->json(["error" => "Asset not found"]);
-        }
-        $finalPrice = $asset->getMeta()?->regularMarketPrice;
-
-        
-
-    }
-
     public function handle()
     {
-        $data = fetchPreChartData($this->trade->trade_currency);
-        $trade = $this->trade;
-        $finalPrice = $data['c'] ?? 0;
+        try {
+            $trade = $this->trade;
+            $data = fetchPreChartData($trade->trade_currency, true);
+            $finalPrice = $data['c'] ?? 0;
 
+            // Evaluate trade
+            if ($trade->direction === 'up' && $finalPrice > $trade->start_price) {
+                $trade->trade_status = 'win';
+            } elseif ($trade->direction === 'down' && $finalPrice < $trade->start_price) {
+                $trade->trade_status = 'win';
+            } else {
+                $trade->trade_status = 'lose';
+            }
 
-        // Evaluate trade
-        if ($this->trade->direction === 'up' && $finalPrice > $this->trade->start_price) {
-            $this->trade->status = 'win';
-        } elseif ($this->trade->direction === 'down' && $finalPrice < $this->trade->start_price) {
-            $this->trade->status = 'win';
-        } else {
-            $this->trade->status = 'lose';
+            $trade->end_price = $finalPrice;
+            $trade->save();
+            event(new \App\Events\TradeUpdated($trade));
+        } catch (\Throwable $th) {
+            Log::info(json_encode($th));
         }
 
-        $this->trade->end_price = $finalPrice;
-        $this->trade->save();
-
         // $tournament = DB::table('tournament_participants')
-        //     ->where('user_id', $this->trade->user_id)
+        //     ->where('user_id', $trade->user_id)
         //     ->where('tournament_id', $activeTournament->id ?? null)
         //     ->first();
 
         // if ($tournament) {
-        //     $profit = $this->trade->status === 'win' ? $this->trade->amount : -$this->trade->amount;
+        //     $profit = $trade->trade_status === 'win' ? $trade->amount : -$trade->amount;
         //     DB::table('tournament_participants')->where('id', $tournament->id)->increment('total_profit', $profit);
         // }
 

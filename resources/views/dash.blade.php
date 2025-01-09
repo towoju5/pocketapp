@@ -8,7 +8,9 @@
     </div>
 
     {{-- left side toggle --}}
-    <div class="min-w-[20rem] p-2 hidden" id="hideShowMenuLeft"></div>
+    <div class="min-w-[20rem] p-2 hidden" id="hideShowMenuLeft">
+        <span id="tradesList"></span>
+    </div>
 
     {{-- right sidebar --}}
     <div class="bg-gray-800 w-60 flex min-h-screen">
@@ -183,9 +185,9 @@
                     lineSeries.setData(formattedInitialData);
 
                     // Optional: Hide the preloader after 3 seconds
-                    setTimeout(() => {
-                        document.querySelector(".__hidePreLoader").classList.toggle("hidden");
-                    }, 3000);
+                    // setTimeout(() => {
+                    //     document.querySelector(".__hidePreLoader").classList.toggle("hidden");
+                    // }, 3000);
                 } else {
                     console.error('Unexpected response format:', candles);
                 }
@@ -206,7 +208,7 @@
                     if (pairData.pair && pairData.rate) {
                         lineSeries.update({
                             time: Math.floor((pairData.ts || Date.now()) /
-                            1000), // Use 'ts' if it exists or default to current timestamp
+                                1000), // Use 'ts' if it exists or default to current timestamp
                             value: pairData.rate,
                         });
                     }
@@ -237,7 +239,6 @@
         socket.onmessage = (event) => {
             try {
                 const message = JSON.parse(event.data);
-                console.log('-> WebSocket message:', message);
                 updateChartWithNewData(message);
             } catch (error) {
                 console.error('Error processing WebSocket message:', error);
@@ -256,16 +257,35 @@
         fetchInitialData();
 
         window.onload = function() {
-            var channel = Echo.channel('trade.created');
-            if (channel) {
-                console.log('Echo connected successfully');
+            // Connect to the trade.created channel
+            var tradeChannel = Echo.channel('trade.created');
 
+            if (tradeChannel) {
+                toastr.success("Trade update connected");
+                console.log('Echo connected successfully');
             }
-            channel.listen('.trade.created', function(data) {
-                console.log('Trade Created:', data);
-                alert(JSON.stringify(data));
+
+            // Listen for the 'trade.created' event
+            tradeChannel.listen('.trade.created', function(data) {
+                if (data && data.id) {
+                    console.log('Trade Created:', data);
+                    toastr.success(`Trade event received: ID: ${data.id}`);
+                } else {
+                    console.error('Invalid trade.created event data:', data);
+                }
+            });
+
+            // Listen for the 'trade-updated' event
+            tradeChannel.listen('.trade-updated', function(data) {
+                if (data && data.id) {
+                    console.log('Trade Updated:', data);
+                    toastr.success(`Update on trade ${data.id} received`);
+                } else {
+                    console.error('Invalid trade-updated event data:', data);
+                }
             });
         };
+
 
         // handle form submission.
         $('#tradeForm').on('submit', function(e) {
@@ -278,19 +298,9 @@
                 success: function(response) {
                     if (response.status) {
                         toastr.success(response.message);
-
                         // Display trade data
                         const trade = response.trade;
-                        const tradeHtml = `
-                                    <div class="trade-item" data-trade-id="${trade.id}">
-                                        <h4>Trade Details</h4>
-                                        <p>Currency: ${trade.trade_currency}</p>
-                                        <p>Direction: ${trade.trade_direction}</p>
-                                        <p>Amount: ${trade.trade_amount}</p>
-                                        <p>Status: ${trade.trade_status}</p>
-                                        <p>Time Remaining: <span class="countdown-${trade.id}"></span></p>
-                                    </div>
-                                `;
+                        const tradeHtml = response.html;
                         $('#tradesList').prepend(tradeHtml);
 
                         // Start countdown

@@ -4,13 +4,14 @@ namespace App\Events;
 
 use App\Models\Trade;
 use Illuminate\Broadcasting\Channel;
+use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Log;
 
-class NewTradeCreated implements ShouldBroadcastNow
+class TradeUpdated
 {
     use Dispatchable, SerializesModels;
 
@@ -32,7 +33,7 @@ class NewTradeCreated implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new Channel('trade.created'),
+            new Channel('trade-updated'),
         ];
     }
 
@@ -46,6 +47,6 @@ class NewTradeCreated implements ShouldBroadcastNow
 
     public function broadcastAs(): string
     {
-        return 'trade.created';
+        return 'trade-updated';
     }
 }

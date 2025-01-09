@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b804ef10573637e3efc95041fbed1002",
+    "content-hash": "fba7672ad65e95d67f070f56dd75b893",
     "packages": [
         {
             "name": "bacon/bacon-qr-code",
@@ -3299,6 +3299,59 @@
                 }
             ],
             "time": "2024-12-21T18:03:19+00:00"
+        },
+        {
+            "name": "neto737/bitgosdk-php",
+            "version": "2.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/neto737/BitGoSDK-PHP.git",
+                "reference": "247d2cf69e12f9a853dcc9077c37f6b0c445700f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/neto737/BitGoSDK-PHP/zipball/247d2cf69e12f9a853dcc9077c37f6b0c445700f",
+                "reference": "247d2cf69e12f9a853dcc9077c37f6b0c445700f",
+                "shasum": ""
+            },
+            "require": {
+                "ext-bcmath": "*",
+                "ext-curl": "*",
+                "php": ">=7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "neto737\\BitGoSDK\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-3.0"
+            ],
+            "authors": [
+                {
+                    "name": "Neto Melo",
+                    "email": "neto737@live.com"
+                }
+            ],
+            "description": "A BitGo SDK written in PHP",
+            "keywords": [
+                "bitcoin",
+                "bitgo",
+                "sdk"
+            ],
+            "support": {
+                "issues": "https://github.com/neto737/BitGoSDK-PHP/issues",
+                "source": "https://github.com/neto737/BitGoSDK-PHP/tree/2.2.3"
+            },
+            "funding": [
+                {
+                    "url": "https://liberapay.com/neto737",
+                    "type": "liberapay"
+                }
+            ],
+            "time": "2022-06-29T03:13:16+00:00"
         },
         {
             "name": "nette/schema",

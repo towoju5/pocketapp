@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Admin Dashboard Templates - One Admin Template</title>
+    <title>@yield('title', 'Auth')</title>
 
     <!-- Meta -->
     <meta name="description"

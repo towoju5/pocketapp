@@ -3,6 +3,7 @@
 use App\Http\Controllers\DepositController;
 use App\Http\Controllers\PayoutController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TransactionHistoryController;
 use App\Models\User;
 use App\Jobs\EvaluateTrade;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +35,7 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('payout', PayoutController::class)->names('payout');
     // });
 
+    Route::get("finance-history", [TransactionHistoryController::class, 'history'])->name('finance.history');
 
     // Route::middleware('auth')->group(function () {
     // Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');

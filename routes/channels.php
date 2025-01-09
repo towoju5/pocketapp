@@ -12,3 +12,6 @@ Broadcast::channel('App.Models.User.{id}', function ($user, $id) {
 Broadcast::channel('trade.created', function ($trade) {
     return $trade;
 });
+Broadcast::channel('trade-updated', function ($trade) {
+    return $trade;
+});

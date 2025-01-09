@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradingView with WebSocket Data Feed</title>
+    <title>@yield('title', 'Trading Panel - Polaris Option')</title>
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -54,11 +54,12 @@
 
 <body style="height: 100vh; overflow: hidden">
     @include('components.preloader')
-    
+
     @include('layouts.header')
-    
+
     <div class="w-full flex">
         @include('layouts.sidebar')
+
         @yield('content')
     </div>
 
@@ -68,7 +69,7 @@
 
 
     <!-- Include jQuery -->
-    <script src="//code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
     <!-- Custom JS files -->
     <script src="{{ asset('assets/js/custom.js') }}"></script>
     <script src="//s3.tradingview.com/tv.js"></script>
@@ -104,15 +105,14 @@
                 loadMenuContent(_current_menu_route);
             }
 
-            $('.right-menu-item').on('click', function() {
-                const route = $(this).data('route'); // Get the route of the clicked menu
-
-                // If the same menu is clicked, toggle the panel visibility
+            $('.right-menu-item').on('click', function(e) {
+                e.preventDefault()
+                const route = $(this).data('route'); 
                 if (activeMenu === this) {
-                    menuPanel.toggleClass('hidden'); // Toggle visibility
+                    menuPanel.toggleClass('hidden');
                     if (menuPanel.hasClass('hidden')) {
                         activeMenu = null;
-                        localStorage.removeItem('_current_menu_route'); // Clear cached route
+                        localStorage.removeItem('_current_menu_route');
                     }
                     return;
                 }

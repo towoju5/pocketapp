@@ -1,63 +1,104 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">
-                    <h4 class="mb-0">Make a Deposit</h4>
+    <div class="bg-[#15182a] rounded-lg w-full m-6 max-h-[90%] text-white">
+        <!-- Multi-Step Wizard -->
+        <div class="max-w-6xl mx-auto py-10 px-4 lg:px-20">
+            <div class="shadow-lg p-6 lg:p-10">
+                <!-- Step Progress -->
+                <div class="flex items-center justify-between mb-8">
+                    <div class="text-teal-500 flex items-center">
+                        <span
+                            class="w-8 h-8 bg-teal-500 text-white rounded-full flex items-center justify-center font-bold">1</span>
+                        <span class="ml-2">Deposit method</span>
+                    </div>
+                    <div class="text-white flex items-center">
+                        <span
+                            class="w-8 h-8 bg-gray-700 text-white rounded-full flex items-center justify-center font-bold">2</span>
+                        <span class="ml-2">Payment details</span>
+                    </div>
+                    <div class="text-gray-500 flex items-center">
+                        <span
+                            class="w-8 h-8 bg-gray-700 text-white rounded-full flex items-center justify-center font-bold">3</span>
+                        <span class="ml-2">Payment process</span>
+                    </div>
+                    <div class="text-gray-500 flex items-center">
+                        <span
+                            class="w-8 h-8 bg-gray-700 text-white rounded-full flex items-center justify-center font-bold">4</span>
+                        <span class="ml-2">Payment execution</span>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <form method="POST" action="{{ route('deposits.store') }}">
-                        @csrf
-                        
-                        <div class="mb-3">
-                            <label for="wallet_id" class="form-label">Select Wallet</label>
-                            <select class="form-select @error('wallet_id') is-invalid @enderror" name="wallet_id" required>
-                                <option value="">Choose wallet...</option>
-                                @foreach($wallets as $wallet)
-                                    <option value="{{ $wallet->id }}">{{ $wallet->name }}</option>
-                                @endforeach
-                            </select>
-                            @error('wallet_id')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
 
-                        <div class="mb-3">
-                            <label for="deposit_amount" class="form-label">Amount</label>
-                            <div class="input-group">
-                                <span class="input-group-text">$</span>
-                                <input type="number" class="form-control @error('deposit_amount') is-invalid @enderror" 
-                                    name="deposit_amount" step="0.01" min="1" required>
-                            </div>
-                            @error('deposit_amount')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+                <!-- Deposit Form -->
+                <div class="grid grid-cols-1 gap-6">
+                    <div class="step-1">
+                        @include('deposits.partials.step-1')
+                    </div>
+                    <div class="step-2 hidden">
+                        @include('deposits.partials.step-2')
+                    </div>
+                    <div class="step-3 hidden">
+                        @include('deposits.partials.step-3')
+                    </div>
+                    <div class="step-4 hidden">
+                        @include('deposits.partials.step-4')
+                    </div>
+                </div>
 
-                        <div class="mb-3">
-                            <label for="deposit_method" class="form-label">Payment Method</label>
-                            <select class="form-select @error('deposit_method') is-invalid @enderror" name="deposit_method" required>
-                                <option value="bitcoin">Bitcoin</option>
-                                <option value="ethereum">Ethereum</option>
-                                <option value="bank_transfer">Bank Transfer</option>
-                                <option value="credit_card">Credit Card</option>
-                            </select>
-                            @error('deposit_method')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Proceed with Deposit</button>
-                            <a href="{{ route('deposits.index') }}" class="btn btn-outline-secondary">Cancel</a>
-                        </div>
-                    </form>
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between mt-8">
+                    <button id="prevBtn" class="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-6 rounded hidden">
+                        Previous
+                    </button>
+                    <button id="nextBtn" class="bg-teal-500 hover:bg-teal-400 text-white font-bold py-2 px-6 rounded">
+                        Next
+                    </button>
+                    <button id="submitBtn" class="bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-6 rounded hidden">
+                        Submit
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let currentStep = 1;
+            const totalSteps = 4;
+
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            function showStep(step) {
+                document.querySelectorAll('.step-1, .step-2, .step-3, .step-4').forEach((el, index) => {
+                    el.classList.add('hidden');
+                    if (index + 1 === step) {
+                        el.classList.remove('hidden');
+                    }
+                });
+
+                prevBtn.classList.toggle('hidden', step === 1);
+                nextBtn.classList.toggle('hidden', step === totalSteps);
+                submitBtn.classList.toggle('hidden', step !== totalSteps);
+            }
+
+            prevBtn.addEventListener('click', () => {
+                if (currentStep > 1) {
+                    currentStep--;
+                    showStep(currentStep);
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    showStep(currentStep);
+                }
+            });
+
+            // Initialize the first step
+            showStep(currentStep);
+        });
+    </script>
 @endsection

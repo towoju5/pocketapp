@@ -145,7 +145,6 @@ $(document).ready(function () {
 
 
 	$(".cta-button").click(function () {
-		alert(this)
 		var action = $(this).val();
 
 		// get the CTA button data-value attribute

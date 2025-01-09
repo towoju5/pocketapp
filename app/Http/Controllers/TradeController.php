@@ -16,9 +16,9 @@ class TradeController extends Controller
 {
     public function index(Request $request)
     {
-        $trades = Trade::latest()->cursorPaginate(10);
-        // return view('trades.index', compact('trades'));
-        return view('dash', compact('trades'));
+        $trades = Trade::whereUserId(auth()->id())->latest()->cursorPaginate(10);
+        return view('trades.index', compact('trades'));
+        // return view('dash', compact('trades'));
     }
 
     public function placeTrade(Request $request)
@@ -56,18 +56,24 @@ class TradeController extends Controller
             "trade_amount" => $validated['amount'],
             "trade_close_time" => now()->addSeconds($validated['duration']),
             "trade_extra_info" => array_merge($validated, ['currentPrice' => $currentPrice]),
+            "start_price" => $currentPrice,
             "trade_status" => "pending",
             "trade_copied_count" => 0,
             'user_id' => auth()->id(),
         ]);
 
         // Dispatch the NewTradeCreated event
-        // event(new NewTradeCreated($trade)); // This broadcasts the event
+        event(new NewTradeCreated($trade)); // This broadcasts the event
 
         // // Dispatch job for trade evaluation
         EvaluateTrade::dispatch($trade)->delay(now()->addSeconds($validated['duration']));
 
-        return response()->json(['status' => true, 'message' => 'Trade placed successfully!', 'trade' => $trade]);
+        return response()->json([
+            'status' => true, 
+            'message' => 'Trade placed successfully!', 
+            'trade' => $trade,
+            'html' => view("mini-pages.trade-list")
+        ]);
     }
 
     private function getMarketPrice($market)

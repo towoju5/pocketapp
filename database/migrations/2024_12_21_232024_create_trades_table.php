@@ -18,6 +18,8 @@ return new class extends Migration
             $table->enum('trade_direction', ['up', 'down'])->default('up')->comment('up means buy and down means sell');
             $table->string('trade_amount');
             $table->string('trade_close_time');
+            $table->string('end_price')->nullable();
+            $table->string('start_price');
             $table->json('trade_extra_info')->nullable();
             $table->string('trade_status')->default('open');
             $table->string('trade_copied_count')->default(0);
