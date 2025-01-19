@@ -31,10 +31,10 @@ class EvaluateTrade implements ShouldQueue
             $finalPrice = $data ?? 0;
 
             // Evaluate trade
-            if ($trade->trade_direction == 'up' && $finalPrice >= $trade->start_price) {
+            if ($trade->trade_direction == 'up' && $finalPrice > $trade->start_price) {
                 $trade->trade_status = 'win';
                 $trade->trade_profit = '1';
-            } elseif ($trade->trade_direction == 'down' && $finalPrice <= $trade->start_price) {
+            } elseif ($trade->trade_direction == 'down' && $finalPrice < $trade->start_price) {
                 $trade->trade_status = 'win';
                 $trade->trade_profit = '1';
             } else {

@@ -39,11 +39,11 @@
 
                 <!-- Navigation Buttons -->
                 <div class="flex justify-between mt-8">
-                    <button type="button" onclick="windows.hisory.back()" class="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-6 rounded">
+                    <button type="button" onclick="window.history.back()" class="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-6 rounded">
                         Previous
                     </button>
 
-                    <button type="button" onclick="$('.payinForm').submit()" class="bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-6 rounded">
+                    <button type="button" id="submitBtn" class="bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-6 rounded">
                         Submit
                     </button>
                 </div>
@@ -54,29 +54,36 @@
 
 @push('js')
     <script>
-        $('.payinForm').on('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            
-            $.ajax({
-                url: this.action,
-                method: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                },
-                success: function(html) {
-                    $('#contentArea').html(html);
-                },
-                error: function(error) {
-                    toastr.error(error.responseJSON.message)
-                    console.error('Error:', error.responseJSON.message);
-                }
+        $(document).ready(function () {
+            // Attach submit event to payinForm
+            $(document).on('submit', '.payinForm', function (e) {
+                e.preventDefault(); // Prevent default form submission
+                
+                const formData = new FormData(this);
+
+                $.ajax({
+                    url: this.action,
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    success: function (html) {
+                        $('#contentArea').html(html); // Update the content area with the response
+                    },
+                    error: function (error) {
+                        toastr.error(error.responseJSON?.message || 'An error occurred.');
+                        console.error('Error:', error.responseJSON);
+                    }
+                });
+            });
+
+            // Trigger form submission when clicking Submit button
+            $('#submitBtn').on('click', function () {
+                $('.payinForm').trigger('submit');
             });
         });
-
-    </script>    
+    </script>
 @endpush

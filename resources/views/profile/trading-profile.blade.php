@@ -4,6 +4,7 @@
 
 @section('content')
     <div class="container m-4">
+        @include('partials.profile')
         <div class="panel box-border personal-info-panel w-full">
             <div class="panel-heading">
                 <div class="panel-title">Identity info</div>
@@ -22,7 +23,7 @@
                                 <div class="flex items-center gap-4 mb-4">
                                     <div class="w-16 h-16 bg-gray-700 rounded-full"></div>
                                     <div>
-                                        <div class="text-xl font-bold">User90373611</div>
+                                        <div class="text-xl font-bold">{{ $user->username }}</div>
                                         <div class="text-sm text-gray-400">UID 90373611</div>
                                     </div>
                                 </div>

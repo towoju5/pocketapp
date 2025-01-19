@@ -64,7 +64,7 @@ class ProfileController extends Controller
     public function tradingProfile()
     {
         $trades = Trade::whereUserId(auth()->id())->get();
-        return $user = auth()->user();
+        $user = auth()->user();
 
         // Calculate trading statistics
         $totalTrades = $trades->count();

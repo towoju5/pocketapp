@@ -89,10 +89,7 @@
                         m.classList.remove('bg-blue-500');
                     }
                 });
-                // alert("DO NOT USE, THIS SERVICE IS IN DEVELOPMENT")
             });
         });
-
-        // alert("DO NOT USE, THIS SERVICE IS IN DEVELOPMENT")
     });
 </script>

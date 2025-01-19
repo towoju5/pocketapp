@@ -1,10 +1,13 @@
 <?php
 
 use App\Models\Assets;
+use App\Models\Bitgo;
+use App\Models\BitgoWallets;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
+use neto737\BitGoSDK\BitGoSDK;
 
 if (!function_exists('get_assets')) {
     function get_assets()
@@ -132,14 +135,14 @@ if (!function_exists('fetchPreChartData')) {
         // External API URL
         try {
             $resp = getAssetData($cryptoPair);
-            if(!isset($resp['rate'])) {
+            if (!isset($resp['rate'])) {
                 return response()->json(['error' => 'Invalid asset']);
             }
 
             if (isset($resp['charts'][0]['candles'])) {
                 if ($isRate)
                     return $resp['rate'];
-                
+
                 $data = $resp['charts'][0]['candles'];
                 return response()->json($data);
             }
@@ -153,13 +156,14 @@ if (!function_exists('fetchPreChartData')) {
     }
 }
 
-if(!function_exists("getAssetData")) {
-    function getAssetData($asset) {
+if (!function_exists("getAssetData")) {
+    function getAssetData($asset)
+    {
         $apiUrl = "https://plus.olymptrade.com/api/v1/assets/pair?locale=en_US&pair={$asset}";
         try {
             $response = Http::get($apiUrl);
-            $resp = $response->json(); 
-            if(!isset($resp['rate'])) {
+            $resp = $response->json();
+            if (!isset($resp['rate'])) {
                 return ["error" => "Invalid asset"];
             }
             return $resp;
@@ -168,5 +172,84 @@ if(!function_exists("getAssetData")) {
             Log::error('Error fetching data from API: ' . $e->getMessage());
             return response()->json(['error' => $e->getMessage()]);
         }
+    }
+}
+
+
+if (!function_exists('getCoinByTicker')) {
+    function getCoinByTicker($coin)
+    {
+
+        return "6228b5861bfa60000725b4340bcdf0fc";
+        $wallet = Bitgo::where('wallet_ticker', $coin)->first();
+        if (!$wallet) {
+            return ['error' => 'Wallet not found'];
+        }
+
+        return $wallet->wallet_id;
+
+    }
+}
+
+
+if (!function_exists('getTransferDetails')) {
+    function getTransferDetails($coin, $transferId)
+    {
+        $accessToken = getenv('BITGO_API_KEY');
+        $walletId = getCoinByTicker($coin);
+        $url = "https://www.bitgo.com/api/v2/{$coin}/wallet/{$walletId}/transfer/{$transferId}";
+
+        try {
+            $response = Http::withToken($accessToken)->get($url);
+            if (!$response->failed()) {
+                $transferDetails = json_decode($response, true);
+                return $transferDetails;
+            }
+            return false;
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+}
+
+if (!function_exists('bitgoDepositAddress')) {
+    function bitgoDepositAddress($coin)
+    {
+        try {
+            $testNet = env('BITGO_ENV') === 'test';
+            $bitgo = new BitGoSDK(env('BITGO_API_KEY'), $coin, $testNet);
+            $bitgo->walletId = getCoinByTicker($coin);
+
+            $createAddress = $bitgo->createWalletAddress();
+            $createdWallet = [];
+            // Log::info("Bitgo wallet address generation response", ['response' => $createAddress]);
+
+            $user = auth()->user();
+            if (isset($createAddress['address'])) {
+                $correctWalletAddress = explode('?', $createAddress['address'])[0] ?? $createAddress['address'];
+
+                $walletData = [
+                    "user_id" => $user->id,
+                    "wallet_id" => $createAddress['wallet'],
+                    "address" => $correctWalletAddress,
+                    "coin_ticker" => $coin,
+                    "meta_data" => $createAddress, // Ensuring meta_data is stored as a JSON string
+                    "coin_label" => "{$coin} Address",
+                    "address_id" => $createAddress['id'],
+                    "wallet_network" => $createAddress['chain'],
+                ];
+
+                $createdWallet = BitgoWallets::create($walletData);
+
+                if ($createdWallet) {
+                    return $createdWallet;
+                }
+            }
+            return $createdWallet;
+        } catch (\Exception $e) {
+            Log::error("Error generating wallet address", ['error' => $e->getMessage()]);
+            return ['error' => $e->getMessage()];
+        }
+
     }
 }

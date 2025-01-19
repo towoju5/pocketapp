@@ -19,6 +19,10 @@ class BitgoWallets extends Model
         "user_id"
     ];
 
+    protected $casts = [
+        'meta_data' => 'array'
+    ];
+
     public function wallet()
     {
         return $this->belongsTo(Bitgo::class);

@@ -17,9 +17,8 @@ class TradeController extends Controller
 {
     public function index(Request $request)
     {
-        return $trades = Trade::whereUserId(auth()->id())->latest()->cursorPaginate(10);
-        // return view('trades.index', compact('trades'));
-        return view('dash', compact('trades'));
+        $trades = Trade::whereUserId(auth()->id())->latest()->paginate(10);
+        return view('trades.index', compact('trades'));
     }
 
     public function placeTrade(Request $request)

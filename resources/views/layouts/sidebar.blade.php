@@ -11,13 +11,13 @@
         <span class="hidden_text hidden lg:block">Finance</span>
     </button>
 
-    <button @if(Route::is('trade.index')) bg-slate-400 @endif data-href="{{ route('profile.edit') }}" class="menu-item py-3 w-full hover:bg-slate-400 text-gray-400 hover:text-white"
+    <button @if(Route::is('profile.*')) bg-slate-400 @endif data-href="{{ route('profile.edit') }}" class="menu-item py-3 w-full hover:bg-slate-400 text-gray-400 hover:text-white"
         data-tooltip="Profile">
         <i class="fa-solid fa-user"></i>
         <span class="hidden_text hidden lg:block">Profile</span>
     </button>
 
-    <button @if(Route::is('trade.index')) bg-slate-400 @endif data-href="#" class="menu-item py-3 w-full hover:bg-slate-400 text-gray-400 hover:text-white relative" data-tooltip="Cart">
+    <button @if(Route::is('trade.index')) bg-slate-400 @endif data-href="{{ route('trade.index') }}" class="menu-item py-3 w-full hover:bg-slate-400 text-gray-400 hover:text-white relative" data-tooltip="Cart">
         <i class="fa-solid fa-cart-shopping"></i>
         <span class="hidden_text hidden lg:block">Market</span>
     </button>

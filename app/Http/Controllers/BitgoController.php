@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\BitgoWallets;
 use Illuminate\Http\Request;
-use App\Models\Bitgo;
 use BitGoSDK\BitGo;
 
 class BitgoController extends Controller
@@ -13,16 +12,16 @@ class BitgoController extends Controller
 
     public function __construct()
     {
-        $this->bitgo = new BitGo([
-            'accessToken' => config('bitgo.access_token'),
-            'env' => config('bitgo.env', 'prod'), // 'test' or 'prod'
-        ]);
+        // $this->bitgo = new Bitgo([
+        //     'accessToken' => config('bitgo.access_token'),
+        //     'env' => config('bitgo.env', 'test'), // 'test' or 'prod'
+        // ]);
     }
 
     // Generate a new wallet
     public function generateWallet(Request $request)
     {
-        $walletName = $request->input('wallet_name');
+        $walletName = $request->input('wallet_ticker');
         $passphrase = config('bitgo.passphrase');
 
         try {
@@ -31,12 +30,12 @@ class BitgoController extends Controller
                 'passphrase' => $passphrase,
             ]);
 
-            Bitgo::create([
+            \App\Models\Bitgo::create([
                 'wallet_id' => $wallet['id'],
                 'wallet_name' => $walletName,
                 'wallet_ticker' => $wallet['coin'],
                 'type' => $wallet['type'],
-                'require_memo' => $wallet['coin'] === 'xrp' || $wallet['coin'] === 'xlm', // Example condition
+                'require_memo' => $wallet['coin'] === 'xrp' || $wallet['coin'] === 'xlm', 
             ]);
 
             return response()->json(['message' => 'Wallet generated successfully', 'data' => $wallet]);
@@ -46,14 +45,10 @@ class BitgoController extends Controller
     }
 
     // Generate a new wallet address
-    public function generateWalletAddress(Request $request, $walletId)
+    public function generateWalletAddress($coin)
     {
         try {
-            $address = $this->bitgo->wallet()->get($walletId)->createAddress([
-                'chain' => 0,
-            ]);
-
-            return response()->json(['message' => 'Address generated successfully', 'data' => $address]);
+            return bitgoDepositAddress($coin);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to generate address', 'details' => $e->getMessage()], 500);
         }

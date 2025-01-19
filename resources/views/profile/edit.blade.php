@@ -3,6 +3,7 @@
 @section('title', 'Profile')
 @section('content')
     <div class="container py-4 mx-4">
+        @include('partials.profile')
         <div class="panel box-border personal-info-panel mb-3">
             <div class="panel-heading">
                 <div class="panel-title">Identity info</div>

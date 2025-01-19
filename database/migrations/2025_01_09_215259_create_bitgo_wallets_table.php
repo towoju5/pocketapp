@@ -12,14 +12,18 @@ return new class extends Migration
         Schema::create('bitgo_wallets', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->foreignId('wallet_id')->constrained('bitgos')->onDelete('cascade');
+            $table->string('wallet_id');
             $table->string('address');
+            $table->string('coin_label');
+            $table->string('address_id');
+            $table->string('wallet_network');
             $table->string('coin_ticker');
             $table->json('meta_data')->nullable();
             $table->timestamps();
             $table->softDeletes();
             
             $table->unique('address');
+            $table->unique('address_id');
             $table->index('coin_ticker');
         });
     }

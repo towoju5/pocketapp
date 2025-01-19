@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bitgo;
+use App\Models\BitgoWallets;
 use App\Models\Deposit;
 use App\Models\User;
 // use App\Models\Wallet;
@@ -60,8 +61,9 @@ class DepositController extends Controller
             if (!$deposit_method) {
                 return response()->json(['message' => 'Invalid deposit method.'], 422);
             }
-            session(['deposit_method' => $request->deposit_method]);
-            // return response()->json(['select_method' => $deposit_method]);
+            session()->put('deposit_method', $deposit_method);
+            session()->put('deposit_method_id', $request->deposit_method);
+
             return view('deposits.partials.step-2', compact('deposit_method'));
         }
 
@@ -70,13 +72,36 @@ class DepositController extends Controller
                 'deposit_amount' => 'required'
             ]);
 
-            session([
-                    "payin_payload" => [
-                        'deposit_method' => session('deposit_method'),
-                        'deposit_amount' => $request->amount
-                ]
+            session()->put("payin_payload", [
+                'deposit_method' => session('deposit_method'),
+                'deposit_amount' => $request->deposit_amount
             ]);
-            return view('deposits.partials.step-3', compact('deposit_method'));
+            $ticker_in_session = session('payin_payload')['deposit_method'];
+            $ticker = $ticker_in_session?->wallet_ticker;
+            
+            
+            if(!$ticker){
+                return response()->json(['message' => 'Invalid deposit method.'], 422);
+            }
+
+            $wallet = BitgoWallets::where('user_id', Auth::id())
+                ->where('coin_ticker', $ticker)
+                ->first();
+            
+            if(env('BITGO_ENV') == 'test') {
+                $ticker = 't' . $ticker;
+            }
+
+
+            if(!$wallet){
+                // generate a new wallet address for selected coin
+                $bitgo = new BitgoController();
+                $wallet = $bitgo->generateWalletAddress('tbtc');
+            }
+            
+            $deposit_method = Bitgo::whereId(session()->get('deposit_method_id'))->where('can_deposit', true)->first();
+            $deposit_amount = $request->deposit_amount;
+            return view('deposits.partials.step-3', compact('wallet', 'deposit_method', 'deposit_amount'));
         }
 
         if ($request->deposit_step == 3) {
