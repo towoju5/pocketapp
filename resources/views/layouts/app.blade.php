@@ -11,9 +11,26 @@
     <!-- TradingView Widget Script -->
     <script type="text/javascript" src="//s3.tradingview.com/tv.js"></script>
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
     <style>
+        #menuPanel {
+            position: fixed;
+            /* Fixes it to the viewport */
+            right: 0;
+            /* Aligns to the right edge of the viewport */
+            top: 0;
+            width: 300px;
+            /* Adjust as necessary */
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            background-color: #1f1f1f;
+            /* Optional for better visibility */
+        }
+
         body {
+            overflow-x: hidden;
             background-image: url({{ asset('assets/images/bg.jpg') }})
         }
 
@@ -48,16 +65,41 @@
             width: 100%;
             height: 90%;
         }
+
+        .container {
+            margin: 2rem;
+            margin-left: 8rem;
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        table tr {
+            width: auto;
+        }
+
+        table tr:not(:last-child) {
+            border-bottom: 1px solid #292d4a;
+            /* Light gray border */
+        }
+
+        @media (min-width: 1536px) {
+            .container {
+                max-width: 100vw;
+            }
+        }
     </style>
     @stack('css')
+
 </head>
 
-<body style="height: 100vh; overflow: hidden">
+<body style="overflow: auto;">
     @include('components.preloader')
 
     @include('layouts.header')
 
-    <div class="w-full flex">
+    <div class="w-full flex" style="margin-top: 4rem">
         @include('layouts.sidebar')
 
         @yield('content')
@@ -91,85 +133,72 @@
                     }
                 });
 
-
             let activeMenu = null; // Currently active menu element
             let isLoading = false; // Prevent multiple simultaneous requests
             const menuPanel = $('#hideShowMenu');
 
-            // Load the previously active menu route from localStorage
-            const _current_menu_route = localStorage.getItem('_current_menu_route');
-
-            // If there's a stored route, load its content on page load
-            if (_current_menu_route) {
-                menuPanel.removeClass('hidden');
-                loadMenuContent(_current_menu_route);
-            }
-
             $('.right-menu-item').on('click', function(e) {
-                e.preventDefault()
-                const route = $(this).data('route'); 
-                if (activeMenu === this) {
-                    menuPanel.toggleClass('hidden');
-                    if (menuPanel.hasClass('hidden')) {
-                        activeMenu = null;
-                        localStorage.removeItem('_current_menu_route');
-                    }
+                e.preventDefault();
+                const route = $(this).data('route');
+
+                if (!route) {
+                    console.warn('No route defined for this menu item.');
                     return;
                 }
 
-                // If a different menu is clicked
-                activeMenu = this;
-
-                // If already loading or the route is the same, avoid duplicate requests
-                if (isLoading || _current_menu_route === route) {
+                // Hide if same route is clicked or is already open
+                if ($(this).hasClass('is-open') || menuPanel.data('currentRoute') === route) {
+                    $(this).removeClass('is-open').addClass('is-close');
+                    menuPanel.hide(); // Hide the panel
+                    activeMenu = null;
                     return;
                 }
 
-                // Update the current menu route in localStorage
-                localStorage.setItem('_current_menu_route', route);
+                // Handle switching to a different menu
+                if (activeMenu && activeMenu !== route) {
+                    $('.right-menu-item.is-open').removeClass('is-open').addClass('is-close');
+                }
 
-                // Show the panel and load content
-                menuPanel.removeClass('hidden');
-                loadMenuContent(route);
+                // Mark the clicked item as active
+                $(this).removeClass('is-close').addClass('is-open');
+                activeMenu = route;
+                menuPanel.data('currentRoute', route);
+
+                // Load content and show the panel
+                if (!isLoading) {
+                    isLoading = true;
+                    loadMenuContent(route).then(() => {
+                        isLoading = false;
+                        menuPanel.css({
+                            display: 'block',
+                            visibility: 'visible',
+                            opacity: 1
+                        });
+                    }).catch((error) => {
+                        isLoading = false;
+                        console.error('Error loading menu content:', error);
+                    });
+                }
             });
-
             // Function to load menu content
             function loadMenuContent(route) {
                 isLoading = true; // Set loading flag
 
                 // Show a preloader (Blade-rendered or fallback HTML)
                 const preloader = `{!! view('components.preloader-main')->render() !!}`;
-                menuPanel.html("<div class='flex justify-center items-center h-full'>" + preloader +
-                    "</div>");
+                menuPanel.html("<div class='flex justify-center items-center h-full'>" + preloader + "</div>");
 
                 // Fetch content dynamically from the route
                 $.get(route, function(data) {
                     menuPanel.html(data); // Replace preloader with fetched data
                     isLoading = false; // Reset loading flag
                 }).fail(function() {
-                    menuPanel.html('<p>Error loading content. Please try again.</p>');
+                    menuPanel.html(
+                        '<p class="text-white text-xl">Error loading content. Please try again.</p>');
                     isLoading = false; // Reset loading flag
                 });
             }
         });
-
-        // new TradingView.widget({
-        //     "container_id": "tradingview_chart",
-        //     "autosize": true,
-        //     "symbol": "BTCUSDT",
-        //     "interval": "1",
-        //     "theme": "dark",
-        //     "style": "2",
-        //     "locale": "en",
-        //     "toolbar_bg": "#f1f3f6",
-        //     "enable_publishing": false,
-        //     "hide_top_toolbar": true,
-        //     "hide_side_toolbar": true,
-        //     "allow_symbol_change": false,
-        //     "studies": [
-        //         "MAExp@tv-basicstudies"
-        //     ]
-        // });
     </script>
 
     @stack('js')

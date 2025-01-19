@@ -1,4 +1,4 @@
-<div id="sideMenu" class="bg-[#1c1f26] min-h-screen px-0 py-1 lg:w-24">
+<div id="sideMenu" class="bg-[#1c1f26] min-h-screen px-0 py-1 lg:w-24 fixed z-10">
     <!-- Menu Items -->
     <button @if(Route::is('dashboard*')) bg-slate-400 @endif data-href="{{ route('dashboard') }}" class="menu-item py-3 hover:bg-slate-400 w-full text-gray-400 hover:text-white" data-tooltip="Analytics">
         <i class="fa-solid fa-chart-line"></i>

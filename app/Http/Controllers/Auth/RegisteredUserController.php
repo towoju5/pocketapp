@@ -31,13 +31,29 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
+
+        $name = explode(" ", $request->name);
+
         $user = User::create([
-            'name' => $request->name,
+            'first_name' => $name[0],
+            'last_name' => $name[1] ?? $name[0],
+            'username' => $name[0] . rand(2201, 9999),
             'email' => $request->email,
+            'config' => [
+                "email_notifications" => "false",
+                "manager_updates" => "false",
+                "company_news" => "false",
+                "company_promotions" => "false",
+                "trading_analytics" => "false",
+                "trading_statements" => "false",
+                "education_emails" => "false",
+                "sound_notifications" => "false",
+                "default_language" => "en",
+            ],
             'password' => Hash::make($request->password),
         ]);
 

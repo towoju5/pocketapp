@@ -35,13 +35,13 @@ class AppServiceProvider extends ServiceProvider
                     $user = Auth::user();
                     $uwallets = [
                         'all_wallets' => $user->wallets,
-                        'main_wallets' => $user->wallets()->where('description', 'main')->get(),
-                        'forex_mt4_wallets' => $user->wallets()->where('description', 'forex_mt4')->get(),
-                        'forex_mt5_wallets' => $user->wallets()->where('description', 'forex_mt5')->get(),
-                        'shares_trading_wallets' => $user->wallets()->where('description', 'shares_trading')->get(),
-                        'active_wallet' => $user->wallets()->where('currently_active', true)->first(),
-                        'live_wallets' => $user->wallets()->where('mode', 'live')->get(),
-                        'test_wallets' => $user->wallets()->where('mode', 'test')->get()
+                        'main_wallets' => $user->wallets()->where('description', 'main')->first(),
+                        'forex_mt4_wallets' => $user->wallets()->where('description', 'forex_mt4')->first(),
+                        'forex_mt5_wallets' => $user->wallets()->where('description', 'forex_mt5')->first(),
+                        'shares_trading_wallets' => $user->wallets()->where('description', 'shares_trading')->first(),
+                        // 'active_wallet' => $user->wallets()->where('currently_active', true)->first(),
+                        'live_wallets' => $user->wallets()->where('description', 'live')->get(),
+                        'test_wallets' => $user->wallets()->where('description', 'test')->get()
                     ];
 
                     $view->with('uwallets', $uwallets);

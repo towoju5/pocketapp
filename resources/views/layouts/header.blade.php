@@ -1,4 +1,5 @@
-<header class="w-full py-2 px-4 flex justify-between border-b border-[#293341] items-center">
+{{-- <header class="w-full py-2 px-4 flex justify-between border-b border-[#293341] items-center"> --}}
+<header class="bg-gray-900 text-white flex justify-between items-center p-4 fixed top-0 left-0 right-0 z-40 h-16">
     <div class="flex gap-3 justify-left items-center">
         <a href="{{ url('/') }}" class="home_url">
             <img src="{{ asset('assets/svg/logo.svg') }}" alt="Website Logo">
@@ -19,9 +20,9 @@
             <img src="{{ asset('assets/svg/logo.svg') }}" alt="Website Logo">
         </a>
         <!-- Dropdown Container -->
-        <div class="relative text-white w-40">
+        <div class="relative text-white w-40 h-10">
             <!-- Dropdown Box -->
-            <div class="relative border border-gray-600 rounded-lg bg-[#1c1f26]">
+            <div class="relative border border-gray-600 rounded-lg bg-[#1c1f26] h-10">
                 <!-- Replace Top Border with QT Real and USD -->
                 <div
                     class="absolute flex -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap gap-2 bg-[#1c1f26] px-3">
@@ -29,7 +30,7 @@
                 </div>
 
                 <!-- Dropdown Button -->
-                <button id="dropdownButton" class="w-full flex justify-between items-center p-3">
+                <button id="dropdownButton" class="w-full flex justify-between items-center p-2">
                     <span class="text-lg font-bold">0</span>
                     <svg id="dropdownArrow" xmlns="http://www.w3.org/2000/svg"
                         class="h-5 w-5 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24"

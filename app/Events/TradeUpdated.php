@@ -33,7 +33,7 @@ class TradeUpdated
     public function broadcastOn(): array
     {
         return [
-            new Channel('trade-updated'),
+            new Channel('trade.updated'),
         ];
     }
 
@@ -47,6 +47,6 @@ class TradeUpdated
 
     public function broadcastAs(): string
     {
-        return 'trade-updated';
+        return 'trade.updated';
     }
 }

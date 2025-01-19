@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="w-full mx-4 my-3">
+    <div class="w-full container">
         @include('partials.finance-header')
         <div class="w-full bg-gray-900 text-white">
             <div class="p-6">

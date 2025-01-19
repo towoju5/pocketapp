@@ -55,7 +55,7 @@ if (!function_exists('create_user_wallet')) {
     function create_user_wallet($userId = null)
     {
         $user = User::findOrFail($userId ?? auth()->id());
-        if($user) {
+        if ($user) {
             $_wallets = [
                 [
                     "name" => "QT Real USD",
@@ -90,16 +90,16 @@ if (!function_exists('create_user_wallet')) {
                     "symbol" => "sh_demo_usd"
                 ],
             ];
-            
-            foreach($_wallets as $k => $w) {
-                if(!$user->hasWallet($w['symbol'])) {
+
+            foreach ($_wallets as $k => $w) {
+                if (!$user->hasWallet($w['symbol'])) {
                     $balance = 0;
                     $wallet = $user->createWallet([
                         'name' => $w['name'],
                         'slug' => $w['symbol'],
                         'balance' => $balance
                     ]);
-                    if(str_contains($w['symbol'], 'demo')) {
+                    if (str_contains($w['symbol'], 'demo')) {
                         $wallet->deposit(_floatAmount(10000));
                     }
                 }
@@ -126,25 +126,43 @@ if (!function_exists('checkMultipleTables')) {
 }
 
 
-if(!function_exists('fetchPreChartData')) {
+if (!function_exists('fetchPreChartData')) {
     function fetchPreChartData($cryptoPair, $isRate = false)
     {
         // External API URL
-        $apiUrl = "https://plus.olymptrade.com/api/v1/assets/pair?locale=en_US&pair={$cryptoPair}";
+        try {
+            $resp = getAssetData($cryptoPair);
+            if(!isset($resp['rate'])) {
+                return response()->json(['error' => 'Invalid asset']);
+            }
 
+            if (isset($resp['charts'][0]['candles'])) {
+                if ($isRate)
+                    return $resp['rate'];
+                
+                $data = $resp['charts'][0]['candles'];
+                return response()->json($data);
+            }
+
+            return response()->json(['error' => $resp]);
+        } catch (\Exception $e) {
+            // Catch any exceptions and return an error
+            Log::error('Error fetching data from API: ' . $e->getMessage());
+            return response()->json(['error' => $e->getMessage()]);
+        }
+    }
+}
+
+if(!function_exists("getAssetData")) {
+    function getAssetData($asset) {
+        $apiUrl = "https://plus.olymptrade.com/api/v1/assets/pair?locale=en_US&pair={$asset}";
         try {
             $response = Http::get($apiUrl);
-            // if ($response->successful()) {
-                $resp = $response->json();
-                if(isset($resp['charts'][0]['candles'])) {
-                    if($isRate) return $resp['rate'];
-                    $data = $resp['charts'][0]['candles'];
-                    return response()->json($data);
-                }
-            // }
-
-            // Handle failed response
-            return response()->json(['error' => $resp]);
+            $resp = $response->json(); 
+            if(!isset($resp['rate'])) {
+                return ["error" => "Invalid asset"];
+            }
+            return $resp;
         } catch (\Exception $e) {
             // Catch any exceptions and return an error
             Log::error('Error fetching data from API: ' . $e->getMessage());

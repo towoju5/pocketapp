@@ -1,333 +1,242 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="en">
 
-@section('title', 'Trading Dashboard')
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Dashboard</title>
+    @vite('resources/css/app.css')
+    @livewireStyles
+    <style>
+        body {
+            background-color: #0A0A23;
+            /* Dark background color */
+            color: #FFFFFF;
+            /* White text color */
+            font-family: 'Arial', sans-serif;
+        }
 
-@section('content')
-    <div class="flex-grow flex flex-col">
-        <div id="chart" class="flex-grow w-full"></div>
-    </div>
+        .bg-gray-800 {
+            background-color: #1C1C3C;
+            /* Darker grey for form area */
+        }
 
-    {{-- left side toggle --}}
-    <div class="min-w-[20rem] p-2 hidden" id="hideShowMenuLeft">
-        <span id="tradesList"></span>
-    </div>
+        .bg-gray-900 {
+            background-color: #14142A;
+            /* Darkest grey for sidebars */
+        }
 
-    {{-- right sidebar --}}
-    <div class="bg-gray-800 w-60 flex min-h-screen">
-        <div class="column-1 w-full">
-            {{-- // add form for trading --}}
-            <form method="POST" action="{{ route('trade.store') }}" class="p-3 rounded-lg text-white space-y-4"
-                id="tradeForm">
-                @csrf
+        .text-gray-700 {
+            color: #B0B3B8;
+            /* Light grey for labels */
+        }
 
-                <!-- Time Input -->
-                <div class="max-w-sm space-y-3">
-                    <div>
-                        <label for="hs-trailing-icon" class="block text-sm font-light mb-2">Time</label>
-                        <div class="relative">
-                            <input type="text" id="hs-trailing-icon" name="duration"
-                                class="p-2 pe-11 block w-full border-[#293341] rounded-lg text-sm bg-[#1f2334]"
-                                id="timeInput" maxlength="8" placeholder="00:01:00" value="00:01:00" name=duration">
-                            <input type="hidden" name="asset" id="assetTicker" value="USDCAD_OTC">
-                            <div
-                                class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-10 border-l p-3 border-[#293341]">
-                                <i class="fa-regular fa-clock bg-[#23283b]"></i>
+        .border-gray-300 {
+            border-color: #4A4A5F;
+            /* Border color */
+        }
+
+        .bg-indigo-600 {
+            background-color: #007BFF;
+            /* Blue for buttons */
+        }
+
+        .hover\:bg-indigo-700:hover {
+            background-color: #0056b3;
+            /* Darker blue on hover */
+        }
+
+        .bg-green-500 {
+            background-color: #28A745;
+            /* Green for BUY button */
+        }
+
+        .hover\:bg-green-600:hover {
+            background-color: #218838;
+            /* Darker green on hover */
+        }
+
+        .bg-red-500 {
+            background-color: #DC3545;
+            /* Red for SELL button */
+        }
+
+        .hover\:bg-red-600:hover {
+            background-color: #C82333;
+            /* Darker red on hover */
+        }
+    </style>
+</head>
+
+<body class="h-screen overflow-hidden">
+    <!-- Full Width Top Menu -->
+    <header class="bg-gray-900 text-white flex justify-between items-center p-4 fixed top-0 left-0 right-0 z-40">
+        <div class="flex items-center">
+            <img src="path/to/logo.png" alt="Logo" class="h-8 mr-2">
+            <h1 class="text-xl font-bold">PocketOption</h1>
+        </div>
+        <nav class="flex space-x-4">
+            <div class="flex items-center text-blue-400">
+                <i class="fas fa-star"></i> <span class="ml-1">100%</span>
+            </div>
+            <a href="#" class="text-blue-400">TOP UP YOUR ACCOUNT</a>
+            <a href="#" class="text-blue-400">TRADER'S BOX</a>
+            <a href="#" class="text-blue-400">RECEIVE A RANDOM REWARD</a>
+            <a href="#" class="text-blue-400">TOP UP</a>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="flex h-full pt-1">
+        <!-- Column 1: Left Sidebar (Fixed) -->
+        <nav class="bg-gray-900 text-white w-64 fixed left-0 top-16 bottom-0 z-30">
+            <ul class="p-4 space-y-2 overflow-y-auto h-full">
+                <li><a href="#" class="block p-2 hover:bg-gray-700"><i class="fas fa-chart-line mr-2"></i>
+                        Trading</a></li>
+                <li><a href="#" class="block p-2 hover:bg-gray-700"><i class="fas fa-user mr-2"></i> Profile</a>
+                </li>
+                <li><a href="#" class="block p-2 hover:bg-gray-700"><i class="fas fa-shopping-cart mr-2"></i>
+                        Market</a></li>
+                <li><a href="#" class="block p-2 hover:bg-gray-700"><i class="fas fa-trophy mr-2"></i>
+                        Achievements</a></li>
+                <li><a href="#" class="block p-2 hover:bg-gray-700"><i class="fas fa-comments mr-2"></i> Chat</a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Wrapper -->
+        <div class="flex flex-1 h-full pl-64">
+            <!-- Column 2: Chart -->
+            <div class="flex-grow h-full relative">
+                <div id="chart" class="flex-grow w-full"></div>
+                <div class="absolute top-0 left-0 p-2 bg-gray-900 text-white">
+                    <span>AUS 200 OTC</span>
+                    <span class="ml-4 text-green-400">+67%</span>
+                </div>
+            </div>
+
+            <div class="flex gap-0 right-0 -mt-3 py-10">
+                <!-- Column 3: Form Data -->
+                <div class="w-64 h-full bg-gray-800 text-white">
+                    <div class="p-4">
+                        <form method="POST" action="{{ route('trade.store') }}" class="space-y-4">
+                            @csrf
+                            <div class="text-sm">
+                                <label class="text-gray-700">Time</label>
+                                <div class="flex items-center justify-between mt-1">
+                                    <span>00:01:00</span>
+                                    <input type="hidden" name="duration" value="00:01:00">
+                                </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Amount Input -->
-                <div class="max-w-sm space-y-3">
-                    <div>
-                        <label for="hs-trailing-icon" class="block text-sm font-light mb-2">Amount</label>
-                        <div class="relative">
-                            <input type="text" id="hs-trailing-icon" name="amount"
-                                class="p-2 pe-11 block w-full border-[#293341] rounded-lg text-sm bg-[#1f2334]"
-                                placeholder="1" value="1" name="amount">
-                            <input type="hidden" name="direction" id="direction" value="">
-                            <div
-                                class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-10 border-l p-3 border-[#293341]">
-                                <svg class="currency-icon currency-icon--usd" width="18" height="18"
-                                    viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="2">
-                                    </circle>
-                                    <path
-                                        d="M15 9h-4a1 1 0 1 0 0 2h2a3 3 0 0 1 0 6v1a1 1 0 0 1-2 0v-1H9a1 1 0 0 1 0-2h4a1 1 0 0 0 0-2h-2a3 3 0 0 1 0-6V6a1 1 0 0 1 2 0v1h2a1 1 0 1 1 0 2Z"
-                                        fill="currentColor"></path>
-                                </svg>
+                            <div class="text-sm">
+                                <label class="text-gray-700">Amount</label>
+                                <div class="flex items-center justify-between mt-1">
+                                    <span>1</span>
+                                    <input type="hidden" name="amount" value="1">
+                                </div>
                             </div>
-                        </div>
+                            <div class="text-sm">
+                                <label class="text-gray-700">Payout</label>
+                                <div class="flex items-center justify-between mt-1">
+                                    <span>+85%</span>
+                                    <span>$1.85</span>
+                                </div>
+                            </div>
+                            <div class="flex space-x-2">
+                                <button type="button"
+                                    class="w-full bg-green-500 text-white py-2 rounded hover:bg-green-600">BUY</button>
+                                <button type="button"
+                                    class="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600">SELL</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
 
-                <!-- Payout Display -->
-                <div class="text-sm">
-                    <label>Payout</label>
-                    <div
-                        class="text-green-400 border border-dashed rounded-lg mb-3 border-[#293341] p-3 flex justify-between">
-                        <span id="profit_percentage">+92% </span>
-                        <span id="payout">$19.20</span>
-                    </div>
-
-                    <!-- Buy and Sell Buttons -->
-                    <div class="gap-2 space-y-2">
-                        <button type="button" name="action" data-value="up"
-                            class="_hover-up cta-button transition duration-300 ease-in-out gap-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 w-full">
-                            <i class="fas fa-arrow-up"></i>
-                            BUY
-                        </button>
-                        <button type="button" name="action" data-value="down"
-                            class="_hover-down cta-button transition duration-300 ease-in-out gap-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 w-full">
-                            <i class="fas fa-arrow-up"></i>
-                            SELL
-                        </button>
+                <!-- Column 4: Hidden for Right Sidebar Menu Content -->
+                <div id="contentArea" class="w-64 h-full bg-gray-800 hidden py-10">
+                    <div class="p-4">
+                        <h2 class="text-lg font-semibold mb-4">Trades</h2>
+                        <p>No opened trades</p>
                     </div>
                 </div>
-            </form>
 
+                <!-- Column 6: Right Sidebar (Fixed) -->
+                <aside class="w-24 h-full bg-gray-900 text-white right-0">
+                    <div class="p-4">
+                        <h2 class="text-lg font-semibold mb-4">Menu</h2>
+                        <ul id="rightSidebarMenu" class="space-y-2">
+                            <li><a href="#" data-content-id="trades" class="block p-2 hover:bg-gray-700">Trades</a></li>
+                            <li><a href="#" data-content-id="signals" class="block p-2 hover:bg-gray-700">Signals</a></li>
+                            <li><a href="#" data-content-id="socialTrading" class="block p-2 hover:bg-gray-700">SocialTradings</a></li>
+                            <li><a href="#" data-content-id="expressTrading" class="block p-2 hover:bg-gray-700">Express Tradings</a></li>
+                            <li><a href="#" data-content-id="tournaments" class="block p-2 hover:bg-gray-700">Tournaments</a></li>
+                            <li><a href="#" data-content-id="pendingTrades" class="block p-2 hover:bg-gray-700">Pending Trades</a></li>
+                            <li><a href="#" data-content-id="hotkeys" class="block p-2 hover:bg-gray-700">Hot keys</a></li>
+                        </ul>
+                    </div>
+                </aside>
+            </div>
         </div>
     </div>
 
-    {{-- right side toggle --}}
-    <div class="min-w-[20rem] p-2 hidden" id="hideShowMenu"></div>
+    @vite('resources/js/app.js')
+    @livewireScripts
 
-    @include('layouts.right')
-    @php $__coin = "XAUUSD" @endphp
-@endsection
-
-
-@push('js')
-    <script src="//unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <script>
-        // WebSocket URL
-        const websocketUrl = "wss://ws-plus.olymptrade.com/connect";
+        document.addEventListener('DOMContentLoaded', function() {
+            const contentArea = document.getElementById('contentArea');
+            const menuItems = document.querySelectorAll('#rightSidebarMenu a');
 
-        // Chart Initialization
-        const chartContainer = document.getElementById('chart');
-        const chart = LightweightCharts.createChart(chartContainer, {
-            width: chartContainer.offsetWidth,
-            height: chartContainer.offsetHeight,
-            layout: {
-                background: {
-                    type: 'solid',
-                    color: 'transparent'
-                },
-                textColor: '#fff',
-                attributionLogo: true
-            },
-            grid: {
-                vertLines: {
-                    color: '#293341',
-                },
-                horzLines: {
-                    color: '#293341',
-                },
-            },
-            crosshair: {
-                mode: LightweightCharts.CrosshairMode.Normal,
-            },
-            rightPriceScale: {
-                borderVisible: true,
-            },
-            timeScale: {
-                borderVisible: false,
-                timeVisible: true,
-                secondsVisible: true,
-                rightOffset: 50,
-                barSpacing: 6,
-                minBarSpacing: 0.5,
-                fixLeftEdge: false,
-                fixRightEdge: false,
-                lockVisibleTimeRangeOnResize: true,
-                rightBarStaysOnScroll: true,
-            },
-        });
-
-
-        // Add Area Series
-        const lineSeries = chart.addAreaSeries({
-            topColor: 'rgba(33, 150, 243, 0.56)',
-            bottomColor: 'rgba(33, 150, 243, 0.04)',
-            lineColor: '#2196f3',
-            lineWidth: 2,
-            lastValueVisible: true,
-            priceLineVisible: true,
-            priceLineSource: LightweightCharts.PriceLineSource.LastBar,
-            crosshairMarkerVisible: true,
-            crosshairMarkerRadius: 6,
-            crosshairMarkerBorderColor: '#ffffff',
-            crosshairMarkerBackgroundColor: '#2196f3',
-        });
-
-        // Resize Chart on Window Resize
-        window.addEventListener('resize', () => {
-            chart.resize(chartContainer.offsetWidth, chartContainer.offsetHeight);
-        });
-
-        // Function to fetch initial data from Olymp API
-        const fetchInitialData = async () => {
-            try {
-                let candleUrl = "{{ url('api/stream/chart/' . $__coin) }}";
-
-                const response = await fetch(candleUrl);
-                const candles = await response.json();
-
-                console.log('Candles:', candles); // Log the candles to see its structure
-
-                if (Array.isArray(candles)) { // Check if candles is an array
-                    const formattedInitialData = candles
-                        .map(candle => ({
-                            time: candle.ts,
-                            value: candle.c,
-                        }))
-                        .filter(item => item.time !== null && item.value !== null);
-                    lineSeries.setData(formattedInitialData);
-
-                    // Optional: Hide the preloader after 3 seconds
-                    // setTimeout(() => {
-                    //     document.querySelector(".__hidePreLoader").classList.toggle("hidden");
-                    // }, 3000);
-                } else {
-                    console.error('Unexpected response format:', candles);
+            // Hide content if clicking outside of it or the menu
+            function hideContentIfOutsideClick(event) {
+                if (!contentArea.contains(event.target) && !document.getElementById('rightSidebarMenu').contains(
+                        event.target)) {
+                    contentArea.classList.add('hidden');
                 }
-            } catch (error) {
-                console.error('Error fetching initial data:', error);
             }
-        };
 
+            // Add click event listener to each menu item
+            menuItems.forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const contentId = this.getAttribute('data-content-id');
 
-        // Function to update chart with incremental data
-        const updateChartWithNewData = (data) => {
-            data.forEach(item => {
-                // Check if item has 'd' and it contains data
-                if (item.d && Array.isArray(item.d) && item.d.length > 0) {
-                    const pairData = item.d[0];
+                    // Show content area
+                    contentArea.classList.remove('hidden');
 
-                    // Check if 'pair' and 'rate' exist in the first item of 'd'
-                    if (pairData.pair && pairData.rate) {
-                        lineSeries.update({
-                            time: Math.floor((pairData.ts || Date.now()) /
-                                1000), // Use 'ts' if it exists or default to current timestamp
-                            value: pairData.rate,
-                        });
+                    // Update content based on the clicked menu item
+                    let content = '';
+                    switch (contentId) {
+                        case 'trades':
+                            content = '<h2>Trades</h2><p>No opened trades</p>';
+                            break;
+                        case 'signals':
+                            content = '<h2>Signals</h2><p>Signal information here...</p>';
+                            break;
+                        case 'socialTrading':
+                            content = '<h2>Social Tradings</h2><p>Social trading data...</p>';
+                            break;
+                        case 'expressTrading':
+                            content = '<h2>Express Tradings</h2><p>Express trading options...</p>';
+                            break;
+                        case 'tournaments':
+                            content = '<h2>Tournaments</h2><p>Tournament details...</p>';
+                            break;
+                        case 'pendingTrades':
+                            content = '<h2>Pending Trades</h2><p>Pending trades list...</p>';
+                            break;
+                        case 'hotkeys':
+                            content = '<h2>Hot keys</h2><p>Hotkey shortcuts...</p>';
+                            break;
                     }
-                }
-            });
-        };
-
-
-        // WebSocket Initialization
-        const socket = new WebSocket(websocketUrl);
-
-        socket.onopen = () => {
-            console.log('WebSocket connected');
-            // Send subscription message
-            const subscriptionMessage = JSON.stringify([{
-                "e": 10,
-                "t": 2,
-                "d": {
-                    "pairs": ["{{ $__coin }}"],
-                    "chart_tfs": [3600, 86400, 604800, 2592000],
-                    "with_forecast": true
-                },
-                "uuid": "1"
-            }]);
-            socket.send(subscriptionMessage);
-        };
-
-        socket.onmessage = (event) => {
-            try {
-                const message = JSON.parse(event.data);
-                updateChartWithNewData(message);
-            } catch (error) {
-                console.error('Error processing WebSocket message:', error);
-            }
-        };
-
-        socket.onclose = () => {
-            console.log('WebSocket disconnected');
-        };
-
-        socket.onerror = (error) => {
-            console.error('WebSocket error:', error);
-        };
-
-        // Fetch initial data before setting up WebSocket
-        fetchInitialData();
-
-        window.onload = function() {
-            // Connect to the trade.created channel
-            var tradeChannel = Echo.channel('trade.created');
-
-            if (tradeChannel) {
-                toastr.success("Trade update connected");
-                console.log('Echo connected successfully');
-            }
-
-            // Listen for the 'trade.created' event
-            tradeChannel.listen('.trade.created', function(data) {
-                if (data && data.id) {
-                    console.log('Trade Created:', data);
-                    toastr.success(`Trade event received: ID: ${data.id}`);
-                } else {
-                    console.error('Invalid trade.created event data:', data);
-                }
+                    contentArea.innerHTML = content;
+                });
             });
 
-            // Listen for the 'trade-updated' event
-            tradeChannel.listen('.trade-updated', function(data) {
-                if (data && data.id) {
-                    console.log('Trade Updated:', data);
-                    toastr.success(`Update on trade ${data.id} received`);
-                } else {
-                    console.error('Invalid trade-updated event data:', data);
-                }
-            });
-        };
-
-
-        // handle form submission.
-        $('#tradeForm').on('submit', function(e) {
-            e.preventDefault();
-            $('.cta-button').prop('disabled', true);
-            $.ajax({
-                url: $(this).attr('action'),
-                method: 'POST',
-                data: $(this).serialize(),
-                success: function(response) {
-                    if (response.status) {
-                        toastr.success(response.message);
-                        // Display trade data
-                        const trade = response.trade;
-                        const tradeHtml = response.html;
-                        $('#tradesList').prepend(tradeHtml);
-
-                        // Start countdown
-                        let timeLeft = trade.trade_close_time;
-                        const countdownInterval = setInterval(() => {
-                            if (timeLeft <= 0) {
-                                clearInterval(countdownInterval);
-                                $(`.countdown-${trade.id}`).text('Completed');
-                                return;
-                            }
-
-                            $(`.countdown-${trade.id}`).text(`${timeLeft} seconds`);
-                            timeLeft--;
-                        }, 1000);
-
-                        // Reset form
-                        $('#tradeForm')[0].reset();
-                    } else {
-                        toastr.error(response.message);
-                    }
-                },
-                error: function(xhr) {
-                    toastr.error('An error occurred while placing the trade');
-                    console.error(xhr);
-                }
-            });
-            $('.cta-button').prop('disabled', false);
+            // Add click event listener to document for hiding content
+            document.addEventListener('click', hideContentIfOutsideClick);
         });
     </script>
-@endpush
+</body>
+
+</html>

@@ -48,10 +48,41 @@ class DepositController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'wallet_id' => 'required|exists:wallets,id',
-            'deposit_amount' => 'required|numeric|min:1',
-            'deposit_method' => 'required|string'
+            "deposit_step" => "required|in:1,2,3,4",
         ]);
+
+        if ($request->deposit_step == 1) {
+            $request->validate([
+                'deposit_method' => 'required|string'
+            ]);
+
+            $deposit_method = Bitgo::whereId($request->deposit_method)->where('can_deposit', true)->first();
+            if (!$deposit_method) {
+                return response()->json(['message' => 'Invalid deposit method.'], 422);
+            }
+            session(['deposit_method' => $request->deposit_method]);
+            // return response()->json(['select_method' => $deposit_method]);
+            return view('deposits.partials.step-2', compact('deposit_method'));
+        }
+
+        if ($request->deposit_step == 2) {
+            $request->validate([
+                'deposit_amount' => 'required'
+            ]);
+
+            session([
+                    "payin_payload" => [
+                        'deposit_method' => session('deposit_method'),
+                        'deposit_amount' => $request->amount
+                ]
+            ]);
+            return view('deposits.partials.step-3', compact('deposit_method'));
+        }
+
+        if ($request->deposit_step == 3) {
+            return view('deposits.partials.step-4', compact('deposit_method'));
+        }
+
 
         $wallet = Wallet::findOrFail($request->wallet_id);
 

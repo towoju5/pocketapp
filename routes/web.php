@@ -1,11 +1,14 @@
 <?php
 
 use App\Http\Controllers\DepositController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PayoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionHistoryController;
+use App\Models\Assets;
 use App\Models\User;
 use App\Jobs\EvaluateTrade;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GitHubArtifactController;
 
@@ -16,13 +19,11 @@ Route::get('/', function () {
 });
 
 
-Route::get('dashboard', function () {
-    return view('dash');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('dashboard-2', function () {
-    return view('dash');
-})->middleware(['auth', 'verified'])->name('dash');
+// Route::get('dashboard-2', function () {
+//     return view('dash');
+// })->middleware(['auth', 'verified'])->name('dash');
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('deposits', DepositController::class);
@@ -39,10 +40,22 @@ Route::middleware(['auth'])->group(function () {
 
     // Route::middleware('auth')->group(function () {
     // Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('trading-profile', [ProfileController::class, 'tradingProfile'])->name('trading.profile');
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::match(['post', 'patch'], 'profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('profile/photo/update', [ProfileController::class, 'update'])->name('profile.photo.update');
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::match(['post', 'patch'], 'profile-update', [ProfileController::class, 'updateProfile'])
+            ->name('profile.update.pk')
+            ->withoutMiddleware(VerifyCsrfToken::class);
+
+    Route::group(['prefix' => 'deposit', 'as' => 'deposit.'], function () {
+        Route::get('/', [DepositController::class, 'create'])->name('step_1');
+        Route::patch('step-2', [DepositController::class, 'step_2'])->name('step_2');
+        Route::delete('step-3', [DepositController::class, 'step_3'])->name('step_3');
+        Route::delete('step-4', [DepositController::class, 'step_4'])->name('step_4');
+    });
 });
 
 

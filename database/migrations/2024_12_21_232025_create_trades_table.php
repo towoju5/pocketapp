@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('trades');
         Schema::create('trades', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
@@ -20,6 +21,7 @@ return new class extends Migration
             $table->string('trade_close_time');
             $table->string('end_price')->nullable();
             $table->string('start_price');
+            $table->string('trade_profit')->default(0);
             $table->json('trade_extra_info')->nullable();
             $table->string('trade_status')->default('open');
             $table->string('trade_copied_count')->default(0);

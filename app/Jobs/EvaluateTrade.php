@@ -27,16 +27,20 @@ class EvaluateTrade implements ShouldQueue
         try {
             $trade = $this->trade;
             $data = fetchPreChartData($trade->trade_currency, true);
-            $finalPrice = $data['c'] ?? 0;
+            Log::info(json_encode($data));
+            $finalPrice = $data ?? 0;
 
             // Evaluate trade
-            if ($trade->direction === 'up' && $finalPrice > $trade->start_price) {
+            if ($trade->trade_direction == 'up' && $finalPrice >= $trade->start_price) {
                 $trade->trade_status = 'win';
-            } elseif ($trade->direction === 'down' && $finalPrice < $trade->start_price) {
+                $trade->trade_profit = '1';
+            } elseif ($trade->trade_direction == 'down' && $finalPrice <= $trade->start_price) {
                 $trade->trade_status = 'win';
+                $trade->trade_profit = '1';
             } else {
                 $trade->trade_status = 'lose';
             }
+            
 
             $trade->end_price = $finalPrice;
             $trade->save();

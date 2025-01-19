@@ -1,229 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TradingView with WebSocket Data Feed</title>
+@section('title', 'Trading Dashboard')
 
-    <!-- Scripts -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <!-- TradingView Widget Script -->
-    <script type="text/javascript" src="//s3.tradingview.com/tv.js"></script>
-    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <style>
-        body {
-            background-image: url({{ asset('assets/images/bg.jpg') }})
-        }
+@section('content')
+    @php $__coin = $data->symbol @endphp
 
-        /* Custom menu styling */
-        .menu {
-            display: flex;
-            flex-direction: column;
-            /* For desktop */
-            justify-content: space-around;
-            /* For mobile */
-        }
-
-        .menu-item {
-            text-align: center;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .menu-item:hover {
-            background-color: #4B5563;
-        }
-
-        .menu-item .icon {
-            font-size: 1.5rem;
-        }
-
-        .menu-item .text {
-            font-size: 0.75rem;
-        }
-
-        #tradingview_chart {
-            width: 100%;
-            height: 93%;
-        }
-    </style>
-</head>
-
-<body style="height: 100vh; overflow: hidden">
-    {{-- @include('components.preloader') --}}
-    <header class="w-full py-2 px-4 flex justify-between border-b border-[#293341] items-center">
-        <div class="flex gap-3 justify-left items-center">
-            <a href="{{ url('/') }}" class="home_url">
-                <img src="{{ asset('assets/svg/logo.svg') }}" alt="Website Logo">
-            </a>
-            <a href="#" class="border rounded-lg p-2 border-[#293341]" onclick="alert('You clicked me')">
-                <img src="{{ asset('assets/svg/star.svg') }}" alt="Favourites">
-            </a>
-            <div class="bg-lightHouse flex gap-2 rounded-lg py-1 px-3 items-center">
-                //
-                <div class="group text-lightHouse-text text-[10px]">
-                    <p>In progress:</p>
-                    <p>Top up your account</p>
-                </div>
-            </div>
+    @if($isOutOfTradingHours == true)
+        <div class="bg-red-500 text-white p-2 text-center">
+            Trading is currently closed. Please check back later.
         </div>
-        <div class="flex gap-3 justify-left items-center">
-            <a href="{{ url('/') }}" class="home_url">
-                <img src="{{ asset('assets/svg/logo.svg') }}" alt="Website Logo">
-            </a>
-            <!-- Dropdown Container -->
-            <div class="relative text-white w-40">
-                <!-- Dropdown Box -->
-                <div class="relative border border-gray-600 rounded-lg bg-[#1c1f26]">
-                    <!-- Replace Top Border with QT Real and USD -->
-                    <div
-                        class="absolute flex -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap gap-2 bg-[#1c1f26] px-3">
-                        <span class="text-sm text-gray-400">QT Real USD</span>
-                    </div>
-
-                    <!-- Dropdown Button -->
-                    <button id="dropdownButton" class="w-full flex justify-between items-center p-3">
-                        <span class="text-lg font-bold">0</span>
-                        <svg id="dropdownArrow" xmlns="http://www.w3.org/2000/svg"
-                            class="h-5 w-5 text-gray-400 transition-transform" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7" />
-                        </svg>
-                    </button>
-                </div>
-
-                <!-- Dropdown Content -->
-                <div id="dropdownContent"
-                    class="hidden absolute top-full mt-2 w-80 -left-[50%] bg-[#1c1f26] rounded-lg border border-[#31353f] shadow-lg z-10">
-                    <div class="p-4 space-y-4">
-                        <!-- Quick Trading Real -->
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <p class="text-sm text-gray-300">Quick Trading Real</p>
-                                <p class="text-xs text-gray-500">$0</p>
-                            </div>
-                            <button
-                                class="px-2 py-1 text-xs text-gray-400 border border-gray-600 rounded-md">USD</button>
-                        </div>
-
-                        <!-- Top Up Button -->
-                        <button
-                            class="w-full py-2 text-sm text-white bg-green-600 rounded-md hover:bg-green-700 flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4" />
+    @else
+        <div class="flex-grow flex flex-col ml-20">
+            <div id="chart" class="flex-grow w-full lg:max-h-[90vh]"></div>
+            <div class="fixed flex bg-tranparent text-white m-10 z-10 w-full">
+                <div class="flex gap-4 w-full">
+                    <div class="hs-dropdown relative [--gpu-acceleration:false] inline-flex">
+                        <button id="hs-dropdown-scale-animation" type="button"
+                            class="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-sm hover:bg-gray-50 focus:outline-none focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700"
+                            aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
+                            Actions
+                            <svg class="hs-dropdown-open:rotate-180 size-4" xmlns="http://www.w3.org/2000/svg" width="24"
+                                height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m6 9 6 6 6-6" />
                             </svg>
-                            Top up
                         </button>
 
-                        <!-- Quick Trading Demo -->
-                        <div>
-                            <p class="text-sm text-gray-300">Quick Trading Demo</p>
-                            <p class="text-xs text-gray-500">$49,993.60</p>
-                        </div>
+                        <div class="hs-dropdown-menu hs-dropdown-open:scale-100 hs-dropdown-open:opacity-100 scale-95 opacity-0 z-10 ease-in-out transition-[transform,opacity] duration-200 max-w-6xl bg-gray-900 shadow-md rounded-lg hidden p-2"
+                            role="menu" aria-orientation="vertical" aria-labelledby="hs-dropdown-scale-animation">
+                            <div class="p-1 space-y-0.5">
+                                <div class="flex gap-2">
+                                    <!-- Sidebar -->
+                                    <div class="w-64 bg-gray-900 sha p-2">
+                                        <h2 class="text-lg font-bold mb-4">Categories</h2>
+                                        <ul id="categoryList">
+                                            @foreach ($assetCategories as $item)
+                                                <li class="mb-2">
+                                                    <button class="w-full text-left p-2 bg-gray-700 rounded hover:bg-gray-600"
+                                                        onclick="filterByCategory('{{ $item->asset_group }}')">{{ ucfirst($item->asset_group) }}</button>
+                                                </li>
+                                            @endforeach
+                                            <li class="mb-2">
+                                                <button class="w-full text-left p-2 bg-gray-700 rounded hover:bg-gray-600"
+                                                    onclick="filterByCategory('All')">All</button>
+                                            </li>
+                                        </ul>
+                                    </div>
 
-                        <!-- Forex Section -->
-                        <div class="flex justify-between items-center">
-                            <p class="text-sm text-gray-300">Forex</p>
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7" />
-                            </svg>
-                        </div>
+                                    <!-- Main Content -->
+                                    <div class="flex-grow p-4 relative">
+                                        <!-- Search Box -->
+                                        <div class="flex mb-4">
+                                            <input id="searchInput" type="text" placeholder="Search"
+                                                class="flex-grow p-2 rounded bg-gray-700 text-white focus:outline-none"
+                                                oninput="filterAssets()" />
+                                        </div>
 
-                        <!-- My Safe Section -->
-                        <div class="flex justify-between items-center">
-                            <p class="text-sm text-gray-300">My Safe</p>
-                            <button class="px-3 py-1 text-xs bg-green-600 rounded-md hover:bg-green-700">Open</button>
+                                        <!-- Assets List -->
+                                        <div class="overflow-y-auto h-[30rem] border border-gray-700 rounded">
+                                            <table class="table-auto w-full text-sm">
+                                                <thead class="bg-gray-700 sticky top-0">
+                                                    <tr>
+                                                        <th class="text-left p-2">Asset</th>
+                                                        <th class="text-right p-2">Payout</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="assetsTable">
+                                                    @foreach (get_assets() as $asset)
+                                                        <tr data-category="{{ $asset->asset_group }}" class="hover:bg-gray-700 cursor-pointer" onclick="window.location.href='{{ route('dashboard', $asset->symbol) }}'">
+                                                            <td class="p-2">{{ $asset->name ." ($asset->symbol)" }}</td>
+                                                            <td class="p-2 text-right">{{ $asset->exchange_float }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <a href="#"
-                class="bg-gradient-to-r from-[#047838] to-[#0a5c45] flex gap-3 rounded-lg py-2 px-3 items-center border-2 border-[#047838]">
-                <i class="fas fa-wallet text-[#5aa86b]"></i>
-                <span class="text-white uppercase text-[13px] font-bold">Top up</span>
-            </a>
-            <div class="relative inline-block  border border-yellow-500 text-yellow-500 p-1 rounded-full">
-                <img class="inline-block size-[46px] rounded-full"
-                    src="//images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80"
-                    alt="Avatar">
-                <span
-                    class="absolute top-0 end-0 block size-3 rounded-full ring-2 ring-white bg-yellow-400 dark:ring-neutral-900"></span>
-            </div>
-        </div>
-    </header>
-
-    {{-- // left sidebar --}}
-    <div class="w-full flex">
-        <div id="sideMenu" class="bg-[#1c1f26] w-20 min-h-screen lg:w-20 items-center">
-            <!-- Menu Items -->
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white" data-tooltip="Analytics">
-                <i class="fa-solid fa-chart-line"></i>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
-
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white" data-tooltip="Finance">
-                <i class="fa-solid fa-dollar-sign"></i>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
-
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white" data-tooltip="Profile">
-                <i class="fa-solid fa-user"></i>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
-
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white relative" data-tooltip="Cart">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
-
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white relative" data-tooltip="Notifications">
-                <i class="fa-regular fa-gem"></i>
-                <span class="absolute top-2 right-2 bg-[#0c69a9] text-xs rounded-md text-white px-2 py-1">6</span>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
-
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white relative" data-tooltip="Chat">
-                <i class="fa-regular fa-comment"></i>
-                <span class="absolute top-2 right-2 bg-[#0c69a9] text-xs rounded-md text-white px-2 py-1">6</span>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
-
-            <button class="menu-item p-3 w-full text-gray-400 hover:text-white" data-tooltip="Help">
-                <i class="fa-solid fa-circle-question"></i>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </button>
-
-            <div class="bottom-3 fixed items-center mx-0 px-0 space-y-2">
-                <button onclick="$('#UserLogoutForm').submit()"
-                    class="menu-item py-4 w-full text-gray-400 hover:text-white" data-tooltip="Help">
-                    <i class="fa-solid fa-right-from-bracket"></i>
-                    <span class="hidden_text hidden lg:block">Trades</span>
-                </button>
-
-                <button class="menu-item py-4 w-full text-gray-400 hover:text-white" data-tooltip="Help"
-                    id="leftSideBarArrow">
-                    <i class="fa-solid fa-arrow-right-long"></i>
-                </button>
-            </div>
         </div>
 
-        <div class="lg:flex m-0 w-full">
-            <div class="content m-0 w-full">
-                <div id="tradingview_chart" class="w-full"></div>
-            </div>
+        {{-- left side toggle --}}
+        <div class="min-w-[20rem] p-2 hidden" id="hideShowMenuLeft">
+            <span id="tradesList"></span>
         </div>
 
         {{-- right sidebar --}}
         <div class="bg-gray-800 w-60 flex min-h-screen">
-            <div class="column-1 w-40">
+            <div class="column-1 w-full">
                 {{-- // add form for trading --}}
-                <form method="POST" action="/your-action-route" class="p-3 rounded-lg text-white space-y-4">
+                <form method="POST" action="{{ route('trade.store') }}" class="p-3 rounded-lg text-white space-y-4"
+                    id="tradeForm">
                     @csrf
 
                     <!-- Time Input -->
@@ -231,9 +102,10 @@
                         <div>
                             <label for="hs-trailing-icon" class="block text-sm font-light mb-2">Time</label>
                             <div class="relative">
-                                <input type="text" id="hs-trailing-icon" name="trading_time"
+                                <input type="text" id="hs-trailing-icon" name="duration"
                                     class="p-2 pe-11 block w-full border-[#293341] rounded-lg text-sm bg-[#1f2334]"
-                                    id="timeInput" maxlength="8" placeholder="00:00:00">
+                                    id="timeInput" maxlength="8" placeholder="00:01:00" value="00:01:00" name=duration">
+                                <input type="hidden" name="asset" id="assetTicker" value="{{ $__coin }}">
                                 <div
                                     class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-10 border-l p-3 border-[#293341]">
                                     <i class="fa-regular fa-clock bg-[#23283b]"></i>
@@ -247,15 +119,16 @@
                         <div>
                             <label for="hs-trailing-icon" class="block text-sm font-light mb-2">Amount</label>
                             <div class="relative">
-                                <input type="text" id="hs-trailing-icon" name="trading_amount"
+                                <input type="text" id="hs-trailing-icon" name="amount"
                                     class="p-2 pe-11 block w-full border-[#293341] rounded-lg text-sm bg-[#1f2334]"
-                                    placeholder="1">
+                                    placeholder="1" value="1" name="amount">
+                                <input type="hidden" name="direction" id="direction" value="">
                                 <div
                                     class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-10 border-l p-3 border-[#293341]">
                                     <svg class="currency-icon currency-icon--usd" width="18" height="18"
                                         viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="12" cy="12" r="11" stroke="currentColor"
-                                            stroke-width="2"></circle>
+                                        <circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="2">
+                                        </circle>
                                         <path
                                             d="M15 9h-4a1 1 0 1 0 0 2h2a3 3 0 0 1 0 6v1a1 1 0 0 1-2 0v-1H9a1 1 0 0 1 0-2h4a1 1 0 0 0 0-2h-2a3 3 0 0 1 0-6V6a1 1 0 0 1 2 0v1h2a1 1 0 1 1 0 2Z"
                                             fill="currentColor"></path>
@@ -268,21 +141,21 @@
                     <!-- Payout Display -->
                     <div class="text-sm">
                         <label>Payout</label>
-                        <div class="text-green-400 border border-dashed rounded-lg mb-3 border-[#293341] p-3 flex">
+                        <div
+                            class="text-green-400 border border-dashed rounded-lg mb-3 border-[#293341] p-3 flex justify-between">
                             <span id="profit_percentage">+92% </span>
                             <span id="payout">$19.20</span>
-                            </p>
                         </div>
 
                         <!-- Buy and Sell Buttons -->
                         <div class="gap-2 space-y-2">
-                            <button type="submit" name="action" value="buy"
-                                class="gap-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 w-full">
+                            <button type="button" name="action" data-value="up"
+                                class="_hover-up cta-button transition duration-300 ease-in-out gap-4 bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-green-400 w-full">
                                 <i class="fas fa-arrow-up"></i>
                                 BUY
                             </button>
-                            <button type="submit" name="action" value="sell"
-                                class="gap-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 w-full">
+                            <button type="button" name="action" data-value="down"
+                                class="_hover-down cta-button transition duration-300 ease-in-out gap-4 bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md focus:outline-none focus:ring-2 focus:ring-red-400 w-full">
                                 <i class="fas fa-arrow-up"></i>
                                 SELL
                             </button>
@@ -293,137 +166,287 @@
             </div>
         </div>
 
-        
+        {{-- right side toggle --}}
         <div class="min-w-[20rem] p-2 hidden" id="hideShowMenu"></div>
-        
-        <div class="bg-[#1c1f26] w-20">
-            <div class="menu-item py-2 w-full" data-route="/trades">
-                <span class="icon">🔄</span>
-                <span class="hidden_text hidden lg:block">Trades</span>
-            </div>
-            <div class="menu-item py-2 w-full" data-route="/signals">
-                <span class="icon">📡</span>
-                <span class="hidden_text hidden lg:block">Signals</span>
-            </div>
-            <div class="menu-item py-2 w-full" data-route="/social">
-                <span class="icon">👥</span>
-                <span class="hidden_text hidden lg:block">Social</span>
-            </div>
-            <div class="menu-item py-2 w-full" data-route="/express">
-                <span class="icon">🎯</span>
-                <span class="hidden_text hidden lg:block">Express</span>
-            </div>
-            <div class="menu-item py-2 w-full" data-route="/tournaments">
-                <span class="icon">🏆</span>
-                <span class="hidden_text hidden lg:block">Tournaments</span>
-            </div>
-            <div class="menu-item py-2 w-full" data-route="/pending">
-                <span class="icon">⏳</span>
-                <span class="hidden_text hidden lg:block">Pending</span>
-            </div>
-            <div class="menu-item py-2 w-full" data-route="/hotkeys">
-                <span class="icon">⌨️</span>
-                <span class="hidden_text hidden lg:block">Hotkeys</span>
-            </div>
-        </div>
-    </div>
 
-    <form method="POST" action="{{ route('logout') }}" class="d-inline" id="UserLogoutForm">
-        @csrf
-    </form>
+        @include('layouts.right')
+    @endif
+@endsection
 
 
-    <!-- Include jQuery -->
-    <script src="//code.jquery.com/jquery-3.6.4.min.js"></script>
-    <!-- Custom JS files -->
-    <script src="{{ asset('assets/js/custom.js') }}"></script>
-    <script src="//s3.tradingview.com/tv.js"></script>
+@push('js')
+    <script src="//unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
     <script>
-        $(document).ready(function() {
-            let activeMenu = null; // Currently active menu element
-            let isLoading = false; // Prevent multiple simultaneous requests
-            const menuPanel = $('#hideShowMenu');
+        // WebSocket URL
+        const websocketUrl = "wss://ws-plus.olymptrade.com/connect";
 
-            // Load the previously active menu route from localStorage
-            const _current_menu_route = localStorage.getItem('_current_menu_route');
-
-            // If there's a stored route, load its content on page load
-            if (_current_menu_route) {
-                menuPanel.removeClass('hidden');
-                loadMenuContent(_current_menu_route);
-            }
-
-            $('.menu-item').on('click', function() {
-                const route = $(this).data('route'); // Get the route of the clicked menu
-
-                // If the same menu is clicked, toggle the panel visibility
-                if (activeMenu === this) {
-                    menuPanel.toggleClass('hidden'); // Toggle visibility
-                    if (menuPanel.hasClass('hidden')) {
-                        activeMenu = null;
-                        localStorage.removeItem('_current_menu_route'); // Clear cached route
-                    }
-                    return;
-                }
-
-                // If a different menu is clicked
-                activeMenu = this;
-
-                // If already loading or the route is the same, avoid duplicate requests
-                if (isLoading || _current_menu_route === route) {
-                    return;
-                }
-
-                // Update the current menu route in localStorage
-                localStorage.setItem('_current_menu_route', route);
-
-                // Show the panel and load content
-                menuPanel.removeClass('hidden');
-                loadMenuContent(route);
-            });
-
-            // Function to load menu content
-            function loadMenuContent(route) {
-                isLoading = true; // Set loading flag
-
-                // Show a preloader (Blade-rendered or fallback HTML)
-                const preloader = `{!! view('components.preloader-main')->render() !!}`;
-                menuPanel.html("<div class='flex justify-center items-center h-full'>" + preloader + "</div>");
-
-                // Fetch content dynamically from the route
-                $.get(route, function(data) {
-                    menuPanel.html(data); // Replace preloader with fetched data
-                    isLoading = false; // Reset loading flag
-                }).fail(function() {
-                    menuPanel.html('<p>Error loading content. Please try again.</p>');
-                    isLoading = false; // Reset loading flag
-                });
-            }
+        // Chart Initialization
+        const chartContainer = document.getElementById('chart');
+        const chart = LightweightCharts.createChart(chartContainer, {
+            width: '100%',
+            height: '100%',
+            layout: {
+                background: {
+                    type: 'solid',
+                    color: 'transparent'
+                },
+                textColor: '#fff',
+                attributionLogo: true
+            },
+            grid: {
+                vertLines: {
+                    color: '#293341',
+                },
+                horzLines: {
+                    color: '#293341',
+                },
+            },
+            crosshair: {
+                mode: LightweightCharts.CrosshairMode.Normal,
+            },
+            rightPriceScale: {
+                borderVisible: true,
+            },
+            timeScale: {
+                borderVisible: false,
+                timeVisible: true,
+                secondsVisible: true,
+                rightOffset: 50,
+                barSpacing: 6,
+                minBarSpacing: 0.5,
+                fixLeftEdge: false,
+                fixRightEdge: false,
+                lockVisibleTimeRangeOnResize: true,
+                rightBarStaysOnScroll: true,
+            },
         });
 
-        new TradingView.widget({
-            "container_id": "tradingview_chart",
-            "autosize": true,
-            "symbol": "BTCUSDT",
-            "interval": "1",
-            "theme": "dark",
-            "style": "2",
-            "locale": "en",
-            "toolbar_bg": "#f1f3f6",
-            "enable_publishing": false,
-            "hide_top_toolbar": true,
-            "hide_side_toolbar": true,
-            "allow_symbol_change": false,
-            "allow_symbol_title": true,
-            "studies": [
-                "MAExp@tv-basicstudies"
-            ]
+        // Add Area Series
+        const lineSeries = chart.addAreaSeries({
+            topColor: 'rgba(33, 150, 243, 0.56)',
+            bottomColor: 'rgba(33, 150, 243, 0.04)',
+            lineColor: '#2196f3',
+            lineWidth: 2,
+            lastValueVisible: true,
+            priceLineVisible: true,
+            priceLineSource: LightweightCharts.PriceLineSource.LastBar,
+            crosshairMarkerVisible: true,
+            crosshairMarkerRadius: 6,
+            crosshairMarkerBorderColor: '#ffffff',
+            crosshairMarkerBackgroundColor: '#2196f3',
+        });
+
+        // Resize Chart on Window Resize
+        window.addEventListener('resize', () => {
+            chart.resize(chartContainer.offsetWidth, chartContainer.offsetHeight);
+        });
+
+        // Function to fetch initial data from Olymp API
+        const fetchInitialData = async () => {
+            try {
+                let candleUrl = "{{ url('api/stream/chart/' . $__coin) }}";
+
+                const response = await fetch(candleUrl);
+                const candles = await response.json();
+
+                console.log('Candles:', candles); // Log the candles to see its structure
+
+                if (Array.isArray(candles)) { // Check if candles is an array
+                    const formattedInitialData = candles
+                        .map(candle => ({
+                            time: candle.ts,
+                            value: candle.c,
+                        }))
+                        .filter(item => item.time !== null && item.value !== null);
+                    lineSeries.setData(formattedInitialData);
+                } else {
+                    console.error('Unexpected response format:', candles);
+                }
+            } catch (error) {
+                console.error('Error fetching initial data:', error);
+            }
+        };
+
+
+        // Function to update chart with incremental data
+        const updateChartWithNewData = (data) => {
+            data.forEach(item => {
+                // Check if item has 'd' and it contains data
+                if (item.d && Array.isArray(item.d) && item.d.length > 0) {
+                    const pairData = item.d[0];
+
+                    // Check if 'pair' and 'rate' exist in the first item of 'd'
+                    if (pairData.pair && pairData.rate) {
+                        lineSeries.update({
+                            time: Math.floor((pairData.ts || Date.now()) /
+                                1000), // Use 'ts' if it exists or default to current timestamp
+                            value: pairData.rate,
+                        });
+                    }
+                }
+            });
+        };
+
+
+        // WebSocket Initialization
+        const socket = new WebSocket(websocketUrl);
+
+        socket.onopen = () => {
+            console.log('WebSocket connected');
+            // Send subscription message
+            const subscriptionMessage = JSON.stringify([{
+                "e": 10,
+                "t": 2,
+                "d": {
+                    "pairs": ["{{ $__coin}}"],
+                    "chart_tfs": [3600, 86400, 604800, 2592000],
+                    "with_forecast": true
+                },
+                "uuid": "1"
+            }]);
+            socket.send(subscriptionMessage);
+        };
+
+        socket.onmessage = (event) => {
+            try {
+                const message = JSON.parse(event.data);
+                updateChartWithNewData(message);
+            } catch (error) {
+                console.error('Error processing WebSocket message:', error);
+            }
+        };
+
+        socket.onclose = () => {
+            console.log('WebSocket disconnected');
+        };
+
+        socket.onerror = (error) => {
+            console.error('WebSocket error:', error);
+        };
+
+        // Fetch initial data before setting up WebSocket
+        fetchInitialData();
+
+        window.onload = function() {
+            // Connect to the trade.created channel
+            var tradeChannel = Echo.channel('trade.created');
+            var tradeUpdateChannel = Echo.channel('trade.updated');
+
+            if (tradeChannel) {
+                toastr.success("Trade update connected");
+                console.log('Echo connected successfully');
+            }
+
+            // Listen for the 'trade.created' event
+            tradeChannel.listen('.trade.created', function(data) {
+                if (data && data.id) {
+                    console.log('Trade Created:', data);
+                    toastr.success(`Trade event received: ID: ${data.id}`);
+                } else {
+                    console.error('Invalid trade.created event data:', data);
+                }
+            });
+
+            // Listen for the 'trade-updated' event
+            tradeUpdateChannel.listen('.trade-updated', function(data) {
+                if (data && data.id) {
+                    console.log('Trade Updated:', data);
+                    toastr.success(`Update on trade ${data.id} received`);
+                } else {
+                    console.error('Invalid trade-updated event data:', data);
+                }
+            });
+        };
+
+
+        // handle form submission.
+        $('#tradeForm').on('submit', function(e) {
+            e.preventDefault();
+            $('.cta-button').prop('disabled', true);
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: $(this).serialize(),
+                success: function(response) {
+                    if (response.status) {
+                        toastr.success(response.message);
+                        // Display trade data
+                        const trade = response.trade;
+                        const tradeHtml = response.html;
+                        $('#tradesList').prepend(tradeHtml);
+
+                        // Start countdown
+                        let timeLeft = trade.trade_close_time;
+                        const countdownInterval = setInterval(() => {
+                            if (timeLeft <= 0) {
+                                clearInterval(countdownInterval);
+                                $(`.countdown-${trade.id}`).text('Completed');
+                                return;
+                            }
+
+                            $(`.countdown-${trade.id}`).text(`${timeLeft} seconds`);
+                            timeLeft--;
+                        }, 1000);
+
+                        // Reset form
+                        $('#tradeForm')[0].reset();
+                    } else {
+                        toastr.error(response.message);
+                    }
+                },
+                error: function(xhr) {
+                    toastr.error('An error occurred while placing the trade');
+                    console.error(xhr);
+                }
+            });
+            $('.cta-button').prop('disabled', false);
         });
     </script>
 
 
+    <script>
+        let selectedCategory = 'All';
+
+        function filterByCategory(category) {
+            selectedCategory = category;
+            filterAssets();
+        }
+
+        function filterAssets() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const tableRows = document.querySelectorAll('#assetsTable tr');
+
+            tableRows.forEach(row => {
+                const assetName = row.cells[0].textContent.toLowerCase();
+                const assetCategory = row.dataset.category;
+
+                const matchesSearch = assetName.includes(searchInput);
+                const matchesCategory = selectedCategory === 'All' || assetCategory === selectedCategory;
+
+                if (matchesSearch && matchesCategory) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+    </script>
+@endpush
 
 
-</body>
+@push('css')
+    <style>
+        .tv-lightweight-charts {
+            width: 100% !important;
+            height: auto;
+        }
 
-</html>
+        table {
+            width: 100% !important;
+        }
+
+        body {
+            overflow: hidden !important;
+        }
+    </style>
+@endpush

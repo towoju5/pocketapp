@@ -9,6 +9,7 @@ use App\Jobs\EvaluateTrade;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Necmicolak\YahooFinance\FinanceAsset;
 
@@ -16,9 +17,9 @@ class TradeController extends Controller
 {
     public function index(Request $request)
     {
-        $trades = Trade::whereUserId(auth()->id())->latest()->cursorPaginate(10);
-        return view('trades.index', compact('trades'));
-        // return view('dash', compact('trades'));
+        return $trades = Trade::whereUserId(auth()->id())->latest()->cursorPaginate(10);
+        // return view('trades.index', compact('trades'));
+        return view('dash', compact('trades'));
     }
 
     public function placeTrade(Request $request)
@@ -47,8 +48,10 @@ class TradeController extends Controller
         $validated['asset'] = str_replace("/", "-", $validated['asset']);
 
         // Fetch initial market price
-        $currentPrice = $chartData = fetchPreChartData($validated['asset'], true);
+        $currentPrice = fetchPreChartData($validated['asset'], true);
 
+        Log::info(json_encode($currentPrice));
+        
         // Create the leader's trade
         $trade = Trade::create([
             "trade_currency" => $validated['asset'],

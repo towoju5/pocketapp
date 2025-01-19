@@ -1,7 +1,7 @@
 <!-- Main Content -->
-<div class="container mx-auto px-4 lg:px-10 py-6">
+<div class="mx-auto px-4 lg:px-10 py-2">
     <!-- Trader's Box -->
-    <div class="bg-gray-800 rounded-lg p-6 mb-6">
+    <div class="bg-gray-800 rounded-lg p-6 mb-6 hidden">
         <div class="flex items-center justify-between">
             <h2 class="text-lg font-semibold">Open Trader's Box</h2>
             <p class="text-gray-400">For a first deposit of $25 or more, you receive a random reward from the Trader's
@@ -25,8 +25,10 @@
     </div>
 
     <!-- Payment Methods -->
-    <div id="payment-methods" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <form action="{{ route('deposit.step_1') }}" id="payment-methods" class="payinForm grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Example Method -->
+        @csrf
+        <input type="hidden" name="deposit_step" value="1">
         @foreach ($methods as $method)
             <label class="payment-method bg-gray-800 rounded-lg p-4 flex flex-col justify-between cursor-pointer">
                 <div class="flex items-center justify-between">
@@ -40,8 +42,7 @@
                 <input type="radio" name="deposit_method" value="{{ $method->id }}" class="hidden">
             </label>
         @endforeach
-
-    </div>
+    </form>
 </div>
 
 <script>
@@ -88,10 +89,10 @@
                         m.classList.remove('bg-blue-500');
                     }
                 });
-                alert("DO NOT USE, THIS SERVICE IS IN DEVELOPMENT")
+                // alert("DO NOT USE, THIS SERVICE IS IN DEVELOPMENT")
             });
         });
 
-        alert("DO NOT USE, THIS SERVICE IS IN DEVELOPMENT")
+        // alert("DO NOT USE, THIS SERVICE IS IN DEVELOPMENT")
     });
 </script>
