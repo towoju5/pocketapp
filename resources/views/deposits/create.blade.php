@@ -54,7 +54,7 @@
 
 @push('js')
     <script>
-        $('#payment-methods').on('submit', function(e) {
+        $('.payinForm').on('submit', function(e) {
             e.preventDefault();
             
             const formData = new FormData(this);

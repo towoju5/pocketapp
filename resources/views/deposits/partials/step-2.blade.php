@@ -1,8 +1,8 @@
  <!-- Payment Details Section -->
  <form action="{{ route('deposit.step_1') }}" id="payment-methods" class="payinForm mx-auto px-4 lg:px-10 py-6">
      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        @csrf
-        <input type="hidden" name="deposit_step" value="2">
+         @csrf
+         <input type="hidden" name="deposit_step" value="2">
          <!-- Left Side -->
          <div class="col-span-2 bg-gray-800 rounded-lg p-6">
              <button class="text-teal-500 flex items-center mb-4">
@@ -11,13 +11,13 @@
 
              <!-- Payment Information -->
              <div class="flex items-center mb-6">
-                 <img src="//pocketoption.com/images/payments/logo2/usdt-trc20.webp" alt="Tether" class="h-12 mr-4">
+                 <img src="{{ $deposit_method->coin_logo }}" alt="Tether" class="h-16 mr-4">
                  <div>
                      <h2 class="text-lg font-semibold">{{ $deposit_method->wallet_name }}</h2>
                      <p class="text-sm text-gray-400">
-                         Commission: 0% <br>
-                         Minimum deposit amount: {{ $deposit_method->minimum_deposit }} <br>
-                         Processing time: {{ $deposit_method->processing_time }}}
+                         Memo Required: {{ $deposit_method->require_memo ? 'True' : 'False' }} <br>
+                         Minimum deposit amount: ${{ $deposit_method->min_deposit }} <br>
+                         Processing time: {{ $deposit_method->processing_time }}
                      </p>
                  </div>
              </div>
@@ -26,7 +26,9 @@
              <div class="mb-4">
                  <label for="amount" class="block text-sm text-gray-400 mb-2">Amount:</label>
                  <div class="relative">
-                     <input type="number" id="amount" value="30" name="deposit_amount" class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600">
+                     <input type="number" id="amount" value="{{ $deposit_method->min_deposit }}"
+                         name="deposit_amount"
+                         class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600">
                      <span
                          class="absolute top-0 right-0 bottom-0 flex items-center justify-center bg-gray-600 text-white px-3 rounded-r-lg">$</span>
                  </div>
@@ -34,10 +36,10 @@
 
              <!-- Quick Amount Buttons -->
              <div class="flex space-x-4 mb-6">
-                 <button onclick="_updateDepositAmount(150)" class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600">$150</button>
-                 <button onclick="_updateDepositAmount(200)" class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600">$200</button>
-                 <button onclick="_updateDepositAmount(300)" class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600">$300</button>
-                 <button onclick="_updateDepositAmount(500)" class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600">$500</button>
+                 <button type="button" onclick="_updateDepositAmount(150)" class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600">$150</button>
+                 <button type="button" onclick="_updateDepositAmount(200)" class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600">$200</button>
+                 <button type="button" onclick="_updateDepositAmount(300)" class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600">$300</button>
+                 <button type="button" onclick="_updateDepositAmount(500)" class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600">$500</button>
              </div>
 
              <!-- Promo Code -->
@@ -49,7 +51,7 @@
              </div>
 
              <!-- Gift Selection -->
-            <div class="hidden">
+             <div class="hidden">
                  <p class="text-sm text-gray-400 mb-4">Choose your Gift for deposit:</p>
                  <div class="flex space-x-4">
                      <img src="path/to/gift1.png" alt="Gift 1"
@@ -61,11 +63,11 @@
                      <img src="path/to/gift4.png" alt="Gift 4"
                          class="w-12 h-12 cursor-pointer rounded-lg hover:ring-2 hover:ring-teal-500">
                  </div>
-            </div>
-        </div>
+             </div>
+         </div>
 
          <!-- Right Side -->
-        <div class="bg-gray-800 rounded-lg p-6">
+         <div class="bg-gray-800 rounded-lg p-6">
              <h3 class="text-lg font-semibold mb-4">You receive:</h3>
              <p class="text-2xl font-bold mb-2">$<span class="deposit_price">30</span></p>
              <p class="text-sm text-gray-400 mb-6">+ Trader's box</p>
@@ -80,17 +82,13 @@
                  <p class="mb-2">Do you have questions or need help with account top-up?</p>
                  <a href="#" class="text-teal-500 hover:underline">View our User Guide</a> <br>
                  <a href="#" class="text-teal-500 hover:underline">Contact Support Service</a>
-            </div>
-        </div>
+             </div>
+         </div>
      </div>
-</form>
-
-
-@push('js')
-<script>
-    function _updateDepositAmount(amount) {
-        $('.deposit_price').text(amount)
-        $('#amount').val(amount)
-    }
-</script>
-@endpush
+ </form>
+ <script>
+     function _updateDepositAmount(amount) {
+         $('.deposit_price').text(amount)
+         $('#amount').val(amount)
+     }
+ </script>
