@@ -5,15 +5,26 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Trade;
 use App\Models\User;
-use DB;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
+use PragmaRX\Google2FA\Google2FA;
 
 class ProfileController extends Controller
 {
+    protected $google2fa;
+
+    public function __construct(Google2FA $google2fa)
+    {
+        $this->google2fa = $google2fa;
+    }
+
     /**
      * Display the user's profile form.
      */
@@ -129,7 +140,7 @@ class ProfileController extends Controller
 
         $column = $request->name;
         $user->$column = $request->value;
-        
+
         if ($user->save()) {
             return response()->json(['status' => true, 'message' => 'Profile updated successfully!']);
         }
@@ -138,9 +149,27 @@ class ProfileController extends Controller
     public function security()
     {
         $userId = auth()->id();
-        $login_history = User::find($userId)->authentications;
-        $active_sessions = $this->getActiveSessions($userId);
-        return view('profile.security', compact('active_sessions'));
+        $logins = User::find($userId)->authentications;
+        $sessions = $this->getActiveSessions($userId);
+        
+        $user = Auth::user();
+        $secret = $user->google2fa_secret;
+
+        if (!$secret) {
+            // If the user hasn't set up 2FA, generate a new secret and QR code
+            $secret = $this->google2fa->generateSecretKey();
+            $user->google2fa_secret = $secret;
+            $user->save();
+        }
+
+        // Generate the QR code URL for Google Authenticator
+        $google2fa_url = $this->google2fa->getQRCodeUrl(
+            config('app.name'),
+            $user->email,
+            $secret
+        );
+
+        return view('profile.security', compact('sessions', 'logins', 'google2fa_url', 'secret'));
     }
 
     public function getActiveSessions($userId)
@@ -154,10 +183,68 @@ class ProfileController extends Controller
 
     public function destroySession($sessionId)
     {
-        DB::table('sessions')
-            ->where('id', $sessionId)
-            ->delete();
-
+        DB::table('sessions')->where('id', $sessionId)->delete();
         return response()->json(['status' => true, 'message' => 'Session destroyed successfully!']);
+    }
+
+
+    public function logoutSession($sessionId)
+    {
+        Session::forget($sessionId);
+        return redirect()->route('profile.security')->with('success', 'Session logged out successfully.');
+    }
+
+    // Method to handle password change request via AJAX
+    public function updatePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = Auth::user();
+
+        // Check if the current password is correct
+        if (!Hash::check($request->current_password, $user->password)) {
+            return response()->json(['status' => 'error', 'message' => 'Current password is incorrect.']);
+        }
+
+        // Update the password
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return response()->json(['status' => 'success']);
+    }
+
+    // Method to handle 2FA verification request via AJAX
+    public function verify2fa(Request $request)
+    {
+        $request->validate([
+            'one_time_password' => 'required|string|size:6'
+        ]);
+
+        $user = Auth::user();
+        $secret = $user->google2fa_secret;
+
+        // Verify the OTP
+        if ($this->google2fa->verifyKey($secret, $request->one_time_password)) {
+            $user->google2fa_enabled = true;
+            $user->save();
+
+            return response()->json(['status' => 'success']);
+        }
+
+        return response()->json(['status' => 'error', 'message' => 'Invalid 2FA code.']);
+    }
+
+    // Disable 2FA
+    public function disable2fa(Request $request)
+    {
+        $user = Auth::user();
+        $user->google2fa_secret = null;
+        $user->google2fa_enabled = false;
+        $user->save();
+
+        return redirect()->route('profile')->with('status', 'Two-factor authentication disabled successfully.');
     }
 }

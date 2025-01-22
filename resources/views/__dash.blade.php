@@ -12,7 +12,7 @@
     @else
         <div class="flex-grow flex flex-col ml-20">
             <div id="chart" class="flex-grow w-full lg:max-h-[90vh]"></div>
-            <div class="fixed flex bg-tranparent text-white m-10 z-10 w-full">
+            <div class="fixed flex bg-tranparent text-white m-10 z-10 w-full" style="margin-left: 8rem; margin-top:3rem;">
                 <div class="flex gap-4 w-full">
                     <div class="hs-dropdown relative [--gpu-acceleration:false] inline-flex">
                         <button id="hs-dropdown-scale-animation" type="button"

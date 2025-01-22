@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ApiController;
 use App\Http\Controllers\DepositController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PayoutController;
@@ -11,10 +12,11 @@ use App\Jobs\EvaluateTrade;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GitHubArtifactController;
-
-
+use App\Http\Controllers\TradeController;
+use Illuminate\Support\Facades\Http;
 
 Route::get('/', function () {
+    // return auth()->user()->authentications;
     return view('act_welcome');
 });
 
@@ -39,16 +41,27 @@ Route::middleware(['auth'])->group(function () {
     Route::get("finance-history", [TransactionHistoryController::class, 'history'])->name('finance.history');
 
     // Route::middleware('auth')->group(function () {
-    // Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('profile/security', [ProfileController::class, 'security'])->name('profile.security');
+    Route::delete('/sessions/{sessionId}/logout', [ProfileController::class, 'logoutSession'])->name('sessions.logout');
     Route::get('trading-profile', [ProfileController::class, 'tradingProfile'])->name('trading.profile');
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::match(['post', 'patch'], 'profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('profile/photo/update', [ProfileController::class, 'update'])->name('profile.photo.update');
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::post('/change-password', [ProfileController::class, 'updatePassword'])->name('password.update');
+
+
+    Route::middleware('auth')->group(function () {
+        Route::get('/profile/2fa', [ProfileController::class, 'show2faForm'])->name('profile.twofa');
+        Route::post('/profile/2fa/verify', [ProfileController::class, 'verify2fa'])->name('profile.verify2fa');
+        Route::post('/profile/2fa/disable', [ProfileController::class, 'disable2fa'])->name('profile.disable2fa');
+    });
+
+
 
     Route::match(['post', 'patch'], 'profile-update', [ProfileController::class, 'updateProfile'])
-            ->name('profile.update.pk')
-            ->withoutMiddleware(VerifyCsrfToken::class);
+        ->name('profile.update.pk')
+        ->withoutMiddleware(VerifyCsrfToken::class);
 
     Route::group(['prefix' => 'deposit', 'as' => 'deposit.'], function () {
         Route::get('/', [DepositController::class, 'create'])->name('step_1');
@@ -57,6 +70,28 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('step-4', [DepositController::class, 'step_4'])->name('step_4');
     });
 });
+
+
+
+Route::group(['as' => 'api.', 'prefix' => 'api'], function () {
+    Route::get('trades', [ApiController::class, 'tradeList'])->name('trades');
+    Route::post('place-trade', [TradeController::class, 'placeTrade'])->name('trade');
+});
+
+Route::get('tt', function () {
+    $walletId = "678eb4cf13b9813a3e3ad0cdc6a6d74d";
+    $coin = "txrp";
+    $response = Http::withHeaders([
+        'Authorization' => 'Bearer ' . config('bitgo.access_token')
+    ])->post('https://app.bitgo-test.com/api/v2/' . $coin . '/wallet/' .
+        $walletId . '/address', [
+        "chain" => 0
+    ]);
+
+    return $response->json();
+});
+
+
 
 
 

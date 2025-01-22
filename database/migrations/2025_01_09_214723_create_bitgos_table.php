@@ -13,10 +13,11 @@ return new class extends Migration {
         Schema::dropIfExists('bitgos');
         Schema::create('bitgos', function (Blueprint $table) {
             $table->id();
-            $table->string('wallet_id')->unique();
+            $table->string('wallet_id')->unique()->nullable();
             $table->string('wallet_name');
             $table->string('wallet_ticker');
             $table->string('type');
+            $table->string('network');
             $table->boolean('require_memo')->default(false);
             $table->boolean('can_deposit')->default(false);
             $table->boolean('can_payout')->default(false);

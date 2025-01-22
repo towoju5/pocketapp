@@ -2,49 +2,48 @@
 
 @section('title', 'Trade Details')
 @section('content')
-    <div class="row gx-3">
-        <div class="col-xxl-12">
-            <div class="card mb-3">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5 class="card-title">Trade Details #{{ $trade->id }}</h5>
-                    <a href="{{ route('trades.index') }}" class="btn btn-secondary">Back to Trades</a>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <dl class="row">
-                                <dt class="col-sm-4">Asset</dt>
-                                <dd class="col-sm-8">{{ $trade->asset }}</dd>
+    <div class="container mx-auto py-6">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="flex justify-between items-center p-4 bg-gray-100">
+                <h5 class="text-xl font-semibold">Trade Details #{{ $trade->id }}</h5>
+                <a href="{{ route('trade.index') }}" class="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-500">Back to Trades</a>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <dl>
+                            <dt class="font-semibold text-gray-700">Asset</dt>
+                            <dd class="text-gray-900">{{ $trade->trade_extra_info['asset'] }}</dd>
 
-                                <dt class="col-sm-4">Amount</dt>
-                                <dd class="col-sm-8">${{ number_format($trade->amount, 2) }}</dd>
+                            <dt class="font-semibold text-gray-700 mt-4">Amount</dt>
+                            <dd class="text-gray-900">${{ number_format($trade->trade_extra_info['amount'], 2) }}</dd>
 
-                                <dt class="col-sm-4">Type</dt>
-                                <dd class="col-sm-8">{{ ucfirst($trade->type) }}</dd>
+                            <dt class="font-semibold text-gray-700 mt-4">Direction</dt>
+                            <dd class="text-gray-900">{{ ucfirst($trade->trade_direction) }}</dd>
 
-                                <dt class="col-sm-4">Entry Price</dt>
-                                <dd class="col-sm-8">${{ number_format($trade->entry_price, 2) }}</dd>
-                            </dl>
-                        </div>
-                        <div class="col-md-6">
-                            <dl class="row">
-                                <dt class="col-sm-4">Exit Price</dt>
-                                <dd class="col-sm-8">${{ number_format($trade->exit_price, 2) }}</dd>
+                            <dt class="font-semibold text-gray-700 mt-4">Start Price</dt>
+                            <dd class="text-gray-900">${{ number_format($trade->start_price, 2) }}</dd>
+                        </dl>
+                    </div>
+                    <div>
+                        <dl>
+                            <dt class="font-semibold text-gray-700">Current Price</dt>
+                            <dd class="text-gray-900">${{ number_format($trade->trade_extra_info['currentPrice'], 2) }}</dd>
 
-                                <dt class="col-sm-4">Status</dt>
-                                <dd class="col-sm-8">
-                                    <span class="badge bg-{{ $trade->status === 'completed' ? 'success' : 'warning' }}">
-                                        {{ ucfirst($trade->status) }}
-                                    </span>
-                                </dd>
+                            <dt class="font-semibold text-gray-700 mt-4">Status</dt>
+                            <dd class="text-gray-900">
+                                <span class="inline-block px-3 py-1 text-sm font-semibold rounded-full 
+                                    {{ $trade->trade_status === 'pending' ? 'bg-yellow-400 text-yellow-800' : 'bg-green-500 text-white' }}">
+                                    {{ ucfirst($trade->trade_status) }}
+                                </span>
+                            </dd>
 
-                                <dt class="col-sm-4">Profit/Loss</dt>
-                                <dd class="col-sm-8">${{ number_format($trade->profit_loss, 2) }}</dd>
+                            <dt class="font-semibold text-gray-700 mt-4">Close Time</dt>
+                            <dd class="text-gray-900">{{ \Carbon\Carbon::parse($trade->trade_close_time)->format('Y-m-d H:i:s') }}</dd>
 
-                                <dt class="col-sm-4">Date</dt>
-                                <dd class="col-sm-8">{{ $trade->created_at->format('Y-m-d H:i') }}</dd>
-                            </dl>
-                        </div>
+                            <dt class="font-semibold text-gray-700 mt-4">Date</dt>
+                            <dd class="text-gray-900">{{ \Carbon\Carbon::parse($trade->created_at)->format('Y-m-d H:i') }}</dd>
+                        </dl>
                     </div>
                 </div>
             </div>

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Models\Bitgo;
 use App\Models\Option;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\View;

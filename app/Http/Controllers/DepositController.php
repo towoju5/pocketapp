@@ -78,27 +78,26 @@ class DepositController extends Controller
             ]);
             $ticker_in_session = session('payin_payload')['deposit_method'];
             $ticker = $ticker_in_session?->wallet_ticker;
-            
-            
-            if(!$ticker){
+
+
+            if (!$ticker) {
                 return response()->json(['message' => 'Invalid deposit method.'], 422);
             }
 
             $wallet = BitgoWallets::where('user_id', Auth::id())
                 ->where('coin_ticker', $ticker)
                 ->first();
-            
-            if(env('BITGO_ENV') == 'test') {
-                $ticker = 't' . $ticker;
-            }
 
 
-            if(!$wallet){
+            if (!$wallet) {
                 // generate a new wallet address for selected coin
                 $bitgo = new BitgoController();
-                $wallet = $bitgo->generateWalletAddress('tbtc');
+                $wallet = $bitgo->generateWalletAddress($ticker);
+                if (isset($wallet['error'])) {
+                    return response()->json(['message' => $wallet['error']], 422);
+                }
             }
-            
+
             $deposit_method = Bitgo::whereId(session()->get('deposit_method_id'))->where('can_deposit', true)->first();
             $deposit_amount = $request->deposit_amount;
             return view('deposits.partials.step-3', compact('wallet', 'deposit_method', 'deposit_amount'));
@@ -112,7 +111,7 @@ class DepositController extends Controller
         $wallet = Wallet::findOrFail($request->wallet_id);
 
         // Calculate bonus (example: 5% bonus for deposits over 1000)
-        $bonus = $request->deposit_amount >= 1000 ? $request->deposit_amount * 0.05 : 0;
+        $bonus = $request->deposit_amount >= get_option('min_deposit_for_bonus') ? $request->deposit_amount * get_option('deposit_bonus', 0) : 0;
 
         $deposit = new Deposit([
             'user_id' => Auth::id(),
@@ -130,7 +129,11 @@ class DepositController extends Controller
         // Process the deposit using Bavix Wallet
         try {
             $user = Auth::user();
-            $user->deposit($request->deposit_amount + $bonus);
+            $user->deposit($request->deposit_amount, ["description" => "wallet deposit"]);
+
+            if ($bonus > 0) {
+                $user->deposit($bonus, ["description" => "Wallet deposit bonus"]);
+            }
 
             $deposit->update(['deposit_status' => 'completed']);
 
@@ -140,7 +143,7 @@ class DepositController extends Controller
         } catch (\Exception $e) {
             $deposit->update(['deposit_status' => 'failed']);
             Flasher::addError('Deposit processing failed. Please try again.');
-            return back();
+            return back()->with('error', "Deposit processing failed. Please try again.");
         }
     }
 
@@ -190,6 +193,9 @@ class DepositController extends Controller
             'total_bonus' => Deposit::where('user_id', Auth::id())
                 ->where('deposit_status', 'completed')
                 ->sum('deposit_bonus'),
+            'completed_deposits' => Deposit::where('user_id', Auth::id())
+                ->where('deposit_status', 'completed')
+                ->count(),
             'pending_deposits' => Deposit::where('user_id', Auth::id())
                 ->where('deposit_status', 'pending')
                 ->count()

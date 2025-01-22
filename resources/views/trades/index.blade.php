@@ -19,7 +19,7 @@
                             <th class="px-4 py-3">Entry Price</th>
                             <th class="px-4 py-3">Exit Price</th>
                             <th class="px-4 py-3">Status</th>
-                            <th class="px-4 py-3">Profit/Loss</th>
+                            <th class="px-4 py-3">Direction</th>
                             <th class="px-4 py-3">Date</th>
                             <th class="px-4 py-3">Actions</th>
                         </tr>
@@ -39,8 +39,12 @@
                                     {{ ucfirst($trade->trade_status) }}
                                 </span>
                             </td>
-                            <td class="px-4 py-3">
-                                {{ $trade->trade_profit == 1 ? 'Profit' : 'Loss' }}
+                            <td class="px-4 py-3 flex gap-2 items-center">
+                                @if($trade->trade_status === "pending")
+                                    <span class="text-yellow-500 text-center">---</span>
+                                @else
+                                    {!! $trade->trade_profit == 1 ? '<i class="fa-solid fa-arrow-up arr-direction rounded-full bg-green-600 p-2 text-white"></i>Up' : '<i class="fa-solid fa-arrow-down arr-direction rounded-full bg-red-600 p-2 text-white"></i>Down' !!}
+                                @endif
                             </td>
                             <td class="px-4 py-3">{{ $trade->created_at->format('Y-m-d H:i') }}</td>
                             <td class="px-4 py-3">
@@ -60,3 +64,12 @@
 </div>
 
 @endsection
+
+
+@push('css')
+<style>
+    .arr-direction {
+        rotate: 45deg;
+    }
+</style>
+@endpush

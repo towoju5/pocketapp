@@ -1,5 +1,6 @@
 @extends('layouts.app')
 
+@section('title', 'Make new Deposit')
 @section('content')
     <div class="container -mt-4">
         <div class="bg-[#15182a] rounded-lg text-white">

@@ -3,6 +3,7 @@
 use App\Models\Assets;
 use App\Models\Bitgo;
 use App\Models\BitgoWallets;
+use App\Models\Option;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
@@ -14,6 +15,17 @@ if (!function_exists('get_assets')) {
     {
         $assets = Assets::all();
         return $assets;
+    }
+}
+
+if (!function_exists('get_option')) {
+    function get_option($key, $default = null)
+    {
+        $option = Option::where('option_name', $key)->first();
+        if ($option) {
+            return $option->option_value;
+        }
+        return $default;
     }
 }
 
@@ -176,16 +188,13 @@ if (!function_exists("getAssetData")) {
 }
 
 
-if (!function_exists('getCoinByTicker')) {
-    function getCoinByTicker($coin)
+if (!function_exists('getWalletIdByCoinTicker')) {
+    function getWalletIdByCoinTicker($coin)
     {
-
-        return "6228b5861bfa60000725b4340bcdf0fc";
         $wallet = Bitgo::where('wallet_ticker', $coin)->first();
         if (!$wallet) {
-            return ['error' => 'Wallet not found'];
+            return (object)['wallet_id' => null];
         }
-
         return $wallet->wallet_id;
 
     }
@@ -196,7 +205,7 @@ if (!function_exists('getTransferDetails')) {
     function getTransferDetails($coin, $transferId)
     {
         $accessToken = getenv('BITGO_API_KEY');
-        $walletId = getCoinByTicker($coin);
+        $walletId = getWalletIdByCoinTicker($coin);
         $url = "https://www.bitgo.com/api/v2/{$coin}/wallet/{$walletId}/transfer/{$transferId}";
 
         try {
@@ -216,13 +225,15 @@ if (!function_exists('bitgoDepositAddress')) {
     function bitgoDepositAddress($coin)
     {
         try {
-            $testNet = env('BITGO_ENV') === 'test';
+            $walletId = getWalletIdByCoinTicker($coin);
+            $coin = strtolower($coin);
+            $testNet = env('BITGO_ENV', 'true');
             $bitgo = new BitGoSDK(env('BITGO_API_KEY'), $coin, $testNet);
-            $bitgo->walletId = getCoinByTicker($coin);
+            $bitgo->walletId = $walletId;
 
             $createAddress = $bitgo->createWalletAddress();
             $createdWallet = [];
-            // Log::info("Bitgo wallet address generation response", ['response' => $createAddress]);
+            Log::info("Bitgo wallet address generation response", ['response' => $createAddress]);
 
             $user = auth()->user();
             if (isset($createAddress['address'])) {
