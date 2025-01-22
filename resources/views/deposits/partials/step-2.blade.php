@@ -46,6 +46,8 @@
              <div class="mb-6">
                  <label class="flex items-center text-sm text-gray-400">
                      <input type="checkbox" class="mr-2 bg-gray-700 border-gray-600 text-teal-500 focus:ring-teal-500">
+                     <input type="hidden" name="deposit_method" value="{{ $deposit_method }}">
+                     <input type="hidden" name="deposit_method_id" value="{{ $deposit_method_id }}">
                      I have a promo code
                  </label>
              </div>

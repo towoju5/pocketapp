@@ -42,6 +42,7 @@ class DepositController extends Controller
         if (empty($wallets)) {
             create_user_wallet($user->id);
         }
+
         $methods = Bitgo::where('can_deposit', true)->get();
         return view('deposits.create', compact('wallets', 'methods'));
     }
@@ -57,40 +58,46 @@ class DepositController extends Controller
                 'deposit_method' => 'required|string'
             ]);
 
+            // Validate and find the selected deposit method
             $deposit_method = Bitgo::whereId($request->deposit_method)->where('can_deposit', true)->first();
             if (!$deposit_method) {
                 return response()->json(['message' => 'Invalid deposit method.'], 422);
             }
-            session()->put('deposit_method', $deposit_method);
-            session()->put('deposit_method_id', $request->deposit_method);
 
-            return view('deposits.partials.step-2', compact('deposit_method'));
+            // // Update session with the newly selected deposit method
+            // session()->put('deposit_method', $deposit_method);
+            // session()->put('deposit_method_id', $request->deposit_method);
+			$deposit_method_id = $request->deposit_method;
+            // After updating the session, return to step 2 with the new deposit method
+            return view('deposits.partials.step-2', compact('deposit_method', 'deposit_method_id'));
         }
 
         if ($request->deposit_step == 2) {
             $request->validate([
-                'deposit_amount' => 'required'
+                'deposit_amount' => 'required',
+				'deposit_method' => 'required',
+				'deposit_method_id' => 'required'
             ]);
 
-            session()->put("payin_payload", [
-                'deposit_method' => session('deposit_method'),
-                'deposit_amount' => $request->deposit_amount
-            ]);
-            $ticker_in_session = session('payin_payload')['deposit_method'];
-            $ticker = $ticker_in_session?->wallet_ticker;
+            // Set the deposit amount
+            $deposit_amount = $request->deposit_amount;
 
+            // Save the deposit data in the session for future steps
+             $deposit_method = json_decode($request->deposit_method);
+             $deposit_method_id = $request->deposit_method_id;
 
+            $ticker = $deposit_method->wallet_ticker;
             if (!$ticker) {
                 return response()->json(['message' => 'Invalid deposit method.'], 422);
             }
 
+            // Check if wallet already exists for the selected ticker
             $wallet = BitgoWallets::where('user_id', Auth::id())
                 ->where('coin_ticker', $ticker)
                 ->first();
 
-
             if (!$wallet) {
-                // generate a new wallet address for selected coin
+                // Generate a new wallet address if not found
                 $bitgo = new BitgoController();
                 $wallet = $bitgo->generateWalletAddress($ticker);
                 if (isset($wallet['error'])) {
@@ -98,8 +105,7 @@ class DepositController extends Controller
                 }
             }
 
-            $deposit_method = Bitgo::whereId(session()->get('deposit_method_id'))->where('can_deposit', true)->first();
-            $deposit_amount = $request->deposit_amount;
+            // Pass the deposit amount to step 3 view
             return view('deposits.partials.step-3', compact('wallet', 'deposit_method', 'deposit_amount'));
         }
 
@@ -107,7 +113,7 @@ class DepositController extends Controller
             return view('deposits.partials.step-4', compact('deposit_method'));
         }
 
-
+        // Process the deposit after confirmation (step 4)
         $wallet = Wallet::findOrFail($request->wallet_id);
 
         // Calculate bonus (example: 5% bonus for deposits over 1000)
@@ -139,13 +145,14 @@ class DepositController extends Controller
 
             Flasher::addSuccess('Deposit processed successfully!');
             return redirect()->route('deposits.show', $deposit->id);
-
         } catch (\Exception $e) {
             $deposit->update(['deposit_status' => 'failed']);
             Flasher::addError('Deposit processing failed. Please try again.');
             return back()->with('error', "Deposit processing failed. Please try again.");
         }
     }
+
+
 
     public function show(Deposit $deposit)
     {
