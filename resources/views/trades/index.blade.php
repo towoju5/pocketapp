@@ -3,6 +3,7 @@
 @section('title', 'Trades')
 @section('content')
 <div class="container mx-auto p-4">
+    @include('partials.profile')
     <div class="bg-gray-800 text-white rounded-lg shadow-md">
         <div class="p-4 border-b border-gray-700">
             <h2 class="text-lg font-semibold">Trade Histories</h2>
