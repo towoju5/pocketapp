@@ -30,7 +30,7 @@
                     </div>
 
                     <!-- Asset Dropdown Content -->
-                    <div id="assetDropDown" class="absolute left-5 w-2xl rounded-lg bg-gray-800 shadow-lg rounded mt-2 hidden">
+                    <div id="assetDropDown" class="absolute left-5 min-w-160 rounded-lg bg-gray-800 shadow-lg rounded-xl mt-2 hidden">
                         <div class="flex">
                             <!-- Categories -->
                             <div class="w-1/3 bg-gray-700 p-2">
@@ -55,7 +55,7 @@
 
                 <!-- Chat type selection -->
                 <div>
-                    <div class="relative inline-block" id="chartTpyeBtn" onclick="$('#chartTpyeDropDown').toggle('hidden')">
+                    <div class="relative inline-block" id="chartTpyeBtn">
                         <!-- Clickable Dropdown Trigger -->
                         <button class="p-2 hover:bg-[#2a3142] rounded">
                             <svg class="h-5 w-5 text-white" xmlns="//www.w3.org/2000/svg" fill="white" viewBox="0 0 40 35" width="40" height="35" data-src="/themes/cabinet/svgicons/chart-types/line.svg" xmlns:xlink="//www.w3.org/1999/xlink" role="img">
@@ -158,8 +158,6 @@
                 </div>
             </div>
 
-
-
             <!-- Bottom Time Scale -->
             <div class="absolute bottom-4 left-4">
                 <div class="bg-[#2a3142] px-3 py-1 rounded flex items-center space-x-2">
@@ -191,7 +189,7 @@
         </div>
     </section>
     <!-- buy and sell section -->
-    <div class="w-max-lg bg-[#23283b] h-screen p-4 text-gray-200">
+    <div class="w-max-lg bg-[#23283b] h-screen text-gray-200">
         <form method="POST" action="{{ route('trade.store') }}" class="p-3 rounded-lg text-white space-y-4"
             id="tradeForm">
             @csrf
@@ -410,238 +408,224 @@
 
 @push('js')
 <script>
-const canvas = document.getElementById('tradingChart');
-const ctx = canvas.getContext('2d');
-const loader = document.getElementById('loader');
+    const canvas = document.getElementById('tradingChart');
+    const ctx = canvas.getContext('2d');
+    const loader = document.getElementById('loader');
 
-let data = [];
-let chartType = "area";
-let isInitialDataLoaded = false;
+    let data = [];
+    let chartType = "area";
+    let isInitialDataLoaded = false;
 
-// Function to change chart type dynamically
-function changeChartType(chart_type) {
-    $(".chart-type-selector").removeClass('active')
-    $(`.${chart_type}-selector`).addClass('active')
-    chartType = chart_type;
-    drawChart();
-}
+    // Function to change chart type dynamically
+    function changeChartType(chart_type) {
+        $(".chart-type-selector").removeClass('active')
+        $(`.${chart_type}-selector`).addClass('active')
+        chartType = chart_type;
+        drawChart();
+    }
 
-// Resize Canvas
-function resizeCanvas() {
-    const rect = canvas.parentElement.getBoundingClientRect();
-    canvas.width = rect.width * window.devicePixelRatio;
-    canvas.height = rect.height * window.devicePixelRatio;
-    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-}
+    // Resize Canvas
+    function resizeCanvas() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = rect.width * window.devicePixelRatio;
+        canvas.height = rect.height * window.devicePixelRatio;
+        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+    }
 
-resizeCanvas();
-window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
 
-// Heikin Ashi Calculation
-function calculateHeikinAshi(data) {
-    if (data.length < 2) return [];
+    // Heikin Ashi Calculation
+    function calculateHeikinAshi(data) {
+        if (data.length < 2) return [];
 
-    let haData = [];
-    let prev = {
-        open: data[0].open,
-        close: data[0].close,
-        high: data[0].high,
-        low: data[0].low
+        let haData = [];
+        let prev = {
+            open: data[0].open,
+            close: data[0].close,
+            high: data[0].high,
+            low: data[0].low
+        };
+
+        data.forEach((candle, i) => {
+            let haClose = (candle.open + candle.high + candle.low + candle.close) / 4;
+            let haOpen = (prev.open + prev.close) / 2;
+            let haHigh = Math.max(candle.high, haOpen, haClose);
+            let haLow = Math.min(candle.low, haOpen, haClose);
+
+            haData.push({
+                open: haOpen,
+                close: haClose,
+                high: haHigh,
+                low: haLow
+            });
+            prev = haData[i];
+        });
+
+        return haData;
+    }
+
+    // Drawing the Chart
+    function drawChart() {
+        if (!isInitialDataLoaded) return; // Don't draw until initial data is ready
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (data.length < 2) return;
+
+        const xStep = canvas.width / data.length;
+        const minPrice = Math.min(...data.map(d => d.low));
+        const maxPrice = Math.max(...data.map(d => d.high));
+        const priceRange = maxPrice - minPrice;
+        const yScale = canvas.height / priceRange;
+
+        if (chartType === "area") {
+            ctx.fillStyle = "rgba(59, 130, 246, 0.3)";
+            ctx.strokeStyle = "#3b82f6";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            data.forEach((point, i) => {
+                const x = i * xStep;
+                const y = canvas.height - ((point.close - minPrice) * yScale);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+
+            ctx.stroke();
+            ctx.lineTo(canvas.width, canvas.height);
+            ctx.lineTo(0, canvas.height);
+            ctx.fill();
+        } else if (chartType === "bars" || chartType === "candles" || chartType === "heikin") {
+            const candleWidth = xStep * 0.8; // Increase candle width for better visibility
+            const dataToPlot = chartType === "heikin" ? calculateHeikinAshi(data) : data;
+
+            dataToPlot.forEach((point, i) => {
+                const x = i * xStep;
+                const yOpen = canvas.height - ((point.open - minPrice) * yScale);
+                const yClose = canvas.height - ((point.close - minPrice) * yScale);
+                const yHigh = canvas.height - ((point.high - minPrice) * yScale);
+                const yLow = canvas.height - ((point.low - minPrice) * yScale);
+
+                ctx.strokeStyle = point.close >= point.open ? "#16a34a" : "#dc2626";
+                ctx.fillStyle = ctx.strokeStyle;
+                ctx.lineWidth = 2;
+
+                if (chartType === "bars") {
+                    ctx.beginPath();
+                    ctx.moveTo(x, yHigh);
+                    ctx.lineTo(x, yLow);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo(x - candleWidth / 2, yOpen);
+                    ctx.lineTo(x, yOpen);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo(x, yClose);
+                    ctx.lineTo(x + candleWidth / 2, yClose);
+                    ctx.stroke();
+                } else if (chartType === "candles" || chartType === "heikin") {
+                    ctx.beginPath();
+                    ctx.moveTo(x, yHigh);
+                    ctx.lineTo(x, yLow);
+                    ctx.stroke();
+
+                    ctx.fillRect(x - candleWidth / 2, Math.min(yOpen, yClose), candleWidth, Math.abs(yOpen - yClose));
+                    ctx.strokeRect(x - candleWidth / 2, Math.min(yOpen, yClose), candleWidth, Math.abs(yOpen - yClose));
+                }
+            });
+        }
+    }
+
+    // Fetch Initial Data
+    const fetchInitialData = async () => {
+        loader.style.display = "block"; // Show loader
+
+        try {
+            let candleUrl = "{{ url('api/stream/chart/' . $__coin) }}";
+            const response = await fetch(candleUrl);
+            const candles = await response.json();
+
+            if (Array.isArray(candles)) {
+                data = candles.map(candle => ({
+                    time: new Date(candle.ts * 1000),
+                    open: candle.o || candle.c,
+                    high: candle.h || candle.c,
+                    low: candle.l || candle.c,
+                    close: candle.c
+                }));
+
+                if (data.length > 300) data = data.slice(-300); // Keep last 300 points
+                isInitialDataLoaded = true;
+                drawChart();
+            } else {
+                console.error('Unexpected response format:', candles);
+            }
+        } catch (error) {
+            console.error('Error fetching initial data:', error);
+        } finally {
+            loader.style.display = "none"; // Hide loader after data is loaded
+        }
     };
 
-    data.forEach((candle, i) => {
-        let haClose = (candle.open + candle.high + candle.low + candle.close) / 4;
-        let haOpen = (prev.open + prev.close) / 2;
-        let haHigh = Math.max(candle.high, haOpen, haClose);
-        let haLow = Math.min(candle.low, haOpen, haClose);
+    // WebSocket Real-time Updates
+    const websocketUrl = "wss://ws-plus.olymptrade.com/connect";
+    const socket = new WebSocket(websocketUrl);
 
-        haData.push({ open: haOpen, close: haClose, high: haHigh, low: haLow });
-        prev = haData[i];
-    });
+    socket.onopen = () => {
+        console.log('WebSocket connected');
+        const subscriptionMessage = JSON.stringify([{
+            "e": 10,
+            "t": 2,
+            "d": {
+                "pairs": ["{{ $__coin }}"],
+                "chart_tfs": [3600, 86400],
+                "with_forecast": true
+            },
+            "uuid": "1"
+        }]);
+        socket.send(subscriptionMessage);
+    };
 
-    return haData;
-}
+    socket.onmessage = (event) => {
+        if (!isInitialDataLoaded) return; // Don't process WebSocket updates until initial data is loaded
 
-// Drawing the Chart
-function drawChart() {
-    if (!isInitialDataLoaded) return; // Don't draw until initial data is ready
+        try {
+            const message = JSON.parse(event.data);
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (data.length < 2) return;
+            message.forEach(item => {
+                if (item.d && Array.isArray(item.d) && item.d.length > 0) {
+                    const pairData = item.d[0];
 
-    const xStep = canvas.width / data.length;
-    const minPrice = Math.min(...data.map(d => d.low));
-    const maxPrice = Math.max(...data.map(d => d.high));
-    const priceRange = maxPrice - minPrice;
-    const yScale = canvas.height / priceRange;
+                    if (pairData.pair && pairData.rate) {
+                        const newPoint = {
+                            time: new Date(),
+                            open: pairData.rate,
+                            high: pairData.rate,
+                            low: pairData.rate,
+                            close: pairData.rate
+                        };
 
-    if (chartType === "area") {
-        ctx.fillStyle = "rgba(59, 130, 246, 0.3)";
-        ctx.strokeStyle = "#3b82f6";
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-
-        data.forEach((point, i) => {
-            const x = i * xStep;
-            const y = canvas.height - ((point.close - minPrice) * yScale);
-            if (i === 0) ctx.moveTo(x, y);
-            else ctx.lineTo(x, y);
-        });
-
-        ctx.stroke();
-        ctx.lineTo(canvas.width, canvas.height);
-        ctx.lineTo(0, canvas.height);
-        ctx.fill();
-    } 
-
-    else if (chartType === "bars" || chartType === "candles" || chartType === "heikin") {
-        const candleWidth = xStep * 0.8; // Increase candle width for better visibility
-        const dataToPlot = chartType === "heikin" ? calculateHeikinAshi(data) : data;
-
-        dataToPlot.forEach((point, i) => {
-            const x = i * xStep;
-            const yOpen = canvas.height - ((point.open - minPrice) * yScale);
-            const yClose = canvas.height - ((point.close - minPrice) * yScale);
-            const yHigh = canvas.height - ((point.high - minPrice) * yScale);
-            const yLow = canvas.height - ((point.low - minPrice) * yScale);
-
-            ctx.strokeStyle = point.close >= point.open ? "#16a34a" : "#dc2626";
-            ctx.fillStyle = ctx.strokeStyle;
-            ctx.lineWidth = 2;
-
-            if (chartType === "bars") {
-                ctx.beginPath();
-                ctx.moveTo(x, yHigh);
-                ctx.lineTo(x, yLow);
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.moveTo(x - candleWidth / 2, yOpen);
-                ctx.lineTo(x, yOpen);
-                ctx.stroke();
-
-                ctx.beginPath();
-                ctx.moveTo(x, yClose);
-                ctx.lineTo(x + candleWidth / 2, yClose);
-                ctx.stroke();
-            } 
-
-            else if (chartType === "candles" || chartType === "heikin") {
-                ctx.beginPath();
-                ctx.moveTo(x, yHigh);
-                ctx.lineTo(x, yLow);
-                ctx.stroke();
-
-                ctx.fillRect(x - candleWidth / 2, Math.min(yOpen, yClose), candleWidth, Math.abs(yOpen - yClose));
-                ctx.strokeRect(x - candleWidth / 2, Math.min(yOpen, yClose), candleWidth, Math.abs(yOpen - yClose));
-            }
-        });
-    }
-}
-
-// Fetch Initial Data
-const fetchInitialData = async () => {
-    loader.style.display = "block"; // Show loader
-
-    try {
-        let candleUrl = "{{ url('api/stream/chart/' . $__coin) }}";
-        const response = await fetch(candleUrl);
-        const candles = await response.json();
-
-        if (Array.isArray(candles)) {
-            data = candles.map(candle => ({
-                time: new Date(candle.ts * 1000),
-                open: candle.o || candle.c,
-                high: candle.h || candle.c,
-                low: candle.l || candle.c,
-                close: candle.c
-            }));
-
-            if (data.length > 300) data = data.slice(-300); // Keep last 300 points
-            isInitialDataLoaded = true;
-            drawChart();
-        } else {
-            console.error('Unexpected response format:', candles);
-        }
-    } catch (error) {
-        console.error('Error fetching initial data:', error);
-    } finally {
-        loader.style.display = "none"; // Hide loader after data is loaded
-    }
-};
-
-// WebSocket Real-time Updates
-const websocketUrl = "wss://ws-plus.olymptrade.com/connect";
-const socket = new WebSocket(websocketUrl);
-
-socket.onopen = () => {
-    console.log('WebSocket connected');
-    const subscriptionMessage = JSON.stringify([{ "e": 10, "t": 2, "d": { "pairs": ["{{ $__coin }}"], "chart_tfs": [3600, 86400], "with_forecast": true }, "uuid": "1" }]);
-    socket.send(subscriptionMessage);
-};
-
-socket.onmessage = (event) => {
-    if (!isInitialDataLoaded) return; // Don't process WebSocket updates until initial data is loaded
-
-    try {
-        const message = JSON.parse(event.data);
-        
-        message.forEach(item => {
-            if (item.d && Array.isArray(item.d) && item.d.length > 0) {
-                const pairData = item.d[0];
-
-                if (pairData.pair && pairData.rate) {
-                    const newPoint = {
-                        time: new Date(),
-                        open: pairData.rate, 
-                        high: pairData.rate, 
-                        low: pairData.rate, 
-                        close: pairData.rate 
-                    };
-
-                    data.push(newPoint);
-                    if (data.length > 300) data.shift(); // Keep only 300 points
-                    drawChart();
+                        data.push(newPoint);
+                        if (data.length > 300) data.shift(); // Keep only 300 points
+                        drawChart();
+                    }
                 }
-            }
-        });
+            });
 
-    } catch (error) {
-        console.error('Error processing WebSocket message:', error);
-    }
-};
-
-socket.onclose = () => console.log('WebSocket disconnected');
-socket.onerror = (error) => console.error('WebSocket error:', error);
-
-// Fetch initial data
-fetchInitialData();
-
-
-    document.addEventListener("DOMContentLoaded", function() {
-        const openTab = document.getElementById("openTab");
-        const closedTab = document.getElementById("closedTab");
-        const openTrades = document.getElementById("openTrades");
-        const closedTrades = document.getElementById("closedTrades");
-
-        function activateTab(tab) {
-            openTab.classList.toggle("text-gray-200", tab === "open");
-            openTab.classList.toggle("text-gray-500", tab !== "open");
-            closedTab.classList.toggle("text-gray-200", tab === "closed");
-            closedTab.classList.toggle("text-gray-500", tab !== "closed");
-
-            openTab.classList.toggle("active-tab", tab === "open");
-            closedTab.classList.toggle("active-tab", tab === "closed");
-
-            openTrades.classList.toggle("hidden", tab !== "open");
-            closedTrades.classList.toggle("hidden", tab !== "closed");
+        } catch (error) {
+            console.error('Error processing WebSocket message:', error);
         }
+    };
 
-        openTab.addEventListener("click", () => activateTab("open"));
-        closedTab.addEventListener("click", () => activateTab("closed"));
-    });
+    socket.onclose = () => console.log('WebSocket disconnected');
+    socket.onerror = (error) => console.error('WebSocket error:', error);
+
+    // Fetch initial data
+    fetchInitialData();
 </script>
 @endpush
 

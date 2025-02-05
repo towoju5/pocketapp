@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Trading Panel - Polaris Option')</title>
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/lightweight-charts/4.1.1/lightweight-charts.standalone.production.js"></script>
+    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/lightweight-charts/4.1.1/lightweight-charts.standalone.production.js"></script> -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/i18next/23.7.11/i18next.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery-i18next/1.2.1/jquery-i18next.min.js"></script>
@@ -21,7 +21,7 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- TradingView Widget Script -->
-    <script type="text/javascript" src="//s3.tradingview.com/tv.js"></script>
+    <!-- <script type="text/javascript" src="//s3.tradingview.com/tv.js"></script> -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
