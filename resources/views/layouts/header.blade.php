@@ -1,6 +1,6 @@
   <!-- Upper nav bar section -->
 <header>
-        <nav class="py-2 nav-gradient text-white">
+        <nav class="py-2 bg-gray-900 text-white">
             <!-- Main Navbar -->
             <div class="px-4 h-16 flex items-center justify-between">
                 <div class="flex items-center space-x-4">

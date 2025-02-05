@@ -107,7 +107,7 @@
 </head>
 
 <body style="overflow: auto;">
-    @include('components.preloader')
+    <!-- @include('components.preloader') -->
 
     @include('layouts.header')
 

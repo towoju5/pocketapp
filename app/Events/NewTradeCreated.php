@@ -32,7 +32,7 @@ class NewTradeCreated implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new Channel('trade.created'),
+            new Channel('trade-created'),
         ];
     }
 
@@ -46,6 +46,6 @@ class NewTradeCreated implements ShouldBroadcastNow
 
     public function broadcastAs(): string
     {
-        return 'trade.created';
+        return 'trade-created';
     }
 }

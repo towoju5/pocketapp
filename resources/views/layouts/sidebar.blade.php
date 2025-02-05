@@ -62,7 +62,7 @@
 </aside>
 
 <!-- LEFT NAV BAR Content Area -->
-<div class="bg-[#222636] min-h-screen w-[30%] mr-auto" id="content-area">
+<div class="bg-[#222636] min-h-screen w-84 mr-auto" id="content-area">
 
     <div class="bg-[#222636] min-h-screen w-full">
         <!-- Search Bar -->
