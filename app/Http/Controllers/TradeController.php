@@ -30,6 +30,11 @@ class TradeController extends Controller
             'duration' => 'required|min:1',
         ]);
 
+        $user = auth()->user();
+        if(!debit_user($user->trade_wallet, $request->amount, "Binary Trade Order")) {
+            return response()->json(['errors' => "Insufficient wallet balance"], 402);
+        }
+
         if ($validated->fails()) {
             return response()->json(['errors' => $validated->errors()], 422);
         }
@@ -61,7 +66,8 @@ class TradeController extends Controller
             "start_price" => $currentPrice,
             "trade_status" => "pending",
             "trade_copied_count" => 0,
-            'user_id' => auth()->id(),
+            'user_id' => $user->id,
+            'trade_wallet' => $user->wallet_mode ?? 'demo'  // acceptable are real or demo
         ]);
 
         // Dispatch the NewTradeCreated event

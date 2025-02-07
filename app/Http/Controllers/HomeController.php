@@ -10,6 +10,7 @@ class HomeController extends Controller
 {
     public function dashboard(Request $request, $coin = null)
     {
+        $user = auth()->user();
         $isOutOfTradingHours = false;
         $data = Assets::where('symbol', "$coin")->first();
         if (!$data or $coin == null) {
@@ -37,7 +38,8 @@ class HomeController extends Controller
         }
 
         $assetCategories = Assets::groupBy('asset_group')->get();
+        $wallet_balance = $user->getWallet($user->active_wallet ?? 'qt_demo_usd') ?? ["balance" => 0];
 
-        return view('__dash', compact('data', 'assetCategories', 'isOutOfTradingHours'));
+        return view('__dash', compact('data', 'assetCategories', 'isOutOfTradingHours', 'wallet_balance'));
     }
 }

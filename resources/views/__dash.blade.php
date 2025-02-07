@@ -182,7 +182,9 @@
                     }
                 </style>
 
-                <div id="loader">Loading...</div>
+                <div id="loader">
+                    @include('components.preloader')
+                </div>
                 <!-- <div id="chart" class="flex-grow w-full lg:max-h-[90vh]"></div> -->
                 <canvas id="tradingChart" class="w-full h-full"></canvas>
             </div>

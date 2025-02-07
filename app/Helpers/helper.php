@@ -71,40 +71,7 @@ if (!function_exists('create_user_wallet')) {
     {
         $user = User::findOrFail($userId ?? auth()->id());
         if ($user) {
-            $_wallets = [
-                [
-                    "name" => "QT Real USD",
-                    "symbol" => "qt_real_usd"
-                ],
-                [
-                    "name" => "QT Demo USD",
-                    "symbol" => "qt_demo_usd"
-                ],
-                [
-                    "name" => "MT4 Demo USD",
-                    "symbol" => "mt4_demo_usd"
-                ],
-                [
-                    "name" => "MT4 Real USD",
-                    "symbol" => "mt4_real_usd"
-                ],
-                [
-                    "name" => "MT5 Demo USD",
-                    "symbol" => "mt5_demo_usd"
-                ],
-                [
-                    "name" => "MT5 Real USD",
-                    "symbol" => "mt5_real_usd"
-                ],
-                [
-                    "name" => "Shares Real USD",
-                    "symbol" => "sh_real_usd"
-                ],
-                [
-                    "name" => "Shares Demo USD",
-                    "symbol" => "sh_demo_usd"
-                ],
-            ];
+            $_wallets = $this->allowed_wallets();
 
             foreach ($_wallets as $k => $w) {
                 if (!$user->hasWallet($w['symbol'])) {
@@ -123,12 +90,53 @@ if (!function_exists('create_user_wallet')) {
     }
 }
 
+if (!function_exists('allowed_wallets')) {
+    function allowed_wallets()
+    {
+        return [
+            [
+                "name" => "QT Real USD",
+                "symbol" => "qt_real_usd"
+            ],
+            [
+                "name" => "QT Demo USD",
+                "symbol" => "qt_demo_usd"
+            ],
+            [
+                "name" => "MT4 Demo USD",
+                "symbol" => "mt4_demo_usd"
+            ],
+            [
+                "name" => "MT4 Real USD",
+                "symbol" => "mt4_real_usd"
+            ],
+            [
+                "name" => "MT5 Demo USD",
+                "symbol" => "mt5_demo_usd"
+            ],
+            [
+                "name" => "MT5 Real USD",
+                "symbol" => "mt5_real_usd"
+            ],
+            [
+                "name" => "Shares Real USD",
+                "symbol" => "sh_real_usd"
+            ],
+            [
+                "name" => "Shares Demo USD",
+                "symbol" => "sh_demo_usd"
+            ],
+        ];
+    }
+}
+
 if (!function_exists('checkMultipleTables')) {
 
     function checkMultipleTables(array $tableNames)
     {
         // Method 2: Using DB facade to check multiple tables
-        $existingTables = DB::select("
+        $existingTables = DB::select(
+            "
             SELECT table_name 
             FROM information_schema.tables 
             WHERE table_schema = ?
@@ -196,7 +204,6 @@ if (!function_exists('getWalletIdByCoinTicker')) {
             return (object)['wallet_id' => null];
         }
         return $wallet->wallet_id;
-
     }
 }
 
@@ -261,6 +268,38 @@ if (!function_exists('bitgoDepositAddress')) {
             Log::error("Error generating wallet address", ['error' => $e->getMessage()]);
             return ['error' => $e->getMessage()];
         }
+    }
+}
 
+
+if (!function_exists('debit_user')) {
+    function debit_user(string $wallet_slug, int|string $amount, string $description): bool
+    {
+        $user = auth()->user();
+        $wallet = $user->getWallet($wallet_slug);
+
+        if ($wallet) { // Ensure wallet exists before attempting withdrawal
+            if ($wallet->withdraw($amount, ["description" => $description])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+}
+
+if (!function_exists('credit_user')) {
+    function credit_user(string $wallet_slug, int|string $amount, string $description): bool
+    {
+        $user = auth()->user();
+        $wallet = $user->getWallet($wallet_slug);
+
+        if ($wallet) { // Ensure wallet exists before attempting deposit
+            if ($wallet->deposit($amount, ["description" => $description])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

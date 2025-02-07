@@ -22,7 +22,7 @@ class DepositController extends Controller
         if (empty($this->wallets)) {
             // then create the user wallets
             create_user_wallet();
-            var_dump($this->wallets);
+            // var_dump($this->wallets);
         }
     }
 

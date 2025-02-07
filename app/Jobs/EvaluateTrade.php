@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Tournament;
+use App\Models\User;
 use BinaryTrading\ExpressTrade\Models\Trade;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,6 +27,15 @@ class EvaluateTrade implements ShouldQueue
     {
         try {
             $trade = $this->trade;
+            $user = User::where('user_id', $trade->user_id)->first();
+            $percentage_profit = 0.9;
+
+            $profit_amount = ($percentage_profit / 100) * $trade->trade_amount;
+            $total = $trade->trade_amount + $profit_amount;
+
+
+
+            $site_mode = strtolower($trade->trade_wallet) ?? 'demo';
             $data = fetchPreChartData($trade->trade_currency, true);
             Log::info(json_encode($data));
             $finalPrice = $data ?? 0;
@@ -40,10 +50,16 @@ class EvaluateTrade implements ShouldQueue
             } else {
                 $trade->trade_status = 'lose';
             }
-            
+
 
             $trade->end_price = $finalPrice;
             $trade->save();
+
+            if ($trade->trade_status == 'win') {
+                // return the user trade with profit
+                credit_user("qt_{$site_mode}_usd", $total, "Successfully won trade ID {$trade->id}");
+            }
+
             event(new \App\Events\TradeUpdated($trade));
         } catch (\Throwable $th) {
             Log::info(json_encode($th));
