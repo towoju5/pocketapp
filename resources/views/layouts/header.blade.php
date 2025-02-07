@@ -513,7 +513,7 @@
                           aria-expanded="false">
                           <div class="w-8 h-8 rounded-full bg-[url(/img/mountains.jpg)] overflow-hidden">
                               <img
-                                  src="https://pocket-uploads.com/images/cabinet/no_avatar.png?v=1724660313&w=42"
+                                  src="//pocket-uploads.com/images/cabinet/no_avatar.png?v=1724660313&w=42"
                                   alt="User Avatar"
                                   class="bg-cover">
                           </div>
@@ -533,7 +533,7 @@
                                       <div class="relative">
                                           <div class="p-1 rounded-full bg-[#2a3148] border-4 border-green-500 justify-center items-center text-center overflow-hidden">
                                               <div class="rounded-full h-20 w-20 overflow-hidden">
-                                                  <img src="https://pocket-uploads.com/images/cabinet/no_avatar.png?v=1724660313&amp;w=100" alt="User Avatar" class="bg-cover">
+                                                  <img src="//pocket-uploads.com/images/cabinet/no_avatar.png?v=1724660313&amp;w=100" alt="User Avatar" class="bg-cover">
                                               </div>
                                           </div>
                                           <div class="absolute -top-1 -right-0 bg-[#2a3148] rounded-full">
