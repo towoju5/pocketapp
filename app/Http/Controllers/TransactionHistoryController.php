@@ -11,35 +11,34 @@ class TransactionHistoryController extends Controller
     {
         $current_user = auth()->user();
 
-    // Get the transactions associated with the current user
-    $transactions = $current_user->transactions();
+        // Get transactions as a query builder instance
+        $transactions = $current_user->transactions()->newQuery();
 
-    // Check if 'date-range' is provided
-    if ($request->has('date-range')) {
-        $dateRange = $request->input('date-range');
-        $dates = explode('-', $dateRange);
+        // Handle date range filtering
+        if ($request->filled('date-range')) {
+            $dates = explode('-', $request->input('date-range'));
 
-        // Validate and parse the dates
-        if (count($dates) === 2) {
-            try {
-                $dateFrom = Carbon::parse(trim($dates[0]))->startOfDay();
-                $dateTo = Carbon::parse(trim($dates[1]))->endOfDay();
+            if (count($dates) === 2) {
+                try {
+                    $dateFrom = Carbon::createFromFormat('Y-m-d', trim($dates[0]))->startOfDay();
+                    $dateTo = Carbon::createFromFormat('Y-m-d', trim($dates[1]))->endOfDay();
 
-                // Filter transactions within the date range
-                $transactions = $transactions->whereBetween('created_at', [$dateFrom, $dateTo]);
-            } catch (\Exception $e) {
-                // Handle invalid date format
-                return back()->withErrors(['date-range' => 'Invalid date range format.']);
+                    $transactions->whereBetween('created_at', [$dateFrom, $dateTo]);
+                } catch (\Exception $e) {
+                    return back()->withErrors(['date-range' => 'Invalid date range format.']);
+                }
+            } else {
+                return back()->withErrors(['date-range' => 'Invalid date range input.']);
             }
-        } else {
-            return back()->withErrors(['date-range' => 'Invalid date range input.']);
         }
-    }
 
-    // Paginate the transactions, sorted by the latest
-    $transactions = $transactions->latest()->paginate(10);
+        // Filter by transaction type if provided
+        if ($request->filled('type')) {
+            $transactions->where('transaction_type', $request->type);
+        }
 
-    // Return the view with transactions
-    return view('finance.history', compact('transactions'));
+        // Paginate results and return the view
+        $transactions = $transactions->latest()->paginate(10)->appends($request->query());
+        return view('finance.history', compact('transactions'));
     }
 }

@@ -44,6 +44,16 @@
         @endforeach
     </form>
 </div>
+                <!-- Navigation Buttons -->
+                <div class="flex justify-between mt-8">
+                    <button type="button" onclick="window.history.back()" class="bg-gray-500 hover:bg-gray-400 text-white font-bold py-2 px-6 rounded">
+                        Previous
+                    </button>
+
+                    <button type="button" id="submitBtn" class="bg-green-500 hover:bg-green-400 text-white font-bold py-2 px-6 rounded">
+                        Submit
+                    </button>
+                </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {

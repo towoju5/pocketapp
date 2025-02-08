@@ -158,7 +158,7 @@
 				<span></span>
 			</a>
 
-			<a href="{{ route('dashboard') }}"  class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('dashboard.demo') }}"  class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->

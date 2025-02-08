@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('kyc_level')->default("0");
             $table->string('trade_level')->default("beginner");
             $table->enum('trade_wallet', ['demo', 'real']);
+            $table->string('active_wallet_slug')->default('qt_demo_usd');
             $table->json('config')->nullable();
             $table->rememberToken();
             $table->timestamps();

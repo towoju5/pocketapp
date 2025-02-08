@@ -22,6 +22,7 @@ Route::get('/', function () {
 
 
 Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('dashboard/demo/{coin?}', [HomeController::class, 'demo'])->middleware(['auth', 'verified'])->name('dashboard.demo');
 
 // Route::get('dashboard-2', function () {
 //     return view('dash');

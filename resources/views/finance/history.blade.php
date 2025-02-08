@@ -9,13 +9,10 @@
                     <h2 class="text-lg font-semibold mb-4">Balance History</h2>
                     <div class="flex flex-wrap items-center justify-between mb-4">
                         <div class="flex gap-2">
-                            <button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">Deposits</button>
-                            <button
-                                class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">Withdrawal</button>
-                            <button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">Internal
-                                Transfers</button>
-                            <button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">All
-                                Types</button>
+                            <a href="{{ url()->current() }}?type=deposit"><button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">Deposits</button></a>
+                            <a href="{{ url()->current() }}?type=payout"><button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">Withdrawal</button></a>
+                            <a href="{{ url()->current() }}?type=deposit"><button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">Internal Transfers</button></a>
+                            <a href="{{ route('finance.history') }}"><button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">All Types</button></a>
                         </div>
                         <div class="flex items-center gap-2">
                             <input type="text" name="daterange"

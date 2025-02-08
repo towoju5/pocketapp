@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Bitgo;
 use App\Models\Option;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
 
@@ -23,31 +24,32 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (tableExists('options')) {
+        // Check if the options table exists before querying
+        if (Schema::hasTable('options')) {
             $u_option = [];
             $options = Option::where("autoload", "yes")->get();
             foreach ($options as $option) {
-                $u_option[] = [$option->option_name => $option->option_value];
+                $u_option[$option->option_name] = $option->option_value;
             }
 
-            // Share user wallets with all views
-            View::composer('*', function ($view) use(&$u_option) {
+            // Share data with all views
+            View::composer('*', function ($view) use ($u_option) {
+                $wallet_balance = ["balance" => 0]; // Default wallet balance
+
                 if (Auth::check()) {
                     $user = Auth::user();
-                    $uwallets = [
-                        'all_wallets' => $user->wallets,
-                        'main_wallets' => $user->wallets()->where('description', 'main')->first(),
-                        'forex_mt4_wallets' => $user->wallets()->where('description', 'forex_mt4')->first(),
-                        'forex_mt5_wallets' => $user->wallets()->where('description', 'forex_mt5')->first(),
-                        'shares_trading_wallets' => $user->wallets()->where('description', 'shares_trading')->first(),
-                        // 'active_wallet' => $user->wallets()->where('currently_active', true)->first(),
-                        'live_wallets' => $user->wallets()->where('description', 'live')->get(),
-                        'test_wallets' => $user->wallets()->where('description', 'test')->get()
-                    ];
+
+                    $uwallets = $user->wallets();
+
+                    // Fetch user's wallet balance
+                    $wallet_balance = $user->getWallet($user->active_wallet_slug ?? 'qt_demo_usd') ?? ["balance" => 0];
 
                     $view->with('uwallets', $uwallets);
-                    $view->with('u_option', $u_option);
+                    $view->with('wallet_balance', $wallet_balance);
                 }
+
+                // Share options regardless of authentication
+                $view->with('u_option', $u_option);
             });
         }
     }
