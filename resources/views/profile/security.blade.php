@@ -2,7 +2,7 @@
 
 @section('title', 'Security - Polaris Option')
 @section('content')
-<div class="container py-4 mx-4">
+<div class="m-4 py-4" style="margin: 1rem">
     @include('partials.profile')
 
     <div class="grid lg:grid-cols-2 gap-4">

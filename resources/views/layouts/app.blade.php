@@ -101,6 +101,26 @@
                 max-width: 100vw;
             }
         }
+
+        .panel-heading {
+            display: -webkit-box;
+            display: flex;
+            -webkit-box-align: center;
+            align-items: center;
+            -webkit-box-pack: justify;
+            border-top-left-radius: var(10px);
+            border-top-right-radius: var(10px);
+            justify-content: space-between;
+            background-color: #20273f;
+            color: #7e91a7;
+        }
+        
+        .panel-title {
+            margin-top: 0;
+            margin-bottom: 0;
+            font-size: 16px;
+            color: inherit;
+        }
     </style>
     @stack('css')
 
@@ -175,8 +195,8 @@
 
         // Animate to 80%
         circle.animate(0.6);
- 
- 
+
+
         // Get all navigation items
         const navItems = document.querySelectorAll('.nav-item');
         const contentTitle = document.getElementById('contentTitle');
@@ -191,7 +211,7 @@
                 contentText.textContent = `Testing: ${text}`;
             });
         });
-  
+
         function toggleDropdown(id) {
             const content = document.getElementById(id);
             const arrow = document.getElementById(`arrow-${id}`);
