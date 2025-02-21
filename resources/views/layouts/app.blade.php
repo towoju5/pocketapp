@@ -17,7 +17,7 @@
             transform: rotate(180deg);
         }
         html {
-            font-size: 12px !important;
+            font-size: 13px !important;
             -webkit-tap-highlight-color: transparent;
         }
     </style>
@@ -25,10 +25,10 @@
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <!-- TradingView Widget Script -->
-    <!-- <script type="text/javascript" src="//s3.tradingview.com/tv.js"></script> -->
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
+    <script src="//unpkg.com/lightweight-charts@3.8.0/dist/lightweight-charts.standalone.production.js"></script>
     <style>
         #menuPanel {
             position: fixed;
@@ -189,9 +189,12 @@
     </script>
     <!-- Custom JS files -->
     <script src="{{ asset('assets/js/custom.js') }}"></script>
-    <script src="//s3.tradingview.com/tv.js"></script>
+    <!-- <script src="//s3.tradingview.com/tv.js"></script> -->
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    
+    @stack('js')
+    
     <script>
         $(document).ready(function() {
             // input mask for time.
@@ -210,8 +213,6 @@
             );
         });
     </script>
-
-
 
     <script>
         // Initialize progress circle
@@ -392,7 +393,6 @@
         document.addEventListener('DOMContentLoaded', fetchIPData);
     </script>
 
-    @stack('js')
 </body>
 
 </html>
