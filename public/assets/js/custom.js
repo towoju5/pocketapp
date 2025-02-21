@@ -29,6 +29,40 @@
 //     });
 // };
 
+
+$(document).ready(function () {
+    function activateTab(activeTab, inactiveTab, activeContent, inactiveContent) {
+        // Show the active content, hide the inactive one
+        $(activeContent).removeClass("hidden");
+        $(inactiveContent).addClass("hidden");
+
+        // Update tab styles
+        $(activeTab).addClass("active-tab text-gray-200 bg-[#1e2131]")
+                    .removeClass("text-gray-500 bg-[#272b3c]");
+        $(inactiveTab).removeClass("active-tab text-gray-200 bg-[#1e2131]")
+                      .addClass("text-gray-500 bg-[#272b3c]");
+
+        // Ensure blue bottom border is only on the active tab
+        $(activeTab).find(".tab-indicator").removeClass("hidden");
+        $(inactiveTab).find(".tab-indicator").addClass("hidden");
+    }
+
+    // Click event for Opened tab
+    $("#openTab").click(function () {
+        activateTab("#openTab", "#closedTab", "#openTrades", "#closedTrades");
+    });
+
+    // Click event for Closed tab
+    $("#closedTab").click(function () {
+        activateTab("#closedTab", "#openTab", "#closedTrades", "#openTrades");
+    });
+
+    // Set the default active tab on page load
+    activateTab("#openTab", "#closedTab", "#openTrades", "#closedTrades");
+});
+
+
+
 // handle trade form submission.
 document.addEventListener("DOMContentLoaded", function () {
     const tradeForm = document.getElementById("tradeForm");
@@ -110,83 +144,4 @@ document.addEventListener("DOMContentLoaded", function () {
 // stock dropdown
 document.getElementById("assetBtn").addEventListener("click", function () {
     document.getElementById("assetDropDown").classList.toggle("hidden");
-});
-
-// Stock Data
-const stocks = [
-    { name: "Apple OTC", payout: "+92%", category: "tech" },
-    { name: "American Express OTC", payout: "+92%", category: "finance" },
-    { name: "Boeing Company OTC", payout: "+92%", category: "tech" },
-    { name: "Facebook INC OTC", payout: "+92%", category: "tech" },
-    { name: "Intel OTC", payout: "+92%", category: "tech" },
-    { name: "Microsoft OTC", payout: "+92%", category: "tech" },
-    { name: "Tesla OTC", payout: "+92%", category: "tech" },
-    { name: "Amazon OTC", payout: "+92%", category: "retail" },
-    { name: "Netflix OTC", payout: "+88%", category: "retail" },
-    { name: "Twitter OTC", payout: "+85%", category: "tech" },
-    { name: "Johnson & Johnson OTC", payout: "+83%", category: "finance" },
-];
-
-// Load stocks
-function loadStocks(filter = "all") {
-    const stockList = document.getElementById("stockList");
-    stockList.innerHTML = "";
-    stocks.forEach((stock) => {
-        if (filter === "all" || stock.category === filter) {
-            const li = document.createElement("li");
-            li.className =
-                "p-2 flex justify-between hover:bg-gray-700 cursor-pointer";
-            li.innerHTML = `<span>${stock.name}</span> <span class="text-green-400">${stock.payout}</span>`;
-            li.onclick = function () {
-                document.getElementById("selectedAsset").innerText = stock.name;
-                document
-                    .getElementById("assetDropDown")
-                    .classList.add("hidden");
-            };
-            stockList.appendChild(li);
-        }
-    });
-}
-
-loadStocks();
-
-// Filter Stocks
-function filterStocks(category) {
-    loadStocks(category);
-}
-
-// Search Functionality
-document.getElementById("searchBar").addEventListener("keyup", function () {
-    const searchValue = this.value.toLowerCase();
-    const stockItems = document.querySelectorAll("#stockList li");
-    stockItems.forEach((item) => {
-        item.style.display = item.textContent
-            .toLowerCase()
-            .includes(searchValue)
-            ? "flex"
-            : "none";
-    });
-});
-
-// Close Dropdown on Outside Click
-document.addEventListener("click", function (event) {
-    if (
-        !document.getElementById("assetBtn").contains(event.target) &&
-        !document.getElementById("assetDropDown").contains(event.target)
-    ) {
-        document.getElementById("assetDropDown").classList.add("hidden");
-    }
-});
-
-// stock dropdown
-document.getElementById("chartTpyeBtn").addEventListener("click", function () {
-    document.getElementById("chartTpyeDropDown").classList.toggle("hidden");
-});
-document.addEventListener("click", function (event) {
-    if (
-        !document.getElementById("chartTpyeBtn").contains(event.target) &&
-        !document.getElementById("chartTpyeDropDown").contains(event.target)
-    ) {
-        document.getElementById("chartTpyeDropDown").classList.add("hidden");
-    }
 });

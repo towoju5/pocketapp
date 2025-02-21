@@ -348,21 +348,22 @@
 
         <!-- Tabs -->
         <div class="flex border-b border-[#2a3142] w-full">
-            <button id="openTab" class="trade-open-close relative py-2 text-gray-200 bg-[#1e2131] font-thin text-sm w-6/12 active-tab">
+            <button id="openTab" class="trade-open-close relative py-2 text-gray-200 bg-[#1e2131] font-thin text-sm w-6/12">
                 Opened
                 <div class="tab-indicator absolute bottom-0 left-0 w-full h-0.5 bg-blue-500"></div>
             </button>
             <button id="closedTab" class="trade-open-close py-2 text-gray-500 bg-[#272b3c] font-thin text-sm w-6/12">
                 Closed
+                <div class="tab-indicator absolute bottom-0 left-0 w-full h-0.5 bg-blue-500"></div>
             </button>
         </div>
 
         <!-- Trade Containers -->
-        <div id="openTrades" class="flex justify-center items-center mt-16">
+        <div id="openTrades" class="flex justify-center items-center mt-16 trade_list-page">
             <p class="text-gray-500">Open Trade Container</p>
         </div>
 
-        <div id="closedTrades" class="flex justify-center items-center mt-16 hidden">
+        <div id="closedTrades" class="flex justify-center items-center mt-16 hidden trade_list-page">
             <p class="text-gray-500">Closed Trade Container</p>
         </div>
     </div>
@@ -370,7 +371,53 @@
     <div id="rightSignals">
         <div class="p-4 text-white">
             <h2 class="text-2xl font-bold mb-4">Trading Signals</h2>
-            <p>Access real-time trading signals and market indicators.</p>
+            <div class="w-full mt-3">
+                <div class="bg-gray-800 p-4 mb-3 rounded-lg flex items-center justify-between relative">
+                    <div class="flex-grow">
+                        <h3 class="text-lg">AUD/CHF OTC</h3>
+                        <p class="text-gray-400 text-sm">$1</p>
+                        <p class="text-gray-400 text-sm">Copied: 62 times</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="text-green-500 text-lg">⬆⬆</div>
+                        <div class="w-24 h-1.5 bg-gray-700 rounded-full mt-1 relative">
+                            <div class="bg-blue-500 h-full w-1/2 rounded-full"></div>
+                        </div>
+                        <button class="bg-green-600 hover:bg-green-700 text-white py-1 px-3 rounded mt-2 text-sm">Copy signal</button>
+                    </div>
+                    <div class="absolute top-4 right-4 text-sm">07:33</div>
+                </div>
+                <div class="bg-gray-800 p-4 mb-3 rounded-lg flex items-center justify-between relative">
+                    <div class="flex-grow">
+                        <h3 class="text-lg">AUD/CHF OTC</h3>
+                        <p class="text-gray-400 text-sm">$1</p>
+                        <p class="text-gray-400 text-sm">Copied: 62 times</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="text-red-500 text-lg">⬇⬇</div>
+                        <div class="w-24 h-1.5 bg-gray-700 rounded-full mt-1 relative">
+                            <div class="bg-blue-500 h-full w-2/5 rounded-full"></div>
+                        </div>
+                        <button class="bg-green-600 hover:bg-green-700 text-white py-1 px-3 rounded mt-2 text-sm">Copy signal</button>
+                    </div>
+                    <div class="absolute top-4 right-4 text-sm">02:03</div>
+                </div>
+                <div class="bg-gray-800 p-4 mb-3 rounded-lg flex items-center justify-between relative">
+                    <div class="flex-grow">
+                        <h3 class="text-lg">AUD/CHF OTC</h3>
+                        <p class="text-gray-400 text-sm">$1</p>
+                        <p class="text-gray-400 text-sm">Copied: 71 times</p>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="text-green-500 text-lg">⬆⬆</div>
+                        <div class="w-24 h-1.5 bg-gray-700 rounded-full mt-1 relative">
+                            <div class="bg-blue-500 h-full w-3/10 rounded-full"></div>
+                        </div>
+                        <button class="bg-green-600 hover:bg-green-700 text-white py-1 px-3 rounded mt-2 text-sm">Copy signal</button>
+                    </div>
+                    <div class="absolute top-4 right-4 text-sm">12:03</div>
+                </div>
+            </div>
         </div>
     </div>
     <div id="rightSocialTrading">
@@ -404,230 +451,91 @@
         </div>
     </div>
 </div>
-
 @endsection
 
 
 @push('js')
+
 <script>
-    const canvas = document.getElementById('tradingChart');
-    const ctx = canvas.getContext('2d');
-    const loader = document.getElementById('loader');
-
-    let data = [];
+    const websocketUrl = "wss://green.derivws.com/websockets/v3?app_id=16929&l=EN&brand=deriv";
+    let ws;
+    let chart;
+    let series;
     let chartType = "area";
-    let isInitialDataLoaded = false;
 
-    // Function to change chart type dynamically
-    function changeChartType(chart_type) {
-        $(".chart-type-selector").removeClass('active')
-        $(`.${chart_type}-selector`).addClass('active')
-        chartType = chart_type;
-        drawChart();
-    }
-
-    // Resize Canvas
-    function resizeCanvas() {
-        const rect = canvas.parentElement.getBoundingClientRect();
-        canvas.width = rect.width * window.devicePixelRatio;
-        canvas.height = rect.height * window.devicePixelRatio;
-        ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-        canvas.style.width = '100%';
-        canvas.style.height = '100%';
-    }
-
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    // Heikin Ashi Calculation
-    function calculateHeikinAshi(data) {
-        if (data.length < 2) return [];
-
-        let haData = [];
-        let prev = {
-            open: data[0].open,
-            close: data[0].close,
-            high: data[0].high,
-            low: data[0].low
-        };
-
-        data.forEach((candle, i) => {
-            let haClose = (candle.open + candle.high + candle.low + candle.close) / 4;
-            let haOpen = (prev.open + prev.close) / 2;
-            let haHigh = Math.max(candle.high, haOpen, haClose);
-            let haLow = Math.min(candle.low, haOpen, haClose);
-
-            haData.push({
-                open: haOpen,
-                close: haClose,
-                high: haHigh,
-                low: haLow
-            });
-            prev = haData[i];
+    function initChart() {
+        chart = LightweightCharts.createChart(document.getElementById("chart-container"), {
+            width: 800,
+            height: 400,
+            layout: { backgroundColor: "#fff", textColor: "#000" },
+            grid: { vertLines: { visible: false }, horzLines: { visible: false } },
         });
 
-        return haData;
+        createSeries(chartType);
     }
 
-    // Drawing the Chart
-    function drawChart() {
-        if (!isInitialDataLoaded) return; // Don't draw until initial data is ready
+    function createSeries(type) {
+        if (series) chart.removeSeries(series);
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (data.length < 2) return;
+        const seriesTypes = {
+            candlestick: chart.addCandlestickSeries(),
+            line: chart.addLineSeries(),
+            bar: chart.addBarSeries(),
+            area: chart.addAreaSeries(),
+            baseline: chart.addBaselineSeries(),
+            histogram: chart.addHistogramSeries()
+        };
 
-        const xStep = canvas.width / data.length;
-        const minPrice = Math.min(...data.map(d => d.low));
-        const maxPrice = Math.max(...data.map(d => d.high));
-        const priceRange = maxPrice - minPrice;
-        const yScale = canvas.height / priceRange;
-
-        if (chartType === "area") {
-            ctx.fillStyle = "rgba(59, 130, 246, 0.3)";
-            ctx.strokeStyle = "#3b82f6";
-            ctx.lineWidth = 2;
-            ctx.beginPath();
-
-            data.forEach((point, i) => {
-                const x = i * xStep;
-                const y = canvas.height - ((point.close - minPrice) * yScale);
-                if (i === 0) ctx.moveTo(x, y);
-                else ctx.lineTo(x, y);
-            });
-
-            ctx.stroke();
-            ctx.lineTo(canvas.width, canvas.height);
-            ctx.lineTo(0, canvas.height);
-            ctx.fill();
-        } else if (chartType === "bars" || chartType === "candles" || chartType === "heikin") {
-            const candleWidth = xStep * 0.8; // Increase candle width for better visibility
-            const dataToPlot = chartType === "heikin" ? calculateHeikinAshi(data) : data;
-
-            dataToPlot.forEach((point, i) => {
-                const x = i * xStep;
-                const yOpen = canvas.height - ((point.open - minPrice) * yScale);
-                const yClose = canvas.height - ((point.close - minPrice) * yScale);
-                const yHigh = canvas.height - ((point.high - minPrice) * yScale);
-                const yLow = canvas.height - ((point.low - minPrice) * yScale);
-
-                ctx.strokeStyle = point.close >= point.open ? "#16a34a" : "#dc2626";
-                ctx.fillStyle = ctx.strokeStyle;
-                ctx.lineWidth = 2;
-
-                if (chartType === "bars") {
-                    ctx.beginPath();
-                    ctx.moveTo(x, yHigh);
-                    ctx.lineTo(x, yLow);
-                    ctx.stroke();
-
-                    ctx.beginPath();
-                    ctx.moveTo(x - candleWidth / 2, yOpen);
-                    ctx.lineTo(x, yOpen);
-                    ctx.stroke();
-
-                    ctx.beginPath();
-                    ctx.moveTo(x, yClose);
-                    ctx.lineTo(x + candleWidth / 2, yClose);
-                    ctx.stroke();
-                } else if (chartType === "candles" || chartType === "heikin") {
-                    ctx.beginPath();
-                    ctx.moveTo(x, yHigh);
-                    ctx.lineTo(x, yLow);
-                    ctx.stroke();
-
-                    ctx.fillRect(x - candleWidth / 2, Math.min(yOpen, yClose), candleWidth, Math.abs(yOpen - yClose));
-                    ctx.strokeRect(x - candleWidth / 2, Math.min(yOpen, yClose), candleWidth, Math.abs(yOpen - yClose));
-                }
-            });
-        }
+        series = seriesTypes[type] || seriesTypes.candlestick;
+        fetchHistoricalData();
     }
 
-    // Fetch Initial Data
-    const fetchInitialData = async () => {
-        loader.style.display = "block"; // Show loader
+    function fetchHistoricalData() {
+        ws = new WebSocket(websocketUrl);
 
-        try {
-            let candleUrl = "{{ url('api/stream/chart/' . $__coin) }}";
-            const response = await fetch(candleUrl);
-            const candles = await response.json();
+        ws.onopen = () => {
+            console.log("Connected to WebSocket");
+            const request = {
+                ticks_history: "frxEURAUD",
+                adjust_start_time: 1,
+                count: 1000,
+                end: "latest",
+                style: "ticks",
+                subscribe: 1
+            };
+            ws.send(JSON.stringify(request));
+        };
 
-            if (Array.isArray(candles)) {
-                data = candles.map(candle => ({
-                    time: new Date(candle.ts * 1000),
-                    open: candle.o || candle.c,
-                    high: candle.h || candle.c,
-                    low: candle.l || candle.c,
-                    close: candle.c
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            if (data.msg_type === "history") {
+                const chartData = data.history.times.map((time, i) => ({
+                    time: time,
+                    value: data.history.prices[i],
                 }));
-
-                if (data.length > 300) data = data.slice(-300); // Keep last 300 points
-                isInitialDataLoaded = true;
-                drawChart();
-            } else {
-                console.error('Unexpected response format:', candles);
+                if (series) series.setData(chartData);
             }
-        } catch (error) {
-            console.error('Error fetching initial data:', error);
-        } finally {
-            loader.style.display = "none"; // Hide loader after data is loaded
-        }
-    };
+            if (data.msg_type === "tick") {
+                const newTick = {
+                    time: data.tick.epoch,
+                    value: data.tick.quote
+                };
+                if (series) series.update(newTick);
+            }
+        };
 
-    // WebSocket Real-time Updates
-    const websocketUrl = "wss://ws-plus.olymptrade.com/connect";
-    const socket = new WebSocket(websocketUrl);
+        ws.onclose = () => {
+            console.log("WebSocket closed. Reconnecting...");
+            setTimeout(fetchHistoricalData, 3000);
+        };
+    }
 
-    socket.onopen = () => {
-        console.log('WebSocket connected');
-        const subscriptionMessage = JSON.stringify([{
-            "e": 10,
-            "t": 2,
-            "d": {
-                "pairs": ["{{ $__coin }}"],
-                "chart_tfs": [3600, 86400],
-                "with_forecast": true
-            },
-            "uuid": "1"
-        }]);
-        socket.send(subscriptionMessage);
-    };
+    function setChartType(type) {
+        chartType = type;
+        createSeries(type);
+    }
 
-    socket.onmessage = (event) => {
-        if (!isInitialDataLoaded) return; // Don't process WebSocket updates until initial data is loaded
-
-        try {
-            const message = JSON.parse(event.data);
-
-            message.forEach(item => {
-                if (item.d && Array.isArray(item.d) && item.d.length > 0) {
-                    const pairData = item.d[0];
-
-                    if (pairData.pair && pairData.rate) {
-                        const newPoint = {
-                            time: new Date(),
-                            open: pairData.rate,
-                            high: pairData.rate,
-                            low: pairData.rate,
-                            close: pairData.rate
-                        };
-
-                        data.push(newPoint);
-                        if (data.length > 300) data.shift(); // Keep only 300 points
-                        drawChart();
-                    }
-                }
-            });
-
-        } catch (error) {
-            console.error('Error processing WebSocket message:', error);
-        }
-    };
-
-    socket.onclose = () => console.log('WebSocket disconnected');
-    socket.onerror = (error) => console.error('WebSocket error:', error);
-
-    // Fetch initial data
-    fetchInitialData();
+    initChart();
 </script>
 @endpush
 
@@ -729,6 +637,202 @@
 
     .toggle.active::before {
         left: 18px;
+    }
+
+
+
+    /* // scss to css */
+    .right-widget-container .signals-list,
+    .right-sidebar-modal .signals-list {
+        --second-column-width: 130px;
+        --gap: 2px;
+        display: block;
+        flex-direction: column;
+        overflow: hidden;
+        width: 100%;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item,
+    .right-sidebar-modal .signals-list .copy-signal-item {
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+        margin-left: calc(-1 * var(--gap));
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item>*,
+    .right-sidebar-modal .signals-list .copy-signal-item>* {
+        margin-left: var(--gap);
+    }
+
+    .right-widget-container .signals-list .copy-signal-item__row,
+    .right-sidebar-modal .signals-list .copy-signal-item__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-left: -10px;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item__row>*,
+    .right-sidebar-modal .signals-list .copy-signal-item__row>* {
+        margin-left: 10px;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item .progress-info,
+    .right-sidebar-modal .signals-list .copy-signal-item .progress-info {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 128px;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item .progress-info .progress,
+    .right-sidebar-modal .signals-list .copy-signal-item .progress-info .progress {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        overflow: hidden;
+        margin: auto;
+        width: 100%;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item .icons-column,
+    .right-sidebar-modal .signals-list .copy-signal-item .icons-column {
+        width: 20px;
+        white-space: nowrap;
+        text-align: center;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item .icons-column--three,
+    .right-sidebar-modal .signals-list .copy-signal-item .icons-column--three {
+        width: 30px;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item .icons-column--four,
+    .right-sidebar-modal .signals-list .copy-signal-item .icons-column--four {
+        width: 36px;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item__symbol,
+    .right-sidebar-modal .signals-list .copy-signal-item__symbol {
+        flex: 1;
+        white-space: nowrap;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item__symbol .price,
+    .right-sidebar-modal .signals-list .copy-signal-item__symbol .price {
+        white-space: nowrap;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item__symbol.pointer,
+    .right-sidebar-modal .signals-list .copy-signal-item__symbol.pointer {
+        cursor: pointer;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item__price,
+    .right-sidebar-modal .signals-list .copy-signal-item__price {
+        flex: 1;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item__progress,
+    .right-sidebar-modal .signals-list .copy-signal-item__progress {
+        display: flex;
+        width: var(--second-column-width);
+    }
+
+    .right-widget-container .signals-list .copy-signal-item__progress>*,
+    .right-sidebar-modal .signals-list .copy-signal-item__progress>* {
+        margin-left: 10px;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item__progress>*:first-child,
+    .right-sidebar-modal .signals-list .copy-signal-item__progress>*:first-child {
+        margin-left: 0;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item__progress .trade-opened,
+    .right-sidebar-modal .signals-list .copy-signal-item__progress .trade-opened {
+        margin-top: -2px;
+        width: 100%;
+        font-size: 12px;
+        text-align: center;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item__action,
+    .right-sidebar-modal .signals-list .copy-signal-item__action {
+        width: var(--second-column-width);
+    }
+
+    .right-widget-container .signals-list .copy-signal-item__action a,
+    .right-sidebar-modal .signals-list .copy-signal-item__action a {
+        padding: 1px 6px 2px;
+        width: 100%;
+        font-size: 12px;
+        color: #fff;
+    }
+
+    .theme-dark-blue .right-widget-container .signals-list .copy-signal-item__action a,
+    .theme-dark-blue .right-sidebar-modal .signals-list .copy-signal-item__action a {
+        border-color: #025b44;
+        background-color: #025b44;
+    }
+
+    .theme-light .right-widget-container .signals-list .copy-signal-item__action a,
+    .theme-light .right-sidebar-modal .signals-list .copy-signal-item__action a {
+        background-color: #5cb85c;
+    }
+
+    .theme-light .right-widget-container .signals-list .copy-signal-item__action a:hover,
+    .theme-light .right-sidebar-modal .signals-list .copy-signal-item__action a:hover {
+        background-color: #449d44;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item__stats,
+    .right-sidebar-modal .signals-list .copy-signal-item__stats {
+        justify-content: space-between;
+        font-size: 11px;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item .tooltip-content,
+    .right-sidebar-modal .signals-list .copy-signal-item .tooltip-content {
+        left: -70px;
+        padding: 3px 6px;
+    }
+
+    .right-widget-container .signals-list .copy-signal-item .tooltip-content .tooltip-text,
+    .right-sidebar-modal .signals-list .copy-signal-item .tooltip-content .tooltip-text {
+        font-size: 12px;
+    }
+
+    .right-widget-container .signals-list .signal-label,
+    .right-sidebar-modal .signals-list .signal-label {
+        min-height: 32px;
+        font-size: 11px;
+    }
+
+    .right-widget-container .signals-list .signal-item,
+    .right-sidebar-modal .signals-list .signal-item {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .right-widget-container .signals-list .signal-item>span,
+    .right-sidebar-modal .signals-list .signal-item>span {
+        padding: 7px;
+    }
+
+    .right-widget-container .signals-list .signal-item>span.price,
+    .right-sidebar-modal .signals-list .signal-item>span.price {
+        margin-right: 10px;
+    }
+
+    .right-widget-container .signals-list .updates-wrapper,
+    .right-widget-container .signals-list .all-wrapper,
+    .right-sidebar-modal .signals-list .updates-wrapper,
+    .right-sidebar-modal .signals-list .all-wrapper {
+        display: block;
     }
 </style>
 @endpush

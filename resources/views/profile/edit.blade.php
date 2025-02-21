@@ -2,7 +2,7 @@
 
 @section('title', 'Profile')
 @section('content')
-    <div class="m-4 py-4" style="margin: 1rem">
+    <div class="m-4 ml-2 container py-4" style="margin: 1rem">
         @include('partials.profile')
         <div class="panel box-border personal-info-panel mb-3">
             <div class="panel-heading">

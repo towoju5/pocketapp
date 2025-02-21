@@ -31,9 +31,9 @@ class TradeController extends Controller
         ]);
 
         $user = auth()->user();
-        if(!debit_user($user->trade_wallet, $request->amount, "Binary Trade Order")) {
-            return response()->json(['errors' => "Insufficient wallet balance"], 402);
-        }
+        // if(!debit_user($user->trade_wallet, $request->amount, "Binary Trade Order")) {
+        //     return response()->json(['errors' => "Insufficient wallet balance"], 402);
+        // }
 
         if ($validated->fails()) {
             return response()->json(['errors' => $validated->errors()], 422);
@@ -80,7 +80,7 @@ class TradeController extends Controller
             'status' => true, 
             'message' => 'Trade placed successfully!', 
             'trade' => $trade,
-            'html' => view("mini-pages.trade-list")
+            'html' => view("mini-pages.trade-list", compact('trade'))->render()
         ]);
     }
 

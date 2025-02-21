@@ -16,6 +16,10 @@
         .rotate-180 {
             transform: rotate(180deg);
         }
+        html {
+            font-size: 12px !important;
+            -webkit-tap-highlight-color: transparent;
+        }
     </style>
 
     <!-- Scripts -->
@@ -43,7 +47,7 @@
 
         body {
             overflow-x: hidden;
-            background-image: url(<?= asset('assets/images/bg.jpg') ?>)
+            background-image: url(<?php echo asset('assets/images/bg.jpg') ?>)
         }
 
         /* Custom menu styling */
@@ -114,7 +118,7 @@
             background-color: #20273f;
             color: #7e91a7;
         }
-        
+
         .panel-title {
             margin-top: 0;
             margin-bottom: 0;
@@ -123,7 +127,9 @@
         }
     </style>
     @stack('css')
-
+    <!-- <link rel="stylesheet" href="{{ asset('theme/main.css') }}"> -->
+    <!-- <link rel="stylesheet" href="{{ asset('theme/desktop.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('theme/desktop.theme-dark-blue.min.css') }}"> -->
 </head>
 
 <body style="overflow: auto;">
@@ -142,8 +148,45 @@
     </form>
 
 
+
+
+
     <!-- Include jQuery -->
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            $("#openTab").click(function () {
+                // Show Open Trades, Hide Closed Trades
+                $("#openTrades").removeClass("hidden");
+                $("#closedTrades").addClass("hidden");
+
+                // Update active/inactive tab styles
+                $("#openTab").addClass("text-gray-200 bg-[#1e2131]").removeClass("text-gray-500 bg-[#272b3c]");
+                $("#closedTab").addClass("text-gray-500 bg-[#272b3c]").removeClass("text-gray-200 bg-[#1e2131]");
+
+                // Ensure blue bottom border is only on the active tab
+                $("#openTab .tab-indicator").removeClass("hidden");
+                $("#closedTab .tab-indicator").addClass("hidden");
+            });
+
+            $("#closedTab").click(function () {
+                // Show Closed Trades, Hide Open Trades
+                $("#closedTrades").removeClass("hidden");
+                $("#openTrades").addClass("hidden");
+
+                // Update active/inactive tab styles
+                $("#closedTab").addClass("text-gray-200 bg-[#1e2131]").removeClass("text-gray-500 bg-[#272b3c]");
+                $("#openTab").addClass("text-gray-500 bg-[#272b3c]").removeClass("text-gray-200 bg-[#1e2131]");
+
+                // Ensure blue bottom border is only on the active tab
+                $("#closedTab .tab-indicator").removeClass("hidden");
+                $("#openTab .tab-indicator").addClass("hidden");
+            });
+
+            // Set the default active tab on page load
+            $("#openTab").trigger("click");
+        });
+    </script>
     <!-- Custom JS files -->
     <script src="{{ asset('assets/js/custom.js') }}"></script>
     <script src="//s3.tradingview.com/tv.js"></script>

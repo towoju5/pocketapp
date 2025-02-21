@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('trade_amount');
             $table->string('trade_close_time');
             $table->string('end_price')->nullable();
+            $table->string('trade_wallet')->nullable();
             $table->string('start_price');
             $table->string('trade_profit')->default(0);
             $table->json('trade_extra_info')->nullable();

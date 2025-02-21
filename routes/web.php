@@ -16,6 +16,7 @@ use App\Http\Controllers\TradeController;
 use Illuminate\Support\Facades\Http;
 
 Route::get('/', function () {
+    // return response()->json(get_assets());
     // return auth()->user()->authentications;
     return view('act_welcome');
 });
