@@ -264,7 +264,7 @@
 
 <!-- trades -->
 <!-- Main Content Area -->
-<div class="min-h-screen bg-[#222636] w-[25%] ml-auto" id="mainContent">
+<div class="min-h-screen bg-[#222636] w-[20%] ml-auto" id="mainContent">
     <div class="text-white">Select a section from the sidebar.</div>
 </div>
 
@@ -1263,7 +1263,7 @@
       console.log("Connected to WebSocket");
       // Request candle data instead of ticks
       const request = {
-        ticks_history: "cryBTCUSD",
+        ticks_history: "JD10",
         adjust_start_time: 1,
         count: 1000,
         end: "latest",
