@@ -289,7 +289,7 @@
                     } else {
                         // Show content
                         contentArea.style.display = "block";
-                        contentArea.innerHTML = sectionContent ? sectionContent.innerHTML : "<div class='p-4 text-white'>Content Not Found</div>";
+                        contentArea.innerHTML = sectionContent ? sectionContent.innerHTML : "<div class='p-1 text-white'>Content Not Found</div>";
                         activeSection = sectionId;
 
                         // Remove active styles from all links
@@ -327,7 +327,7 @@
                     } else {
                         // Show content
                         mainContent.style.display = "block";
-                        mainContent.innerHTML = sectionContent ? sectionContent.innerHTML : "<div class='p-4 text-white'>Content Not Found</div>";
+                        mainContent.innerHTML = sectionContent ? sectionContent.innerHTML : "<div class='p-1 text-white'>Content Not Found</div>";
                         activeSection = sectionId;
 
                         // Remove active styles from all links

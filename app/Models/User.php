@@ -84,6 +84,11 @@ class User extends Authenticatable
         return $this->hasMany(Trade::class, "user_id");
     }
 
+    public function trades()
+    {
+        return $this->hasMany(Trade::class, "user_id");
+    }
+
     public function transaction_history()
     {
         return $this->hasMany(TransactionHistory::class, "user_id");

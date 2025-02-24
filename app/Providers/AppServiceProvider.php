@@ -24,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        $social_trades = social_trades();
+        View::composer('*', compact('social_trades'));
         // Check if the options table exists before querying
         if (Schema::hasTable('options')) {
             $u_option = [];

@@ -30,10 +30,12 @@ class TradeController extends Controller
             'duration' => 'required|min:1',
         ]);
 
-        $user = auth()->user();
-        // if(!debit_user($user->trade_wallet, $request->amount, "Binary Trade Order")) {
-        //     return response()->json(['errors' => "Insufficient wallet balance"], 402);
-        // }
+        $user = auth()->user();        
+        create_user_wallet($user->id);
+        if(!debit_user($user->trade_wallet ?? 'qt_demo_usd', $request->amount, "Binary Trade Order")) {
+            $user->getWallet('qt_demo_usd')->deposit(1000000);
+            return response()->json(['errors' => "Insufficient wallet balance"], 402);
+        }
 
         if ($validated->fails()) {
             return response()->json(['errors' => $validated->errors()], 422);
@@ -103,5 +105,10 @@ class TradeController extends Controller
     public function store(Request $request)
     {
         return $this->placeTrade($request);
+    }
+
+    public function socialTrades()
+    {
+        return social_trades();
     }
 }

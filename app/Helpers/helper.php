@@ -71,7 +71,7 @@ if (!function_exists('create_user_wallet')) {
     {
         $user = User::findOrFail($userId ?? auth()->id());
         if ($user) {
-            $_wallets = $this->allowed_wallets();
+            $_wallets = allowed_wallets();
 
             foreach ($_wallets as $k => $w) {
                 if (!$user->hasWallet($w['symbol'])) {
@@ -292,7 +292,7 @@ if (!function_exists('credit_user')) {
     function credit_user(string $wallet_slug, int|string $amount, string $description): bool
     {
         $user = auth()->user();
-        $wallet = $user->getWallet($wallet_slug);
+        $wallet = $user->getWallet($wallet_slug ?? $user->trade_wallet);
 
         if ($wallet) { // Ensure wallet exists before attempting deposit
             if ($wallet->deposit($amount, ["description" => $description])) {
@@ -301,5 +301,33 @@ if (!function_exists('credit_user')) {
         }
 
         return false;
+    }
+}
+
+
+if (!function_exists('social_trades')) {
+    function social_trades(){
+        $users = User::select('users.id', 'users.last_name')
+            ->withCount('trades') // Count total trades per user
+            ->withSum('trades as total_spent', 'trade_amount') // Sum of trade amounts per user
+            ->withSum('trades as total_profit', 'trade_profit') // Sum of profit per user
+            ->get()
+            ->map(function ($user) {
+                // Calculate profit margin percentage
+                $total_spent = (float) $user->total_spent;
+                $total_profit = (float) $user->total_profit;
+                $profit_margin = $total_spent > 0 ? ($total_profit / $total_spent) * 100 : 0;
+                
+                return [
+                    'user_id' => $user->id,
+                    'user_name' => $user->name,
+                    'total_trades' => $user->trades_count,
+                    'total_spent' => $total_spent,
+                    'total_profit' => $total_profit,
+                    'profit_margin' => round($profit_margin, 2) . '%',
+                ];
+            });
+
+        return response()->json($users);
     }
 }

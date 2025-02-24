@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('google2fa_secret')->nullable();
             $table->string('kyc_level')->default("0");
             $table->string('trade_level')->default("beginner");
-            $table->string('trade_wallet')->nullable();
+            $table->string('trade_wallet')->default('qt_demo_usd');
             $table->string('active_wallet_slug')->default('qt_demo_usd');
             $table->json('config')->nullable();
             $table->rememberToken();

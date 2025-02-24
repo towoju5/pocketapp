@@ -97,6 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         // Display trade data
                         const trade = response.trade;
                         const tradeHtml = response.html;
+                        $("#openTradeList").append(tradeHtml);
                         document
                             .getElementById("tradesList")
                             .insertAdjacentHTML("afterbegin", tradeHtml);

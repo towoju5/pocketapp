@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Assets;
+use App\Models\Trade;
 use Illuminate\Http\Request;
 use Necmicolak\YahooFinance\FinanceAsset;
 
@@ -39,8 +40,9 @@ class HomeController extends Controller
 
         $assetCategories = Assets::groupBy('asset_group')->get();
         
+        $active_trades = Trade::where(["trade_status" => "pending", "user_id" => auth()->id()])->get();
 
-        return view('__dash', compact('data', 'assetCategories', 'isOutOfTradingHours'));
+        return view('__dash', compact('data', 'assetCategories', 'isOutOfTradingHours', 'active_trades'));
     }
 
     public function demo(Request $request, $coin = null)

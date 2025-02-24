@@ -1,71 +1,51 @@
 <?php
 
-namespace Database\Seeders;
-
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
 class MarketDataSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run()
     {
         DB::table('market_data')->insert([
             // Major Pairs
-            ["symbol" => "frxAUDJPY", "name" => "AUD/JPY", "category" => "Forex"],
-            ["symbol" => "frxAUDUSD", "name" => "AUD/USD", "category" => "Forex"],
-            ["symbol" => "frxEURAUD", "name" => "EUR/AUD", "category" => "Forex"],
-            ["symbol" => "frxEURCAD", "name" => "EUR/CAD", "category" => "Forex"],
-            ["symbol" => "frxEURCHF", "name" => "EUR/CHF", "category" => "Forex"],
-            ["symbol" => "frxEURGBP", "name" => "EUR/GBP", "category" => "Forex"],
-            ["symbol" => "frxEURJPY", "name" => "EUR/JPY", "category" => "Forex"],
-            ["symbol" => "frxEURUSD", "name" => "EUR/USD", "category" => "Forex"],
-            ["symbol" => "frxGBPAUD", "name" => "GBP/AUD", "category" => "Forex"],
-            ["symbol" => "frxGBPJPY", "name" => "GBP/JPY", "category" => "Forex"],
-            ["symbol" => "frxGBPUSD", "name" => "GBP/USD", "category" => "Forex"],
-            ["symbol" => "frxUSDCAD", "name" => "USD/CAD", "category" => "Forex"],
-            ["symbol" => "frxUSDCHF", "name" => "USD/CHF", "category" => "Forex"],
-            ["symbol" => "frxUSDJPY", "name" => "USD/JPY", "category" => "Forex"],
+            ["symbol" => "frxAUDJPY", "name" => "AUD/JPY", "category" => "Forex", "yahoo_ticker" => "AUDJPY=X"],
+            ["symbol" => "frxAUDUSD", "name" => "AUD/USD", "category" => "Forex", "yahoo_ticker" => "AUDUSD=X"],
+            ["symbol" => "frxEURAUD", "name" => "EUR/AUD", "category" => "Forex", "yahoo_ticker" => "EURAUD=X"],
+            ["symbol" => "frxEURCAD", "name" => "EUR/CAD", "category" => "Forex", "yahoo_ticker" => "EURCAD=X"],
+            ["symbol" => "frxEURCHF", "name" => "EUR/CHF", "category" => "Forex", "yahoo_ticker" => "EURCHF=X"],
+            ["symbol" => "frxEURGBP", "name" => "EUR/GBP", "category" => "Forex", "yahoo_ticker" => "EURGBP=X"],
+            ["symbol" => "frxEURJPY", "name" => "EUR/JPY", "category" => "Forex", "yahoo_ticker" => "EURJPY=X"],
+            ["symbol" => "frxEURUSD", "name" => "EUR/USD", "category" => "Forex", "yahoo_ticker" => "EURUSD=X"],
+            ["symbol" => "frxGBPAUD", "name" => "GBP/AUD", "category" => "Forex", "yahoo_ticker" => "GBPAUD=X"],
+            ["symbol" => "frxGBPJPY", "name" => "GBP/JPY", "category" => "Forex", "yahoo_ticker" => "GBPJPY=X"],
+            ["symbol" => "frxGBPUSD", "name" => "GBP/USD", "category" => "Forex", "yahoo_ticker" => "GBPUSD=X"],
+            ["symbol" => "frxUSDCAD", "name" => "USD/CAD", "category" => "Forex", "yahoo_ticker" => "USDCAD=X"],
+            ["symbol" => "frxUSDCHF", "name" => "USD/CHF", "category" => "Forex", "yahoo_ticker" => "USDCHF=X"],
+            ["symbol" => "frxUSDJPY", "name" => "USD/JPY", "category" => "Forex", "yahoo_ticker" => "USDJPY=X"],
 
             // Minor Pairs
-            ["symbol" => "frxAUDCAD", "name" => "AUD/CAD", "category" => "Forex"],
-            ["symbol" => "frxAUDCHF", "name" => "AUD/CHF", "category" => "Forex"],
-            ["symbol" => "frxAUDNZD", "name" => "AUD/NZD", "category" => "Forex"],
-            ["symbol" => "frxEURNZD", "name" => "EUR/NZD", "category" => "Forex"],
-            ["symbol" => "frxGBPCAD", "name" => "GBP/CAD", "category" => "Forex"],
-            ["symbol" => "frxGBPCHF", "name" => "GBP/CHF", "category" => "Forex"],
-            ["symbol" => "frxGBPNZD", "name" => "GBP/NZD", "category" => "Forex"],
-            ["symbol" => "frxNZDJPY", "name" => "NZD/JPY", "category" => "Forex"],
-            ["symbol" => "frxNZDUSD", "name" => "NZD/USD", "category" => "Forex"],
-            ["symbol" => "frxUSDMXN", "name" => "USD/MXN", "category" => "Forex"],
-            ["symbol" => "frxUSDPLN", "name" => "USD/PLN", "category" => "Forex"],
-
-            // Indices
-            ["symbol" => "OTC_US500", "name" => "US 500", "category" => "American Indices"],
-            ["symbol" => "OTC_USTECH100", "name" => "US Tech 100", "category" => "American Indices"],
-            ["symbol" => "OTC_WALLST30", "name" => "Wall Street 30", "category" => "American Indices"],
-            ["symbol" => "OTC_AUS200", "name" => "Australia 200", "category" => "Asian Indices"],
-            ["symbol" => "OTC_HK50", "name" => "Hong Kong 50", "category" => "Asian Indices"],
-            ["symbol" => "OTC_JP225", "name" => "Japan 225", "category" => "Asian Indices"],
-            ["symbol" => "OTC_EURO50", "name" => "Euro 50", "category" => "European Indices"],
-            ["symbol" => "OTC_FR40", "name" => "France 40", "category" => "European Indices"],
-            ["symbol" => "OTC_GER40", "name" => "Germany 40", "category" => "European Indices"],
-            ["symbol" => "OTC_NETH25", "name" => "Netherlands 25", "category" => "European Indices"],
-            ["symbol" => "OTC_SWISS20", "name" => "Swiss 20", "category" => "European Indices"],
-            ["symbol" => "OTC_UK100", "name" => "UK 100", "category" => "European Indices"],
+            ["symbol" => "frxAUDCAD", "name" => "AUD/CAD", "category" => "Forex", "yahoo_ticker" => "AUDCAD=X"],
+            ["symbol" => "frxAUDCHF", "name" => "AUD/CHF", "category" => "Forex", "yahoo_ticker" => "AUDCHF=X"],
+            ["symbol" => "frxAUDNZD", "name" => "AUD/NZD", "category" => "Forex", "yahoo_ticker" => "AUDNZD=X"],
+            ["symbol" => "frxEURNZD", "name" => "EUR/NZD", "category" => "Forex", "yahoo_ticker" => "EURNZD=X"],
+            ["symbol" => "frxGBPCAD", "name" => "GBP/CAD", "category" => "Forex", "yahoo_ticker" => "GBPCAD=X"],
+            ["symbol" => "frxGBPCHF", "name" => "GBP/CHF", "category" => "Forex", "yahoo_ticker" => "GBPCHF=X"],
+            ["symbol" => "frxGBPNZD", "name" => "GBP/NZD", "category" => "Forex", "yahoo_ticker" => "GBPNZD=X"],
+            ["symbol" => "frxNZDJPY", "name" => "NZD/JPY", "category" => "Forex", "yahoo_ticker" => "NZDJPY=X"],
+            ["symbol" => "frxNZDUSD", "name" => "NZD/USD", "category" => "Forex", "yahoo_ticker" => "NZDUSD=X"],
+            ["symbol" => "frxUSDMXN", "name" => "USD/MXN", "category" => "Forex", "yahoo_ticker" => "USDMXN=X"],
+            ["symbol" => "frxUSDPLN", "name" => "USD/PLN", "category" => "Forex", "yahoo_ticker" => "USDPLN=X"],
 
             // Cryptocurrencies
-            ["symbol" => "cryBTCUSD", "name" => "BTC/USD", "category" => "Cryptocurrencies"],
-            ["symbol" => "cryETHUSD", "name" => "ETH/USD", "category" => "Cryptocurrencies"],
+            ["symbol" => "cryBTCUSD", "name" => "BTC/USD", "category" => "Cryptocurrencies", "yahoo_ticker" => "BTC-USD"],
+            ["symbol" => "cryETHUSD", "name" => "ETH/USD", "category" => "Cryptocurrencies", "yahoo_ticker" => "ETH-USD"],
 
             // Metals
-            ["symbol" => "frxGOLDUSD", "name" => "Gold/USD", "category" => "Metals"],
-            ["symbol" => "frxPALLADIUMUSD", "name" => "Palladium/USD", "category" => "Metals"],
-            ["symbol" => "frxPLATINUMUSD", "name" => "Platinum/USD", "category" => "Metals"],
-            ["symbol" => "frxSILVERUSD", "name" => "Silver/USD", "category" => "Metals"],
+            ["symbol" => "frxGOLDUSD", "name" => "Gold/USD", "category" => "Metals", "yahoo_ticker" => "GC=F"],
+            ["symbol" => "frxPALLADIUMUSD", "name" => "Palladium/USD", "category" => "Metals", "yahoo_ticker" => "PA=F"],
+            ["symbol" => "frxPLATINUMUSD", "name" => "Platinum/USD", "category" => "Metals", "yahoo_ticker" => "PL=F"],
+            ["symbol" => "frxSILVERUSD", "name" => "Silver/USD", "category" => "Metals", "yahoo_ticker" => "SI=F"],
         ]);
     }
 }

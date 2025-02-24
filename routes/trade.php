@@ -10,6 +10,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('trades', TradeController::class)->names('trade');
     // Route::get('trades/{trade}/evaluate', [TradeController::class, 'evaluateTrade'])->name('trade.evaluate');
     Route::post('binary-trade', [TradeController::class, 'placeTrade'])->name('binary.trade');
+    Route::post('social-trade', [TradeController::class, 'socialTrades'])->name('social-trade');
 
 
     Route::get('/api/assets', function () {

@@ -4,6 +4,96 @@
 
 @section('content')
 @php $__coin = $data->symbol ?? "USDCAD" @endphp
+<style>
+    .signal-card {
+        padding: 10px;
+        width: 330px;
+    }
+
+    .signal-card:nth-child(even) {
+        background-color: #292d41;
+    }
+
+    .signal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        /* margin-bottom: 10px; */
+    }
+
+    .signal-title {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: #A0AEC0;
+        gap: .75rem;
+    }
+
+    .signal-title i {
+        color: #FFA500;
+        margin-right: 5px;
+    }
+
+    .signal-percentage {
+        color: #4CAF50;
+        font-weight: bold;
+    }
+
+    .signal-time {
+        color: white;
+        /* font-size: 10px; */
+    }
+
+    .signal-body {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .signal-price {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .signal-price i {
+        color: #4CAF50;
+        margin-right: 5px;
+    }
+
+    .signal-profit {
+        color: #4CAF50;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .signal-button {
+        background-color: #19222D;
+        border: 1px solid #0F5D42;
+        border-radius: 5px;
+        padding: 4px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .signal-button i {
+        margin-right: 5px;
+    }
+    .fa-arrow-up {
+        color: rgb(73, 167, 68);
+        margin-right: 2px;
+        transform: rotate(45deg);
+    }
+</style>
+
 
 
 <!-- THIS IS THE CHART DIV + THE BUY AND SELL -->
@@ -30,7 +120,7 @@
                     </div>
 
                     <!-- Asset Dropdown Content -->
-                    <div id="assetDropDown" class="absolute left-5 min-w-160 rounded-lg bg-gray-800 shadow-lg rounded-xl mt-2 hidden">
+                    <div id="assetDropDown" class="absolute left-5 min-w-160 rounded-lg bg-gray-800 shadow-lg rounded-xl mt-2 z-10 hidden">
                         <div class="flex">
                             <!-- Categories -->
                             <div class="w-1/3 bg-gray-700 p-2">
@@ -264,7 +354,7 @@
 
 <!-- trades -->
 <!-- Main Content Area -->
-<div class="min-h-screen bg-[#222636] w-[20%] ml-auto" id="mainContent">
+<div class="min-h-screen bg-[#222636] w-[20%] ml-auto" id="mainContent" style="min-width: 330px;">
     <div class="text-white">Select a section from the sidebar.</div>
 </div>
 
@@ -355,8 +445,34 @@
         </div>
 
         <!-- Trade Containers -->
-        <div id="openTrades" class="flex justify-center items-center mt-16 trade_list-page">
-            <p class="text-gray-500">Open Trade Container</p>
+        <div id="openTrades" class="flex justify-center items-center mt-0 trade_list-page">
+            <div id="openTradeList">
+                @foreach($active_trades as $trade)
+                    <div class="signal-card">
+                        <div class="signal-header">
+                            <div class="signal-title gap-3">
+                                <i class="fas fa-star-o text[#ff9706]"></i> <span class="text-[#8ea5c0]"> {{ $trade->trade_currency }}</span> <span class="signal-percentage">+85%</span>
+                            </div>
+                            <div class="signal-time">03:59:40</div>
+                        </div>
+                        <div class="signal-body">
+                            <div class="signal-price text-[#8ea5c0]">
+                                @if($trade->trade_direction == 'up')
+                                    <i class="fas fa-arrow-up"></i>
+                                @else
+                                    <i class="fas fa-arrow-down"></i>
+                                @endif
+                                ${{ formatPrice($trade->trade_amount) }}
+                            </div>
+                            <div class="signal-profit total_amount base_plus_profit">${{ formatPrice($trade->trade_amount) }}</div>
+                            <div class="signal-profit">+$1,705.10</div>
+                        </div>
+                        <div class="signal-button">
+                            <i class="fas fa-angle-double-up"></i> Double Up
+                        </div>
+                    </div>
+                @endforeach
+            </div>
         </div>
 
         <div id="closedTrades" class="flex justify-center items-center mt-16 hidden trade_list-page">
@@ -365,7 +481,7 @@
     </div>
 
     <div id="rightSignals">
-        <div class="p-4 text-white">
+        <div class="p-1 text-white">
         <div class="h-full overflow-y-auto pb-20">
             <h1 class="text-lg font-medium mb-4 px-4">Signals</h1>
 
@@ -566,35 +682,34 @@
         </div>
     </div>
     <div id="rightSocialTrading">
-        <div class="p-4 text-white">
+        <div class="p-3 text-white">
         <div class="h-full flex flex-col">
             <div class="flex-1 overflow-y-auto pb-20">
                 <h1 class="text-lg text-sm mb-4 px-4">Social Trading</h1>
-
                 <div class="relative mb-6 px-4">
-                <button id="periodDropdown" data-dropdown="period" class="w-full py-2.5 rounded-lg text-xs flex justify-between items-center px-4" style="background: #1d2130; border: 1px solid #454a56">
-                    <span id="selectedPeriod">Top ranked traders for 24h</span>
-                    <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                    </svg>
-                </button>
-                <div id="periodMenu" class="hidden absolute w-full bg-gray-800 rounded-lg mt-2 shadow-lg z-10 py-1">
-                    <button class="period-option w-full text-left px-4 py-2 text-sm hover:bg-gray-700" data-period="24h">
-                    Top ranked traders for 24h
+                    <button id="periodDropdown" data-dropdown="period" class="w-full py-2.5 rounded-lg text-xs flex justify-between items-center px-4" style="background: #1d2130; border: 1px solid #454a56">
+                        <span id="selectedPeriod">Top ranked traders for 24h</span>
+                        <svg class="w-4 h-4 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
                     </button>
-                    <button class="period-option w-full text-left px-4 py-2 text-sm hover:bg-gray-700" data-period="7d">
-                    Top ranked traders for 7 days
-                    </button>
-                    <button class="period-option w-full text-left px-4 py-2 text-sm hover:bg-gray-700" data-period="30d">
-                    Top ranked traders for 30 days
-                    </button>
-                    <button class="period-option w-full text-left px-4 py-2 text-sm hover:bg-gray-700" data-period="90d">
-                    Top ranked traders for 90 days
-                    </button>
-                    <button class="period-option w-full text-left px-4 py-2 text-sm hover:bg-gray-700" data-period="1y">
-                    Top ranked traders for 1 year
-                    </button>
-                </div>
+                    <div id="periodMenu" class="hidden absolute w-full bg-gray-800 rounded-lg mt-2 shadow-lg z-10 py-1">
+                        <button class="period-option w-full text-left px-4 py-2 text-sm hover:bg-gray-700" data-period="24h">
+                        Top ranked traders for 24h
+                        </button>
+                        <button class="period-option w-full text-left px-4 py-2 text-sm hover:bg-gray-700" data-period="7d">
+                        Top ranked traders for 7 days
+                        </button>
+                        <button class="period-option w-full text-left px-4 py-2 text-sm hover:bg-gray-700" data-period="30d">
+                        Top ranked traders for 30 days
+                        </button>
+                        <button class="period-option w-full text-left px-4 py-2 text-sm hover:bg-gray-700" data-period="90d">
+                        Top ranked traders for 90 days
+                        </button>
+                        <button class="period-option w-full text-left px-4 py-2 text-sm hover:bg-gray-700" data-period="1y">
+                        Top ranked traders for 1 year
+                        </button>
+                    </div>
                 </div>
 
                 <div class="text-xs text-center text-gray-400 mb-3">REAL TRADING</div>
@@ -604,7 +719,7 @@
                         <div style="width: 20%" class="flex items-center justify-center h-full">
                         <i class="fa-regular fa-circle-user text-2xl" aria-hidden="true"></i>
                         </div>
-                        <div class="w-full">
+                        <div class="w-full gap-8">
                         <div class="flex items-center justify-between text-sm">
                             <p>user98987654</p>
                             <p style="color: #6fc274">+$8,500.00</p>
@@ -756,8 +871,8 @@
         </div>
     </div>
     <div id="rightExpressTrades">
-        <div class="p-4 text-white">
-        <div class="p-4 h-full overflow-y-auto">
+        <div class="p-3 text-white">
+        <div class="h-full overflow-hidden">
             <!-- Express Trades Section -->
             <div class="mb-4 text-lg font-semibold">Express Trades</div>
             <div class="flex justify-between gap-2 mt-2">
@@ -964,8 +1079,8 @@
         </div>
     </div>
     <div id="rightTournaments">
-        <div class="p-4 text-white">
-            <div class="p-4 h-full overflow-y-auto">
+        <div class="p-3 text-white">
+            <div class="h-full overflow-hidden">
             <!-- Header -->
             <div class="flex w-full h-12 justify-between space-x-4 items-center mb-6">
                 <button onclick="switchTab('all-tournaments', this)" class="tab-btn text-white text-xs w-full p-2 rounded-lg">
@@ -1078,13 +1193,13 @@
         </div>
     </div>
     <div id="rightPendingTrades">
-        <div class="p-4 text-white">
+        <div class="p-3 text-white">
             <h2 class="text-2xl font-bold mb-4">Pending Trades</h2>
             <p>Monitor and manage your pending trade orders.</p>
         </div>
     </div>
     <div id="rightHotkeys">
-        <div class="p-4 text-white">
+        <div class="p-3 text-white">
             <h2 class="text-2xl font-bold mb-4">Hotkey Settings</h2>
             <p>Configure and view your trading hotkeys.</p>
         </div>
@@ -1095,6 +1210,88 @@
 
 @push('js')
 <script>
+        document.addEventListener("DOMContentLoaded", function () {
+        function activateTab(activeTabId) {
+            // Define related elements dynamically
+            const activeTab = document.getElementById(activeTabId);
+            const inactiveTab = activeTab.id === "openTab" ? document.getElementById("closedTab") : document.getElementById("openTab");
+            const activeContent = activeTab.id === "openTab" ? document.getElementById("openTrades") : document.getElementById("closedTrades");
+            const inactiveContent = activeTab.id === "openTab" ? document.getElementById("closedTrades") : document.getElementById("openTrades");
+
+            // Show the active content, hide the inactive one
+            activeContent.classList.remove("hidden");
+            inactiveContent.classList.add("hidden");
+
+            // Update tab styles
+            activeTab.classList.add("active-tab", "text-gray-200", "bg-[#1e2131]");
+            activeTab.classList.remove("text-gray-500", "bg-[#272b3c]");
+
+            inactiveTab.classList.remove("active-tab", "text-gray-200", "bg-[#1e2131]");
+            inactiveTab.classList.add("text-gray-500", "bg-[#272b3c]");
+
+            // Ensure blue bottom border is only on the active tab
+            activeTab.querySelector(".tab-indicator").classList.remove("hidden");
+            inactiveTab.querySelector(".tab-indicator").classList.add("hidden");
+        }
+
+        // Attach click events
+        document.getElementById("openTab").addEventListener("click", function () {
+            activateTab("openTab");
+        });
+
+        document.getElementById("closedTab").addEventListener("click", function () {
+            activateTab("closedTab");
+        });
+
+        // Set the default active tab on page load
+        activateTab("openTab");
+    });
+
+
+    
+
+document.addEventListener("DOMContentLoaded", function () {
+    function startCountdown() {
+        document.querySelectorAll(".signal-card").forEach((card) => {
+            let timeElement = card.querySelector(".signal-time");
+            let timeParts = timeElement.textContent.trim().split(":").map(Number);
+            let totalSeconds = timeParts[0] * 3600 + timeParts[1] * 60 + timeParts[2];
+            // alert("Count down initiated")
+            function updateTimer() {
+                if (totalSeconds <= 0) {
+                    moveToClosedTab(card);
+                    return;
+                }
+
+                totalSeconds--;
+
+                let hours = Math.floor(totalSeconds / 3600);
+                let minutes = Math.floor((totalSeconds % 3600) / 60);
+                let seconds = totalSeconds % 60;
+
+                timeElement.textContent =
+                    String(hours).padStart(2, "0") + ":" +
+                    String(minutes).padStart(2, "0") + ":" +
+                    String(seconds).padStart(2, "0");
+
+                setTimeout(updateTimer, 1000);
+            }
+
+            updateTimer();
+        });
+    }
+
+    function moveToClosedTab(card) {
+        let closedTab = document.getElementById("closedTrades");
+        card.remove();
+        closedTab.appendChild(card);
+    }
+
+    startCountdown();
+});
+
+
+
   /***********************************************************
    *               GLOBALS & INITIAL SETUP
    ***********************************************************/
