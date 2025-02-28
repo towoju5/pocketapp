@@ -17,6 +17,7 @@
         "laravel/socialite": "*",
         "laravel/telescope": "^5.2",
         "laravel/tinker": "^2.9",
+        "michael-rubel/laravel-couponables": "^9.0",
         "mobiledetect/mobiledetectlib": "^4.8",
         "munafio/chatify": "*",
         "necmicolak/yahoo-finance": "^1.0",

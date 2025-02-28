@@ -71,6 +71,13 @@
       0 => 'Laravel\\Tinker\\TinkerServiceProvider',
     ),
   ),
+  'michael-rubel/laravel-couponables' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'MichaelRubel\\Couponables\\CouponableServiceProvider',
+    ),
+  ),
   'munafio/chatify' => 
   array (
     'aliases' => 

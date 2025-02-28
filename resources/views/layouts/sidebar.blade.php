@@ -1,5 +1,5 @@
 <!-- Left Nav Bar -->
-<aside class="flex flex-col justify-between h-screen w-24 bg-[#1e2131] py-4 px-2 overflow-hidden mr-auto">
+<aside class="flex flex-col justify-between h-screen w-24 bg-[#1e2131] py-4 px-2 overflow-hidden">
 	<nav class="flex flex-col items-center space-y-4 text-center">
 		<!-- Trading -->
 		<a href="#" data-section="Trading" class="nav-link flex flex-col items-center group">
@@ -321,7 +321,7 @@
 				<span></span>
 			</a>
 
-			<a href="{{ route('finance.history') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('finance.cashback') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -337,7 +337,7 @@
 				<span></span>
 			</a>
 
-			<a class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('finance.promo-codes') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -353,7 +353,7 @@
 				<span></span>
 			</a>
 
-			<a class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('finance.my-safe') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->

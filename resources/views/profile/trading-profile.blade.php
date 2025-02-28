@@ -3,7 +3,7 @@
 @section('title', 'Trading Profile')
 
 @section('content')
-    <div class="m-4" style="margin: 1rem">
+    <div class="m-4 py-4" style="margin: 1rem">
         @include('partials.profile')
         <div class="panel box-border personal-info-panel w-full">
             <div class="panel-heading">

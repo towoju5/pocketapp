@@ -224,6 +224,8 @@
                 success: function(response) {
                     if (response.status === 'success') {
                         alert('Password changed successfully!');
+                    } else if (response.status === 'error') {
+                        alert(response.message);
                     }
                 },
                 error: function(xhr, status, error) {
@@ -252,6 +254,8 @@
                 success: function(response) {
                     if (response.status === 'success') {
                         alert('2FA enabled successfully!');
+                    } else if (response.status === 'error') {
+                        alert(response.message);
                     }
                 },
                 error: function(xhr, status, error) {

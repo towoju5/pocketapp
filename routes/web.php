@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\ChartController;
 use App\Http\Controllers\DepositController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PayoutController;
@@ -12,6 +13,8 @@ use App\Jobs\EvaluateTrade;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GitHubArtifactController;
+use App\Http\Controllers\MySafeController;
+use App\Http\Controllers\PromoCodeController;
 use App\Http\Controllers\TradeController;
 use Illuminate\Support\Facades\Http;
 
@@ -71,8 +74,13 @@ Route::middleware(['auth'])->group(function () {
         Route::delete('step-3', [DepositController::class, 'step_3'])->name('step_3');
         Route::delete('step-4', [DepositController::class, 'step_4'])->name('step_4');
     });
-});
 
+    Route::group(['as' => 'finance.', 'prefix' => 'finance'], function () {
+        Route::get('cashback', [ChartController::class, 'cashback'])->name('cashback');
+        Route::get('promo-codes', [PromoCodeController::class, 'index'])->name('promo-codes');
+        Route::get('my-safe', [MySafeController::class, 'index'])->name('my-safe');
+    });
+});
 
 
 Route::group(['as' => 'api.', 'prefix' => 'api'], function () {

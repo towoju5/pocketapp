@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class PromoCodeController extends Controller
+class MySafeController extends Controller
 {
     public function index()
     {
         try {
-            return view('finance.promo-codes');
+            return view('finance.my-safe');
         } catch (\Throwable $th) {
             //throw $th;
         }

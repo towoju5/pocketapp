@@ -15,4 +15,10 @@ class ChartController extends Controller
         }
         return response()->json($asset->getChart());
     }
+
+    public function cashback()
+    {
+        return view('finance.cashback');
+    }
+
 }

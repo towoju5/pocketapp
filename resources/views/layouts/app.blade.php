@@ -127,9 +127,6 @@
         }
     </style>
     @stack('css')
-    <!-- <link rel="stylesheet" href="{{ asset('theme/main.css') }}"> -->
-    <!-- <link rel="stylesheet" href="{{ asset('theme/desktop.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('theme/desktop.theme-dark-blue.min.css') }}"> -->
 </head>
 
 <body style="overflow: auto;">
@@ -137,7 +134,7 @@
 
     @include('layouts.header')
 
-    <section class="flex flex-row w-full overflow-hidden border-t border-gray-700">
+    <section class="flex flex-row w-full @if(!Route::is('dashboard'))overflow-hidden @endif border-t border-gray-700">
         @include('layouts.sidebar')
 
         @yield('content')
