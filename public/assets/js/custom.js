@@ -143,6 +143,15 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // stock dropdown
-document.getElementById("assetBtn").addEventListener("click", function () {
-    document.getElementById("assetDropDown").classList.toggle("hidden");
+document.addEventListener("DOMContentLoaded", function () {
+    const assetBtn = document.getElementById("assetBtn");
+    const assetDropDown = document.getElementById("assetDropDown");
+
+    if (assetBtn && assetDropDown) {
+        assetBtn.addEventListener("click", function () {
+            assetDropDown.classList.toggle("hidden");
+        });
+    } else {
+        // console.error("Element(s) not found: assetBtn or assetDropDown.");
+    }
 });

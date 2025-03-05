@@ -7,8 +7,8 @@
             <!-- Promo Code Input Section -->
             <div class="flex flex-col bg-gray-900 p-4 rounded-lg col-span-1 lg:min-w-xl _min_300">
                 <div class="text-lg font-semibold mb-2">Do you have a promo code?</div>
-                <input class="bg-gray-700 text-white border border-gray-600 rounded-md px-4 py-2 w-full" placeholder="Enter promo code">
-                <a class="hidden mt-3 bg-orange-600 text-white font-medium px-4 py-2 rounded-md hover:bg-orange-700 transition duration-300 text-center" href="#">
+                <input class="bg-gray-700 text-white border border-gray-600 rounded-md px-4 py-2 w-full" id="promoCodeInput" placeholder="Enter promo code">
+                <a class="promoCodeBtn hidden mt-3 bg-orange-600 text-white font-medium px-4 py-2 rounded-md hover:bg-orange-700 transition duration-300 text-center" href="#">
                     Check
                 </a>
                 <div class="mt-2 text-orange-400 text-sm hidden">Invalid promo code</div>
@@ -51,9 +51,6 @@
 
 
     </div>
-
-
-
     <style>
         ._min_300 {
             min-width: 25rem ;
@@ -95,4 +92,19 @@
 
 
 @push('js')
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const promoCodeInput = document.getElementById("promoCodeInput");
+        const promoCodeBtn = document.getElementById("promoCodeBtn");
+
+        promoCodeInput.addEventListener("input", function () {
+            if (promoCodeInput.value.trim().length > 0) {
+                promoCodeBtn.classList.remove("hidden");
+            } else {
+                promoCodeBtn.classList.add("hidden");
+            }
+        });
+    });
+</script>
+
 @endpush

@@ -5,7 +5,7 @@
         @include('partials.finance-header')
         <div class="w-full bg-gray-900 text-white">
             <div class="p-6">
-                <div class=rounded-lg p-4">
+                <div class="rounded-lg p-4">
                     <h2 class="text-lg font-semibold mb-4">Balance History</h2>
                     <div class="flex flex-wrap items-center justify-between mb-4">
                         <div class="flex gap-2">
@@ -15,7 +15,7 @@
                             <a href="{{ route('finance.history') }}"><button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">All Types</button></a>
                         </div>
                         <div class="flex items-center gap-2">
-                            <input type="text" name="daterange"
+                            <input type="text" id="daterange" name="daterange"
                                 class="px-4 py-2 rounded bg-gray-700 border-b border-[#292d4a] text-white" />
                             <button class="px-4 py-2 bg-[#292d4a] text-white rounded hover:bg-[#293145]">Apply</button>
                         </div>
@@ -58,18 +58,18 @@
     </div>
 @endsection
 
-
 @push('js')
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="//cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <script>
-        $(function() {
-            $('input[name="daterange"]').daterangepicker({
+        $(document).ready(function() {
+            $('#daterange').daterangepicker({
                 opens: 'right',
-                startDate: '12/21/2024',
-                endDate: '01/09/2025',
+                startDate: "{{ now()->format('Y-m-d') }}",
+                endDate: "{{ now()->addDays(30)->format('Y-m-d') }}",
                 locale: {
-                    format: 'YYYY-MM-DD'
+                    format: 'DD-MM-YYYY'
                 }
             });
         });

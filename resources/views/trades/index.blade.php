@@ -2,16 +2,16 @@
 
 @section('title', 'Trades')
 @section('content')
-<div class="container mx-auto p-4">
+<div class="w-full p-4">
     @include('partials.profile')
-    <div class="bg-gray-800 text-white rounded-lg shadow-md">
+    <div class="bg-gray-900 text-white rounded-lg shadow-md">
         <div class="p-4 border-b border-gray-700">
             <h2 class="text-lg font-semibold">Trade Histories</h2>
         </div>
         <div class="p-4">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-400">
-                    <thead class="bg-gray-700 text-gray-300 uppercase text-xs">
+                    <thead class="text-gray-300 uppercase text-xs">
                         <tr>
                             <th class="px-4 py-3">ID</th>
                             <th class="px-4 py-3">Asset</th>
@@ -25,7 +25,7 @@
                             <th class="px-4 py-3">Actions</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-gray-800">
+                    <tbody class="bg-gray-900">
                         @foreach($trades as $trade)
                         <tr class="border-b border-gray-700 hover:bg-gray-700">
                             <td class="px-4 py-3">{{ $trade->id }}</td>

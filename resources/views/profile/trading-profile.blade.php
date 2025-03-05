@@ -1,178 +1,239 @@
 @extends('layouts.app')
 
-@section('title', 'Trading Profile')
-
+@section('title', 'Profile')
 @section('content')
-    <div class="m-4 py-4" style="margin: 1rem">
+    <div class="m-4 ml-2 container py-4" style="margin: 1rem">
         @include('partials.profile')
-        <div class="panel box-border personal-info-panel w-full">
+        <div class="panel box-border personal-info-panel mb-3">
             <div class="panel-heading">
-                <div class="panel-title">Identity info</div>
+                <div class="panel-title">Trading profile</div>
             </div>
-            <div class="panel-body">
-                <div class="min-h-screen bg-gray-900 text-white">
-                    <!-- Container -->
-                    <div class="p-8">
-                        <!-- Header -->
-                        <div class="text-lg font-semibold mb-6">Trading profile</div>
-    
-                        <!-- Main Grid -->
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <!-- Left Panel -->
-                            <div class="bg-gray-800 p-6 rounded-md">
-                                <div class="flex items-center gap-4 mb-4">
-                                    <div class="w-16 h-16 bg-gray-700 rounded-full"></div>
-                                    <div>
-                                        <div class="text-xl font-bold">{{ $user->username }}</div>
-                                        <div class="text-sm text-gray-400">UID 90373611</div>
-                                    </div>
-                                </div>
-                                <div class="text-2xl font-bold mb-4">$0</div>
-                                <button class="w-full bg-green-500 text-white py-2 px-4 rounded-md font-semibold">
-                                    Invest real money
-                                </button>
-                                
-                                
-                                <div class="mt-6 space-y-2">
-                                    <div class="flex justify-between">
-                                        <span>Trades:</span>
-                                        <span>{{ $totalTrades }}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>Profitable trades:</span>
-                                        <span>{{ number_format($profitableTradesPercentage, 2) }}%</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>Trading turnover:</span>
-                                        <span>${{ number_format($tradingTurnover, 2) }}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>Trading profit:</span>
-                                        <span>${{ number_format($tradingProfit, 2) }}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>Max. trade:</span>
-                                        <span>${{ number_format($maxTrade, 2) }}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>Min. trade:</span>
-                                        <span>${{ number_format($minTrade, 2) }}</span>
-                                    </div>
-                                    <div class="flex justify-between">
-                                        <span>Max. profit:</span>
-                                        <span>${{ number_format($maxProfit, 2) }}</span>
-                                    </div>
-                                </div>
-                                
-                                <div class="mt-6 hidden">
-                                    <button class="w-full bg-orange-500 text-white py-2 px-4 rounded-md font-semibold">
-                                        Get 50% bonus
-                                    </button>
-                                </div>
-                            </div>
-    
-                            <!-- Right Panel -->
-                            <div class="lg:col-span-2 grid grid-cols-1 gap-6">
-                                <!-- Profitability Chart -->
-                                <div class="bg-gray-800 p-6 rounded-md">
-                                    <div class="text-lg font-semibold mb-4">Profitability</div>
-                                    <canvas id="profitabilityChart"></canvas>
-                                </div>
-    
-                                <!-- Distribution by Assets -->
-                                <div class="grid grid-cols-2 gap-6">
-                                    <div class="bg-gray-800 p-6 rounded-md flex items-center justify-center">
-                                        {{-- <span class="text-gray-400">Trades distribution by assets<br>No trading history</span> --}}
-                                        <canvas id="tradeAmountsChart"></canvas>
-                                    </div>
-                                    <div class="bg-gray-800 p-6 rounded-md flex items-center justify-center">
-                                        {{-- <span class="text-gray-400">Trade amounts by assets<br>No trading history</span> --}}
-                                        <canvas id="tradesDistributionChart"></canvas>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div class="panel-body text-white">
+            <div class="min-h-screen bg-gray-900 text-white">
+                    
                 </div>
             </div>
         </div>
     </div>
 @endsection
 
-
 @push('js')
-    <script src="//cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/jqueryui-editable/js/jqueryui-editable.min.js"></script>
     <script>
-        // Profitability Chart Data
-        const profitabilityLabels = @json($profitabilityData->keys());
-        const profitabilityValues = @json($profitabilityData->values());
-    
-        // Trade Amounts by Assets Data
-        const tradeAmountsLabels = @json($tradeAmountsByAssets->keys());
-        const tradeAmountsValues = @json($tradeAmountsByAssets->values());
-    
-        // Trades Distribution by Assets Data
-        const tradesDistributionLabels = @json($tradesDistributionByAssets->keys());
-        const tradesDistributionValues = @json($tradesDistributionByAssets->values());
-    
-        // Profitability Chart
-        const profitabilityCtx = document.getElementById('profitabilityChart').getContext('2d');
-        new Chart(profitabilityCtx, {
-            type: 'line',
-            data: {
-                labels: profitabilityLabels,
-                datasets: [{
-                    label: 'Profitability',
-                    data: profitabilityValues,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderWidth: 2,
-                }]
-            }
+        $(document).ready(function() {
+            // Set X-editable to inline mode
+            $.fn.editable.defaults.mode = 'inline';
+
+            // Initialize editable elements
+            $('.editable-click').editable();
+
+            // Handle toggle switches
+            $('.toggle-setting').on('change', function() {
+                const checkbox = $(this);
+                const key = checkbox.data('key');
+                const value = checkbox.is(':checked') ? 1 : 0;
+
+                $.ajax({
+                    url: "{{ route('profile.update.pk') }}",
+                    method: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        name: key,
+                        value: value
+                    },
+                    success: function(response) {
+                        if (response.status !== 200) {
+                            // Revert the checkbox if the response is not successful
+                            checkbox.prop('checked', !checkbox.is(':checked'));
+                            alert('Failed to update setting. Please try again.');
+                        }
+                    },
+                    error: function() {
+                        // Revert the checkbox on error
+                        checkbox.prop('checked', !checkbox.is(':checked'));
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+
+            // Handle language change
+            $('.change-language').on('click', function(e) {
+                e.preventDefault();
+                const link = $(this);
+                const key = link.data('key');
+                const value = link.data('value');
+
+                $.ajax({
+                    url: '/settings/update',
+                    method: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                        name: key,
+                        value: value
+                    },
+                    success: function(response) {
+                        if (response.status === 200) {
+                            // Highlight the selected language
+                            $('.profile__languages li').removeClass('active');
+                            link.closest('li').addClass('active');
+                        } else {
+                            alert('Failed to update language. Please try again.');
+                        }
+                    },
+                    error: function() {
+                        alert('An error occurred. Please try again.');
+                    }
+                });
+            });
+
         });
-    
-        // Trade Amounts by Assets Chart
-        const tradeAmountsCtx = document.getElementById('tradeAmountsChart').getContext('2d');
-        new Chart(tradeAmountsCtx, {
-            type: 'bar',
-            data: {
-                labels: tradeAmountsLabels,
-                datasets: [{
-                    label: 'Trade Amounts',
-                    data: tradeAmountsValues,
-                    backgroundColor: 'rgba(153, 102, 255, 0.6)',
-                    borderColor: 'rgba(153, 102, 255, 1)',
-                    borderWidth: 1,
-                }]
-            }
-        });
-    
-        // Trades Distribution by Assets Chart
-        const tradesDistributionCtx = document.getElementById('tradesDistributionChart').getContext('2d');
-        new Chart(tradesDistributionCtx, {
-            type: 'pie',
-            data: {
-                labels: tradesDistributionLabels,
-                datasets: [{
-                    label: 'Trades Distribution',
-                    data: tradesDistributionValues,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.6)',
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 206, 86, 0.6)',
-                        'rgba(75, 192, 192, 0.6)',
-                        'rgba(153, 102, 255, 0.6)',
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                    ],
-                    borderWidth: 1,
-                }]
-            }
-        });
-    </script>    
+    </script>
+@endpush
+
+
+@push('css')
+    <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/jqueryui-editable/css/jqueryui-editable.css"
+        rel="stylesheet" />
+    <style>
+        .table>tbody>tr>td,
+        .theme-dark-blue .table>tbody>tr>th,
+        .theme-dark-blue .table>tfoot>tr>td,
+        .theme-dark-blue .table>tfoot>tr>th,
+        .theme-dark-blue .table>thead>tr>td,
+        .theme-dark-blue .table>thead>tr>th {
+            border-color: #292d4a !important;
+        }
+
+        .profile .table td {
+            vertical-align: middle;
+        }
+
+        .table>tbody>tr>td,
+        .table>tbody>tr>th,
+        .table>tfoot>tr>td,
+        .table>tfoot>tr>th,
+        .table>thead>tr>td,
+        .table>thead>tr>th {
+            padding: 10px 15px;
+        }
+
+        tr {
+            display: table-row;
+            vertical-align: inherit;
+            unicode-bidi: isolate;
+            border-color: inherit;
+        }
+
+        .profile__languages {
+            display: grid;
+            gap: 8px;
+            grid-template-columns: repeat(auto-fill, 120px);
+        }
+
+        .profile__languages .active a {
+            background-color: #314463;
+            border: 1px solid #009af9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+
+        .email_add_subscribes {
+            padding: 1rem 10px;
+        }
+
+        .panel {
+            border-radius: 10px;
+            border: none;
+        }
+
+        .panel-body {
+            background-color: #131628;
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .panel-heading+.panel-body {
+            border-top: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+
+        .panel-heading {
+            background-color: #20273f;
+            color: #7e91a7;
+            display: -webkit-box;
+            display: flex;
+            -webkit-box-align: center;
+            align-items: center;
+            -webkit-box-pack: justify;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+            justify-content: space-between;
+            padding: 10px 15px;
+            border-bottom: 1px solid transparent;
+        }
+
+        /* Style the form container */
+        /* Style the input field */
+
+        .editable-container input {
+            /* border: 2px solid #007bff; */
+            border-radius: 4px;
+            padding: 2px 8px;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+            background-color: transparent;
+            border-radius: 4px;
+            -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075);
+            -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+            -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+            transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        }
+
+        .choose-file {
+            display: -webkit-box;
+            display: flex;
+            position: relative;
+            -webkit-box-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            cursor: pointer;
+            font-size: 16px;
+            justify-content: center;
+            min-height: 100px;
+            padding: 15px;
+        }
+
+        .profile .choose-file {
+            background-color: rgba(48, 153, 245, .05);
+            border: 1px dashed rgba(48, 153, 245, .96);
+            -webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 0 8px rgba(48, 153, 245, .5);
+            box-shadow: 0 1px 1px rgba(0, 0, 0, .2), 0 0 8px rgba(48, 153, 245, .5);
+            color: #fff;
+        }
+
+        .choose-file [type=file] {
+            cursor: pointer;
+            font-size: 200px;
+            height: 100%;
+            left: 0;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            top: 0;
+            width: 100%;
+        }
+
+        .choose-file span {
+            font-size: 14px;
+            text-align: center;
+        }
+    </style>
 @endpush

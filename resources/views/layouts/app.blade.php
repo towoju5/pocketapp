@@ -16,10 +16,10 @@
         .rotate-180 {
             transform: rotate(180deg);
         }
-        html {
+        /* html {
             font-size: 13px !important;
             -webkit-tap-highlight-color: transparent;
-        }
+        } */
     </style>
 
     <!-- Scripts -->
