@@ -37,13 +37,13 @@ jobs:
             echo "SQLite database already exists."
           fi
 
-      - name: Setup Project
-        run: |
-          touch database/database.sqlite
-          php artisan migrate:fresh --force --seed
-          php artisan config:clear
-          php artisan cache:clear
-          php artisan key:generate
+      # - name: Setup Project
+      #   run: |
+      #     touch database/database.sqlite
+      #     php artisan migrate:fresh --force --seed
+      #     php artisan config:clear
+      #     php artisan cache:clear
+      #     php artisan key:generate
 
       - name: Deploy to Server
         if: ${{ success() }}
