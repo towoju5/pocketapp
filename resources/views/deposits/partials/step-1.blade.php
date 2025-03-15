@@ -30,7 +30,7 @@
         @csrf
         <input type="hidden" name="deposit_step" value="1">
         @foreach ($methods as $method)
-            <label class="payment-method bg-gray-800 rounded-lg p-4 flex flex-col justify-between cursor-pointer">
+            <label class="payment-method bg-gray-800 rounded-lg p-4 flex flex-col justify-between cursor-pointer" style="min-width: 200px;">
                 <div class="flex items-center justify-between">
                     <span class="text-lg font-medium">{{ $method->wallet_name }}</span>
                     <img src="{{ $method->coin_logo }}" alt="USDT" class="h-6">

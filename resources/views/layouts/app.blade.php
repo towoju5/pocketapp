@@ -126,6 +126,28 @@
             color: inherit;
         }
     </style>
+        <script>
+        document.getElementById('chatForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const input = document.getElementById('messageInput');
+            if (input.value.trim()) {
+                axios.post('/chat/send', { content: input.value })
+                    .then(response => {
+                        input.value = '';
+                    });
+            }
+        });
+
+        window.Echo.private('chat.' + {{ auth()->id() }})
+            .listen('ChatEvent', (e) => {
+                const messagesDiv = document.getElementById('messages');
+                const newMessage = document.createElement('div');
+                newMessage.className = 'p-3 rounded-lg bg-gray-200 text-black mr-auto';
+                newMessage.textContent = e.message.content;
+                messagesDiv.appendChild(newMessage);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            });
+    </script>
     @stack('css')
 </head>
 
