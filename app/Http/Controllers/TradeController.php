@@ -7,14 +7,21 @@ use App\Models\Assets;
 use App\Models\Trade;
 use App\Jobs\EvaluateTrade;
 use App\Models\User;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Necmicolak\YahooFinance\FinanceAsset;
 
 class TradeController extends Controller
 {
+    public function __construct()
+    {
+        //
+    }
+    
     public function index(Request $request)
     {
         $trades = Trade::whereUserId(auth()->id())->latest()->paginate(10);
@@ -69,7 +76,7 @@ class TradeController extends Controller
             "trade_status" => "pending",
             "trade_copied_count" => 0,
             'user_id' => $user->id,
-            'trade_wallet' => $user->wallet_mode ?? 'demo'  // acceptable are real or demo
+            'trade_wallet' => $user->wallet_mode ?? 'qt_demo_usd'
         ]);
 
         // Dispatch the NewTradeCreated event
