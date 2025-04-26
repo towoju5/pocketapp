@@ -1231,6 +1231,7 @@
   /***********************************************************
    *               GLOBALS & INITIAL SETUP
    ***********************************************************/
+//   wss://green.derivws.com/websockets/v3?app_id=16929&l=EN&brand=deriv
   const websocketUrl = "wss://green.derivws.com/websockets/v3?app_id=16929&l=EN&brand=deriv";
   let ws;
   let chart;
@@ -1396,7 +1397,7 @@
       console.log("Connected to WebSocket");
       // Request candle data instead of ticks
       const request = {
-        ticks_history: "JD10",
+        ticks_history: "AAPL",
         adjust_start_time: 1,
         count: 1000,
         end: "latest",
