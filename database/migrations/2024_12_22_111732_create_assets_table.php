@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('olymptrade_ticker')->comment('To generate the live chart data');
             $table->enum('exchange_float_type', ['fixed', 'float', 'combine']);
             $table->string('exchange_float');
+            $table->string('asset_profit_margin')->default(0);
             $table->json('extra_data')->nullable();
             $table->timestamps();
             $table->softDeletes();
@@ -28,7 +29,7 @@ return new class extends Migration
     }
 
     /**
-     * Reverse the migrations.
+     * Reverse the migrations.saaaaaa
      */
     public function down(): void
     {

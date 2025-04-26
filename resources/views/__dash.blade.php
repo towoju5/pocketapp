@@ -306,9 +306,7 @@
                 <div>
                     <label for="input_amount_field" class="block text-sm font-light mb-2">Amount</label>
                     <div class="relative">
-                        <input type="number" step="any" id="input_amount_field" name="amount" oninput="calculate_trade_profit()"
-                            class="p-2 pe-11 block w-full border-[#293341] rounded-lg text-sm bg-[#1f2334]"
-                            placeholder="1" value="1" name="amount">
+                        <input type="text" pattern="^\d*\.?\d*$" step="any" id="input_amount_field" name="amount" oninput="calculate_trade_profit()" class="p-2 pe-11 block w-full border-[#293341] rounded-lg text-sm bg-[#1f2334]" autocomplete="off" placeholder="1000">
                         <input type="hidden" name="direction" id="direction" value="">
                         <div
                             class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-10 border-l p-3 border-[#293341]">
