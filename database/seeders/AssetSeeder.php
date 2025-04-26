@@ -27,7 +27,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -42,7 +42,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
             ],
@@ -57,7 +57,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
             ],
@@ -73,7 +73,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -90,7 +90,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -106,7 +106,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -121,7 +121,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -137,7 +137,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
             ],
@@ -153,7 +153,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 
@@ -170,7 +170,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 
@@ -187,7 +187,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 
@@ -203,7 +203,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 
@@ -219,7 +219,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 4,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -236,7 +236,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -252,7 +252,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -267,7 +267,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -282,7 +282,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 4,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -298,7 +298,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -314,7 +314,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -329,7 +329,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -344,7 +344,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -360,7 +360,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -376,7 +376,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -392,7 +392,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -408,7 +408,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -423,7 +423,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -1083,7 +1083,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -1099,7 +1099,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -1115,7 +1115,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -1130,7 +1130,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -1145,7 +1145,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -1160,7 +1160,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -1176,7 +1176,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -1192,7 +1192,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -1208,7 +1208,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -1223,7 +1223,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -1239,7 +1239,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -1254,7 +1254,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -1269,7 +1269,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 4,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -1285,7 +1285,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -1300,7 +1300,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 4,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true
             ],
@@ -1316,7 +1316,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false
             ],
@@ -1332,7 +1332,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 4,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -1992,7 +1992,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -2586,7 +2586,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -3180,7 +3180,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -3774,7 +3774,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -4368,7 +4368,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -4962,7 +4962,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -5556,7 +5556,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -6216,7 +6216,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -6809,7 +6809,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -7470,7 +7470,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -7820,7 +7820,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 1,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -8414,7 +8414,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -9008,7 +9008,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 1,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -9602,7 +9602,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -10196,7 +10196,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -10790,7 +10790,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -11384,7 +11384,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -11978,7 +11978,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -12572,7 +12572,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -13165,7 +13165,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -13824,7 +13824,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -14483,7 +14483,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -15078,7 +15078,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -15427,7 +15427,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -15776,7 +15776,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -16369,7 +16369,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 4,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -16962,7 +16962,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 6,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -17621,7 +17621,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 0,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -18214,7 +18214,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -18565,7 +18565,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -18915,7 +18915,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -19265,7 +19265,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -19615,7 +19615,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -19966,7 +19966,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -20315,7 +20315,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -20974,7 +20974,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -21633,7 +21633,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -22293,7 +22293,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -22954,7 +22954,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -23305,7 +23305,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -23654,7 +23654,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -24313,7 +24313,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -24973,7 +24973,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -25322,7 +25322,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -25915,7 +25915,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -25945,7 +25945,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -26296,7 +26296,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -26647,7 +26647,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -26996,7 +26996,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -27589,7 +27589,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 4,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -28183,7 +28183,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 0,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -28212,7 +28212,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 1,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -28806,7 +28806,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -29156,7 +29156,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -29506,7 +29506,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 1,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -30101,7 +30101,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -30451,7 +30451,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -31045,7 +31045,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -31639,7 +31639,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -32233,7 +32233,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -32826,7 +32826,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -33485,7 +33485,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -34145,7 +34145,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -34495,7 +34495,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -34844,7 +34844,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 1,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -35437,7 +35437,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 4,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -36030,7 +36030,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -36690,7 +36690,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -37041,7 +37041,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -37390,7 +37390,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -37419,7 +37419,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 4,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -38079,7 +38079,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -38428,7 +38428,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 1,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -39021,7 +39021,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -39682,7 +39682,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -40032,7 +40032,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -40061,7 +40061,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -40720,7 +40720,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 4,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -41380,7 +41380,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -41973,7 +41973,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -42633,7 +42633,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -43226,7 +43226,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -43885,7 +43885,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -43915,7 +43915,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -44508,7 +44508,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -45167,7 +45167,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -45760,7 +45760,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -46353,7 +46353,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -46946,7 +46946,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -46976,7 +46976,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -47327,7 +47327,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -47677,7 +47677,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -48271,7 +48271,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -48864,7 +48864,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -49523,7 +49523,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -50183,7 +50183,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 2,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -50533,7 +50533,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -51192,7 +51192,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 5,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => true,
                 "chart" => [
@@ -51786,7 +51786,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 1,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -52380,7 +52380,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 1,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
@@ -52974,7 +52974,7 @@ class AssetSeeder extends Seeder
                 ],
                 "precision" => 3,
                 "is_geo_limited" => false,
-"asset_profit_margin" => rand(0.1, 45.3))
+"asset_profit_margin" => rand(0.1, 45.3),
                 "trading_enabled" => false,
                 "active" => false,
                 "chart" => [
