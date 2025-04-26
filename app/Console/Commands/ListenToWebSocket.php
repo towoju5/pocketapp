@@ -3,7 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\Services\WebSocketService;
+use App\Services\WebSocketListener;
 
 class ListenToWebSocket extends Command
 {
@@ -17,8 +17,8 @@ class ListenToWebSocket extends Command
 
     public function handle()
     {
-        $webSocketService = new WebSocketService();
-        $webSocketService->sendSubscriptionMessage(); // Send subscription message
+        $webSocketService = new WebSocketListener();
+        $webSocketService->subscribe(); // Send subscription message
         $webSocketService->listenAndBroadcast(); // Listen and broadcast WebSocket events
     }
 }
