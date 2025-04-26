@@ -432,13 +432,13 @@
 
         <!-- Tabs -->
         <div class="flex border-b border-[#2a3142] w-full">
-            <button id="openTab" class="trade-open-close relative py-2 text-gray-200 bg-[#1e2131] font-thin text-sm w-6/12">
+            <button onclick="toggleTradeMenu('active')" id="openTab" class="trade-open-close relative py-2 text-gray-500 bg-[#272b3c] font-thin text-sm w-6/12">
                 Opened
-                <div class="tab-indicator absolute bottom-0 left-0 w-full h-0.5 bg-blue-500"></div>
+                <div id="open-tab-indicator" class="hidden absolute bottom-0 left-0 w-full h-0.5 bg-blue-500"></div>
             </button>
-            <button id="closedTab" class="trade-open-close py-2 text-gray-500 bg-[#272b3c] font-thin text-sm w-6/12">
+            <button onclick="toggleTradeMenu('closed')" id="closedTab" class="trade-open-close relative py-2 text-gray-500 bg-[#272b3c] font-thin text-sm w-6/12">
                 Closed
-                <div class="tab-indicator absolute bottom-0 left-0 w-full h-0.5 bg-blue-500"></div>
+                <div id="close-tab-indicator" class="hidden absolute bottom-0 left-0 w-full h-0.5 bg-blue-500"></div>
             </button>
         </div>
 
@@ -1229,7 +1229,7 @@
   /***********************************************************
    *               GLOBALS & INITIAL SETUP
    ***********************************************************/
-//   wss://green.derivws.com/websockets/v3?app_id=16929&l=EN&brand=deriv
+  //   wss://green.derivws.com/websockets/v3?app_id=16929&l=EN&brand=deriv
   const websocketUrl = "wss://green.derivws.com/websockets/v3?app_id=16929&l=EN&brand=deriv";
   let ws;
   let chart;

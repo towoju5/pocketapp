@@ -173,39 +173,47 @@
     <!-- Include jQuery -->
     <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
     <script>
-        $(document).ready(function () {
-            $("#openTab").click(function () {
-                // Show Open Trades, Hide Closed Trades
-                $("#openTrades").removeClass("hidden");
-                $("#closedTrades").addClass("hidden");
+        function toggleTradeMenu(state) {
+            const openTab = document.getElementById('openTab');
+            const closedTab = document.getElementById('closedTab');
+            const openTrades = document.getElementById('openTrades');
+            const closedTrades = document.getElementById('closedTrades');
+            const openTabIndicator = document.getElementById('open-tab-indicator');
+            const closeTabIndicator = document.getElementById('close-tab-indicator');
 
-                // Update active/inactive tab styles
-                $("#openTab").addClass("text-gray-200 bg-[#1e2131]").removeClass("text-gray-500 bg-[#272b3c]");
-                $("#closedTab").addClass("text-gray-500 bg-[#272b3c]").removeClass("text-gray-200 bg-[#1e2131]");
+            if (state === 'active') {
+                // Show Open Trades
+                openTrades.classList.remove('hidden');
+                closedTrades.classList.add('hidden');
 
-                // Ensure blue bottom border is only on the active tab
-                $("#openTab .tab-indicator").removeClass("hidden");
-                $("#closedTab .tab-indicator").addClass("hidden");
-            });
+                // Update tab styles
+                openTab.classList.add('text-gray-200', 'bg-[#1e2131]', 'active-tab');
+                openTab.classList.remove('text-gray-500', 'bg-[#272b3c]');
+                closedTab.classList.add('text-gray-500', 'bg-[#272b3c]');
+                closedTab.classList.remove('text-gray-200', 'bg-[#1e2131]', 'active-tab');
 
-            $("#closedTab").click(function () {
-                // Show Closed Trades, Hide Open Trades
-                $("#closedTrades").removeClass("hidden");
-                $("#openTrades").addClass("hidden");
+                // Tab indicator
+                openTabIndicator.classList.remove('active-tab');
+                closeTabIndicator.classList.add('active-tab');
+            } else if (state === 'closed') {
+                // Show Closed Trades
+                closedTrades.classList.remove('hidden');
+                openTrades.classList.add('hidden');
 
-                // Update active/inactive tab styles
-                $("#closedTab").addClass("text-gray-200 bg-[#1e2131]").removeClass("text-gray-500 bg-[#272b3c]");
-                $("#openTab").addClass("text-gray-500 bg-[#272b3c]").removeClass("text-gray-200 bg-[#1e2131]");
+                // Update tab styles
+                closedTab.classList.add('text-gray-200', 'bg-[#1e2131]', 'active-tab');
+                closedTab.classList.remove('text-gray-500', 'bg-[#272b3c]');
+                openTab.classList.add('text-gray-500', 'bg-[#272b3c]');
+                openTab.classList.remove('text-gray-200', 'bg-[#1e2131]', 'active-tab');
+            }
+        }
 
-                // Ensure blue bottom border is only on the active tab
-                $("#closedTab .tab-indicator").removeClass("hidden");
-                $("#openTab .tab-indicator").addClass("hidden");
-            });
-
-            // Set the default active tab on page load
-            $("#openTab").trigger("click");
+        // When page loads, make sure 'Opened' is active by default:
+        window.addEventListener('DOMContentLoaded', function () {
+            toggleTradeMenu('active');
         });
     </script>
+
     <!-- Custom JS files -->
     <script src="{{ asset('assets/js/custom.js') }}"></script>
     <!-- <script src="//s3.tradingview.com/tv.js"></script> -->
