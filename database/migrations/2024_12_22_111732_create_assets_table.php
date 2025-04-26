@@ -11,6 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::dropIfExists('assets');
         Schema::create('assets', function (Blueprint $table) {
             $table->id();
             $table->string('symbol');
@@ -21,7 +22,7 @@ return new class extends Migration
             $table->string('olymptrade_ticker')->comment('To generate the live chart data');
             $table->enum('exchange_float_type', ['fixed', 'float', 'combine']);
             $table->string('exchange_float');
-            $table->string('asset_profit_margin')->default(0);
+            $table->string('asset_profit_margin')->default(0.9);
             $table->json('extra_data')->nullable();
             $table->timestamps();
             $table->softDeletes();
