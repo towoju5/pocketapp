@@ -28,14 +28,8 @@ class EvaluateTrade implements ShouldQueue
         try {
             $trade = $this->trade;
             $user = User::where('user_id', $trade->user_id)->first();
-            $percentage_profit = 0.9;
 
-            $profit_amount = ($percentage_profit / 100) * $trade->trade_amount;
-            $total = $trade->trade_amount + $profit_amount;
-
-
-
-            $site_mode = strtolower($trade->trade_wallet) ?? 'demo';
+            $site_mode = strtolower($trade->trade_wallet) ?? 'qt_demo_usd';
             $data = fetchPreChartData($trade->trade_currency, true);
             Log::info(json_encode($data));
             $finalPrice = $data ?? 0;
@@ -43,10 +37,10 @@ class EvaluateTrade implements ShouldQueue
             // Evaluate trade
             if ($trade->trade_direction == 'up' && $finalPrice > $trade->start_price) {
                 $trade->trade_status = 'win';
-                $trade->trade_profit = '1';
+                $trade->trade_profit = $trade->trade_profit;
             } elseif ($trade->trade_direction == 'down' && $finalPrice < $trade->start_price) {
                 $trade->trade_status = 'win';
-                $trade->trade_profit = '1';
+                $trade->trade_profit = $trade->trade_profit;
             } else {
                 $trade->trade_status = 'lose';
             }
@@ -57,7 +51,7 @@ class EvaluateTrade implements ShouldQueue
 
             if ($trade->trade_status == 'win') {
                 // return the user trade with profit
-                credit_user("qt_{$site_mode}_usd", $total, "Successfully won trade ID {$trade->id}");
+                credit_user($trade->trade_wallet, $trade->trade_profit, "Successfully won trade ID {$trade->id}");
             }
 
             event(new \App\Events\TradeUpdated($trade));

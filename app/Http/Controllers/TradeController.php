@@ -40,7 +40,7 @@ class TradeController extends Controller
         $user = auth()->user();        
         create_user_wallet($user->id);
         if(!debit_user($user->trade_wallet ?? 'qt_demo_usd', $request->amount, "Binary Trade Order")) {
-            $user->getWallet('qt_demo_usd')->deposit(1000000);
+            // $user->getWallet('qt_demo_usd')->deposit(1000000);
             return response()->json(['errors' => "Insufficient wallet balance"], 402);
         }
 
@@ -50,8 +50,8 @@ class TradeController extends Controller
 
         $validated = $validated->validated();
 
-        // $x = explode(":", $validated['asset']);
-        // $asset = Assets::where('symbol', $x[1] ?? $x[0])->first();
+        $x = explode(":", $validated['asset']);
+        $asset = Assets::where('symbol', $x[1] ?? $x[0])->first();
 
         // Convert duration from HH:MM:SS to seconds
         $timeParts = explode(':', $validated['duration']);
@@ -64,6 +64,12 @@ class TradeController extends Controller
         $currentPrice = fetchPreChartData($validated['asset'], true);
 
         Log::info(json_encode($currentPrice));
+
+        // calculate the profit percentage of trade
+        $percentage_profit = $asset->asset_profit_margin;
+        $profit_amount = ($percentage_profit / 100) * $request->amount;
+        $calculated_profit = $request->amount + $profit_amount;
+
         
         // Create the leader's trade
         $trade = Trade::create([
@@ -76,7 +82,8 @@ class TradeController extends Controller
             "trade_status" => "pending",
             "trade_copied_count" => 0,
             'user_id' => $user->id,
-            'trade_wallet' => $user->wallet_mode ?? 'qt_demo_usd'
+            'trade_wallet' => $user->wallet_mode ?? 'qt_demo_usd',
+            'trade_profit' => $calculated_profit
         ]);
 
         // Dispatch the NewTradeCreated event

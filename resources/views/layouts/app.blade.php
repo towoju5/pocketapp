@@ -259,7 +259,6 @@
         // Animate to 80%
         circle.animate(0.6);
 
-
         // Get all navigation items
         const navItems = document.querySelectorAll('.nav-item');
         const contentTitle = document.getElementById('contentTitle');

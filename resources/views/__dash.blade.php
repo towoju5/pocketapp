@@ -304,9 +304,9 @@
             <!-- Amount Input -->
             <div class="max-w-sm space-y-3">
                 <div>
-                    <label for="hs-trailing-icon" class="block text-sm font-light mb-2">Amount</label>
+                    <label for="input_amount_field" class="block text-sm font-light mb-2">Amount</label>
                     <div class="relative">
-                        <input type="text" id="hs-trailing-icon" name="amount"
+                        <input type="number" step="any" id="input_amount_field" name="amount" oninput="calculate_trade_profit()"
                             class="p-2 pe-11 block w-full border-[#293341] rounded-lg text-sm bg-[#1f2334]"
                             placeholder="1" value="1" name="amount">
                         <input type="hidden" name="direction" id="direction" value="">
@@ -330,8 +330,8 @@
                 <label>Payout</label>
                 <div
                     class="text-green-400 border border-dashed rounded-lg mb-3 border-[#293341] p-3 flex justify-between">
-                    <span id="profit_percentage">+92% </span>
-                    <span id="payout">$19.20</span>
+                    <span id="profit_percentage">+{{ $data->asset_profit_margin }}% </span>
+                    <span id="payout">$0.0</span>
                 </div>
 
                 <!-- Buy and Sell Buttons -->
@@ -1210,88 +1210,24 @@
 
 @push('js')
 <script>
-        document.addEventListener("DOMContentLoaded", function () {
-        function activateTab(activeTabId) {
-            // Define related elements dynamically
-            const activeTab = document.getElementById(activeTabId);
-            const inactiveTab = activeTab.id === "openTab" ? document.getElementById("closedTab") : document.getElementById("openTab");
-            const activeContent = activeTab.id === "openTab" ? document.getElementById("openTrades") : document.getElementById("closedTrades");
-            const inactiveContent = activeTab.id === "openTab" ? document.getElementById("closedTrades") : document.getElementById("openTrades");
+    // calculate percentage expected return profit
+    function calculate_trade_profit() {
+        const asset_profit = parseFloat("{{ $data->asset_profit_margin }}"); // e.g. 0.9
+        const inputEl = document.getElementById("input_amount_field");
+        const input_amount = parseFloat(inputEl.value);
 
-            // Show the active content, hide the inactive one
-            activeContent.classList.remove("hidden");
-            inactiveContent.classList.add("hidden");
-
-            // Update tab styles
-            activeTab.classList.add("active-tab", "text-gray-200", "bg-[#1e2131]");
-            activeTab.classList.remove("text-gray-500", "bg-[#272b3c]");
-
-            inactiveTab.classList.remove("active-tab", "text-gray-200", "bg-[#1e2131]");
-            inactiveTab.classList.add("text-gray-500", "bg-[#272b3c]");
-
-            // Ensure blue bottom border is only on the active tab
-            activeTab.querySelector(".tab-indicator").classList.remove("hidden");
-            inactiveTab.querySelector(".tab-indicator").classList.add("hidden");
+        if (!isNaN(asset_profit) && !isNaN(input_amount)) {
+            const profit = (asset_profit / 100) * input_amount;
+            document.getElementById('payout').textContent = '$' + profit.toFixed(2);
+            console.log([
+                'Profit is: ' + profit.toFixed(2),
+                'Input amount is: ' + input_amount,
+                'Asset profit margin is: ' + asset_profit
+            ]);
+        } else {
+            console.log('Invalid number entered');
         }
-
-        // Attach click events
-        document.getElementById("openTab").addEventListener("click", function () {
-            activateTab("openTab");
-        });
-
-        document.getElementById("closedTab").addEventListener("click", function () {
-            activateTab("closedTab");
-        });
-
-        // Set the default active tab on page load
-        activateTab("openTab");
-    });
-
-
-    
-
-document.addEventListener("DOMContentLoaded", function () {
-    function startCountdown() {
-        document.querySelectorAll(".signal-card").forEach((card) => {
-            let timeElement = card.querySelector(".signal-time");
-            let timeParts = timeElement.textContent.trim().split(":").map(Number);
-            let totalSeconds = timeParts[0] * 3600 + timeParts[1] * 60 + timeParts[2];
-            // alert("Count down initiated")
-            function updateTimer() {
-                if (totalSeconds <= 0) {
-                    moveToClosedTab(card);
-                    return;
-                }
-
-                totalSeconds--;
-
-                let hours = Math.floor(totalSeconds / 3600);
-                let minutes = Math.floor((totalSeconds % 3600) / 60);
-                let seconds = totalSeconds % 60;
-
-                timeElement.textContent =
-                    String(hours).padStart(2, "0") + ":" +
-                    String(minutes).padStart(2, "0") + ":" +
-                    String(seconds).padStart(2, "0");
-
-                setTimeout(updateTimer, 1000);
-            }
-
-            updateTimer();
-        });
     }
-
-    function moveToClosedTab(card) {
-        let closedTab = document.getElementById("closedTrades");
-        card.remove();
-        closedTab.appendChild(card);
-    }
-
-    startCountdown();
-});
-
-
-
   /***********************************************************
    *               GLOBALS & INITIAL SETUP
    ***********************************************************/
