@@ -16,18 +16,16 @@ return new class extends Migration
             $table->id();
             $table->string('symbol');
             $table->string('name');
-            $table->string('display_symbol');
             $table->string('asset_group');
-            $table->string('yahoo_ticker')->comment('Used to generate inital chart and the acutal trade data');
-            $table->string('olymptrade_ticker')->comment('To generate the live chart data');
-            $table->enum('exchange_float_type', ['fixed', 'float', 'combine']);
-            $table->string('exchange_float');
+            $table->string('exchange_float')->nullable();
             $table->string('asset_profit_margin')->default(0.9);
             $table->json('extra_data')->nullable();
+            $table->boolean('is_otc')->default(false);
             $table->timestamps();
             $table->softDeletes();
         });
     }
+
 
     /**
      * Reverse the migrations.saaaaaa

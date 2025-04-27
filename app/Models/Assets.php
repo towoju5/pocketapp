@@ -15,10 +15,17 @@ class Assets extends Model
         'symbol',
         'name',
         'asset_group',
-        'exchange_float_type',
         'exchange_float',
+        'asset_profit_margin',
+        'extra_data',
+        'is_otc'
     ];
 
     // If you have timestamps and soft deletes
     protected $dates = ['deleted_at'];
+
+    protected $casts = [
+        'extra_data' => 'array',
+        'is_otc' => 'boolean'
+    ];
 }

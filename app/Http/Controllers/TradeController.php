@@ -24,7 +24,6 @@ class TradeController extends Controller
                 $table->string('trade_percentage')->default(0.9);
             });
         }
-        Trade::truncate();
     }
     
     public function index(Request $request)
@@ -55,27 +54,37 @@ class TradeController extends Controller
 
         $validated = $validated->validated();
 
+        $symbol = $request->asset; 
+        if(isset($request->asset)) {
+            $symbol = str_replace('--', '/', $request->asset);
+        }
+
+        $validated['asset'] = $symbol;
         $x = explode(":", $validated['asset']);
-        $asset = Assets::where('symbol', $x[1] ?? $x[0])->first();
+        $asset = Assets::where('symbol', $symbol)->first();
 
         // Convert duration from HH:MM:SS to seconds
         $timeParts = explode(':', $validated['duration']);
         $validated['duration'] = ($timeParts[0] * 3600) + ($timeParts[1] * 60) + $timeParts[2];
 
-
-        $validated['asset'] = str_replace("/", "-", $validated['asset']);
-
         // Fetch initial market price
-        $currentPrice = fetchPreChartData($validated['asset'], true);
+        $currentPrice = getAssetData($request->asset, true);
 
-        Log::info(json_encode($currentPrice));
+        Log::info(json_encode(['current_price' => $currentPrice]));
 
         // calculate the profit percentage of trade
         $percentage_profit = $asset->asset_profit_margin;
         $profit_amount = ($percentage_profit / 100) * $request->amount;
         $calculated_profit = $request->amount + $profit_amount;
 
-        
+        if(is_array($currentPrice)) {
+            return response()->json([
+                'status' => false, 
+                'message' => 'Error placing trade!', 
+                'trade' => [],
+            ]);
+        }
+
         // Create the leader's trade
         $trade = Trade::create([
             "trade_currency" => $validated['asset'],

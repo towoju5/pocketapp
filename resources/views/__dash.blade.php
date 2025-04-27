@@ -112,7 +112,7 @@
                     <div class="relative inline-block" id="assetBtn">
                         <!-- Clickable Dropdown Trigger -->
                         <div class="flex items-center bg-[#2a3142] px-4 py-2 rounded cursor-pointer">
-                            <span class="text-white font-medium" id="selectedAsset">American Express OTC</span>
+                            <span class="text-white font-medium" id="selectedAsset">{{ $data->name }}</span>
                             <svg xmlns="//www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path>
                             </svg>
@@ -126,15 +126,15 @@
                             <div class="w-1/3 bg-gray-700 p-2">
                                 <ul>
                                     <li class="p-2 hover:bg-gray-600 cursor-pointer" onclick="filterStocks('all')">All</li>
-                                    <li class="p-2 hover:bg-gray-600 cursor-pointer" onclick="filterStocks('tech')">Tech</li>
-                                    <li class="p-2 hover:bg-gray-600 cursor-pointer" onclick="filterStocks('finance')">Finance</li>
-                                    <li class="p-2 hover:bg-gray-600 cursor-pointer" onclick="filterStocks('retail')">Retail</li>
+                                    @foreach($assetCategories as $aGroup)
+                                        <li class="p-2 hover:bg-gray-600 cursor-pointer" onclick="filterStocks('{{$aGroup->asset_group}}')">{{ ucfirst($aGroup->asset_group) }}</li>
+                                    @endforeach
                                 </ul>
                             </div>
 
                             <!-- Stock List -->
                             <div class="w-2/3 p-2">
-                                <input type="text" id="searchBar" placeholder="Search..." class="w-full px-2 py-1 bg-gray-700 rounded text-white">
+                                <input type="text" id="searchBar" placeholder="Search..." class="w-full px-2 py-1 bg-gray-700 rounded text-white" style="overflow: scroll">
                                 <ul id="stockList" class="mt-2">
                                     <!-- Stocks will be dynamically added here -->
                                 </ul>
@@ -1246,7 +1246,7 @@ async function fetchHistoricalData() {
     try {
         const from = Math.floor((Date.now() - 3600 * 1000 * 24) / 1000); // 24 hours ago
         const to = Math.floor(Date.now() / 1000);
-        const symbol = encodeURIComponent("EUR/USD.X_Strike");
+        const symbol = encodeURIComponent("{{ $chart_coin }}_Strike");
         const resolution = 1;
 
         const url = `${restApiUrl}?from=${from}&to=${to}&symbol=${symbol}&firstDataRequest=true&resolution=${resolution}`;
@@ -1282,7 +1282,7 @@ function connectWebSocket() {
     ws.onopen = () => {
         // console.log("WebSocket connected");
         const subscribeMessage = {
-            id: "EUR/USD.X", // Match the REST API symbol
+            id: "{{ $chart_coin }}", // Match the REST API symbol
             param: "Option",
             operation: "SUBSCRIBE.TICK"
         };
@@ -1404,10 +1404,10 @@ connectWebSocket();
 	// Convert assets to the required format
 	const stocks = assets.map(asset => {
 		return {
-			name: asset.display_symbol + " OTC",
+			name: asset.name,
 			symbol: asset.symbol,
 			payout: asset.asset_profit_margin + "%", // Default payout
-			category: asset.asset_group === "stocks" ? "tech" : "crypto" // Categorizing based on asset group
+			category: asset.asset_group // Categorizing based on asset group
 		};
 	});
 
@@ -1423,13 +1423,13 @@ connectWebSocket();
 					"p-2 flex justify-between hover:bg-gray-700 cursor-pointer";
 				li.innerHTML = `<span>${stock.name}</span> <span class="text-green-400">${stock.payout}</span>`;
 				li.onclick = function () {
-					document.getElementById("selectedAsset").innerText = stock.name;
-					// alert(stock.symbol + " Selected");
-					window.location.href="/dashboard/"+stock.symbol
-					document
-						.getElementById("assetDropDown")
-						.classList.add("hidden");
-				};
+                    document.getElementById("selectedAsset").innerText = stock.name;
+                    const sanitizedSymbol = stock.symbol.replace(/\//g, '--'); // Replace all '/' with '--'
+                    window.location.href = "/dashboard/" + sanitizedSymbol;
+                    document
+                        .getElementById("assetDropDown")
+                        .classList.add("hidden");
+                };
 				stockList.appendChild(li);
 			}
 		});

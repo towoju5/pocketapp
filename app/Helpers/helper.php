@@ -7,6 +7,7 @@ use App\Models\Option;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use neto737\BitGoSDK\BitGoSDK;
 
@@ -177,14 +178,26 @@ if (!function_exists('fetchPreChartData')) {
 }
 
 if (!function_exists("getAssetData")) {
-    function getAssetData($asset)
+    function getAssetData($asset, $rateOnly = false)
     {
-        $apiUrl = "https://plus.olymptrade.com/api/v1/assets/pair?locale=en_US&pair={$asset}";
+        $unixTimeMilliseconds = round(microtime(true) * 1000);
+        $url = "https://iqcent.com/trade-api/api/ticks?symbol=AUD/CHF.X&from=" . $unixTimeMilliseconds;
+
+        // Simple GET request
+        $response = file_get_contents($url);
+
+        if ($response !== false) {
+            Log::info(json_encode(['result' => $response]));
+        }
+        $apiUrl = "https://iqcent.com/trade-api/api/ticks?symbol={$asset}&from={$unixTimeMilliseconds}";
         try {
             $response = Http::get($apiUrl);
             $resp = $response->json();
-            if (!isset($resp['rate'])) {
+            if (!isset($resp[0]['strike'])) {
                 return ["error" => "Invalid asset"];
+            }
+            if (isset($resp[0]['strike']) && $rateOnly == true) {
+                return $resp[0]['strike'];
             }
             return $resp;
         } catch (\Exception $e) {
@@ -306,7 +319,8 @@ if (!function_exists('credit_user')) {
 
 
 if (!function_exists('social_trades')) {
-    function social_trades(){
+    function social_trades()
+    {
         $users = User::select('users.id', 'users.last_name')
             ->withCount('trades') // Count total trades per user
             ->withSum('trades as total_spent', 'trade_amount') // Sum of trade amounts per user
@@ -317,7 +331,7 @@ if (!function_exists('social_trades')) {
                 $total_spent = (float) $user->total_spent;
                 $total_profit = (float) $user->total_profit;
                 $profit_margin = $total_spent > 0 ? ($total_profit / $total_spent) * 100 : 0;
-                
+
                 return [
                     'user_id' => $user->id,
                     'user_name' => $user->name,
