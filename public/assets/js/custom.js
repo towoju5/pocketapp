@@ -1,12 +1,12 @@
 // window.onload = function () {
 //     // Connect to the trade.created channel
 //     var tradeChannel = Echo.channel("trade.created");
-//     var tradeUpdateChannel = Echo.channel("trade.updated");
+    // var tradeUpdateChannel = Echo.channel("trade.updated");
 
-//     if (tradeChannel) {
-//         toastr.success("Trade update connected");
-//         console.log("Echo connected successfully");
-//     }
+    // if (tradeChannel) {
+    //     toastr.success("Trade update connected");
+    //     console.log("Echo connected successfully");
+    // }
 
 //     // Listen for the 'trade.created' event
 //     tradeChannel.listen(".trade.created", function (data) {
@@ -19,15 +19,47 @@
 //     });
 
 //     // Listen for the 'trade-updated' event
-//     tradeUpdateChannel.listen(".trade-updated", function (data) {
-//         if (data && data.id) {
-//             console.log("Trade Updated:", data);
-//             toastr.success(`Update on trade ${data.id} received`);
-//         } else {
-//             console.error("Invalid trade-updated event data:", data);
-//         }
-//     });
+    // tradeUpdateChannel.listen(".trade-updated", function (data) {
+    //     if (data && data.id) {
+    //         console.log("Trade Updated:", data);
+    //         toastr.success(`Update on trade ${data.id} received`);
+    //     } else {
+    //         console.error("Invalid trade-updated event data:", data);
+    //     }
+    // });
 // };
+
+function initCountdowns() {
+    const countdownElements = document.querySelectorAll('.signal-time');
+    
+    countdownElements.forEach(element => {
+        let timeString = element.textContent.trim();
+        let timerParts = timeString.split(':').map(Number);
+        let totalTime = timerParts[0] * 3600 + timerParts[1] * 60 + timerParts[2];
+
+        const updateCountdown = () => {
+            totalTime--;
+            
+            if (totalTime < 0) {
+                clearInterval(timer);
+                element.textContent = '00:00:00';
+                return;
+            }
+
+            const newHours = Math.floor(totalTime / 3600);
+            const newMinutes = Math.floor((totalTime % 3600) / 60);
+            const newSeconds = totalTime % 60;
+
+            element.textContent = [
+                String(newHours).padStart(2, '0'),
+                String(newMinutes).padStart(2, '0'),
+                String(newSeconds).padStart(2, '0')
+            ].join(':');
+        };
+
+        const timer = setInterval(updateCountdown, 1000);
+    });
+}
 
 
 $(document).ready(function () {
@@ -131,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     }
                 })
                 .catch((error) => {
-                    toastr.error("An error occurred while placing the trade");
+                    // toastr.error("An error occurred while placing the trade");
                     console.error(error);
                 })
                 .finally(() => {

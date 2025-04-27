@@ -19,7 +19,12 @@ class TradeController extends Controller
 {
     public function __construct()
     {
-        //
+        if(!Schema::hasColumn('trades', 'trade_percentage')) {
+            Schema::table('trades', function(Blueprint $table) {
+                $table->string('trade_percentage')->default(0.9);
+            });
+        }
+        Trade::truncate();
     }
     
     public function index(Request $request)
@@ -83,7 +88,8 @@ class TradeController extends Controller
             "trade_copied_count" => 0,
             'user_id' => $user->id,
             'trade_wallet' => $user->wallet_mode ?? 'qt_demo_usd',
-            'trade_profit' => $calculated_profit
+            'trade_profit' => $calculated_profit,
+            'trade_percentage' => $percentage_profit
         ]);
 
         // Dispatch the NewTradeCreated event

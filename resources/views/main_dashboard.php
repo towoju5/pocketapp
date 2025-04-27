@@ -322,7 +322,7 @@
                     }
                 },
                 error: function(xhr) {
-                    toastr.error('An error occurred while placing the trade');
+                    // toastr.error('An error occurred while placing the trade');
                     console.error(xhr);
                 }
             });

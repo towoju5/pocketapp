@@ -152,8 +152,6 @@
 </head>
 
 <body style="overflow: auto;">
-    <!-- @include('components.preloader') -->
-
     @include('layouts.header')
 
     <section class="flex flex-row w-full @if(!Route::is('dashboard'))overflow-hidden @endif border-t border-gray-700">
@@ -212,6 +210,38 @@
         window.addEventListener('DOMContentLoaded', function () {
             toggleTradeMenu('active');
         });
+
+        function initCountdowns() {
+            const countdownElements = document.querySelectorAll('.signal-time');
+            
+            countdownElements.forEach(element => {
+                let timeString = element.textContent.trim();
+                let timerParts = timeString.split(':').map(Number);
+                let totalTime = timerParts[0] * 3600 + timerParts[1] * 60 + timerParts[2];
+
+                const updateCountdown = () => {
+                    totalTime--;
+                    
+                    if (totalTime < 0) {
+                        clearInterval(timer);
+                        element.textContent = '00:00:00';
+                        return;
+                    }
+
+                    const newHours = Math.floor(totalTime / 3600);
+                    const newMinutes = Math.floor((totalTime % 3600) / 60);
+                    const newSeconds = totalTime % 60;
+
+                    element.textContent = [
+                        String(newHours).padStart(2, '0'),
+                        String(newMinutes).padStart(2, '0'),
+                        String(newSeconds).padStart(2, '0')
+                    ].join(':');
+                };
+
+                const timer = setInterval(updateCountdown, 1000);
+            });
+        }
     </script>
 
     <!-- Custom JS files -->
@@ -224,6 +254,7 @@
     
     <script>
         $(document).ready(function() {
+            initCountdowns();
             // input mask for time.
             $("#hs-trailing-icon").inputmask(
                 "99:59:59", {

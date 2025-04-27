@@ -258,7 +258,7 @@
                 </div>
             </div>
             <!-- Main Chart Area -->
-            <div id="chartContainer" class="w-[100%] -mt-[1rem] h-[calc(100% + 1rem)]">
+            <div id="chartContainer" class="w-[100%] -mt-[2rem] h-[calc(100% + 1rem)]" style="margin-top: -3rem;">
                 <style>
                     #loader {
                         position: absolute;
@@ -272,7 +272,7 @@
                 </style>
 
                 <div id="loader">
-                    @include('components.preloader')
+                    <!-- @include('components.preloader') -->
                 </div>
                 <div id="chart-container"></div>
             </div>
@@ -349,6 +349,7 @@
         </form>
     </div>
 </section>
+
 
 <!-- trades -->
 <!-- Main Content Area -->
@@ -446,29 +447,7 @@
         <div id="openTrades" class="flex justify-center items-center mt-0 trade_list-page">
             <div id="openTradeList">
                 @foreach($active_trades as $trade)
-                    <div class="signal-card">
-                        <div class="signal-header">
-                            <div class="signal-title gap-3">
-                                <i class="fas fa-star-o text[#ff9706]"></i> <span class="text-[#8ea5c0]"> {{ $trade->trade_currency }}</span> <span class="signal-percentage">+85%</span>
-                            </div>
-                            <div class="signal-time">03:59:40</div>
-                        </div>
-                        <div class="signal-body">
-                            <div class="signal-price text-[#8ea5c0]">
-                                @if($trade->trade_direction == 'up')
-                                    <i class="fas fa-arrow-up"></i>
-                                @else
-                                    <i class="fas fa-arrow-down"></i>
-                                @endif
-                                ${{ formatPrice($trade->trade_amount) }}
-                            </div>
-                            <div class="signal-profit total_amount base_plus_profit">${{ formatPrice($trade->trade_amount) }}</div>
-                            <div class="signal-profit">+$1,705.10</div>
-                        </div>
-                        <div class="signal-button">
-                            <i class="fas fa-angle-double-up"></i> Double Up
-                        </div>
-                    </div>
+                    @include('mini-pages.trade-list')
                 @endforeach
             </div>
         </div>
@@ -713,6 +692,7 @@
                 <div class="text-xs text-center text-gray-400 mb-3">REAL TRADING</div>
 
                 <div class="flex flex-col gap-3">
+                    <!-- // top trader 1 -->
                     <div class="px-3 py-1 flex items-center gap-2">
                         <div style="width: 20%" class="flex items-center justify-center h-full">
                         <i class="fa-regular fa-circle-user text-2xl" aria-hidden="true"></i>
@@ -738,6 +718,7 @@
                         <div class="flex items-center justify-between"></div>
                         </div>
                     </div>
+                    <!-- // top trader 2 -->
                     <div class="px-3 py-1 flex items-center gap-2" style="background: #292d41">
                         <div style="width: 20%" class="flex items-center justify-center h-full">
                         <i class="fa-regular fa-circle-user text-2xl" aria-hidden="true"></i>
@@ -762,107 +743,6 @@
                         </div>
                         <div class="flex items-center justify-between"></div>
                         </div>
-                    </div>
-                    <div class="px-3 py-1 flex items-center gap-2">
-                        <div style="width: 20%" class="flex items-center justify-center h-full">
-                        <i class="fa-regular fa-circle-user text-2xl" aria-hidden="true"></i>
-                        </div>
-                        <div class="w-full">
-                        <div class="flex items-center justify-between text-sm">
-                            <p>user98987654</p>
-                            <p style="color: #6fc274">+$8,500.00</p>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <div>
-                            <p class="text-xs" style="color: #8ea5c0">Number of trades:</p>
-                            <p class="text-xs text-white">130</p>
-                            </div>
-                            <div>
-                            <p class="text-xs text-right" style="color: #8ea5c0">
-                                Profitable trades:
-                            </p>
-                            <p class="text-xs text-right text-white">44%</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between"></div>
-                        </div>
-                    </div>
-                    <div class="px-3 py-1 flex items-center gap-2" style="background: #292d41">
-                        <div style="width: 20%" class="flex items-center justify-center h-full">
-                        <i class="fa-regular fa-circle-user text-2xl" aria-hidden="true"></i>
-                        </div>
-                        <div class="w-full">
-                        <div class="flex items-center justify-between text-sm">
-                            <p>user98987654</p>
-                            <p style="color: #6fc274">+$8,500.00</p>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <div>
-                            <p class="text-xs" style="color: #8ea5c0">Number of trades:</p>
-                            <p class="text-xs text-white">130</p>
-                            </div>
-                            <div>
-                            <p class="text-xs text-right" style="color: #8ea5c0">
-                                Profitable trades:
-                            </p>
-                            <p class="text-xs text-right text-white">44%</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between"></div>
-                        </div>
-                    </div>
-                    <div class="px-3 py-1 flex items-center gap-2">
-                        <div style="width: 20%" class="flex items-center justify-center h-full">
-                        <i class="fa-regular fa-circle-user text-2xl" aria-hidden="true"></i>
-                        </div>
-                        <div class="w-full">
-                        <div class="flex items-center justify-between text-sm">
-                            <p>user98987654</p>
-                            <p style="color: #6fc274">+$8,500.00</p>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <div>
-                            <p class="text-xs" style="color: #8ea5c0">Number of trades:</p>
-                            <p class="text-xs text-white">130</p>
-                            </div>
-                            <div>
-                            <p class="text-xs text-right" style="color: #8ea5c0">
-                                Profitable trades:
-                            </p>
-                            <p class="text-xs text-right text-white">44%</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between"></div>
-                        </div>
-                    </div>
-                    <div class="px-3 py-1 flex items-center gap-2" style="background: #292d41">
-                        <div style="width: 20%" class="flex items-center justify-center h-full">
-                        <i class="fa-regular fa-circle-user text-2xl" aria-hidden="true"></i>
-                        </div>
-                        <div class="w-full">
-                        <div class="flex items-center justify-between text-sm">
-                            <p>user98987654</p>
-                            <p style="color: #6fc274">+$8,500.00</p>
-                        </div>
-
-                        <div class="flex items-center justify-between">
-                            <div>
-                            <p class="text-xs" style="color: #8ea5c0">Number of trades:</p>
-                            <p class="text-xs text-white">130</p>
-                            </div>
-                            <div>
-                            <p class="text-xs text-right" style="color: #8ea5c0">
-                                Profitable trades:
-                            </p>
-                            <p class="text-xs text-right text-white">44%</p>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between"></div>
-                        </div>
-                    </div>
                     </div>
                 </div>
             </div>
@@ -1217,296 +1097,303 @@
         if (!isNaN(asset_profit) && !isNaN(input_amount)) {
             const profit = (asset_profit / 100) * input_amount;
             document.getElementById('payout').textContent = '$' + profit.toFixed(2);
-            console.log([
-                'Profit is: ' + profit.toFixed(2),
-                'Input amount is: ' + input_amount,
-                'Asset profit margin is: ' + asset_profit
-            ]);
+            // console.log([
+            //     'Profit is: ' + profit.toFixed(2),
+            //     'Input amount is: ' + input_amount,
+            //     'Asset profit margin is: ' + asset_profit
+            // ]);
         } else {
-            console.log('Invalid number entered');
+            // console.log('Invalid number entered');
         }
     }
-  /***********************************************************
-   *               GLOBALS & INITIAL SETUP
-   ***********************************************************/
-  //   wss://green.derivws.com/websockets/v3?app_id=16929&l=EN&brand=deriv
-  const websocketUrl = "wss://green.derivws.com/websockets/v3?app_id=16929&l=EN&brand=deriv";
-  let ws;
-  let chart;
-  let series;            // current active series
-  let chartType = "candlestick";
-  let showArea = false; 
-  let autoScroll = true; // toggled by "Enable autoscroll"
 
-  // We'll store the raw candle data in memory
-  let candleData = [];
+/***********************************************************
+ *               GLOBALS & INITIAL SETUP
+ ***********************************************************/
+const restApiUrl = "https://iqcent.com/trade-api/history";
+const websocketUrl = "wss://iqcent.com/trade-api-ws/api/ws/price";
+let ws;
+let chart;
+let series;
+let chartType = "line";
+let showArea = true;
+let autoScroll = true;
 
-  function initChart() {
+let candleData = [];
+
+function initChart() {
     const chartContainer = document.getElementById("chart-container");
 
     chart = LightweightCharts.createChart(chartContainer, {
-      layout: {
-        backgroundColor: 'transparent',
-        textColor: '#ffffff',
-      },
-      grid: {
-        vertLines: { visible: false },
-        horzLines: { visible: false },
-      },
-      timeScale: {
-        rightOffset: 30,  // Extra offset so the latest candle isn't on the extreme edge
-        barSpacing: 8,
-        fixLeftEdge: true,
-      },
+        layout: {
+            backgroundColor: 'transparent',
+            textColor: '#ffffff',
+        },
+        grid: {
+            vertLines: { visible: false },
+            horzLines: { visible: false },
+        },
+        timeScale: {
+            rightOffset: 30,
+            barSpacing: 8,
+            fixLeftEdge: false,
+        },
     });
 
-    // Create initial series
-    createSeries(chartType);
-
-    // Handle resizing
-    handleResize();
-  }
-
-  /***********************************************************
-   *               SERIES CREATION / SWITCHING
-   ***********************************************************/
-  function createSeries(type) {
-    // If a series already exists, remove it
-    if (series) {
-      chart.removeSeries(series);
-      series = null;
-    }
-
-    // Decide which type of series to create
-    // For Heikin Ashi, we also use candlestick series,
-    // but we transform the data to Heikin Ashi before setting.
-    switch (type) {
-      case 'line':
-        // If "show area" is enabled, use area series instead
-        if (showArea) {
-          series = chart.addAreaSeries({
-            topColor: 'rgba(67, 83, 254, 0.4)',
-            bottomColor: 'rgba(67, 83, 254, 0.0)',
-            lineColor: '#4353fe',
-          });
-        } else {
-          series = chart.addLineSeries({ color: '#fff' });
+    chart.applyOptions({
+        localization: {
+            priceFormatter: (price) => {
+                return price.toFixed(5); // Example: Format to 5 decimal places
+            }
         }
-        break;
+    });
+    
+    createSeries(chartType);
+    handleResize();
+}
 
-      case 'bar':
-        series = chart.addBarSeries({
-          upColor: '#4bffb5',
-          downColor: '#ff4976',
-          borderVisible: false,
-        });
-        break;
-
-      case 'candlestick':
-        series = chart.addCandlestickSeries({
-          upColor: '#4bffb5',
-          downColor: '#ff4976',
-          borderVisible: false,
-          wickVisible: true,
-        });
-        break;
-
-      case 'heikinAshi':
-        // We'll use a candlestick series for drawing Heikin Ashi
-        series = chart.addCandlestickSeries({
-          upColor: '#4bffb5',
-          downColor: '#ff4976',
-          borderVisible: false,
-          wickVisible: true,
-        });
-        break;
+/***********************************************************
+ *               SERIES CREATION / SWITCHING
+ ***********************************************************/
+function createSeries(type) {
+    if (series) {
+        chart.removeSeries(series);
+        series = null;
     }
 
-    // Now that we have the new series, set data from candleData (if we already fetched some)
+    switch (type) {
+        case 'line':
+            if (showArea) {
+                series = chart.addAreaSeries({
+                    topColor: 'rgba(67, 83, 254, 0.4)',
+                    bottomColor: 'rgba(67, 83, 254, 0.0)',
+                    lineColor: '#4353fe',
+                });
+            } else {
+                series = chart.addLineSeries({ color: '#fff' });
+            }
+            break;
+        case 'bar':
+            series = chart.addBarSeries({
+                upColor: '#4bffb5',
+                downColor: '#ff4976',
+                borderVisible: false,
+            });
+            break;
+        case 'candlestick':
+        case 'heikinAshi':
+            series = chart.addCandlestickSeries({
+                upColor: '#4bffb5',
+                downColor: '#ff4976',
+                borderVisible: false,
+                wickVisible: true,
+            });
+            break;
+    }
+
     updateSeriesData();
-  }
+}
 
-  // Transform standard OHLC data to Heikin Ashi
-  function transformToHeikinAshi(data) {
+function updateSeriesData() {
+    if (!series) return;
+
+    if (chartType === 'heikinAshi') {
+        const haData = transformToHeikinAshi(candleData);
+        series.setData(haData);
+    } else if (chartType === 'line') {
+        const lineData = candleData.map(c => ({
+            time: c.time,
+            value: c.close,
+        }));
+        series.setData(lineData);
+    } else {
+        series.setData(candleData);
+    }
+}
+
+function transformToHeikinAshi(data) {
     if (!data || data.length === 0) return [];
-
     let haData = [];
-    // Initialize previous HaOpen & HaClose with the first real candle
     let prevHaOpen = data[0].open;
     let prevHaClose = data[0].close;
 
     for (let i = 0; i < data.length; i++) {
-      let d = data[i];
-      const haClose = (d.open + d.high + d.low + d.close) / 4;
-      const haOpen = (prevHaOpen + prevHaClose) / 2;
-      const haHigh = Math.max(d.high, haOpen, haClose);
-      const haLow = Math.min(d.low, haOpen, haClose);
+        const d = data[i];
+        const haClose = (d.open + d.high + d.low + d.close) / 4;
+        const haOpen = (prevHaOpen + prevHaClose) / 2;
+        const haHigh = Math.max(d.high, haOpen, haClose);
+        const haLow = Math.min(d.low, haOpen, haClose);
 
-      haData.push({
-        time: d.time,
-        open: haOpen,
-        high: haHigh,
-        low: haLow,
-        close: haClose,
-      });
+        haData.push({
+            time: d.time,
+            open: haOpen,
+            high: haHigh,
+            low: haLow,
+            close: haClose,
+        });
 
-      prevHaOpen = haOpen;
-      prevHaClose = haClose;
+        prevHaOpen = haOpen;
+        prevHaClose = haClose;
     }
 
     return haData;
-  }
+}
 
-  // Depending on chartType, set or update the series data
-  function updateSeriesData() {
-    if (!series) return;
+/***********************************************************
+ *            FETCH HISTORICAL DATA (REST API)
+ ***********************************************************/
+async function fetchHistoricalData() {
+    try {
+        const from = Math.floor((Date.now() - 3600 * 1000 * 24) / 1000); // 24 hours ago
+        const to = Math.floor(Date.now() / 1000);
+        const symbol = encodeURIComponent("EUR/USD.X_Strike");
+        const resolution = 1;
 
-    switch (chartType) {
-      case 'line':
-        // Convert OHLC to single-value data
-        const singleValueData = candleData.map(c => ({
-          time: c.time,
-          value: c.close,
-        }));
-        series.setData(singleValueData);
-        break;
+        const url = `${restApiUrl}?from=${from}&to=${to}&symbol=${symbol}&firstDataRequest=true&resolution=${resolution}`;
 
-      case 'bar':
-      case 'candlestick':
-        // Both bar & candlestick need full OHLC
-        series.setData(candleData);
-        break;
+        const response = await fetch(url);
+        const data = await response.json();
 
-      case 'heikinAshi':
-        // Convert standard OHLC to Heikin Ashi
-        const haData = transformToHeikinAshi(candleData);
-        series.setData(haData);
-        break;
+        if (data && data.result && Array.isArray(data.result)) {
+            candleData = data.result.map(c => ({
+                time: Math.floor(c.time / 1000), // Convert from milliseconds to seconds
+                open: c.open,
+                high: c.high,
+                low: c.low,
+                close: c.close,
+            }));
+            // console.log(candleData);
+            updateSeriesData();
+            scrollIfEnabled();
+        } else {
+            console.error("Unexpected historical data format", data);
+        }
+    } catch (error) {
+        console.error("Failed to fetch historical data", error);
     }
-  }
+}
 
-  /***********************************************************
-   *            FETCH & SUBSCRIBE TO WEBSOCKET DATA
-   ***********************************************************/
-  function fetchHistoricalData() {
+/***********************************************************
+ *            LIVE DATA VIA WEBSOCKET
+ ***********************************************************/
+function connectWebSocket() {
     ws = new WebSocket(websocketUrl);
 
     ws.onopen = () => {
-      console.log("Connected to WebSocket");
-      // Request candle data instead of ticks
-      const request = {
-        ticks_history: "AAPL",
-        adjust_start_time: 1,
-        count: 1000,
-        end: "latest",
-        style: "candles",    // <--- request OHLC data
-        subscribe: 1,
-        granularity: 60      // 1-minute candles (adjust as you like)
-      };
-      ws.send(JSON.stringify(request));
+        // console.log("WebSocket connected");
+        const subscribeMessage = {
+            id: "EUR/USD.X", // Match the REST API symbol
+            param: "Option",
+            operation: "SUBSCRIBE.TICK"
+        };
+        ws.send(JSON.stringify(subscribeMessage));
     };
 
     ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
+        try {
+            const message = JSON.parse(event.data);
+            // console.log("WebSocket message received:", message);
 
-      // Historical candles
-      if (data.msg_type === "candles" && data.candles) {
-        // Convert each candle to the format needed by Lightweight Charts
-        candleData = data.candles.map(c => ({
-          time: c.epoch,
-          open: c.open,
-          high: c.high,
-          low: c.low,
-          close: c.close,
-        }));
-        updateSeriesData();
-        scrollIfEnabled();
-      }
+            if (message && typeof message.p === 'number' && typeof message.t === 'number') {
+                const now = Math.floor(message.t / 1000); // Convert ms to seconds
+                const price = parseFloat(message.p.toFixed(6)); // Precision 6 decimals
 
-      // A new candle or updated candle (for real-time subscription)
-      if (data.msg_type === "ohlc") {
-        const c = data.ohlc;
-        // We either update the last candle or push a new one if a new epoch arrived
-        const lastCandle = candleData[candleData.length - 1];
-        if (lastCandle && lastCandle.time === c.open_time) {
-          // Update existing candle
-          lastCandle.open = c.open;
-          lastCandle.high = c.high;
-          lastCandle.low = c.low;
-          lastCandle.close = c.close;
-        } else {
-          // New candle
-          candleData.push({
-            time: c.open_time,
-            open: c.open,
-            high: c.high,
-            low: c.low,
-            close: c.close,
-          });
+                // For candleData (for bars/candles/heikin ashi):
+                const lastCandle = candleData[candleData.length - 1];
+                if (!lastCandle || now >= lastCandle.time + 60) {
+                    candleData.push({
+                        time: now,
+                        open: price,
+                        high: price,
+                        low: price,
+                        close: price,
+                    });
+                } else {
+                    lastCandle.close = price;
+                    lastCandle.high = Math.max(lastCandle.high, price);
+                    lastCandle.low = Math.min(lastCandle.low, price);
+                }
+
+                // For real-time update:
+                if (chartType === 'line') {
+                    series.update({ time: now, value: price });
+                } else if (chartType === 'candlestick' || chartType === 'bar' || chartType === 'heikinAshi') {
+                    updateSeriesData(); // Full update for candle types
+                }
+
+                scrollIfEnabled();
+            } else {
+                console.error("Unexpected websocket data:", message);
+            }
+        } catch (error) {
+            console.error("Failed to process WebSocket message:", error);
         }
-        updateSeriesData();
-        scrollIfEnabled();
-      }
+    };
+
+    ws.onerror = (err) => {
+        console.error("WebSocket error", err);
     };
 
     ws.onclose = () => {
-      console.log("WebSocket closed. Reconnecting...");
-      setTimeout(fetchHistoricalData, 3000);
+        console.warn("WebSocket closed. Reconnecting...");
+        setTimeout(connectWebSocket, 3000);
     };
-  }
+}
 
-  // Auto-scroll to the most recent candle if enabled
-  function scrollIfEnabled() {
-    if (!autoScroll) return;
-    chart.timeScale().scrollToRealTime();
-  }
 
-  /***********************************************************
-   *              UI EVENT HANDLERS (Chart Types / Toggles)
-   ***********************************************************/
-  function setChartType(type) {
+/***********************************************************
+ *                AUTO-SCROLL CONTROL
+ ***********************************************************/
+function scrollIfEnabled() {
+    if (autoScroll) {
+        chart.timeScale().scrollToRealTime();
+    }
+}
+
+/***********************************************************
+ *              UI EVENT HANDLERS
+ ***********************************************************/
+function setChartType(type) {
     chartType = type;
     createSeries(chartType);
-  }
+}
 
-  // “Show area” toggle for line-based charts
-  function toggleArea() {
+function toggleArea() {
     showArea = !showArea;
-    // Only relevant if we’re on a line-based chart
     if (chartType === 'line') {
-      createSeries('line');
+        createSeries('line');
     }
-  }
+}
 
-  // “Enable autoscroll” toggle
-  function toggleAutoScroll() {
+function toggleAutoScroll() {
     autoScroll = !autoScroll;
     if (autoScroll) {
-      scrollIfEnabled();
+        scrollIfEnabled();
     }
-  }
+}
 
-  /***********************************************************
-   *             CHART RESIZING
-   ***********************************************************/
-  function handleResize() {
+/***********************************************************
+ *                CHART RESIZING
+ ***********************************************************/
+function handleResize() {
     const chartContainer = document.getElementById("chart-container");
     function resizeChart() {
-      chart.applyOptions({
-        width: chartContainer.clientWidth,
-        height: chartContainer.clientHeight,
-      });
+        chart.applyOptions({
+            width: chartContainer.clientWidth,
+            height: chartContainer.clientHeight,
+        });
     }
     window.addEventListener("resize", resizeChart);
     new ResizeObserver(resizeChart).observe(chartContainer);
     resizeChart();
-  }
+}
 
-  /***********************************************************
-   *                INIT EVERYTHING
-   ***********************************************************/
-  initChart();
-  fetchHistoricalData();
+/***********************************************************
+ *                INIT EVERYTHING
+ ***********************************************************/
+initChart();
+fetchHistoricalData();
+connectWebSocket();
 
 
   /***********************************************************
@@ -1519,7 +1406,7 @@
 		return {
 			name: asset.display_symbol + " OTC",
 			symbol: asset.symbol,
-			payout: "+92%", // Default payout
+			payout: asset.asset_profit_margin + "%", // Default payout
 			category: asset.asset_group === "stocks" ? "tech" : "crypto" // Categorizing based on asset group
 		};
 	});

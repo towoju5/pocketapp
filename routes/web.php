@@ -16,13 +16,21 @@ use App\Http\Controllers\GitHubArtifactController;
 use App\Http\Controllers\MySafeController;
 use App\Http\Controllers\PromoCodeController;
 use App\Http\Controllers\TradeController;
+use App\Models\Trade;
 use Illuminate\Support\Facades\Http;
 
+Trade::truncate();
 Route::get('/', function () {
     // return response()->json(get_assets());
     // return auth()->user()->authentications;
     return view('act_welcome');
 });
+
+
+Route::get('demo', function(){
+    return view('reverb');
+});
+
 
 
 Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
