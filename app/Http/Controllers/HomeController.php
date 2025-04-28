@@ -12,10 +12,9 @@ class HomeController extends Controller
     public function dashboard(Request $request, $coin = null)
     {
         $user = auth()->user();
-        $isOutOfTradingHours = false;
+        $isOutOfTradingHours = true;
         if(isset($coin)) {
             $coin = str_replace('--', '/', $coin);
-            // var_dump($coin); exit;
         }
 
         $data = Assets::where('symbol', $coin)->first();
@@ -24,6 +23,12 @@ class HomeController extends Controller
             $data = Assets::first();
         }
         
+        $current_rate = getAssetData($coin, true);
+        if(is_numeric($current_rate)) {
+            $isOutOfTradingHours = false;
+        }
+
+
         $assetCategories = Assets::groupBy('asset_group')->get();
         $chart_coin = $data->symbol;
         $active_trades = Trade::where(["trade_status" => "pending", "user_id" => auth()->id()])->get();

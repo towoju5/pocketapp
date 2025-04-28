@@ -120,7 +120,7 @@
                     </div>
 
                     <!-- Asset Dropdown Content -->
-                    <div id="assetDropDown" class="absolute left-5 min-w-160 rounded-lg bg-gray-800 shadow-lg rounded-xl mt-2 z-10 hidden">
+                    <div id="assetDropDown" class="absolute left-1 min-w-160 rounded-lg bg-gray-800 shadow-lg rounded-xl z-10 hidden">
                         <div class="flex">
                             <!-- Categories -->
                             <div class="w-1/3 bg-gray-700 p-2">
@@ -274,7 +274,24 @@
                 <div id="loader">
                     <!-- @include('components.preloader') -->
                 </div>
+                @if($isOutOfTradingHours == true)
+                <div class="max-w-md mx-auto mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 rounded-md shadow-md">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 mr-3 text-yellow-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m0-4h.01M12 6v6m0 6h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                        </svg>
+                        <div>
+                        <p class="font-semibold mb-1">Market Unavailable</p>
+                        <p class="text-sm leading-relaxed">
+                            Trading for the selected asset is currently unavailable as the market is closed. 
+                            Please select a different asset to continue trading.
+                        </p>
+                        </div>
+                    </div>
+                </div>
+                @else
                 <div id="chart-container"></div>
+                @endif
             </div>
         </div>
     </section>
@@ -332,6 +349,22 @@
                     <span id="payout">$0.0</span>
                 </div>
 
+                @if($isOutOfTradingHours == true)
+                <div class="max-w-md mx-auto mt-6 p-4 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 rounded-md shadow-md">
+                    <div class="flex items-start">
+                        <svg class="w-6 h-6 mr-3 text-yellow-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m0-4h.01M12 6v6m0 6h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+                        </svg>
+                        <div>
+                        <p class="font-semibold mb-1">Market Unavailable</p>
+                        <p class="text-sm leading-relaxed">
+                            Trading for the selected asset is currently unavailable as the market is closed. 
+                            Please select a different asset to continue trading.
+                        </p>
+                        </div>
+                    </div>
+                </div>
+                @else
                 <!-- Buy and Sell Buttons -->
                 <div class="gap-2 space-y-2">
                     <button type="button" name="action" data-value="up"
@@ -345,6 +378,7 @@
                         SELL
                     </button>
                 </div>
+                @endif
             </div>
         </form>
     </div>
@@ -1106,296 +1140,301 @@
             // console.log('Invalid number entered');
         }
     }
+</script>
 
-/***********************************************************
- *               GLOBALS & INITIAL SETUP
- ***********************************************************/
-const restApiUrl = "https://iqcent.com/trade-api/history";
-const websocketUrl = "wss://iqcent.com/trade-api-ws/api/ws/price";
-let ws;
-let chart;
-let series;
-let chartType = "line";
-let showArea = true;
-let autoScroll = true;
+@if($isOutOfTradingHours == false)
+<script>
+    /***********************************************************
+     *               GLOBALS & INITIAL SETUP
+     ***********************************************************/
+    const restApiUrl = "https://iqcent.com/trade-api/history";
+    const websocketUrl = "wss://iqcent.com/trade-api-ws/api/ws/price";
+    let ws;
+    let chart;
+    let series;
+    let chartType = "line";
+    let showArea = true;
+    let autoScroll = true;
 
-let candleData = [];
+    let candleData = [];
 
-function initChart() {
-    const chartContainer = document.getElementById("chart-container");
+    function initChart() {
+        const chartContainer = document.getElementById("chart-container");
 
-    chart = LightweightCharts.createChart(chartContainer, {
-        layout: {
-            backgroundColor: 'transparent',
-            textColor: '#ffffff',
-        },
-        grid: {
-            vertLines: { visible: false },
-            horzLines: { visible: false },
-        },
-        timeScale: {
-            rightOffset: 30,
-            barSpacing: 8,
-            fixLeftEdge: false,
-        },
-    });
-
-    chart.applyOptions({
-        localization: {
-            priceFormatter: (price) => {
-                return price.toFixed(5); // Example: Format to 5 decimal places
-            }
-        }
-    });
-    
-    createSeries(chartType);
-    handleResize();
-}
-
-/***********************************************************
- *               SERIES CREATION / SWITCHING
- ***********************************************************/
-function createSeries(type) {
-    if (series) {
-        chart.removeSeries(series);
-        series = null;
-    }
-
-    switch (type) {
-        case 'line':
-            if (showArea) {
-                series = chart.addAreaSeries({
-                    topColor: 'rgba(67, 83, 254, 0.4)',
-                    bottomColor: 'rgba(67, 83, 254, 0.0)',
-                    lineColor: '#4353fe',
-                });
-            } else {
-                series = chart.addLineSeries({ color: '#fff' });
-            }
-            break;
-        case 'bar':
-            series = chart.addBarSeries({
-                upColor: '#4bffb5',
-                downColor: '#ff4976',
-                borderVisible: false,
-            });
-            break;
-        case 'candlestick':
-        case 'heikinAshi':
-            series = chart.addCandlestickSeries({
-                upColor: '#4bffb5',
-                downColor: '#ff4976',
-                borderVisible: false,
-                wickVisible: true,
-            });
-            break;
-    }
-
-    updateSeriesData();
-}
-
-function updateSeriesData() {
-    if (!series) return;
-
-    if (chartType === 'heikinAshi') {
-        const haData = transformToHeikinAshi(candleData);
-        series.setData(haData);
-    } else if (chartType === 'line') {
-        const lineData = candleData.map(c => ({
-            time: c.time,
-            value: c.close,
-        }));
-        series.setData(lineData);
-    } else {
-        series.setData(candleData);
-    }
-}
-
-function transformToHeikinAshi(data) {
-    if (!data || data.length === 0) return [];
-    let haData = [];
-    let prevHaOpen = data[0].open;
-    let prevHaClose = data[0].close;
-
-    for (let i = 0; i < data.length; i++) {
-        const d = data[i];
-        const haClose = (d.open + d.high + d.low + d.close) / 4;
-        const haOpen = (prevHaOpen + prevHaClose) / 2;
-        const haHigh = Math.max(d.high, haOpen, haClose);
-        const haLow = Math.min(d.low, haOpen, haClose);
-
-        haData.push({
-            time: d.time,
-            open: haOpen,
-            high: haHigh,
-            low: haLow,
-            close: haClose,
+        chart = LightweightCharts.createChart(chartContainer, {
+            layout: {
+                backgroundColor: 'transparent',
+                textColor: '#ffffff',
+            },
+            grid: {
+                vertLines: { visible: false },
+                horzLines: { visible: false },
+            },
+            timeScale: {
+                rightOffset: 30,
+                barSpacing: 8,
+                fixLeftEdge: false,
+            },
         });
 
-        prevHaOpen = haOpen;
-        prevHaClose = haClose;
+        chart.applyOptions({
+            localization: {
+                priceFormatter: (price) => {
+                    return price.toFixed(5); // Example: Format to 5 decimal places
+                }
+            }
+        });
+        
+        createSeries(chartType);
+        handleResize();
     }
 
-    return haData;
-}
-
-/***********************************************************
- *            FETCH HISTORICAL DATA (REST API)
- ***********************************************************/
-async function fetchHistoricalData() {
-    try {
-        const from = Math.floor((Date.now() - 3600 * 1000 * 24) / 1000); // 24 hours ago
-        const to = Math.floor(Date.now() / 1000);
-        const symbol = encodeURIComponent("{{ $chart_coin }}_Strike");
-        const resolution = 1;
-
-        const url = `${restApiUrl}?from=${from}&to=${to}&symbol=${symbol}&firstDataRequest=true&resolution=${resolution}`;
-
-        const response = await fetch(url);
-        const data = await response.json();
-
-        if (data && data.result && Array.isArray(data.result)) {
-            candleData = data.result.map(c => ({
-                time: Math.floor(c.time / 1000), // Convert from milliseconds to seconds
-                open: c.open,
-                high: c.high,
-                low: c.low,
-                close: c.close,
-            }));
-            // console.log(candleData);
-            updateSeriesData();
-            scrollIfEnabled();
-        } else {
-            console.error("Unexpected historical data format", data);
+    /***********************************************************
+     *               SERIES CREATION / SWITCHING
+     ***********************************************************/
+    function createSeries(type) {
+        if (series) {
+            chart.removeSeries(series);
+            series = null;
         }
-    } catch (error) {
-        console.error("Failed to fetch historical data", error);
-    }
-}
 
-/***********************************************************
- *            LIVE DATA VIA WEBSOCKET
- ***********************************************************/
-function connectWebSocket() {
-    ws = new WebSocket(websocketUrl);
-
-    ws.onopen = () => {
-        // console.log("WebSocket connected");
-        const subscribeMessage = {
-            id: "{{ $chart_coin }}", // Match the REST API symbol
-            param: "Option",
-            operation: "SUBSCRIBE.TICK"
-        };
-        ws.send(JSON.stringify(subscribeMessage));
-    };
-
-    ws.onmessage = (event) => {
-        try {
-            const message = JSON.parse(event.data);
-            // console.log("WebSocket message received:", message);
-
-            if (message && typeof message.p === 'number' && typeof message.t === 'number') {
-                const now = Math.floor(message.t / 1000); // Convert ms to seconds
-                const price = parseFloat(message.p.toFixed(6)); // Precision 6 decimals
-
-                // For candleData (for bars/candles/heikin ashi):
-                const lastCandle = candleData[candleData.length - 1];
-                if (!lastCandle || now >= lastCandle.time + 60) {
-                    candleData.push({
-                        time: now,
-                        open: price,
-                        high: price,
-                        low: price,
-                        close: price,
+        switch (type) {
+            case 'line':
+                if (showArea) {
+                    series = chart.addAreaSeries({
+                        topColor: 'rgba(67, 83, 254, 0.4)',
+                        bottomColor: 'rgba(67, 83, 254, 0.0)',
+                        lineColor: '#4353fe',
                     });
                 } else {
-                    lastCandle.close = price;
-                    lastCandle.high = Math.max(lastCandle.high, price);
-                    lastCandle.low = Math.min(lastCandle.low, price);
+                    series = chart.addLineSeries({ color: '#fff' });
                 }
+                break;
+            case 'bar':
+                series = chart.addBarSeries({
+                    upColor: '#4bffb5',
+                    downColor: '#ff4976',
+                    borderVisible: false,
+                });
+                break;
+            case 'candlestick':
+            case 'heikinAshi':
+                series = chart.addCandlestickSeries({
+                    upColor: '#4bffb5',
+                    downColor: '#ff4976',
+                    borderVisible: false,
+                    wickVisible: true,
+                });
+                break;
+        }
 
-                // For real-time update:
-                if (chartType === 'line') {
-                    series.update({ time: now, value: price });
-                } else if (chartType === 'candlestick' || chartType === 'bar' || chartType === 'heikinAshi') {
-                    updateSeriesData(); // Full update for candle types
-                }
+        updateSeriesData();
+    }
 
+    function updateSeriesData() {
+        if (!series) return;
+
+        if (chartType === 'heikinAshi') {
+            const haData = transformToHeikinAshi(candleData);
+            series.setData(haData);
+        } else if (chartType === 'line') {
+            const lineData = candleData.map(c => ({
+                time: c.time,
+                value: c.close,
+            }));
+            series.setData(lineData);
+        } else {
+            series.setData(candleData);
+        }
+    }
+
+    function transformToHeikinAshi(data) {
+        if (!data || data.length === 0) return [];
+        let haData = [];
+        let prevHaOpen = data[0].open;
+        let prevHaClose = data[0].close;
+
+        for (let i = 0; i < data.length; i++) {
+            const d = data[i];
+            const haClose = (d.open + d.high + d.low + d.close) / 4;
+            const haOpen = (prevHaOpen + prevHaClose) / 2;
+            const haHigh = Math.max(d.high, haOpen, haClose);
+            const haLow = Math.min(d.low, haOpen, haClose);
+
+            haData.push({
+                time: d.time,
+                open: haOpen,
+                high: haHigh,
+                low: haLow,
+                close: haClose,
+            });
+
+            prevHaOpen = haOpen;
+            prevHaClose = haClose;
+        }
+
+        return haData;
+    }
+
+    /***********************************************************
+     *            FETCH HISTORICAL DATA (REST API)
+     ***********************************************************/
+    async function fetchHistoricalData() {
+        try {
+            const from = Math.floor((Date.now() - 3600 * 1000 * 24) / 1000); // 24 hours ago
+            const to = Math.floor(Date.now() / 1000);
+            const symbol = encodeURIComponent("{{ $chart_coin }}_Strike");
+            const resolution = 1;
+
+            const url = `${restApiUrl}?from=${from}&to=${to}&symbol=${symbol}&firstDataRequest=true&resolution=${resolution}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+
+            if (data && data.result && Array.isArray(data.result)) {
+                candleData = data.result.map(c => ({
+                    time: Math.floor(c.time / 1000), // Convert from milliseconds to seconds
+                    open: c.open,
+                    high: c.high,
+                    low: c.low,
+                    close: c.close,
+                }));
+                // console.log(candleData);
+                updateSeriesData();
                 scrollIfEnabled();
             } else {
-                console.error("Unexpected websocket data:", message);
+                console.error("Unexpected historical data format", data);
             }
         } catch (error) {
-            console.error("Failed to process WebSocket message:", error);
+            console.error("Failed to fetch historical data", error);
         }
-    };
-
-    ws.onerror = (err) => {
-        console.error("WebSocket error", err);
-    };
-
-    ws.onclose = () => {
-        console.warn("WebSocket closed. Reconnecting...");
-        setTimeout(connectWebSocket, 3000);
-    };
-}
-
-
-/***********************************************************
- *                AUTO-SCROLL CONTROL
- ***********************************************************/
-function scrollIfEnabled() {
-    if (autoScroll) {
-        chart.timeScale().scrollToRealTime();
     }
-}
 
-/***********************************************************
- *              UI EVENT HANDLERS
- ***********************************************************/
-function setChartType(type) {
-    chartType = type;
-    createSeries(chartType);
-}
+    /***********************************************************
+     *            LIVE DATA VIA WEBSOCKET
+     ***********************************************************/
+    function connectWebSocket() {
+        ws = new WebSocket(websocketUrl);
 
-function toggleArea() {
-    showArea = !showArea;
-    if (chartType === 'line') {
-        createSeries('line');
+        ws.onopen = () => {
+            // console.log("WebSocket connected");
+            const subscribeMessage = {
+                id: "{{ $chart_coin }}", // Match the REST API symbol
+                param: "Option",
+                operation: "SUBSCRIBE.TICK"
+            };
+            ws.send(JSON.stringify(subscribeMessage));
+        };
+
+        ws.onmessage = (event) => {
+            try {
+                const message = JSON.parse(event.data);
+                // console.log("WebSocket message received:", message);
+
+                if (message && typeof message.p === 'number' && typeof message.t === 'number') {
+                    const now = Math.floor(message.t / 1000); // Convert ms to seconds
+                    const price = parseFloat(message.p.toFixed(6)); // Precision 6 decimals
+
+                    // For candleData (for bars/candles/heikin ashi):
+                    const lastCandle = candleData[candleData.length - 1];
+                    if (!lastCandle || now >= lastCandle.time + 60) {
+                        candleData.push({
+                            time: now,
+                            open: price,
+                            high: price,
+                            low: price,
+                            close: price,
+                        });
+                    } else {
+                        lastCandle.close = price;
+                        lastCandle.high = Math.max(lastCandle.high, price);
+                        lastCandle.low = Math.min(lastCandle.low, price);
+                    }
+
+                    // For real-time update:
+                    if (chartType === 'line') {
+                        series.update({ time: now, value: price });
+                    } else if (chartType === 'candlestick' || chartType === 'bar' || chartType === 'heikinAshi') {
+                        updateSeriesData(); // Full update for candle types
+                    }
+
+                    scrollIfEnabled();
+                } else {
+                    console.error("Unexpected websocket data:", message);
+                }
+            } catch (error) {
+                console.error("Failed to process WebSocket message:", error);
+            }
+        };
+
+        ws.onerror = (err) => {
+            console.error("WebSocket error", err);
+        };
+
+        ws.onclose = () => {
+            console.warn("WebSocket closed. Reconnecting...");
+            setTimeout(connectWebSocket, 3000);
+        };
     }
-}
 
-function toggleAutoScroll() {
-    autoScroll = !autoScroll;
-    if (autoScroll) {
-        scrollIfEnabled();
+
+    /***********************************************************
+     *                AUTO-SCROLL CONTROL
+     ***********************************************************/
+    function scrollIfEnabled() {
+        if (autoScroll) {
+            chart.timeScale().scrollToRealTime();
+        }
     }
-}
 
-/***********************************************************
- *                CHART RESIZING
- ***********************************************************/
-function handleResize() {
-    const chartContainer = document.getElementById("chart-container");
-    function resizeChart() {
-        chart.applyOptions({
-            width: chartContainer.clientWidth,
-            height: chartContainer.clientHeight,
-        });
+    /***********************************************************
+     *              UI EVENT HANDLERS
+     ***********************************************************/
+    function setChartType(type) {
+        chartType = type;
+        createSeries(chartType);
     }
-    window.addEventListener("resize", resizeChart);
-    new ResizeObserver(resizeChart).observe(chartContainer);
-    resizeChart();
-}
 
-/***********************************************************
- *                INIT EVERYTHING
- ***********************************************************/
-initChart();
-fetchHistoricalData();
-connectWebSocket();
+    function toggleArea() {
+        showArea = !showArea;
+        if (chartType === 'line') {
+            createSeries('line');
+        }
+    }
 
+    function toggleAutoScroll() {
+        autoScroll = !autoScroll;
+        if (autoScroll) {
+            scrollIfEnabled();
+        }
+    }
 
+    /***********************************************************
+     *                CHART RESIZING
+     ***********************************************************/
+    function handleResize() {
+        const chartContainer = document.getElementById("chart-container");
+        function resizeChart() {
+            chart.applyOptions({
+                width: chartContainer.clientWidth,
+                height: chartContainer.clientHeight,
+            });
+        }
+        window.addEventListener("resize", resizeChart);
+        new ResizeObserver(resizeChart).observe(chartContainer);
+        resizeChart();
+    }
+
+    /***********************************************************
+     *                INIT EVERYTHING
+     ***********************************************************/
+    initChart();
+    fetchHistoricalData();
+    connectWebSocket();
+</script>
+@endif
+
+<script>
   /***********************************************************
    *                STOCK Loading and s
    ***********************************************************/

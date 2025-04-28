@@ -14,10 +14,10 @@
             @else
                 <i class="fas fa-arrow-down"></i>
             @endif
-            ${{ formatPrice($trade->trade_amount) }}
+            ${{ ($trade->trade_amount) }}
         </div>
-        <div class="signal-profit total_amount base_plus_profit">${{ formatPrice($trade->trade_amount) }}</div>
-        <div class="signal-profit">+${{ $trade->trade_profit }}</div>
+        <div class="signal-profit total_amount base_plus_profit">${{ ($trade->trade_profit) }}</div>
+        <div class="signal-profit">+${{ $trade->trade_profit - $trade->trade_amount }}</div>
     </div>
     <div class="signal-button">
         <i class="fas fa-angle-double-up"></i> Double Up
