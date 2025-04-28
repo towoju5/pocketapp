@@ -25,11 +25,6 @@ Route::get('/', function () {
 });
 
 
-Route::get('demo', function(){
-    return view('reverb');
-});
-
-
 
 Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('dashboard/demo/{coin?}', [HomeController::class, 'demo'])->middleware(['auth', 'verified'])->name('dashboard.demo');

@@ -197,6 +197,9 @@ if (! function_exists("getAssetData")) {
             // Fetch the API response
             $response = @file_get_contents($apiUrl, false, $context);
 
+            // Optional: Log the API response (you can comment this if not needed)
+            Log::info('API Response: ' . json_encode(['result' => $response, 'url' => $apiUrl]));
+
             // Handle failed HTTP request
             if ($response === false) {
                 $error = [
@@ -220,10 +223,6 @@ if (! function_exists("getAssetData")) {
                 exit;
             }
 
-            // Optional: Log the API response (you can comment this if not needed)
-            if (function_exists('Log')) {
-                Log::info('API Response: ' . json_encode(['result' => $resp, 'url' => $apiUrl]));
-            }
 
             // Validate API data
             if (empty($resp['success']) || empty($resp['data']) || ! isset($resp['data'][0]['strike'])) {
