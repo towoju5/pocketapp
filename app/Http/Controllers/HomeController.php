@@ -56,7 +56,7 @@ class HomeController extends Controller
 
         $wallet_balance = $user->getWallet($user->active_wallet_slug ?? 'qt_demo_usd') ?? ["balance" => 0];
 
-        return view('__dash', compact('data', 'assetCategories', 'isOutOfTradingHours', 'wallet_balance'));
+        return view('__dash', compact('data', 'assetCategories', 'isOutOfTradingHours', 'active_trades', 'chart_coin', 'wallet_balance'));
     }
 
     public function get_asset_history($ticker, $isOTC = true)
