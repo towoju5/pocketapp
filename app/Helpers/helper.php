@@ -149,33 +149,6 @@ if (! function_exists('checkMultipleTables')) {
     }
 }
 
-if (! function_exists('fetchPreChartData')) {
-    function fetchPreChartData($cryptoPair, $isRate = false)
-    {
-        // External API URL
-        try {
-            $resp = getAssetData($cryptoPair);
-            if (! isset($resp['rate'])) {
-                return response()->json(['error' => 'Invalid asset']);
-            }
-
-            if (isset($resp['charts'][0]['candles'])) {
-                if ($isRate) {
-                    return $resp['rate'];
-                }
-
-                $data = $resp['charts'][0]['candles'];
-                return response()->json($data);
-            }
-
-            return response()->json(['error' => $resp]);
-        } catch (\Exception $e) {
-            // Catch any exceptions and return an error
-            Log::error('Error fetching data from API: ' . $e->getMessage());
-            return response()->json(['error' => $e->getMessage()]);
-        }
-    }
-}
 
 if (! function_exists("getAssetData")) {
     function getAssetData($asset, $rateOnly = false)

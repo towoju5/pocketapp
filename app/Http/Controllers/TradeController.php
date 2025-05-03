@@ -76,7 +76,7 @@ class TradeController extends Controller
         $calculated_profit = $validated['amount'] + $profit_amount;
 
         try {
-            $trade = Trade::updateOrCreate([
+            $trade = Trade::create([
                 "trade_currency" => $symbol,
                 "trade_direction" => $validated['direction'],
                 "trade_amount" => $validated['amount'],
@@ -99,7 +99,7 @@ class TradeController extends Controller
             return response()->json(['status' => false, 'message' => 'Error placing trade']);
         }
 
-        event(new NewTradeCreated($trade));
+        // event(new NewTradeCreated($trade));
         EvaluateTrade::dispatch($trade)->delay(now()->addSeconds($validated['duration']));
 
         return response()->json([

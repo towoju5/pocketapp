@@ -28,11 +28,12 @@ class EvaluateTrade implements ShouldQueue
         try {
             $trade = $this->trade;
             $user = User::where('user_id', $trade->user_id)->first();
-
-            $site_mode = strtolower($trade->trade_wallet) ?? 'qt_demo_usd';
-            $data = fetchPreChartData($trade->trade_currency, true);
-            Log::info(json_encode($data));
-            $finalPrice = $data ?? 0;
+           
+            $currentPrice = getAssetData($trade->trade_currency, true);
+            if (is_array($currentPrice)) {
+                Log::info(json_encode($currentPrice));
+            }
+            $finalPrice = $currentPrice ?? 0;
 
             // Evaluate trade
             if ($trade->trade_direction == 'up' && $finalPrice > $trade->start_price) {
@@ -54,7 +55,7 @@ class EvaluateTrade implements ShouldQueue
                 credit_user($trade->trade_wallet, $trade->trade_profit + $trade->trade_amount, "Successfully won trade ID {$trade->id}");
             }
 
-            event(new \App\Events\TradeUpdated($trade));
+            // event(new \App\Events\TradeUpdated($trade));
         } catch (\Throwable $th) {
             Log::info(json_encode($th));
         }

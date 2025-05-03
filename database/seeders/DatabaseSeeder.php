@@ -14,8 +14,9 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            TradeSeeder::class,
             // BitgoSeeder::class,
-            AssetSeeder::class,
+            // AssetSeeder::class,
             // CountryStateCityTableSeeder::class,
         ]);
     }

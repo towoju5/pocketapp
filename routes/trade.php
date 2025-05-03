@@ -18,9 +18,9 @@ Route::group(['middleware' => 'auth'], function () {
         return response()->json($assets);
     });
 
-    Route::get('api/stream/chart/{coin}', function ($coin) {
-        $chartData = fetchPreChartData($coin);
-        return $chartData;
-    })->name('stream.chart');
+    // Route::get('api/stream/chart/{coin}', function ($coin) {
+    //     $chartData = fetchPreChartData($coin);
+    //     return $chartData;
+    // })->name('stream.chart');
 
 });

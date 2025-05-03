@@ -19,7 +19,7 @@ use App\Http\Controllers\TradeController;
 use App\Models\Trade;
 use Illuminate\Support\Facades\Http;
 
-Trade::truncate();
+
 Route::get('/', function () {
     return view('act_welcome');
 });
