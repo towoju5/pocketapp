@@ -10,7 +10,7 @@ class ApiController extends Controller
 {
     public function tradeList()
     {
-        $trades = Trade::where(['user_id' => auth()->id(), 'trade_status' => 'pending'])->latest()->get();
+        return $trades = Trade::where(['user_id' => auth()->id(), 'trade_status' => 'pending'])->latest()->get();
         // return response()->json($trades);
         return view('mini-pages.trade-list', compact('trades'));
     }

@@ -29,9 +29,9 @@ Route::get('/', function () {
 Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('dashboard/demo/{coin?}', [HomeController::class, 'demo'])->middleware(['auth', 'verified'])->name('dashboard.demo');
 
-// Route::get('dashboard-2', function () {
-//     return view('dash');
-// })->middleware(['auth', 'verified'])->name('dash');
+Route::get('dashboard-2', function () {
+    return view('dash');
+})->middleware(['auth', 'verified'])->name('dash');
 
 Route::middleware(['auth'])->group(function () {
     Route::resource('deposits', DepositController::class);
@@ -103,9 +103,6 @@ Route::get('tt', function () {
 });
 
 
-
-
-
 require __DIR__ . '/auth.php';
 require __DIR__ . '/temp.php';
 require __DIR__ . '/chat.php';
@@ -114,7 +111,6 @@ require __DIR__ . '/admin.php';
 
 
 Route::fallback(function () {
-    sleep(10);
     return response()->json([
         "status" => "error",
         "message" => "Route not found",

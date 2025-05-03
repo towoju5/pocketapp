@@ -1,0 +1,532 @@
+[2025-04-30 11:47:09] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746013629807,\"ask\":3277.43537,\"bid\":3276.76537,\"strike\":3277.10037},{\"timeId\":1746013629556,\"ask\":3277.51519,\"bid\":3276.84519,\"strike\":3277.18019},{\"timeId\":1746013629304,\"ask\":3277.52093,\"bid\":3276.84093,\"strike\":3277.18093}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=XAU%2FUSD&from=1746013629243"}  
+[2025-04-30 11:47:09] local.INFO: {"current_price":3277.10037}  
+[2025-04-30 11:47:09] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "XAU\/USD",
+    "trade_direction": "down",
+    "trade_amount": "334",
+    "trade_close_time": "2025-05-02T03:48:09.973388Z",
+    "trade_extra_info": {
+        "asset": "XAU\/USD",
+        "amount": "334",
+        "direction": "down",
+        "duration": 144060,
+        "currentPrice": 3277.10037
+    },
+    "start_price": 3277.10037,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 336.505,
+    "trade_percentage": "0.75",
+    "updated_at": "2025-04-30T11:47:09.000000Z",
+    "created_at": "2025-04-30T11:47:09.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 11:47:22] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746013641882,\"ask\":3278.66098,\"bid\":3277.99098,\"strike\":3278.32598},{\"timeId\":1746013641631,\"ask\":3278.74699,\"bid\":3278.06699,\"strike\":3278.40699},{\"timeId\":1746013641379,\"ask\":3278.66076,\"bid\":3277.98076,\"strike\":3278.32076},{\"timeId\":1746013641127,\"ask\":3278.62613,\"bid\":3277.94613,\"strike\":3278.28613}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=XAU%2FUSD&from=1746013641007"}  
+[2025-04-30 11:47:22] local.INFO: {"current_price":3278.32598}  
+[2025-04-30 11:47:22] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "XAU\/USD",
+    "trade_direction": "down",
+    "trade_amount": "334",
+    "trade_close_time": "2025-05-02T03:48:22.086212Z",
+    "trade_extra_info": {
+        "asset": "XAU\/USD",
+        "amount": "334",
+        "direction": "down",
+        "duration": 144060,
+        "currentPrice": 3278.32598
+    },
+    "start_price": 3278.32598,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 336.505,
+    "trade_percentage": "0.75",
+    "updated_at": "2025-04-30T11:47:22.000000Z",
+    "created_at": "2025-04-30T11:47:22.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:03:49] local.INFO: API Response: {"result":"{\"success\":false,\"data\":null,\"code\":\"request\",\"problem\":\"Invalid request fields\",\"constraints\":[{\"key\":\"symbol\",\"message\":[\"error.minLength\"]},{\"key\":\"symbol\",\"message\":[\"error.required\"]}]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=&from=1746021828166"}  
+[2025-04-30 14:04:01] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746021840681,\"ask\":12230.549,\"bid\":12225.69,\"strike\":12228.1195},{\"timeId\":1746021840430,\"ask\":12230.2935,\"bid\":12225.4345,\"strike\":12227.864},{\"timeId\":1746021840180,\"ask\":12229.9865,\"bid\":12225.1275,\"strike\":12227.557},{\"timeId\":1746021839929,\"ask\":12229.5283,\"bid\":12224.6693,\"strike\":12227.0988}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746021839690"}  
+[2025-04-30 14:04:38] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746021878242,\"ask\":12225.9244,\"bid\":12221.0654,\"strike\":12223.4949},{\"timeId\":1746021877992,\"ask\":12225.4395,\"bid\":12220.5805,\"strike\":12223.01},{\"timeId\":1746021877741,\"ask\":12225.0106,\"bid\":12220.1516,\"strike\":12222.5811},{\"timeId\":1746021877491,\"ask\":12225.3168,\"bid\":12220.4578,\"strike\":12222.8873},{\"timeId\":1746021877241,\"ask\":12225.7951,\"bid\":12220.9361,\"strike\":12223.3656}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746021877097"}  
+[2025-04-30 14:04:38] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "up",
+    "trade_amount": "3454",
+    "trade_close_time": "2025-04-30T14:05:38.724697Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "3454",
+        "direction": "up",
+        "duration": 60,
+        "currentPrice": 12223.4949
+    },
+    "start_price": 12223.4949,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 3485.7768,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:04:38.000000Z",
+    "created_at": "2025-04-30T14:04:38.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:05:49] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746021949099,\"ask\":12230.201,\"bid\":12225.342,\"strike\":12227.7715},{\"timeId\":1746021948848,\"ask\":12230.2458,\"bid\":12225.3868,\"strike\":12227.8163},{\"timeId\":1746021948598,\"ask\":12230.1081,\"bid\":12225.2491,\"strike\":12227.6786}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746021948513"}  
+[2025-04-30 14:05:49] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "down",
+    "trade_amount": "3454",
+    "trade_close_time": "2025-04-30T14:06:49.609853Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "3454",
+        "direction": "down",
+        "duration": 60,
+        "currentPrice": 12227.7715
+    },
+    "start_price": 12227.7715,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 3485.7768,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:05:49.000000Z",
+    "created_at": "2025-04-30T14:05:49.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:06:28] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746021987906,\"ask\":12234.7222,\"bid\":12229.8632,\"strike\":12232.2927},{\"timeId\":1746021987656,\"ask\":12234.4949,\"bid\":12229.6359,\"strike\":12232.0654},{\"timeId\":1746021987406,\"ask\":12234.0884,\"bid\":12229.2294,\"strike\":12231.6589},{\"timeId\":1746021987155,\"ask\":12234.1745,\"bid\":12229.3155,\"strike\":12231.745},{\"timeId\":1746021986905,\"ask\":12234.1845,\"bid\":12229.3255,\"strike\":12231.755}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746021986745"}  
+[2025-04-30 14:06:28] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "up",
+    "trade_amount": "3454",
+    "trade_close_time": "2025-04-30T14:07:28.311456Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "3454",
+        "direction": "up",
+        "duration": 60,
+        "currentPrice": 12232.2927
+    },
+    "start_price": 12232.2927,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 3485.7768,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:06:28.000000Z",
+    "created_at": "2025-04-30T14:06:28.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:06:31] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746021990661,\"ask\":12236.1797,\"bid\":12231.3207,\"strike\":12233.7502},{\"timeId\":1746021990410,\"ask\":12235.7365,\"bid\":12230.8775,\"strike\":12233.307},{\"timeId\":1746021990160,\"ask\":12235.4675,\"bid\":12230.6085,\"strike\":12233.038}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746021990034"}  
+[2025-04-30 14:06:31] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "down",
+    "trade_amount": "3454",
+    "trade_close_time": "2025-04-30T14:07:31.138335Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "3454",
+        "direction": "down",
+        "duration": 60,
+        "currentPrice": 12233.7502
+    },
+    "start_price": 12233.7502,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 3485.7768,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:06:31.000000Z",
+    "created_at": "2025-04-30T14:06:31.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:07:12] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746022031974,\"ask\":12241.3091,\"bid\":12236.4501,\"strike\":12238.8796},{\"timeId\":1746022031723,\"ask\":12241.2372,\"bid\":12236.3782,\"strike\":12238.8077},{\"timeId\":1746022031473,\"ask\":12241.0299,\"bid\":12236.1709,\"strike\":12238.6004}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746022031288"}  
+[2025-04-30 14:07:12] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "up",
+    "trade_amount": "3454",
+    "trade_close_time": "2025-04-30T14:08:12.518695Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "3454",
+        "direction": "up",
+        "duration": 60,
+        "currentPrice": 12238.8796
+    },
+    "start_price": 12238.8796,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 3485.7768,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:07:12.000000Z",
+    "created_at": "2025-04-30T14:07:12.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:12:23] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746022342703,\"ask\":12243.7416,\"bid\":12238.8826,\"strike\":12241.3121},{\"timeId\":1746022342452,\"ask\":12243.3469,\"bid\":12238.4879,\"strike\":12240.9174},{\"timeId\":1746022342202,\"ask\":12243.629,\"bid\":12238.77,\"strike\":12241.1995}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746022342140"}  
+[2025-04-30 14:12:23] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "down",
+    "trade_amount": "3454",
+    "trade_close_time": "2025-04-30T14:13:23.208614Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "3454",
+        "direction": "down",
+        "duration": 60,
+        "currentPrice": 12241.3121
+    },
+    "start_price": 12241.3121,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 3485.7768,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:12:23.000000Z",
+    "created_at": "2025-04-30T14:12:23.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:14:40] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746022480173,\"ask\":12229.7062,\"bid\":12224.8472,\"strike\":12227.2767},{\"timeId\":1746022479923,\"ask\":12230.1216,\"bid\":12225.2626,\"strike\":12227.6921},{\"timeId\":1746022479673,\"ask\":12230.4604,\"bid\":12225.6014,\"strike\":12228.0309}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746022479524"}  
+[2025-04-30 14:14:40] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "up",
+    "trade_amount": "3454",
+    "trade_close_time": "2025-04-30T14:15:40.594498Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "3454",
+        "direction": "up",
+        "duration": 60,
+        "currentPrice": 12227.2767
+    },
+    "start_price": 12227.2767,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 3485.7768,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:14:40.000000Z",
+    "created_at": "2025-04-30T14:14:40.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:14:50] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746022489938,\"ask\":12233.9765,\"bid\":12229.1175,\"strike\":12231.547},{\"timeId\":1746022489687,\"ask\":12233.639,\"bid\":12228.78,\"strike\":12231.2095},{\"timeId\":1746022489437,\"ask\":12233.9549,\"bid\":12229.0959,\"strike\":12231.5254}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746022489319"}  
+[2025-04-30 14:14:50] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "down",
+    "trade_amount": "3454",
+    "trade_close_time": "2025-04-30T14:15:50.144414Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "3454",
+        "direction": "down",
+        "duration": 60,
+        "currentPrice": 12231.547
+    },
+    "start_price": 12231.547,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 3485.7768,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:14:50.000000Z",
+    "created_at": "2025-04-30T14:14:50.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:16:08] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746022568553,\"ask\":12235.0833,\"bid\":12230.2243,\"strike\":12232.6538},{\"timeId\":1746022568302,\"ask\":12235.3713,\"bid\":12230.5123,\"strike\":12232.9418},{\"timeId\":1746022568052,\"ask\":12234.8892,\"bid\":12230.0302,\"strike\":12232.4597}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746022567876"}  
+[2025-04-30 14:16:18] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746022577817,\"ask\":12234.308,\"bid\":12229.449,\"strike\":12231.8785},{\"timeId\":1746022577566,\"ask\":12233.9933,\"bid\":12229.1343,\"strike\":12231.5638},{\"timeId\":1746022577316,\"ask\":12233.7082,\"bid\":12228.8492,\"strike\":12231.2787},{\"timeId\":1746022577066,\"ask\":12234.1789,\"bid\":12229.3199,\"strike\":12231.7494},{\"timeId\":1746022576815,\"ask\":12233.7855,\"bid\":12228.9265,\"strike\":12231.356}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746022576602"}  
+[2025-04-30 14:16:18] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "up",
+    "trade_amount": "34",
+    "trade_close_time": "2025-04-30T14:17:18.133841Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "34",
+        "direction": "up",
+        "duration": 60,
+        "currentPrice": 12231.8785
+    },
+    "start_price": 12231.8785,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 34.3128,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:16:18.000000Z",
+    "created_at": "2025-04-30T14:16:18.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:16:26] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746022585833,\"ask\":12234.9697,\"bid\":12230.1107,\"strike\":12232.5402},{\"timeId\":1746022585583,\"ask\":12234.6434,\"bid\":12229.7844,\"strike\":12232.2139},{\"timeId\":1746022585332,\"ask\":12234.7136,\"bid\":12229.8546,\"strike\":12232.2841}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746022585085"}  
+[2025-04-30 14:16:26] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "down",
+    "trade_amount": "34",
+    "trade_close_time": "2025-04-30T14:17:26.109045Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "34",
+        "direction": "down",
+        "duration": 60,
+        "currentPrice": 12232.5402
+    },
+    "start_price": 12232.5402,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 34.3128,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:16:26.000000Z",
+    "created_at": "2025-04-30T14:16:26.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:20:51] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746022850988,\"ask\":12253.4927,\"bid\":12248.6337,\"strike\":12251.0632},{\"timeId\":1746022850738,\"ask\":12253.6993,\"bid\":12248.8403,\"strike\":12251.2698},{\"timeId\":1746022850488,\"ask\":12253.378,\"bid\":12248.519,\"strike\":12250.9485},{\"timeId\":1746022850237,\"ask\":12253.4306,\"bid\":12248.5716,\"strike\":12251.0011},{\"timeId\":1746022849987,\"ask\":12253.5407,\"bid\":12248.6817,\"strike\":12251.1112},{\"timeId\":1746022849737,\"ask\":12253.7562,\"bid\":12248.8972,\"strike\":12251.3267}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746022849671"}  
+[2025-04-30 14:20:51] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "up",
+    "trade_amount": "34",
+    "trade_close_time": "2025-04-30T14:21:51.452430Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "34",
+        "direction": "up",
+        "duration": 60,
+        "currentPrice": 12251.0632
+    },
+    "start_price": 12251.0632,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 34.3128,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:20:51.000000Z",
+    "created_at": "2025-04-30T14:20:51.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:21:20] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746022880532,\"ask\":12254.1474,\"bid\":12249.2884,\"strike\":12251.7179},{\"timeId\":1746022880281,\"ask\":12254.0634,\"bid\":12249.2044,\"strike\":12251.6339},{\"timeId\":1746022880031,\"ask\":12253.6736,\"bid\":12248.8146,\"strike\":12251.2441}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746022879803"}  
+[2025-04-30 14:21:20] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "up",
+    "trade_amount": "34",
+    "trade_close_time": "2025-04-30T14:22:20.906462Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "34",
+        "direction": "up",
+        "duration": 60,
+        "currentPrice": 12251.7179
+    },
+    "start_price": 12251.7179,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 34.3128,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:21:20.000000Z",
+    "created_at": "2025-04-30T14:21:20.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:21:43] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746022903317,\"ask\":12251.9958,\"bid\":12247.1368,\"strike\":12249.5663},{\"timeId\":1746022903067,\"ask\":12252.2124,\"bid\":12247.3534,\"strike\":12249.7829},{\"timeId\":1746022902816,\"ask\":12251.8873,\"bid\":12247.0283,\"strike\":12249.4578},{\"timeId\":1746022902566,\"ask\":12251.6934,\"bid\":12246.8344,\"strike\":12249.2639},{\"timeId\":1746022902315,\"ask\":12251.4676,\"bid\":12246.6086,\"strike\":12249.0381}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746022902210"}  
+[2025-04-30 14:21:43] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "down",
+    "trade_amount": "34",
+    "trade_close_time": "2025-04-30T14:22:43.590378Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "34",
+        "direction": "down",
+        "duration": 60,
+        "currentPrice": 12249.5663
+    },
+    "start_price": 12249.5663,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 34.3128,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:21:43.000000Z",
+    "created_at": "2025-04-30T14:21:43.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:21:48] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746022907824,\"ask\":12255.1428,\"bid\":12250.2838,\"strike\":12252.7133},{\"timeId\":1746022907574,\"ask\":12254.849,\"bid\":12249.99,\"strike\":12252.4195},{\"timeId\":1746022907323,\"ask\":12254.4948,\"bid\":12249.6358,\"strike\":12252.0653},{\"timeId\":1746022907073,\"ask\":12254.3215,\"bid\":12249.4625,\"strike\":12251.892}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746022907022"}  
+[2025-04-30 14:21:48] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "down",
+    "trade_amount": "34",
+    "trade_close_time": "2025-04-30T14:22:48.086028Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "34",
+        "direction": "down",
+        "duration": 60,
+        "currentPrice": 12252.7133
+    },
+    "start_price": 12252.7133,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 34.3128,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:21:48.000000Z",
+    "created_at": "2025-04-30T14:21:48.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:23:07] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746022986693,\"ask\":12256.0887,\"bid\":12251.2297,\"strike\":12253.6592},{\"timeId\":1746022986443,\"ask\":12256.0601,\"bid\":12251.2011,\"strike\":12253.6306},{\"timeId\":1746022986192,\"ask\":12256.4881,\"bid\":12251.6291,\"strike\":12254.0586}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746022986130"}  
+[2025-04-30 14:23:07] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "down",
+    "trade_amount": "34",
+    "trade_close_time": "2025-04-30T14:24:07.105646Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "34",
+        "direction": "down",
+        "duration": 60,
+        "currentPrice": 12253.6592
+    },
+    "start_price": 12253.6592,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 34.3128,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:23:07.000000Z",
+    "created_at": "2025-04-30T14:23:07.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:23:33] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746023012731,\"ask\":12255.5822,\"bid\":12250.7232,\"strike\":12253.1527},{\"timeId\":1746023012480,\"ask\":12255.389,\"bid\":12250.53,\"strike\":12252.9595},{\"timeId\":1746023012230,\"ask\":12255.4699,\"bid\":12250.6109,\"strike\":12253.0404},{\"timeId\":1746023011980,\"ask\":12255.7463,\"bid\":12250.8873,\"strike\":12253.3168}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746023011965"}  
+[2025-04-30 14:23:33] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "up",
+    "trade_amount": "34",
+    "trade_close_time": "2025-04-30T14:24:33.023443Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "34",
+        "direction": "up",
+        "duration": 60,
+        "currentPrice": 12253.1527
+    },
+    "start_price": 12253.1527,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 34.3128,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:23:33.000000Z",
+    "created_at": "2025-04-30T14:23:33.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:24:12] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746023052045,\"ask\":12258.1321,\"bid\":12253.2731,\"strike\":12255.7026},{\"timeId\":1746023051794,\"ask\":12258.0351,\"bid\":12253.1761,\"strike\":12255.6056},{\"timeId\":1746023051544,\"ask\":12258.0778,\"bid\":12253.2188,\"strike\":12255.6483},{\"timeId\":1746023051294,\"ask\":12258.2348,\"bid\":12253.3758,\"strike\":12255.8053}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746023051238"}  
+[2025-04-30 14:24:42] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746023082592,\"ask\":12260.0469,\"bid\":12255.1879,\"strike\":12257.6174},{\"timeId\":1746023082341,\"ask\":12259.8712,\"bid\":12255.0122,\"strike\":12257.4417},{\"timeId\":1746023082091,\"ask\":12259.6945,\"bid\":12254.8355,\"strike\":12257.265},{\"timeId\":1746023081841,\"ask\":12260.1586,\"bid\":12255.2996,\"strike\":12257.7291},{\"timeId\":1746023081590,\"ask\":12259.8664,\"bid\":12255.0074,\"strike\":12257.4369},{\"timeId\":1746023081340,\"ask\":12259.7699,\"bid\":12254.9109,\"strike\":12257.3404},{\"timeId\":1746023081090,\"ask\":12259.5613,\"bid\":12254.7023,\"strike\":12257.1318},{\"timeId\":1746023080839,\"ask\":12259.8071,\"bid\":12254.9481,\"strike\":12257.3776}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746023080691"}  
+[2025-04-30 14:25:28] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746023127660,\"ask\":12258.9222,\"bid\":12254.0632,\"strike\":12256.4927},{\"timeId\":1746023127410,\"ask\":12259.1596,\"bid\":12254.3006,\"strike\":12256.7301},{\"timeId\":1746023127159,\"ask\":12258.8426,\"bid\":12253.9836,\"strike\":12256.4131}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=CHE.IDX%2FCHF.X&from=1746023126974"}  
+[2025-04-30 14:25:28] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "CHE.IDX\/CHF.X",
+    "trade_direction": "up",
+    "trade_amount": "78",
+    "trade_close_time": "2025-04-30T14:26:28.006940Z",
+    "trade_extra_info": {
+        "asset": "CHE.IDX\/CHF.X",
+        "amount": "78",
+        "direction": "up",
+        "duration": 60,
+        "currentPrice": 12256.4927
+    },
+    "start_price": 12256.4927,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 78.7176,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:25:28.000000Z",
+    "created_at": "2025-04-30T14:25:28.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 14:25:38] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746023138363,\"ask\":5.197,\"bid\":5.196,\"strike\":5.197},{\"timeId\":1746023138113,\"ask\":5.205,\"bid\":5.204,\"strike\":5.205},{\"timeId\":1746023137862,\"ask\":5.215,\"bid\":5.214,\"strike\":5.215},{\"timeId\":1746023137612,\"ask\":5.219,\"bid\":5.218,\"strike\":5.219}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=UNI%2FUSDT.X&from=1746023137454"}  
+[2025-04-30 14:25:50] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746023149636,\"ask\":5.231,\"bid\":5.23,\"strike\":5.231},{\"timeId\":1746023149386,\"ask\":5.241,\"bid\":5.24,\"strike\":5.241},{\"timeId\":1746023149135,\"ask\":5.24,\"bid\":5.239,\"strike\":5.24},{\"timeId\":1746023148885,\"ask\":5.24,\"bid\":5.239,\"strike\":5.24},{\"timeId\":1746023148634,\"ask\":5.244,\"bid\":5.243,\"strike\":5.244},{\"timeId\":1746023148384,\"ask\":5.236,\"bid\":5.235,\"strike\":5.236}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=UNI%2FUSDT.X&from=1746023148130"}  
+[2025-04-30 14:25:50] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "UNI\/USDT.X",
+    "trade_direction": "up",
+    "trade_amount": "66",
+    "trade_close_time": "2025-04-30T14:26:50.085090Z",
+    "trade_extra_info": {
+        "asset": "UNI\/USDT.X",
+        "amount": "66",
+        "direction": "up",
+        "duration": 60,
+        "currentPrice": 5.231
+    },
+    "start_price": 5.231,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 66.6072,
+    "trade_percentage": "0.92",
+    "updated_at": "2025-04-30T14:25:50.000000Z",
+    "created_at": "2025-04-30T14:25:50.000000Z",
+    "id": 1,
+    "socket": null
+}  
+[2025-04-30 20:56:37] local.INFO: API Response: {"result":"{\"success\":false,\"data\":null,\"code\":\"request\",\"problem\":\"Invalid request fields\",\"constraints\":[{\"key\":\"symbol\",\"message\":[\"error.minLength\"]},{\"key\":\"symbol\",\"message\":[\"error.required\"]}]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=&from=1746046594759"}  
+[2025-04-30 20:57:41] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746046661206,\"ask\":7.7894,\"bid\":7.7887,\"strike\":7.789},{\"timeId\":1746046660872,\"ask\":7.7886,\"bid\":7.7879,\"strike\":7.7882},{\"timeId\":1746046660539,\"ask\":7.7956,\"bid\":7.7949,\"strike\":7.7952},{\"timeId\":1746046660205,\"ask\":7.7901,\"bid\":7.7894,\"strike\":7.7897}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=EUR%2FDKK.X&from=1746046660134"}  
+[2025-04-30 21:04:05] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746047045317,\"ask\":7.8079,\"bid\":7.8072,\"strike\":7.8075},{\"timeId\":1746047044984,\"ask\":7.8032,\"bid\":7.8025,\"strike\":7.8028},{\"timeId\":1746047044651,\"ask\":7.7971,\"bid\":7.7964,\"strike\":7.7967}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=EUR%2FDKK.X&from=1746047044530"}  
+[2025-05-01 11:10:33] local.INFO: API Response: {"result":"{\"success\":true,\"data\":[{\"timeId\":1746097833301,\"ask\":4.7748,\"bid\":4.7741,\"strike\":4.7745},{\"timeId\":1746097832967,\"ask\":4.7821,\"bid\":4.7814,\"strike\":4.7818},{\"timeId\":1746097832634,\"ask\":4.7796,\"bid\":4.7789,\"strike\":4.7793},{\"timeId\":1746097832301,\"ask\":4.7864,\"bid\":4.7857,\"strike\":4.7861}],\"code\":null,\"problem\":null,\"constraints\":[]}","url":"https:\/\/iqcent.com\/trade-api\/api\/ticks?symbol=EUR%2FDKK.X&from=1746097832199"}  

@@ -28,7 +28,8 @@ class TradeController extends Controller
     
     public function index(Request $request)
     {
-        $trades = Trade::whereUserId(auth()->id())->latest()->paginate(10);
+        return response()->json(Trade::all());
+        return $trades = Trade::whereUserId(auth()->id())->latest()->paginate(10);
         return view('trades.index', compact('trades'));
     }
 
@@ -38,73 +39,67 @@ class TradeController extends Controller
             'asset' => 'required|string',
             'amount' => 'required|numeric|min:1',
             'direction' => 'required|in:up,down',
-            'duration' => 'required|min:1',
+            'duration' => 'required|string' // assuming HH:MM:SS
         ]);
-
-        $user = auth()->user();        
-        create_user_wallet($user->id);
-        if(!debit_user($user->trade_wallet ?? 'qt_demo_usd', $request->amount, "Binary Trade Order")) {
-            // $user->getWallet('qt_demo_usd')->deposit(1000000);
-            return response()->json(['errors' => "Insufficient wallet balance"], 402);
-        }
 
         if ($validated->fails()) {
             return response()->json(['errors' => $validated->errors()], 422);
         }
 
         $validated = $validated->validated();
+        $user = auth()->user();
 
-        $symbol = $request->asset; 
-        if(isset($request->asset)) {
-            $symbol = str_replace('--', '/', $request->asset);
+        create_user_wallet($user->id);
+
+        if(!debit_user($user->trade_wallet ?? 'qt_demo_usd', $validated['amount'], "Binary Trade Order")) {
+            return response()->json(['errors' => "Insufficient wallet balance"], 402);
         }
 
+        $symbol = str_replace('--', '/', $validated['asset']);
         $validated['asset'] = $symbol;
-        $x = explode(":", $validated['asset']);
-        $asset = Assets::where('symbol', $symbol)->first();
 
-        // Convert duration from HH:MM:SS to seconds
+        $asset = Assets::where('symbol', $symbol)->first();
+        if (!$asset) {
+            return response()->json(['errors' => "Asset not found"], 404);
+        }
+
         $timeParts = explode(':', $validated['duration']);
         $validated['duration'] = ($timeParts[0] * 3600) + ($timeParts[1] * 60) + $timeParts[2];
 
-        // Fetch initial market price
-        $currentPrice = getAssetData($request->asset, true);
-
-        Log::info(json_encode(['current_price' => $currentPrice]));
-
-        // calculate the profit percentage of trade
-        $percentage_profit = $asset->asset_profit_margin;
-        $profit_amount = ($percentage_profit / 100) * $request->amount;
-        $calculated_profit = $request->amount + $profit_amount;
-
-        if(is_array($currentPrice)) {
-            return response()->json([
-                'status' => false, 
-                'message' => 'Error placing trade!', 
-                'trade' => [],
-            ]);
+        $currentPrice = getAssetData($symbol, true);
+        if (is_array($currentPrice)) {
+            return response()->json(['status' => false, 'message' => 'Error getting asset price']);
         }
 
-        // Create the leader's trade
-        $trade = Trade::create([
-            "trade_currency" => $validated['asset'],
-            "trade_direction" => $validated['direction'],
-            "trade_amount" => $validated['amount'],
-            "trade_close_time" => now()->addSeconds($validated['duration']),
-            "trade_extra_info" => array_merge($validated, ['currentPrice' => $currentPrice]),
-            "start_price" => $currentPrice,
-            "trade_status" => "pending",
-            "trade_copied_count" => 0,
-            'user_id' => $user->id,
-            'trade_wallet' => $user->wallet_mode ?? 'qt_demo_usd',
-            'trade_profit' => $calculated_profit,
-            'trade_percentage' => $percentage_profit
-        ]);
+        $percentage_profit = $asset->asset_profit_margin;
+        $profit_amount = ($percentage_profit / 100) * $validated['amount'];
+        $calculated_profit = $validated['amount'] + $profit_amount;
 
-        // Dispatch the NewTradeCreated event
-        event(new NewTradeCreated($trade)); // This broadcasts the event
+        try {
+            $trade = Trade::updateOrCreate([
+                "trade_currency" => $symbol,
+                "trade_direction" => $validated['direction'],
+                "trade_amount" => $validated['amount'],
+                "trade_close_time" => now()->addSeconds($validated['duration']),
+                "trade_extra_info" => array_merge($validated, ['currentPrice' => $currentPrice]),
+                "start_price" => $currentPrice,
+                "trade_status" => "pending",
+                "trade_copied_count" => 0,
+                'user_id' => $user->id,
+                'trade_wallet' => $user->wallet_mode ?? 'qt_demo_usd',
+                'trade_profit' => $calculated_profit,
+                'trade_percentage' => $percentage_profit,
+            ]);
+        } catch (\Exception $e) {
+            Log::error("Trade creation failed", ['error' => $e->getMessage()]);
+            return response()->json(['status' => false, 'message' => 'Trade creation failed']);
+        }
 
-        // // Dispatch job for trade evaluation
+        if (!$trade || !$trade->id) {
+            return response()->json(['status' => false, 'message' => 'Error placing trade']);
+        }
+
+        event(new NewTradeCreated($trade));
         EvaluateTrade::dispatch($trade)->delay(now()->addSeconds($validated['duration']));
 
         return response()->json([
@@ -114,6 +109,7 @@ class TradeController extends Controller
             'html' => view("mini-pages.trade-list", compact('trade'))->render()
         ]);
     }
+
 
     private function getMarketPrice($market)
     {
