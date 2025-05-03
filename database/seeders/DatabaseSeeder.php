@@ -15,8 +15,8 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             TradeSeeder::class,
-            // BitgoSeeder::class,
-            // AssetSeeder::class,
+            BitgoSeeder::class,
+            AssetSeeder::class,
             // CountryStateCityTableSeeder::class,
         ]);
     }
