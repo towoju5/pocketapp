@@ -5,7 +5,7 @@
           <div class="px-4 h-16 flex items-center justify-between">
               <div class="flex items-center space-x-4">
                   <div class="flex items-center">
-                      <a href="/" class="header__logo logo ">
+                      <a href="{{ route('dashboard') }}" class="header__logo logo ">
                           <svg width="210" height="30" viewBox="0 0 210 30" fill="none" xmlns="http://www.w3.org/2000/svg">
                               <path fill-rule="evenodd" clip-rule="evenodd" d="M18.764 1.39412C23.7097 3.48874 27.0949 7.94781 27.0949 13.0956C27.0949 18.2456 23.7085 22.7046 18.7628 24.7971C13.8182 22.7046 10.4307 18.2456 10.4307 13.0956C10.4307 7.94676 13.8182 3.48769 18.764 1.39412Z" fill="#002ED9"></path>
                               <path fill-rule="evenodd" clip-rule="evenodd" d="M18.7699 1.3964C20.4838 0.486105 22.4389 0 24.5067 0C31.6944 0 37.5293 5.86913 37.5293 13.099C37.5293 20.3278 31.6944 26.1969 24.5067 26.1969C22.4389 26.1969 20.4838 25.7118 18.7688 24.8005C23.0912 22.7069 26.0525 18.2478 26.0525 13.099C26.0525 7.9501 23.0923 3.49102 18.7699 1.3964Z" fill="#0099FA"></path>
@@ -16,14 +16,14 @@
                       </a>
                   </div>
                   <!-- star icon -->
-                  <button class="p-2 hover:bg-gray-700 rounded-md border-1 border-gray-700">
+                  <!-- <button class="p-2 hover:bg-gray-700 rounded-md border-1 border-gray-700">
                       <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg" class="svg-icon">
                           <path d="M20.4656 7.56167C20.401 7.37048 20.2834 7.20254 20.1271 7.07823C19.9709 6.95392 19.7827 6.87858 19.5853 6.86133L13.761 5.99375L11.1508 0.589653C11.067 0.412926 10.9361 0.263883 10.7732 0.159597C10.6102 0.055311 10.4218 0 10.2295 0C10.0373 0 9.84885 0.055311 9.68592 0.159597C9.52299 0.263883 9.39212 0.412926 9.3083 0.589653L6.6981 5.9833L0.873781 6.86133C0.684335 6.88883 0.506229 6.97 0.359675 7.09564C0.213121 7.22128 0.103988 7.38635 0.0446597 7.57212C-0.00964775 7.75366 -0.0145212 7.94688 0.0305624 8.13103C0.075646 8.31518 0.168985 8.48332 0.300561 8.6174L4.52806 12.7985L3.50445 18.7357C3.46312 18.9327 3.4784 19.1376 3.54845 19.3259C3.6185 19.5142 3.74033 19.6778 3.89929 19.7971C4.05824 19.9164 4.24756 19.9862 4.44446 19.9981C4.64136 20.0101 4.83745 19.9638 5.00915 19.8646L10.2295 17.0737L15.4499 19.8646C15.5936 19.9474 15.7559 19.9906 15.9208 19.9901C16.1376 19.9908 16.3491 19.9213 16.5247 19.7915C16.6835 19.6753 16.8065 19.5151 16.879 19.3299C16.9516 19.1447 16.9707 18.9421 16.9342 18.7462L15.9106 12.809L20.1381 8.62786C20.2859 8.5 20.3951 8.33194 20.4531 8.14321C20.511 7.95448 20.5154 7.75283 20.4656 7.56167Z"
                               fill="#8ea5c0">
                           </path>
                       </svg>
-                  </button>
-                  <div class="bg-[#1a1d2d] rounded-2xl p-2 pr-4 flex items-center gap-2 my-2 ">
+                  </button> -->
+                  <div class="bg-[#1a1d2d] rounded-2xl p-2 pr-4 hidden lg:flex items-center gap-2 my-2 ">
                       <!-- Progress Circle Container -->
                       <div id="progress-circle" class="w-9 h-9 relative">
                           <div class="absolute inset-0 flex items-center justify-center text-white text-xs font-medium">
@@ -41,7 +41,7 @@
 
               <!-- Right Section -->
               <div class="flex items-center space-x-4">
-                  <div class="flex items-center bg-[#1a1f2e] border-[#0a6235] bg-gradient-to-r from-[#184771] from-10% via-[#20273f] via-30% to-[#20273f] to-90% rounded-lg p-2">
+                  <div class="hidden lg:flex items-center bg-[#1a1f2e] border-[#0a6235] bg-gradient-to-r from-[#184771] from-10% via-[#20273f] via-30% to-[#20273f] to-90% rounded-lg p-2">
                       <img src="https://pocketoption.com/themes/cabinet/images/header-buttons/bonus-icon.png" alt="Trader Box Icon" class="h-8 w-8 rounded-md">
                       <div class="ml-2">
                           <div class="text-md font-semibold text-white">TRADER'S BOX</div>
