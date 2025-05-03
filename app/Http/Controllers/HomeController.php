@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Assets;
 use App\Models\Trade;
 use Illuminate\Http\Request;
+use App\Services\IqcentDomScraper;
 use Necmicolak\YahooFinance\FinanceAsset;
 
 class HomeController extends Controller
@@ -65,4 +66,16 @@ class HomeController extends Controller
         $history = file_get_contents("https://iqcent.com/trade-api/history?from=1745684639&to=1745702639&symbol={$symbol}&firstDataRequest=true&resolution=1");
         return $history;
     }
+
+    public function getTicks()
+    {
+        $scraper = new IqcentDomScraper();
+        $symbol = 'EUR/USD.X';
+        $from = $to = now()->timestamp * 1000;
+
+        $data = $scraper->getTickData($symbol, $from, $to);
+
+        return response()->json(json_decode($data, true));
+    }
+
 }

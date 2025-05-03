@@ -25,6 +25,8 @@
         "pragmarx/google2fa-laravel": "^2.2",
         "pragmarx/google2fa-qrcode": "^3.0",
         "prevailexcel/laravel-nowpayments": "^1.0",
+        "symfony/dom-crawler": "^7.2",
+        "symfony/http-client": "^7.2",
         "textalk/websocket": "^1.6",
         "yadahan/laravel-authentication-log": "^1.7",
         "yoeunes/toastr": "^3.1"

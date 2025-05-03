@@ -155,7 +155,7 @@ if (! function_exists("getAssetData")) {
     {
         try {
             $unixTimeMilliseconds = round(microtime(true) * 1000);
-            $apiUrl               = "https://iqcent.com/trade-api/api/ticks?symbol=" . urlencode($asset) . "&from=" . $unixTimeMilliseconds;
+            $apiUrl = "https://iqcent.com/trade-api/api/ticks?symbol=" . urlencode($asset) . "&from={$unixTimeMilliseconds}&to={$unixTimeMilliseconds}";
 
             // Create a context with a User-Agent
             $options = [
@@ -169,9 +169,6 @@ if (! function_exists("getAssetData")) {
 
             // Fetch the API response
             $response = @file_get_contents($apiUrl, false, $context);
-
-            // Optional: Log the API response (you can comment this if not needed)
-            Log::info('API Response: ' . json_encode(['result' => $response, 'url' => $apiUrl]));
 
             // Handle failed HTTP request
             if ($response === false) {

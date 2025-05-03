@@ -17,11 +17,15 @@ use App\Http\Controllers\MySafeController;
 use App\Http\Controllers\PromoCodeController;
 use App\Http\Controllers\TradeController;
 use App\Models\Trade;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Schema;
 
 
 Route::get('/', function () {
-    return view('act_welcome');
+    $test = new HomeController();
+    return response()->json($test->getTicks());
+    // return view('act_welcome');
 });
 
 
