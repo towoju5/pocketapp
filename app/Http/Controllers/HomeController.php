@@ -12,7 +12,7 @@ class HomeController extends Controller
     public function dashboard(Request $request, $coin = null)
     {
         $user = auth()->user();
-        $isOutOfTradingHours = true;
+        $isOutOfTradingHours = false;
         if(isset($coin)) {
             $coin = str_replace('--', '/', $coin);
         }

@@ -28,8 +28,8 @@ class TradeController extends Controller
     
     public function index(Request $request)
     {
-        return response()->json(Trade::all());
-        return $trades = Trade::whereUserId(auth()->id())->latest()->paginate(10);
+        // return response()->json(Trade::all());
+        $trades = Trade::whereUserId(auth()->id())->latest()->paginate(10);
         return view('trades.index', compact('trades'));
     }
 
