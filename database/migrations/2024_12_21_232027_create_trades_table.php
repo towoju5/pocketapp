@@ -26,6 +26,7 @@ return new class extends Migration
             $table->json('trade_extra_info')->nullable();
             $table->string('trade_status')->default('open');
             $table->string('trade_copied_count')->default(0);
+            $table->string('trade_percentage')->default(0.9);
             $table->timestamps();
             $table->softDeletes();
         });
