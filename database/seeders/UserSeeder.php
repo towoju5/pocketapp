@@ -39,9 +39,15 @@ class UserSeeder extends Seeder
                 'email'              => $email,
                 'username'           => $username,
                 'email_verified_at'  => now(),
-                'password'           => Hash::make('password'), // Default password
+                'password'           => Hash::make('password'),
                 'phone'              => $phone,
-                'address'            => $address,
+                'address'            => [
+                    'line1' => fake()->streetAddress(),
+                    'city' => fake()->city(),
+                    'state' => fake()->stateAbbr(),
+                    'zip' => fake()->postcode(),
+                    'country' => fake()->countryCode(),
+                ],
                 'avatar'             => $avatar,
                 'google2fa_enabled'  => rand(0, 1),
                 'google2fa_secret'   => Str::random(32),
