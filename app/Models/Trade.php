@@ -6,20 +6,21 @@ use Carbon\Carbon;
 
 class Trade extends Model
 {
-    protected $fillable = [
-        'trade_currency',
-        'trade_direction',
-        'trade_amount',
-        'trade_close_time',
-        'trade_extra_info',
-        'start_price',
-        'trade_status',
-        'trade_copied_count',
-        'user_id',
-        'trade_wallet',
-        'trade_profit',
-        'trade_percentage'
-    ];
+    protected $guarded = [];
+    // protected $fillable = [
+    //     'trade_currency',
+    //     'trade_direction',
+    //     'trade_amount',
+    //     'trade_close_time',
+    //     'trade_extra_info',
+    //     'start_price',
+    //     'trade_status',
+    //     'trade_copied_count',
+    //     'user_id',
+    //     'trade_wallet',
+    //     'trade_profit',
+    //     'trade_percentage'
+    // ];
     
     protected $casts = [
         "trade_extra_info" => "array",
