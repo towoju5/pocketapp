@@ -30,10 +30,10 @@
                         <tr class="border-b border-gray-700 hover:bg-gray-700">
                             <td class="px-4 py-3">{{ $trade->id }}</td>
                             <td class="px-4 py-3">{{ $trade->trade_currency }}</td>
-                            <td class="px-4 py-3">${{ number_format(floatval($trade->trade_amount), 2) }}</td>
+                            <td class="px-4 py-3">${{ number_format(floatval($trade->trade_amount), 6) }}</td>
                             <td class="px-4 py-3">{{ ucfirst($trade->trade_direction) }}</td>
-                            <td class="px-4 py-3">${{ number_format(floatval($trade->start_price), 2) }}</td>
-                            <td class="px-4 py-3">${{ number_format(floatval($trade->end_price), 2) }}</td>
+                            <td class="px-4 py-3">${{ number_format(floatval($trade->start_price), 6) }}</td>
+                            <td class="px-4 py-3">${{ number_format(floatval($trade->end_price), 6) }}</td>
                             <td class="px-4 py-3">
                                 <span class="inline-block px-2 py-1 rounded text-xs font-medium 
                                     {{ $trade->trade_status === 'win' ? 'bg-green-500 text-white' : 'bg-yellow-500 text-black' }}">

@@ -17,14 +17,16 @@ use App\Http\Controllers\MySafeController;
 use App\Http\Controllers\PromoCodeController;
 use App\Http\Controllers\TradeController;
 use App\Models\Trade;
+use App\Services\ExternalTradeWebSocketService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 
 
 Route::get('/', function () {
-    $test = new HomeController();
-    return response()->json($test->getTicks());
+    $service = new ExternalTradeWebSocketService();
+    $response = $service->listen();
+    return response()->json($response);
     // return view('act_welcome');
 });
 

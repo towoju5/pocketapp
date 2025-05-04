@@ -1,0 +1,6 @@
+[2025-05-04 07:10:04] local.DEBUG: Subscription payload: {"id":"COPPER.CMD\/USD.X","param":"Option","operation":"SUBSCRIBE.TICK"}  
+[2025-05-04 07:10:06] local.INFO: Get Asset Data - Helper function:  {"incoming_asset":"COPPER.CMD/USD.X","0":"assetData","1":{"s":"COPPER.CMD/USD.X","t":1746342605828,"p":4.81008}} 
+[2025-05-04 07:10:10] local.DEBUG: Subscription payload: {"id":"COPPER.CMD\/USD.X","param":"Option","operation":"SUBSCRIBE.TICK"}  
+[2025-05-04 07:10:12] local.INFO: Get Asset Data - Helper function:  {"incoming_asset":"COPPER.CMD/USD.X","0":"assetData","1":{"s":"COPPER.CMD/USD.X","t":1746342612162,"p":4.80725}} 
+[2025-05-04 07:11:16] local.INFO: Current Price:  ["response",{"s":"EUR/USD.X","t":1746342676162,"p":1.138743}] 
+[2025-05-04 07:11:16] local.INFO: Current Price:  ["assetData",{"s":"EUR/USD.X","t":1746342676162,"p":1.138743}] 

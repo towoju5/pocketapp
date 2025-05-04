@@ -5,6 +5,7 @@ use App\Models\Bitgo;
 use App\Models\BitgoWallets;
 use App\Models\Option;
 use App\Models\User;
+use App\Services\ExternalTradeWebSocketService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -154,62 +155,18 @@ if (! function_exists("getAssetData")) {
     function getAssetData($asset, $rateOnly = false)
     {
         try {
-            $unixTimeMilliseconds = round(microtime(true) * 1000);
-            $apiUrl = "https://iqcent.com/trade-api/api/ticks?symbol=" . urlencode($asset) . "&from={$unixTimeMilliseconds}&to={$unixTimeMilliseconds}";
-
-            // Create a context with a User-Agent
-            $options = [
-                'http' => [
-                    'method' => "GET",
-                    'header' => "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)\r\n",
-                ],
-            ];
-
-            $context = stream_context_create($options);
-
-            // Fetch the API response
-            $response = @file_get_contents($apiUrl, false, $context);
-
-            // Handle failed HTTP request
-            if ($response === false) {
-                $error = [
-                    'error' => 'Failed to fetch data from API.',
-                    'url'   => $apiUrl,
-                ];
-                return json_encode($error);
-                exit;
+            // since direct url request is not working let's use websocket
+            $service = new ExternalTradeWebSocketService();
+            $response = (array)$service->listen($asset);
+            if ($response) {
+                $data = $response;
+                Log::info("Get Asset Data - Helper function: ", ['incoming_asset' => $asset, 'assetData', $response]);
+                if ($rateOnly) {
+                    return $response['p'];
+                }
+                return $response;
             }
-
-            // Decode the response
-            $resp = json_decode($response, true);
-
-            // Handle invalid JSON
-            if (json_last_error() !== JSON_ERROR_NONE) {
-                $error = [
-                    'error' => 'Invalid JSON response.',
-                    'url'   => $apiUrl,
-                ];
-                return json_encode($error);
-                exit;
-            }
-
-
-            // Validate API data
-            if (empty($resp['success']) || empty($resp['data']) || ! isset($resp['data'][0]['strike'])) {
-                $error = [
-                    'error' => 'Invalid or empty asset data.',
-                    'url'   => $apiUrl,
-                ];
-                return json_encode($error);
-                exit;
-            }
-
-            // Return based on $rateOnly
-            if ($rateOnly === true) {
-                return $resp['data'][0]['strike'];
-            } else {
-                return json_encode($resp['data']);
-            }
+            return $response;
         } catch (\Exception $e) {
             return "Error fetching data: " . $e->getMessage();
         }

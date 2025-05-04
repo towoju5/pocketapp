@@ -16,19 +16,19 @@
                             <dd class="text-gray-300">{{ $trade->trade_extra_info['asset'] }}</dd>
 
                             <dt class="font-semibold text-white mt-4">Amount</dt>
-                            <dd class="text-gray-300">${{ number_format($trade->trade_extra_info['amount'], 2) }}</dd>
+                            <dd class="text-gray-300">${{ number_format($trade->trade_extra_info['amount'], 6) }}</dd>
 
                             <dt class="font-semibold text-white mt-4">Direction</dt>
                             <dd class="text-gray-300">{{ ucfirst($trade->trade_direction) }}</dd>
 
                             <dt class="font-semibold text-white mt-4">Start Price</dt>
-                            <dd class="text-gray-300">${{ number_format($trade->start_price, 2) }}</dd>
+                            <dd class="text-gray-300">${{ number_format($trade->start_price, 6) }}</dd>
                         </dl>
                     </div>
                     <div>
                         <dl>
                             <dt class="font-semibold text-white">Current Price</dt>
-                            <dd class="text-gray-300">${{ number_format($trade->trade_extra_info['currentPrice'], 2) }}</dd>
+                            <dd class="text-gray-300">${{ number_format($trade->trade_extra_info['currentPrice'], 6) }}</dd>
 
                             <dt class="font-semibold text-white mt-4">Status</dt>
                             <dd class="text-gray-300">

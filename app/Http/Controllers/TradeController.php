@@ -67,8 +67,8 @@ class TradeController extends Controller
         $validated['duration'] = ($timeParts[0] * 3600) + ($timeParts[1] * 60) + $timeParts[2];
 
         $currentPrice = getAssetData($symbol, true);
-        if (is_array($currentPrice)) {
-            return response()->json(['status' => false, 'message' => 'Error getting asset price']);
+        if (is_array($currentPrice) || null == $currentPrice || empty($currentPrice)) {
+            return response()->json(['status' => false, 'message' => 'Error getting asset price']); exit;
         }
 
         $percentage_profit = $asset->asset_profit_margin;

@@ -12,7 +12,7 @@ class WebSocketListener
     public function __construct()
     {
         // Connect to the WebSocket server
-        $this->client = new Client("wss://ws-plus.olymptrade.com/connect");
+        $this->client = new Client("wss://iqcent.com/trade-api-ws/api/ws/price");
     }
 
     public function subscribe()
@@ -20,13 +20,9 @@ class WebSocketListener
         // Send subscription message
         $message = [
             [
-                "e" => 10,
-                "t" => 2,
-                "d" => [
-                    "pairs" => ["GBPUSD_OTC"],
-                    "chart_tfs" => [3600],
-                    "with_forecast" => false,
-                ]
+                "id" => "GBPUSD_OTC",
+                "param" => "Option",
+                "operation" => "SUBSCRIBE.TICK",
             ]
         ];
 
@@ -45,12 +41,13 @@ class WebSocketListener
             while (true) {
                 $response = $this->client->receive(); // Receive WebSocket messages
                 $data = json_decode($response, true);
+                // return $data;
 
-                // Dispatch an event with the WebSocket data
-                Event::dispatch('websocket.message.received', $data);
+                // // Dispatch an event with the WebSocket data
+                // Event::dispatch('websocket.message.received', $data);
 
-                // Log or debug (optional)
-                echo "Received WebSocket message: " . $response . "\n";
+                // // Log or debug (optional)
+                // echo "Received WebSocket message: " . $response . "\n";
             }
         } catch (\Exception $e) {
             // Handle connection errors or other exceptions

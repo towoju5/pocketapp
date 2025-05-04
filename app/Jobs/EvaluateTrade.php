@@ -28,7 +28,7 @@ class EvaluateTrade implements ShouldQueue
         try {
             $trade = $this->trade;
             $user = User::where('user_id', $trade->user_id)->first();
-           
+            Log::info("TRade currency is: {$trade->trade_currency}");
             $currentPrice = getAssetData($trade->trade_currency, true);
             if (is_array($currentPrice)) {
                 Log::info(json_encode($currentPrice));
