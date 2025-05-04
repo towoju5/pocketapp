@@ -107,7 +107,7 @@ class TradeController extends Controller
             return response()->json(['status' => false, 'message' => 'Error placing trade']);
         }
 
-        // event(new NewTradeCreated($trade));
+        event(new NewTradeCreated($trade));
         EvaluateTrade::dispatch($trade)->delay(now()->addSeconds($validated['duration']));
 
         return response()->json([

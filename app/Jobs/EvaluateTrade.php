@@ -56,7 +56,7 @@ class EvaluateTrade implements ShouldQueue
 
             // event(new \App\Events\TradeUpdated($trade));
         } catch (\Throwable $th) {
-            Log::info(json_encode($th));
+            Log::info(json_encode($th->getTraceAsString()));
         }
 
         // $tournament = DB::table('tournament_participants')
