@@ -159,13 +159,14 @@ if (! function_exists("getAssetData")) {
             $query = http_build_query([
                 'symbol' => $asset,
                 'from' => $currentUnixTimestamp,
-                'to' => $currentUnixTimestamp
+                // 'to' => $currentUnixTimestamp
             ]);
 
-            $innerUrl = "https://iqcent.com/trade-api/api/ticks?$query";
+            $innerUrl = "https://iqcent.com/trade-api/api/ticks?{$query}&autoparse=true";
             $encodedUrl = urlencode($innerUrl);
 
-            $zenrowsUrl = "https://api.zenrows.com/v1/?apikey=9d342a084f2a2c3bd879946a58802a2d28bc56cb&url={$encodedUrl}&autoparse=true";
+            $zenrowsUrl = "https://api.zenrows.com/v1/?apikey=9d342a084f2a2c3bd879946a58802a2d28bc56cb&url={$encodedUrl}";
+            Log::info('getAssetData: ', [$zenrowsUrl]);
 
             $ch = curl_init();
             curl_setopt($ch, CURLOPT_URL, $zenrowsUrl);
@@ -179,7 +180,8 @@ if (! function_exists("getAssetData")) {
             curl_close($ch);
 
             $arrResponse = json_decode($response, true);
-
+            // log the response
+            Log::info('getAssetData response: ', [$arrResponse]);
             if (!isset($arrResponse['data'][0])) {
                 return "No data available.";
             }
@@ -187,6 +189,8 @@ if (! function_exists("getAssetData")) {
             $tick = $arrResponse['data'][0];
 
             if ($rateOnly) {
+                // log the strike
+                Log::info('getAssetData strike: ', [$tick['strike']]);
                 return $tick['strike'] ?? null;
             }
 

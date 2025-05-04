@@ -1,0 +1,8 @@
+[2025-05-04 10:25:49] local.INFO: getAssetData:  ["https://api.zenrows.com/v1/?apikey=9d342a084f2a2c3bd879946a58802a2d28bc56cb&url=https%3A%2F%2Fiqcent.com%2Ftrade-api%2Fapi%2Fticks%3Fsymbol%3DMETA%252FUSD.X%26from%3D1746354349000%26autoparse%3Dtrue"] 
+[2025-05-04 10:25:50] local.INFO: getAssetData response:  [{"success":true,"data":[{"timeId":1746354350337,"ask":608.61,"bid":608.46,"strike":608.54},{"timeId":1746354350087,"ask":608.53,"bid":608.38,"strike":608.46},{"timeId":1746354349837,"ask":608.53,"bid":608.38,"strike":608.46},{"timeId":1746354349586,"ask":608.5,"bid":608.35,"strike":608.43},{"timeId":1746354349336,"ask":608.59,"bid":608.44,"strike":608.52},{"timeId":1746354349085,"ask":608.65,"bid":608.5,"strike":608.58}],"code":null,"problem":null,"constraints":[]}] 
+[2025-05-04 10:25:50] local.INFO: getAssetData strike:  [608.54] 
+[2025-05-04 10:25:50] local.INFO: Current Price {"price":"608.65"} 
+[2025-05-04 10:26:52] local.INFO: TRade currency is: META/USD.X  
+[2025-05-04 10:26:52] local.INFO: getAssetData:  ["https%3A%2F%2Fiqcent.com%2Ftrade-api%2Fapi%2Fticks%3Fsymbol%3DMETA%252FUSD.X%26from%3D1746354412000%26to%3D1746354412000"] 
+[2025-05-04 10:26:54] local.INFO: getAssetData response:  [{"success":true,"data":[],"code":null,"problem":null,"constraints":[]}] 
+[2025-05-04 10:26:54] local.INFO: {}  

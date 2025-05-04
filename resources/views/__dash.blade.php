@@ -325,6 +325,8 @@
                     <div class="relative">
                         <input type="text" pattern="^\d*\.?\d*$" step="any" id="input_amount_field" name="amount" oninput="calculate_trade_profit()" class="p-2 pe-11 block w-full border-[#293341] rounded-lg text-sm bg-[#1f2334]" autocomplete="off" placeholder="1000">
                         <input type="hidden" name="direction" id="direction" value="">
+                        <input type="hidden" name="order_token" id="order_token" value="">
+                        <input type="hidden" name="order_time" id="order_time" value="">
                         <div
                             class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-10 border-l p-3 border-[#293341]">
                             <svg class="currency-icon currency-icon--usd" width="18" height="18"
@@ -1155,7 +1157,7 @@
     let chartType = "line";
     let showArea = true;
     let autoScroll = true;
-
+    let latestRate = null;
     let candleData = [];
 
     function initChart() {
@@ -1334,7 +1336,10 @@
                 if (message && typeof message.p === 'number' && typeof message.t === 'number') {
                     const now = Math.floor(message.t / 1000); // Convert ms to seconds
                     const price = parseFloat(message.p.toFixed(6)); // Precision 6 decimals
-
+                    latestRate = price;
+                    const orderToken = btoa(latestRate.toString());
+                    document.getElementById('order_token').value = orderToken;
+                    document.getElementById('order_time').value = message.t;
                     // For candleData (for bars/candles/heikin ashi):
                     const lastCandle = candleData[candleData.length - 1];
                     if (!lastCandle || now >= lastCandle.time + 60) {

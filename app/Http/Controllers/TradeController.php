@@ -39,6 +39,8 @@ class TradeController extends Controller
             'asset' => 'required|string',
             'amount' => 'required|numeric|min:1',
             'direction' => 'required|in:up,down',
+            'order_token' => 'required|string',
+            'order_time' => 'required',
             'duration' => 'required|string' // assuming HH:MM:SS
         ]);
 
@@ -66,7 +68,13 @@ class TradeController extends Controller
         $timeParts = explode(':', $validated['duration']);
         $validated['duration'] = ($timeParts[0] * 3600) + ($timeParts[1] * 60) + $timeParts[2];
 
-        $currentPrice = getAssetData($symbol, true);
+
+
+        getAssetData($symbol, true);
+        
+        // return response()->json($validated);
+        $currentPrice = base64_decode($request->order_token);
+        Log::info('Current Price', ['price' => $currentPrice]);
         if (is_array($currentPrice) || null == $currentPrice || empty($currentPrice)) {
             return response()->json(['status' => false, 'message' => 'Error getting asset price']); exit;
         }
