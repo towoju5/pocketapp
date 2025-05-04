@@ -30,6 +30,7 @@ class ExternalTradeWebSocketService
 
             if ($message) {
                 $tradeData = json_decode($message, true);
+                Log::debug('Received rate: ' . json_encode($tradeData));
                 return $tradeData;
             }
         } catch (\Exception $e) {

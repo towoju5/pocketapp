@@ -155,18 +155,42 @@ if (! function_exists("getAssetData")) {
     function getAssetData($asset, $rateOnly = false)
     {
         try {
-            // since direct url request is not working let's use websocket
-            $service = new ExternalTradeWebSocketService();
-            $response = (array)$service->listen($asset);
-            if ($response) {
-                $data = $response;
-                Log::info("Get Asset Data - Helper function: ", ['incoming_asset' => $asset, 'assetData', $response]);
-                if ($rateOnly) {
-                    return $response['p'];
-                }
-                return $response;
+            $currentUnixTimestamp = time() * 1000;
+            $query = http_build_query([
+                'symbol' => $asset,
+                'from' => $currentUnixTimestamp,
+                'to' => $currentUnixTimestamp
+            ]);
+
+            $innerUrl = "https://iqcent.com/trade-api/api/ticks?$query";
+            $encodedUrl = urlencode($innerUrl);
+
+            $zenrowsUrl = "https://api.zenrows.com/v1/?apikey=9d342a084f2a2c3bd879946a58802a2d28bc56cb&url={$encodedUrl}&autoparse=true";
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $zenrowsUrl);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+            $response = curl_exec($ch);
+            if (curl_errno($ch)) {
+                throw new \Exception('Curl error: ' . curl_error($ch));
             }
-            return $response;
+            curl_close($ch);
+
+            $arrResponse = json_decode($response, true);
+
+            if (!isset($arrResponse['data'][0])) {
+                return "No data available.";
+            }
+
+            $tick = $arrResponse['data'][0];
+
+            if ($rateOnly) {
+                return $tick['strike'] ?? null;
+            }
+
+            return $tick;
         } catch (\Exception $e) {
             return "Error fetching data: " . $e->getMessage();
         }

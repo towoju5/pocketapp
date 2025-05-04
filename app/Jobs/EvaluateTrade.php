@@ -51,7 +51,6 @@ class EvaluateTrade implements ShouldQueue
             $trade->save();
 
             if ($trade->trade_status == 'win') {
-                // return the user trade with profit
                 credit_user($trade->trade_wallet, $trade->trade_profit + $trade->trade_amount, "Successfully won trade ID {$trade->id}");
             }
 
