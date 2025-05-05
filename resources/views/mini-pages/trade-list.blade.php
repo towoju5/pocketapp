@@ -5,7 +5,7 @@
             <span class="text-[#8ea5c0]"> {{ $trade->trade_currency }}</span>
             <span class="signal-percentage">+{{ $trade->trade_percentage }}%</span>
         </div>
-        <div class="signal-time">{{ $trade->duration }}</div>
+        <div class="signal-time" id="countdown-{{ $trade->id }}">--:--</div>
     </div>
     <div class="signal-body">
         <div class="signal-price text-[#8ea5c0]">

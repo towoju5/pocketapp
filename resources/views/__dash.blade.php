@@ -497,7 +497,6 @@
         <div class="p-1 text-white">
         <div class="h-full overflow-y-auto pb-20">
             <h1 class="text-lg font-medium mb-4 px-4">Signals</h1>
-
             <!-- Filter Buttons -->
             <div class="flex items-center mb-6 px-4">
                 <div class="flex-1 flex space-x-3">
@@ -525,90 +524,22 @@
 
             <!-- Signal Items -->
             <div id="updates" class="content mt-4">
+                @foreach($signals as $signal)
                 <div class="flex items-center justify-between px-3 py-1">
-                <div>
-                    <div class="text-sm font-bold">EUR/JPY</div>
-                    <div class="text-xs">₦1,500</div>
-                    <div class="text-xs text-gray-400">Copied: 36 times</div>
+                    <div>
+                        <div class="text-sm font-bold">EUR/JPY</div>
+                        <div class="text-xs">₦1,500</div>
+                        <div class="text-xs text-gray-400">Copied: 36 times</div>
+                    </div>
+                    <div class="">
+                        <div class="text-xs text-gray-400 text-right">04:37</div>
+                        <button class="bg-green-600 text-white text-xs px-4 py-1 rounded copy-signal-btn" data-id="{{ $signal->id }}">
+                            Copy signal
+                        </button>
+                        <div class="text-green-500 text-right text-xs">1 min ago</div>
+                    </div>
                 </div>
-                <div class="">
-                    <div class="text-xs text-gray-400 text-right">04:37</div>
-                    <button class="bg-green-600 text-white text-xs px-4 py-1 rounded">
-                    Copy signal
-                    </button>
-                    <div class="text-green-500 text-right text-xs">1 min ago</div>
-                </div>
-                </div>
-                <div class="flex items-center justify-between px-3 py-1" style="background: #292d41">
-                <div>
-                    <div class="text-sm font-bold">EUR/JPY</div>
-                    <div class="text-xs">₦1,500</div>
-                    <div class="text-xs text-gray-400">Copied: 36 times</div>
-                </div>
-                <div class="">
-                    <div class="text-xs text-gray-400 text-right">04:37</div>
-                    <button class="bg-green-600 text-white text-xs px-4 py-1 rounded">
-                    Copy signal
-                    </button>
-                    <div class="text-green-500 text-right text-xs">1 min ago</div>
-                </div>
-                </div>
-                <div class="flex items-center justify-between px-3 py-1">
-                <div>
-                    <div class="text-sm font-bold">EUR/JPY</div>
-                    <div class="text-xs">₦1,500</div>
-                    <div class="text-xs text-gray-400">Copied: 36 times</div>
-                </div>
-                <div class="">
-                    <div class="text-xs text-gray-400 text-right">04:37</div>
-                    <button class="bg-green-600 text-white text-xs px-4 py-1 rounded">
-                    Copy signal
-                    </button>
-                    <div class="text-green-500 text-right text-xs">1 min ago</div>
-                </div>
-                </div>
-                <div class="flex items-center justify-between px-3 py-1" style="background: #292d41">
-                <div>
-                    <div class="text-sm font-bold">EUR/JPY</div>
-                    <div class="text-xs">₦1,500</div>
-                    <div class="text-xs text-gray-400">Copied: 36 times</div>
-                </div>
-                <div class="">
-                    <div class="text-xs text-gray-400 text-right">04:37</div>
-                    <button class="bg-green-600 text-white text-xs px-4 py-1 rounded">
-                    Copy signal
-                    </button>
-                    <div class="text-green-500 text-right text-xs">1 min ago</div>
-                </div>
-                </div>
-                <div class="flex items-center justify-between px-3 py-1">
-                <div>
-                    <div class="text-sm font-bold">EUR/JPY</div>
-                    <div class="text-xs">₦1,500</div>
-                    <div class="text-xs text-gray-400">Copied: 36 times</div>
-                </div>
-                <div class="">
-                    <div class="text-xs text-gray-400 text-right">04:37</div>
-                    <button class="bg-green-600 text-white text-xs px-4 py-1 rounded">
-                    Copy signal
-                    </button>
-                    <div class="text-green-500 text-right text-xs">1 min ago</div>
-                </div>
-                </div>
-                <div class="flex items-center justify-between px-3 py-1" style="background: #292d41">
-                <div>
-                    <div class="text-sm font-bold">EUR/JPY</div>
-                    <div class="text-xs">₦1,500</div>
-                    <div class="text-xs text-gray-400">Copied: 36 times</div>
-                </div>
-                <div class="">
-                    <div class="text-xs text-gray-400 text-right">04:37</div>
-                    <button class="bg-green-600 text-white text-xs px-4 py-1 rounded">
-                    Copy signal
-                    </button>
-                    <div class="text-green-500 text-right text-xs">1 min ago</div>
-                </div>
-                </div>
+                @endforeach
             </div>
 
             <!-- All Updates -->
@@ -1133,15 +1064,57 @@
         if (!isNaN(asset_profit) && !isNaN(input_amount)) {
             const profit = (asset_profit / 100) * input_amount;
             document.getElementById('payout').textContent = '$' + profit.toFixed(2);
-            // console.log([
-            //     'Profit is: ' + profit.toFixed(2),
-            //     'Input amount is: ' + input_amount,
-            //     'Asset profit margin is: ' + asset_profit
-            // ]);
         } else {
             // console.log('Invalid number entered');
         }
     }
+    
+    document.querySelectorAll('.copy-signal-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            const signalId = this.dataset.id;
+            this.disabled = true;
+            this.textContent = "Copying...";
+
+            fetch(`/signals/${signalId}/copy`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(res => {
+                if (res.status) {
+                    alert('Trade placed!');
+                    // Optional: refresh trade list or show modal
+                } else {
+                    alert(res.message || 'Error placing trade.');
+                }
+            })
+            .catch(() => alert("Failed to copy signal."))
+            .finally(() => {
+                btn.disabled = false;
+                btn.textContent = "Copy Signal & Trade";
+            });
+        });
+    });
+
+    console.log("I'm at the window.echo side");
+    
+    window.Echo.channel(`trades.user.${userId}`)
+        .listen('TradeUpdated', (event) => {
+            console.log('Trade updated:', event);
+
+            updateOrInsertTradeCard(event);
+            startCountdowns([event]);
+        });
+
+    window.Echo.channel('signals')
+        .listen('SignalCreated', (e) => {
+            console.log("New Signal:", e);
+        });
+
 </script>
 
 @if($isOutOfTradingHours == false)

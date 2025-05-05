@@ -26,12 +26,13 @@ class EvaluateTrade implements ShouldQueue
     public function handle()
     {
         try {
+            Log::debug("Evaluating trade: " . $this->trade->id);
             $trade = $this->trade;
-            $user = User::where('user_id', $trade->user_id)->first();
+            // $user = User::where('user_id', $trade->user_id)->first();
             Log::info("TRade currency is: {$trade->trade_currency}");
             $currentPrice = getAssetData($trade->trade_currency, true);
             if (is_array($currentPrice)) {
-                Log::info(json_encode($currentPrice));
+                Log::info("checking rate as an array: ". json_encode($currentPrice));
             }
             $finalPrice = $currentPrice ?? 0;
 

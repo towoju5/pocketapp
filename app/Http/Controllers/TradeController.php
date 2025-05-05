@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Events\NewTradeCreated;
+use App\Events\TradeUpdated;
 use App\Models\Assets;
 use App\Models\Trade;
 use App\Jobs\EvaluateTrade;
+use App\Models\Signal;
 use App\Models\User;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
@@ -30,7 +32,8 @@ class TradeController extends Controller
     {
         // return response()->json(Trade::all());
         $trades = Trade::whereUserId(auth()->id())->latest()->paginate(10);
-        return view('trades.index', compact('trades'));
+        $signals = Signal::latest()->where('is_active', true)->get();
+        return view('trades.index', compact('trades','signals'));
     }
 
     public function placeTrade(Request $request)
@@ -68,10 +71,6 @@ class TradeController extends Controller
         $timeParts = explode(':', $validated['duration']);
         $validated['duration'] = ($timeParts[0] * 3600) + ($timeParts[1] * 60) + $timeParts[2];
 
-
-
-        getAssetData($symbol, true);
-        
         // return response()->json($validated);
         $currentPrice = base64_decode($request->order_token);
         Log::info('Current Price', ['price' => $currentPrice]);
@@ -108,6 +107,7 @@ class TradeController extends Controller
         }
 
         event(new NewTradeCreated($trade));
+        event(new TradeUpdated($trade));
         EvaluateTrade::dispatch($trade)->delay(now()->addSeconds($validated['duration']));
 
         return response()->json([

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Assets;
+use App\Models\Signal;
 use App\Models\Trade;
 use Illuminate\Http\Request;
 use App\Services\IqcentDomScraper;
@@ -24,17 +25,18 @@ class HomeController extends Controller
             $data = Assets::first();
         }
         
-        $current_rate = getAssetData($coin, true);
-        if(is_numeric($current_rate)) {
-            $isOutOfTradingHours = false;
-        }
+        // $current_rate = getAssetData($coin, true);
+        // if(is_numeric($current_rate)) {
+        //     $isOutOfTradingHours = false;
+        // }
 
 
         $assetCategories = Assets::groupBy('asset_group')->get();
         $chart_coin = $data->symbol;
         $active_trades = Trade::where(["trade_status" => "pending", "user_id" => auth()->id()])->get();
+        $signals = Signal::latest()->where('is_active', true)->get();
 
-        return view('__dash', compact('data', 'assetCategories', 'isOutOfTradingHours', 'active_trades', 'chart_coin'));
+        return view('__dash', compact('data', 'assetCategories', 'isOutOfTradingHours', 'active_trades', 'chart_coin', 'signals'));
     }
 
     public function demo(Request $request, $coin = null)

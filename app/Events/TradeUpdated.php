@@ -13,40 +13,32 @@ use Illuminate\Queue\SerializesModels;
 
 class TradeUpdated
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    private Trade $trade;
+    public $trade;
 
-    /**
-     * Create a new event instance.
-     */
     public function __construct(Trade $trade)
     {
         $this->trade = $trade;
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
+    public function broadcastOn(): Channel
+    {
+        return new Channel('trades.user.' . $this->trade->user_id);
+    }
+
+    public function broadcastWith()
     {
         return [
-            new Channel('trade-updated'),
+            'id' => $this->trade->id,
+            'trade_close_time' => $this->trade->trade_close_time,
+            'trade_currency' => $this->trade->trade_currency,
+            'trade_status' => $this->trade->trade_status,
+            'trade_amount' => $this->trade->trade_amount,
+            'trade_profit' => $this->trade->trade_profit,
+            'trade_percentage' => $this->trade->trade_percentage,
+            'trade_direction' => $this->trade->trade_direction,
+            'start_price' => $this->trade->start_price,
         ];
-    }
-
-    /**
-     * Get the data to broadcast with the event.
-     */
-    public function broadcastWith(): array
-    {
-        return $this->trade->toArray(); // Ensure broadcast data is complete
-    }
-
-    public function broadcastAs(): string
-    {
-        return 'trade-updated';
     }
 }
