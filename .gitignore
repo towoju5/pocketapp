@@ -19,8 +19,5 @@ yarn-error.log
 /.idea
 /.nova
 /.vscode
-*.sqlite
-database/database.sqlite
-database/*.sqlite
 *.zip
 old
