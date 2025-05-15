@@ -111,7 +111,7 @@ class User extends Authenticatable
     protected static function booted()
     {
         static::created(function ($user) {
-            createSupportedWalletsForUser($user); // Or use a config file instead
+            createSupportedWalletsForUser($user);
         });
     }
 
