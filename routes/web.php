@@ -66,7 +66,7 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/profile/2fa/disable', [ProfileController::class, 'disable2fa'])->name('profile.disable2fa');
     });
 
-
+    Route::get('wallet-change-default/{slug}', [ProfileController::class, 'changeDefaultWallet'])->name('wallet.change.default');
 
     Route::match(['post', 'patch'], 'profile-update', [ProfileController::class, 'updateProfile'])
         ->name('profile.update.pk')

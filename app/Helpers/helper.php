@@ -5,7 +5,6 @@ use App\Models\Bitgo;
 use App\Models\BitgoWallets;
 use App\Models\Option;
 use App\Models\User;
-use App\Services\ExternalTradeWebSocketService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -59,7 +58,7 @@ if (! function_exists('formatPrice')) {
      */
     function formatPrice($amount)
     {
-        return floatval($amount * 100);
+        return "$".number_format($amount, 2);
     }
 }
 
@@ -132,6 +131,20 @@ if (! function_exists('allowed_wallets')) {
     }
 }
 
+if (! function_exists('createSupportedWalletsForUser')) {
+    function createSupportedWalletsForUser(\App\Models\User $user)
+    {
+        foreach (allowed_wallets() as $walletData) {
+            if (! $user->hasWallet($walletData['symbol'])) {
+                $user->createWallet([
+                    'name' => $walletData['name'],
+                    'slug' => $walletData['symbol'],
+                ]);
+            }
+        }
+    }
+}
+
 if (! function_exists('checkMultipleTables')) {
 
     function checkMultipleTables(array $tableNames)
@@ -150,19 +163,18 @@ if (! function_exists('checkMultipleTables')) {
     }
 }
 
-
 if (! function_exists("getAssetData")) {
     function getAssetData($asset, $rateOnly = false)
     {
         try {
             $currentUnixTimestamp = time() * 1000;
-            $query = http_build_query([
+            $query                = http_build_query([
                 'symbol' => $asset,
-                'from' => $currentUnixTimestamp,
+                'from'   => $currentUnixTimestamp,
                 // 'to' => $currentUnixTimestamp
             ]);
 
-            $innerUrl = "https://iqcent.com/trade-api/api/ticks?{$query}&autoparse=true";
+            $innerUrl   = "https://iqcent.com/trade-api/api/ticks?{$query}&autoparse=true";
             $encodedUrl = urlencode($innerUrl);
 
             $zenrowsUrl = "https://api.zenrows.com/v1/?apikey=9d342a084f2a2c3bd879946a58802a2d28bc56cb&url={$encodedUrl}";
@@ -182,7 +194,7 @@ if (! function_exists("getAssetData")) {
             $arrResponse = json_decode($response, true);
             // log the response
             // Log::info('getAssetData response: ', [$arrResponse]);
-            if (!isset($arrResponse['data'][0])) {
+            if (! isset($arrResponse['data'][0])) {
                 return "No data available.";
             }
 

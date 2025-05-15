@@ -10,7 +10,12 @@
 
                 <div class="mb-3">
                     <label for="asset" class="form-label">Asset</label>
-                    <input type="text" class="form-control" id="asset" name="asset" required>
+                    <select name="asset" id="asset" class="form-control" required>
+                        @foreach($assets as $asset)
+                        <option value="{{ $asset->symbol }}">{{ $asset->name }}</option>
+                        @endforeach
+                    </select>
+                    <!-- <input type="text" class="form-control" id="asset" name="asset" required> -->
                 </div>
 
                 <div class="mb-3">

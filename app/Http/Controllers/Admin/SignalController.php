@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Events\SignalCreated;
 use App\Http\Controllers\Controller;
+use App\Models\Assets;
 use Illuminate\Http\Request;
 use App\Models\Signal;
 
@@ -17,7 +18,8 @@ class SignalController extends Controller
 
     public function create()
     {
-        return view('admin.signals.create');
+        $assets = Assets::all();
+        return view('admin.signals.create', compact('assets'));
     }
 
     public function store(Request $request)

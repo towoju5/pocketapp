@@ -51,6 +51,17 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
+    public function changeDefaultWallet($newDefaultWallet)
+    {
+        $user = auth()->user();
+        $user->active_wallet_slug = $newDefaultWallet;
+        if($user->save()) {
+            return back()->with('success', 'Default wallet updated successfully.');
+        }
+
+        return back()->with('error', 'Failed to update default wallet.');
+    }
+
     /**
      * Delete the user's account.
      */

@@ -23,25 +23,36 @@
 
 <!-- Trade Containers -->
 <div class="trade-open-content trade_list-page flex justify-center items-center mt-0">
-    <div id="openSignalList" style="overflow: scroll!important;">
+    <div id="openSignalList" style="overflow: scroll!important; width: -moz-available;">
         @foreach($signals as $signal)
-        <div class="flex items-center justify-between px-3 py-1">
+        <div class="flex items-center justify-between px-3 py-1 border-b border-gray-200 signal-item" 
+             data-id="{{ $signal['id'] }}" 
+             data-duration="{{ $signal['duration'] }}"
+             data-created-at="{{ \Carbon\Carbon::parse($signal['created_at'])->toIso8601String() }}"
+             id="signal-{{ $signal['id'] }}">
             <div>
-                <div class="text-sm font-bold">EUR/JPY</div>
-                <div class="text-xs">₦1,500</div>
-                <div class="text-xs text-gray-400">Copied: 36 times</div>
+                <div class="text-sm font-bold text-white">{{ $signal['asset'] }}</div>
+                <div class="text-xs text-white">₦{{ number_format($signal['amount'], 0) }}</div>
+                <div class="text-xs text-gray-400">Copied: N/A</div>
             </div>
-            <div>
-                <div class="text-xs text-gray-400 text-right">04:37</div>
-                <button class="bg-green-600 text-white text-xs px-4 py-1 rounded copy-signal-btn" data-id="{{ $signal->id }}">
+            <div class="text-right">
+                <div class="text-xs text-gray-400">
+                    <span class="countdown-timer" id="timer-{{ $signal['id'] }}">--:--</span>
+                </div>
+                <button class="bg-green-600 text-white text-xs px-4 py-1 rounded copy-signal-btn" 
+                        data-id="{{ $signal['id'] }}" 
+                        id="btn-{{ $signal['id'] }}">
                     Copy signal
                 </button>
-                <div class="text-green-500 text-right text-xs">1 min ago</div>
+                <div class="text-green-500 text-xs">
+                    {{ \Carbon\Carbon::parse($signal['created_at'])->diffForHumans() }}
+                </div>
             </div>
         </div>
         @endforeach
     </div>
 </div>
+
 
 <div class="trade-closed-content trade_list-page flex justify-center items-center mt-4 hidden">
     <div class="flex flex-col w-full">
@@ -56,3 +67,33 @@
         @endforeach
     </div>
 </div>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const signals = document.querySelectorAll(".signal-item");
+
+        signals.forEach(signal => {
+            const id = signal.dataset.id;
+            const createdAt = new Date(signal.dataset.createdAt);
+            const duration = parseInt(signal.dataset.duration, 10) * 1000; // convert to ms
+            const expireAt = new Date(createdAt.getTime() + duration);
+            const timerEl = document.getElementById(`timer-${id}`);
+
+            const interval = setInterval(() => {
+                const now = new Date();
+                const remaining = expireAt - now;
+
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    signal.remove(); // Remove signal from DOM
+                    return;
+                }
+
+                const minutes = Math.floor(remaining / 1000 / 60).toString().padStart(2, '0');
+                const seconds = Math.floor((remaining / 1000) % 60).toString().padStart(2, '0');
+                timerEl.textContent = `${minutes}:${seconds}`;
+            }, 1000);
+        });
+    });
+</script>

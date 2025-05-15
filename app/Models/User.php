@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -28,7 +27,7 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
-        'config'
+        'config',
     ];
 
     /**
@@ -59,9 +58,9 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'config' => 'array',
-            'address' => 'array'
+            'password'          => 'hashed',
+            'config'            => 'array',
+            'address'           => 'array',
         ];
     }
 
@@ -105,8 +104,15 @@ class User extends Authenticatable
         $this->wallets()->update(['currently_active' => false]);
 
         return $this->getWallet($walletSlug)->update([
-            'currently_active' => true
+            'currently_active' => true,
         ]);
+    }
+
+    protected static function booted()
+    {
+        static::created(function ($user) {
+            createSupportedWalletsForUser($user); // Or use a config file instead
+        });
     }
 
 }

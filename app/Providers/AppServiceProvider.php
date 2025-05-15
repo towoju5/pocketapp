@@ -46,6 +46,7 @@ class AppServiceProvider extends ServiceProvider
                     // Fetch user's wallet balance
                     $wallet_balance = $user->getWallet($user->active_wallet_slug ?? 'qt_demo_usd') ?? ["balance" => 0];
 
+                    $view->with('_user', $user);
                     $view->with('uwallets', $uwallets);
                     $view->with('wallet_balance', $wallet_balance);
                 }

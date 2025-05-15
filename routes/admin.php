@@ -5,7 +5,8 @@ use App\Http\Controllers\Admin\{
     AssetController,
     UserController,
     CashbackRuleController,
-    SignalController
+    SignalController,
+    WalletController,
 };
 
 Route::prefix('admin')->middleware(['auth', 'verified'])->as('admin.')->group(function () {
@@ -17,4 +18,13 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->as('admin.')->group(fu
         'cashbacks' => CashbackRuleController::class,
         'signals' => SignalController::class
     ]);
+
+    Route::prefix('wallets')->group(function () {
+        Route::get('/', [WalletController::class, 'index'])->name('wallets.index');
+        Route::post('/{userId}/credit', [WalletController::class, 'credit'])->name('wallets.credit');
+        Route::post('/{userId}/debit', [WalletController::class, 'debit'])->name('wallets.debit');
+    });
+    Route::post('{user}/wallet', [UserController::class, 'updateWalletAction'])->name('wallets.update');
+
+    
 });
