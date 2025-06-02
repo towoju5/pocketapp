@@ -34,7 +34,7 @@ class TransactionHistoryController extends Controller
 
         // Filter by transaction type if provided
         if ($request->filled('type')) {
-            $transactions->where('transaction_type', $request->type);
+            $transactions->where('type', $request->type);
         }
 
         // Paginate results and return the view

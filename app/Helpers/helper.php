@@ -58,7 +58,7 @@ if (! function_exists('formatPrice')) {
      */
     function formatPrice($amount)
     {
-        return "$".number_format($amount, 2);
+        return "$" . number_format($amount, 2);
     }
 }
 
@@ -176,12 +176,12 @@ if (! function_exists("getAssetData")) {
 
             $innerUrl   = "https://iqcent.com/trade-api/api/ticks?{$query}&autoparse=true";
             $encodedUrl = urlencode($innerUrl);
-
-            $zenrowsUrl = "https://api.zenrows.com/v1/?apikey=9d342a084f2a2c3bd879946a58802a2d28bc56cb&url={$encodedUrl}";
-            // Log::info('getAssetData: ', [$zenrowsUrl]);
+            $zenrowsKey = env('ZENROWS_API_KEY');
+            $zenrowsUrl = "https://api.zenrows.com/v1/?apikey={$zenrowsKey}&url={$encodedUrl}";
+            Log::info('getAssetData: ', [$zenrowsUrl]);
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $zenrowsUrl);
+            curl_setopt($ch, CURLOPT_URL, $innerUrl ?? $zenrowsUrl);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 
@@ -290,16 +290,20 @@ if (! function_exists('bitgoDepositAddress')) {
 if (! function_exists('debit_user')) {
     function debit_user(string $wallet_slug, int | string $amount, string $description): bool
     {
-        $user   = auth()->user();
-        $wallet = $user->getWallet($wallet_slug);
+        try {
+            $user   = auth()->user();
+            $wallet = $user->getWallet($wallet_slug);
 
-        if ($wallet) { // Ensure wallet exists before attempting withdrawal
-            if ($wallet->withdraw($amount, ["description" => $description])) {
-                return true;
+            if ($wallet) { // Ensure wallet exists before attempting withdrawal
+                if ($wallet->withdraw($amount, ["description" => $description])) {
+                    return true;
+                }
             }
-        }
 
-        return false;
+            return false;
+        } catch (\Throwable $th) {
+            return false;
+        }
     }
 }
 

@@ -26,7 +26,7 @@
             <h3 class="text-orange-400 font-semibold mb-2">In order to get your {{ $deposit_method->wallet_ticker }} payment processed automatically:</h3>
             <ul class="text-sm text-gray-300 space-y-2 list-inside list-disc">
                 <li>The exact USD amount should reach the specified address.</li>
-                <li>Use only Tron network for your transfer.</li>
+                <li>Use only {{ $deposit_method->wallet_ticker }} network for your transfer.</li>
                 <li>Generate a new payment form for each new deposit.</li>
             </ul>
             <p class="text-orange-400 mt-4">Failure to meet one of the requirements will result in the loss of funds.</p>
@@ -47,7 +47,7 @@
 
             <!-- Wallet Address -->
             <div>
-                <label for="wallet-address" class="block text-sm text-gray-400 mb-1">to the address via Tron network:</label>
+                <label for="wallet-address" class="block text-sm text-gray-400 mb-1">to the address:</label>
                 <div class="relative">
                     <input type="text" id="wallet-address" value="{{ $wallet->address }}" readonly class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600">
                     <button class="absolute right-3 top-2 bg-teal-500 text-white px-3 py-1 rounded-lg hover:bg-teal-600">
@@ -58,7 +58,7 @@
 
             <!-- QR Code -->
             <div class="text-center mt-6">
-                <img src="path/to/qr-code.png" alt="QR Code" class="w-32 h-32 mx-auto mb-4">
+                <img src="https://quickchart.io/qr?text={{ $wallet->address }}&margin=0&size=400" alt="QR Code" class="w-32 h-32 mx-auto mb-4">
                 <p class="text-sm text-gray-400">Or simply scan the generated QR code to make your payment.</p>
             </div>
         </div>

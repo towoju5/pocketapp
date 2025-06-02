@@ -201,9 +201,15 @@ class ProfileController extends Controller
 
     public function logoutSession($sessionId)
     {
-        Session::forget($sessionId);
+        if ($sessionId === Session::getId()) {
+            return redirect()->route('profile.security')->with('error', 'You cannot logout the current session.');
+        }
+    
+        DB::table('sessions')->where('id', $sessionId)->delete();
+    
         return redirect()->route('profile.security')->with('success', 'Session logged out successfully.');
     }
+    
 
     // Method to handle password change request via AJAX
     public function updatePassword(Request $request)

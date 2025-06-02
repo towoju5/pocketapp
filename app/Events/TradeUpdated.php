@@ -24,7 +24,7 @@ class TradeUpdated
 
     public function broadcastOn(): Channel
     {
-        return new Channel('trades.user.' . $this->trade->user_id);
+        return new Channel('trade.updated');
     }
 
     public function broadcastWith()

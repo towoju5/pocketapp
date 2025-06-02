@@ -37,16 +37,15 @@ class EvaluateTrade implements ShouldQueue
             $finalPrice = $currentPrice ?? 0;
 
             // Evaluate trade
-            if ($trade->trade_direction == 'up' && $finalPrice > $trade->start_price) {
+            if ($trade->trade_direction == 'up' && $finalPrice > 0 && $finalPrice > $trade->start_price) {
                 $trade->trade_status = 'win';
                 $trade->trade_profit = $trade->trade_profit;
-            } elseif ($trade->trade_direction == 'down' && $finalPrice < $trade->start_price) {
+            } elseif ($trade->trade_direction == 'down' && $finalPrice > 0 && $finalPrice < $trade->start_price) {
                 $trade->trade_status = 'win';
                 $trade->trade_profit = $trade->trade_profit;
             } else {
                 $trade->trade_status = 'lose';
             }
-
 
             $trade->end_price = $finalPrice;
             $trade->save();
@@ -55,7 +54,7 @@ class EvaluateTrade implements ShouldQueue
                 credit_user($trade->trade_wallet, $trade->trade_profit + $trade->trade_amount, "Successfully won trade ID {$trade->id}");
             }
 
-            // event(new \App\Events\TradeUpdated($trade));
+            event(new \App\Events\TradeUpdated($trade));
         } catch (\Throwable $th) {
             Log::info(json_encode($th->getTraceAsString()));
         }

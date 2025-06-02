@@ -3,6 +3,7 @@
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\DepositController;
+use App\Http\Controllers\ExpressTradeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PayoutController;
 use App\Http\Controllers\ProfileController;
@@ -45,6 +46,12 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('payout', PayoutController::class)->names('withdrawals');
     Route::resource('deposit', DepositController::class)->names('deposit');
     Route::resource('payout', PayoutController::class)->names('payout');
+
+
+    Route::post('submit-express-trade', [ExpressTradeController::class, 'bulk'])->name('submit.express.trade');
+
+
+    Route::post('payout/create', [PayoutController::class, 'store'])->name('payout.create');
     // });
 
     Route::get("finance-history", [TransactionHistoryController::class, 'history'])->name('finance.history');

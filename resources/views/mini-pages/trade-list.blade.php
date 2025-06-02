@@ -1,11 +1,11 @@
 <div class="signal-card">
     <div class="signal-header">
         <div class="signal-title gap-3">
-            <i class="fas fa-star-o text[#ff9706]"></i>
+            <i class="fas fa-star text[#ff9706]"></i>
             <span class="text-[#8ea5c0]"> {{ $trade->trade_currency }}</span>
             <span class="signal-percentage">+{{ $trade->trade_percentage }}%</span>
         </div>
-        <div class="signal-time" id="countdown-{{ $trade->id }}">--:--</div>
+        <div class="countdown-timer text-white" id="countdown-{{ $trade->id }}" data-timestamp="{{ $trade->trade_duration }}"></div>
     </div>
     <div class="signal-body">
         <div class="signal-price text-[#8ea5c0]">

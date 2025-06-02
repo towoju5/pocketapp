@@ -10,8 +10,8 @@
                     <div class="flex flex-wrap items-center justify-between mb-4">
                         <div class="flex gap-2">
                             <a href="{{ url()->current() }}?type=deposit"><button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">Deposits</button></a>
-                            <a href="{{ url()->current() }}?type=payout"><button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">Withdrawal</button></a>
-                            <a href="{{ url()->current() }}?type=deposit"><button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">Internal Transfers</button></a>
+                            <a href="{{ url()->current() }}?type=withdraw"><button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">Withdrawal</button></a>
+                            <a href="{{ url()->current() }}?type=transfer"><button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">Internal Transfers</button></a>
                             <a href="{{ route('finance.history') }}"><button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">All Types</button></a>
                         </div>
                         <div class="flex items-center gap-2">
@@ -39,7 +39,7 @@
                                     <td class="border-b border-gray-800 px-4 py-2">2025-01-08 11:48:33</td>
                                     <td class="border-b border-gray-800 px-4 py-2">$10</td>
                                     <td class="border-b border-gray-800 px-4 py-2">QafPay</td>
-                                    <td class="border-b border-gray-800 px-4 py-2">Deposit</td>
+                                    <td class="border-b border-gray-800 px-4 py-2">{{ $item->type }}</td>
                                     <td class="border-b border-gray-800 px-4 py-2">
                                         <span class="bg-red-500 text-white px-2 py-1 rounded text-xs">Expired</span>
                                     </td>
@@ -52,6 +52,9 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+                <div class="pagination">
+                    {{ $transactions->links() }}
                 </div>
             </div>
         </div>

@@ -1,189 +1,274 @@
-// window.onload = function () {
-//     // Connect to the trade.created channel
-//     var tradeChannel = Echo.channel("trade.created");
-    // var tradeUpdateChannel = Echo.channel("trade.updated");
+document.addEventListener('DOMContentLoaded', function () {
+    // Echo listeners
+    try {
+        const tradeChannel = Echo.channel("trade.created");
+        const tradeUpdateChannel = Echo.channel("trade.updated");
 
-    // if (tradeChannel) {
-    //     toastr.success("Trade update connected");
-    //     console.log("Echo connected successfully");
-    // }
+        // toastr.success("Trade update connected");
+        console.log("Echo connected successfully");
 
-//     // Listen for the 'trade.created' event
-//     tradeChannel.listen(".trade.created", function (data) {
-//         if (data && data.id) {
-//             console.log("Trade Created:", data);
-//             toastr.success(`Trade event received: ID: ${data.id}`);
-//         } else {
-//             console.error("Invalid trade.created event data:", data);
-//         }
-//     });
-
-//     // Listen for the 'trade-updated' event
-    // tradeUpdateChannel.listen(".trade-updated", function (data) {
-    //     if (data && data.id) {
-    //         console.log("Trade Updated:", data);
-    //         toastr.success(`Update on trade ${data.id} received`);
-    //     } else {
-    //         console.error("Invalid trade-updated event data:", data);
-    //     }
-    // });
-// };
-
-function initCountdowns() {
-    const countdownElements = document.querySelectorAll('.signal-time');
-    
-    countdownElements.forEach(element => {
-        let timeString = element.textContent.trim();
-        let timerParts = timeString.split(':').map(Number);
-        let totalTime = timerParts[0] * 3600 + timerParts[1] * 60 + timerParts[2];
-
-        const updateCountdown = () => {
-            totalTime--;
-            
-            if (totalTime < 0) {
-                clearInterval(timer);
-                element.textContent = '00:00:00';
-                return;
+        tradeChannel.listen(".trade.created", (data) => {
+            if (data?.id) {
+                console.log("Trade Created:", data);
+                toastr.success(`Trade event received: ID: ${data.id}`);
+            } else {
+                console.error("Invalid trade.created event data:", data);
             }
+        });
 
-            const newHours = Math.floor(totalTime / 3600);
-            const newMinutes = Math.floor((totalTime % 3600) / 60);
-            const newSeconds = totalTime % 60;
+        tradeUpdateChannel.listen(".trade-updated", (data) => {
+            if (data?.id) {
+                console.log("Trade Updated:", data);
+                toastr.success(`Update on trade ${data.id} received`);
+            } else {
+                console.error("Invalid trade-updated event data:", data);
+            }
+        });
+    } catch (error) {
+        console.error("Error initializing Echo channels:", error);
+    }
 
-            element.textContent = [
-                String(newHours).padStart(2, '0'),
-                String(newMinutes).padStart(2, '0'),
-                String(newSeconds).padStart(2, '0')
-            ].join(':');
-        };
+    // Countdown initialization
+    function formatTime(seconds) {
+        const hrs = Math.floor(seconds / 3600);
+        const mins = Math.floor((seconds % 3600) / 60);
+        const secs = seconds % 60;
+        const pad = n => n.toString().padStart(2, '0');
+        return hrs > 0 ? `${pad(hrs)}:${pad(mins)}:${pad(secs)}` : `${pad(mins)}:${pad(secs)}`;
+    }
 
-        const timer = setInterval(updateCountdown, 1000);
-    });
-}
+    // function updateCountdowns() {
+    //     document.querySelectorAll('.countdown-timer').forEach(timer => {
+    //         let seconds = parseInt(timer.getAttribute('data-timestamp'), 10);
+    //         if (seconds > 0) {
+    //             seconds--;
+    //             timer.setAttribute('data-timestamp', seconds);
+    //             timer.textContent = formatTime(seconds);
+    //         } else {
+    //             timer.textContent = '00:00';
+    //         }
+    //     });
+    // }
+    function updateCountdowns() {
+        const $noTradeTag = document.getElementById('regular-trade-no-trade-text-default');
+        document.querySelectorAll('.countdown-timer').forEach(timer => {
+            let seconds = parseInt(timer.getAttribute('data-timestamp'), 10);
+            if (seconds > 0) {
+                seconds--;
+                timer.setAttribute('data-timestamp', seconds);
+                timer.textContent = formatTime(seconds);
+            } else {
+                timer.textContent = '00:00';
+
+                const signalCard = timer.closest('.signal-card');
+                const closedContainer = document.querySelector('.trade-closed-content.trade_list-page');
+
+                if (signalCard && closedContainer && !signalCard.classList.contains('moved')) {
+                    // closedContainer.appendChild(signalCard);
+                    closedContainer.prepend(signalCard);
+                    if ($noTradeTag) {
+                        $noTradeTag.style.display = 'none';
+                    }
+                    signalCard.classList.add('moved'); // Prevent moving it multiple times
+                }
+            }
+        });
+    }
 
 
-$(document).ready(function () {
+    function initCountdowns() {
+        document.querySelectorAll('.countdown-timer:not([data-initialized])').forEach(timer => {
+            const seconds = parseInt(timer.getAttribute('data-timestamp'), 10);
+            timer.textContent = formatTime(seconds);
+            timer.dataset.initialized = 'true';
+        });
+    }
+
+    function observeDOMChanges() {
+        const observer = new MutationObserver(initCountdowns);
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    initCountdowns();
+    setInterval(updateCountdowns, 1000);
+    observeDOMChanges();
+
+    // Tab switching
     function activateTab(activeTab, inactiveTab, activeContent, inactiveContent) {
-        // Show the active content, hide the inactive one
         $(activeContent).removeClass("hidden");
         $(inactiveContent).addClass("hidden");
 
-        // Update tab styles
         $(activeTab).addClass("active-tab text-gray-200 bg-[#1e2131]")
-                    .removeClass("text-gray-500 bg-[#272b3c]");
+            .removeClass("text-gray-500 bg-[#272b3c]");
         $(inactiveTab).removeClass("active-tab text-gray-200 bg-[#1e2131]")
-                      .addClass("text-gray-500 bg-[#272b3c]");
+            .addClass("text-gray-500 bg-[#272b3c]");
 
-        // Ensure blue bottom border is only on the active tab
         $(activeTab).find(".tab-indicator").removeClass("hidden");
         $(inactiveTab).find(".tab-indicator").addClass("hidden");
     }
 
-    // Click event for Opened tab
-    $("#openTab").click(function () {
-        activateTab("#openTab", "#closedTab", "#openTrades", "#closedTrades");
-    });
-
-    // Click event for Closed tab
-    $("#closedTab").click(function () {
-        activateTab("#closedTab", "#openTab", "#closedTrades", "#openTrades");
-    });
-
-    // Set the default active tab on page load
+    $("#openTab").on("click", () => activateTab("#openTab", "#closedTab", "#openTrades", "#closedTrades"));
+    $("#closedTab").on("click", () => activateTab("#closedTab", "#openTab", "#closedTrades", "#openTrades"));
     activateTab("#openTab", "#closedTab", "#openTrades", "#closedTrades");
-});
 
-
-
-// handle trade form submission.
-document.addEventListener("DOMContentLoaded", function () {
+    // Trade form submission
     const tradeForm = document.getElementById("tradeForm");
     const tradeButtons = document.querySelectorAll(".cta-button");
 
-    // Handle button clicks to set trade direction and submit form
-    tradeButtons.forEach((button) => {
-        button.addEventListener("click", function () {
-            const tradeDirection = this.getAttribute("data-value"); // 'up' or 'down'
+    tradeButtons.forEach(button => {
+        button.addEventListener("click", () => {
+            const direction = button.getAttribute("data-value");
+            if (!direction) return toastr.error("Trade direction is missing.");
 
-            if (!tradeDirection) {
-                toastr.error("Trade direction is missing.");
-                return;
-            }
-
-            // Append trade direction to the form
             const formData = new FormData(tradeForm);
-            formData.append("direction", tradeDirection);
-
-            // Disable buttons to prevent multiple submissions
-            tradeButtons.forEach((btn) => (btn.disabled = true));
+            formData.append("direction", direction);
+            tradeButtons.forEach(btn => btn.disabled = true);
 
             fetch(tradeForm.getAttribute("action"), {
                 method: "POST",
-                body: new URLSearchParams([...formData]), // Convert FormData to URL-encoded format
+                body: new URLSearchParams([...formData])
             })
-                .then((response) => response.json()) // Convert response to JSON
-                .then((response) => {
+                .then(res => res.json())
+                .then(response => {
                     if (response.status) {
                         toastr.success(response.message);
-
-                        // Display trade data
                         const trade = response.trade;
                         const tradeHtml = response.html;
-                        $("#openTradeList").append(tradeHtml);
-                        document
-                            .getElementById("tradesList")
-                            .insertAdjacentHTML("afterbegin", tradeHtml);
 
-                        // Start countdown
+                        $("#openTradeList").prepend(tradeHtml);
+                        document.getElementById("tradesList").insertAdjacentHTML("afterbegin", tradeHtml);
+
                         let timeLeft = trade.trade_close_time;
-                        const countdownInterval = setInterval(() => {
+                        const interval = setInterval(() => {
                             if (timeLeft <= 0) {
-                                clearInterval(countdownInterval);
-                                document
-                                    .querySelectorAll(`.countdown-${trade.id}`)
-                                    .forEach(
-                                        (el) => (el.textContent = "Completed")
-                                    );
-                                return;
+                                clearInterval(interval);
+                                document.querySelectorAll(`.countdown-${trade.id}`).forEach(el => el.textContent = "Completed");
+                            } else {
+                                document.querySelectorAll(`.countdown-${trade.id}`).forEach(el => el.textContent = `${timeLeft} seconds`);
+                                timeLeft--;
                             }
-
-                            document
-                                .querySelectorAll(`.countdown-${trade.id}`)
-                                .forEach(
-                                    (el) =>
-                                        (el.textContent = `${timeLeft} seconds`)
-                                );
-                            timeLeft--;
                         }, 1000);
 
-                        // Reset form after submission
                         tradeForm.reset();
                     } else {
                         toastr.error(response.message);
                     }
                 })
-                .catch((error) => {
-                    // toastr.error("An error occurred while placing the trade");
-                    console.error(error);
-                })
-                .finally(() => {
-                    // Re-enable buttons
-                    tradeButtons.forEach((btn) => (btn.disabled = false));
-                });
+                .catch(console.error)
+                .finally(() => tradeButtons.forEach(btn => btn.disabled = false));
         });
     });
-});
 
-// stock dropdown
-document.addEventListener("DOMContentLoaded", function () {
+    // Asset dropdown toggle
     const assetBtn = document.getElementById("assetBtn");
     const assetDropDown = document.getElementById("assetDropDown");
 
     if (assetBtn && assetDropDown) {
-        assetBtn.addEventListener("click", function () {
+        assetBtn.addEventListener("click", () => {
             assetDropDown.classList.toggle("hidden");
         });
-    } else {
-        // console.error("Element(s) not found: assetBtn or assetDropDown.");
     }
+
+    // Type filter
+    document.querySelectorAll('#asset-filters .filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('#asset-filters .filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const type = btn.dataset.filter;
+            document.querySelectorAll('#asset-list .asset-item').forEach(item => {
+                item.style.display = (type === 'all' || item.dataset.type === type) ? 'flex' : 'none';
+            });
+        });
+    });
+
+    // Countdown labels with duration
+    document.querySelectorAll('.countdown').forEach(cd => {
+        const mins = parseInt(cd.dataset.duration, 10) || 1;
+        const end = Date.now() + mins * 60 * 1000;
+
+        const tick = setInterval(() => {
+            const diff = end - Date.now();
+            if (diff <= 0) {
+                cd.textContent = `M${mins} 00:00`;
+                clearInterval(tick);
+            } else {
+                const t = Math.floor(diff / 1000);
+                cd.textContent = `M${mins} ${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`;
+            }
+        }, 1000);
+    });
+
+    // Trade selection
+    const selectedTrades = new Map();
+
+    document.querySelectorAll('.trade-btn').forEach(button => {
+        button.addEventListener('click', function () {
+            const { asset, direction, close } = this.dataset;
+            const key = `${asset}-${direction}`;
+
+            alert(`Selected Asset: ${asset}\nDirection: ${direction}\nClose Time: ${close}`);
+
+            if (selectedTrades.has(key)) {
+                selectedTrades.delete(key);
+                document.querySelector(`#selected-trades-item-${CSS.escape(key)}`)?.remove();
+            } else {
+                selectedTrades.set(key, { asset, direction, closeTime: close });
+                addTradeToList(asset, direction, close);
+            }
+        });
+    });
+
+    function addTradeToList(asset, direction, closeTime) {
+        const key = `${asset}-${direction}`;
+        const li = document.createElement('li');
+        li.id = `selected-trades-item-${key}`;
+        li.className = "flex justify-between items-center bg-white dark:bg-gray-700 p-2 rounded shadow-sm";
+
+        li.innerHTML = `
+            <span>${asset.toUpperCase()} → ${direction.toUpperCase()} <span class="text-xs text-gray-500">(Close: ${closeTime})</span></span>
+            <button class="remove-trade px-2 py-1 text-xs text-red-600 hover:underline" data-key="${key}">Remove</button>
+        `;
+
+        document.querySelector('#selected-trades').appendChild(li);
+
+        li.querySelector('.remove-trade').addEventListener('click', function () {
+            selectedTrades.delete(key);
+            li.remove();
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const paymentButton = document.getElementById('paymentButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const dropdownArrow = document.getElementById('dropdownArrow');
+        const selectedOption = document.getElementById('selectedOption');
+        const paymentOptions = document.querySelectorAll('.payment-option');
+
+        function toggleDropdown() {
+            dropdownMenu.classList.toggle('hidden');
+            dropdownArrow.classList.toggle('rotate-180');
+        }
+
+        function selectOption(button) {
+            const option = button.dataset.option;
+            const buttonContent = button.innerHTML;
+            selectedOption.innerHTML = buttonContent;
+            toggleDropdown();
+        }
+
+        paymentButton.addEventListener('click', toggleDropdown);
+
+        paymentOptions.forEach(option => {
+            option.addEventListener('click', () => selectOption(option));
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!paymentButton.contains(e.target) && !dropdownMenu.contains(e.target)) {
+                dropdownMenu.classList.add('hidden');
+                dropdownArrow.classList.remove('rotate-180');
+            }
+        });
+    });
 });

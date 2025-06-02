@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Broadcast;
 Broadcast::channel('trade-created', function ($trade) {
     return $trade;
 });
+
+Broadcast::channel('trade-updated', function ($trade) {
+    return $trade;
+});
+
 Broadcast::channel('trade-updated', function ($trade) {
     return $trade;
 });

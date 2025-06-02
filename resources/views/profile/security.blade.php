@@ -115,7 +115,7 @@
 
         <div class="panel box-border personal-info-panel mb-3">
             <div class="panel-heading">
-                <div class="panel-title">Login history</div>
+                <div class="panel-title">Login history <small>Last 5</small></div>
             </div>
             <div class="panel-body text-white">
                 <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
@@ -130,7 +130,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach($logins as $login)
+                                @foreach($logins->take(5) as $login)
                                 <tr class="border-b dark:border-gray-700">
                                     <td class="px-4 py-2">{{ $login['ip_address'] }}</td>
                                     <td class="px-4 py-2">{{ $login['user_agent'] }}</td>
@@ -170,6 +170,11 @@
                                     <td class="px-4 py-2">{{ $session->ip_address }}</td>
                                     <td class="px-4 py-2">{{ \Carbon\Carbon::createFromTimestamp($session->last_activity)->format('Y-m-d H:i:s') }}</td>
                                     <td class="px-4 py-2">
+                                    @if ($session->id === Session::getId()) 
+                                        <span class="bg-red-600 text-white rounded-xl py-1 px-4">
+                                            Current Session
+                                        </span>
+                                    @else
                                         <form action="{{ route('sessions.logout', $session->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to logout this session?');">
                                             @csrf
                                             @method('DELETE')
@@ -178,6 +183,7 @@
                                             </button>
                                         </form>
                                     </td>
+                                    @endif
                                 </tr>
                                 @endforeach
                             </tbody>
