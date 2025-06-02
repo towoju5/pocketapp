@@ -1,0 +1,76 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.newbie-guide-todo-list-btn {
+    display: -webkit-box;
+    display: flex;
+    position: relative;
+    -webkit-box-align: center;
+    align-items: center;
+    border-radius: 8px;
+    cursor: pointer;
+    height: 42px;
+    min-width: 40px;
+    padding: 0 10px;
+    -webkit-transition: border-color .3s, background-color .3s;
+    transition: border-color .3s, background-color .3s;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+}
+
+body {
+    margin: 0;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.hidden_text {
+    font-size: 12px;
+    color: #fff;
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.r-height {
+    height: calc(100vh + 2rem);
+}
+
+
+/* 
+.flex {
+    display: flex;
+    height: 100%;
+}
+
+#sideMenu {
+    width: 64px;
+    background-color: #1c1f26;
+}
+
+#menu {
+    width: 256px;
+    background-color: #1c1f26;
+    flex-shrink: 0; 
+}
+
+.content {
+    flex-grow: 1;
+    background-color: #0c0f13;
+    overflow-y: auto;
+}
+
+
+.from_btn_gradient {
+    --tw-gradient-from: #f43f5e var(--tw-gradient-from-position);
+    --tw-gradient-to: rgb(244 63 94 / 0) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+
+.newbie-guide-todo-list-btn {
+    --newbie-guide-todo-list-percentage: 60;
+} */
