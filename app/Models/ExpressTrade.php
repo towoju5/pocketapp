@@ -26,8 +26,32 @@ class ExpressTrade extends Model
         'trade_copied_count',
         'trade_percentage'
     ];
+    
+    protected $with = ['asset'];
+
+    protected $appends = ['trade_duration'];
+
 
     protected $casts = [
         'trade_extra_info' => 'array',
     ];
+
+    public function getTradeDurationAttribute()
+    {
+        if (!$this->trade_close_time) {
+            return 0;
+        }
+
+        $closeTimestamp = \Carbon\Carbon::parse($this->trade_close_time)->timestamp;
+        $nowTimestamp = now()->timestamp;
+
+        $remainingSeconds = $closeTimestamp - $nowTimestamp;
+
+        return $remainingSeconds > 0 ? $remainingSeconds : 0;
+    }
+
+    public function asset()
+    {
+        return $this->belongsTo(Assets::class);
+    }
 }

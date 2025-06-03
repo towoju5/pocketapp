@@ -107,7 +107,7 @@ class TradeController extends Controller
         }
 
         event(new NewTradeCreated($trade));
-        event(new TradeUpdated($trade));
+        // event(new TradeUpdated($trade));
         EvaluateTrade::dispatch($trade)->delay(now()->addSeconds($validated['duration']));
 
         return response()->json([

@@ -51,18 +51,18 @@ class Trade extends Model
     //         return 0;
     //     }
     // }
-    
+
     public function getTradeDurationAttribute()
-{
-    if (!$this->trade_close_time) {
-        return 0;
+    {
+        if (!$this->trade_close_time) {
+            return 0;
+        }
+
+        $closeTimestamp = \Carbon\Carbon::parse($this->trade_close_time)->timestamp;
+        $nowTimestamp = now()->timestamp;
+
+        $remainingSeconds = $closeTimestamp - $nowTimestamp;
+
+        return $remainingSeconds > 0 ? $remainingSeconds : 0;
     }
-
-    $closeTimestamp = \Carbon\Carbon::parse($this->trade_close_time)->timestamp;
-    $nowTimestamp = now()->timestamp;
-
-    $remainingSeconds = $closeTimestamp - $nowTimestamp;
-
-    return $remainingSeconds > 0 ? $remainingSeconds : 0;
-}
 }

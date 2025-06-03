@@ -165,7 +165,7 @@
                     {{-- ###########  ASSET LIST ############ --}}
                     <div id="asset-list" class="mt-4 space-y-3">
                         @foreach($assets as $asset)
-                        <div class="asset-item-{{ $asset->id }} flex items-center justify-between gap-3" data-type="{{ $asset->asset_group }}">
+                        <div class="asset-item-{{ $asset->id }} asset-item-groups flex items-center justify-between gap-3" data-type="{{ $asset->asset_group }}">
                             {{-- up --}}
                             <button class="trade-btn up asset_{{ $asset->id }}" data-assetId="{{ $asset->id }}" data-percentage="{{ $asset->asset_profit_margin * 100 }}" data-asset="{{ $asset->symbol }}" data-direction="up" data-close-time="30" onclick="selectTrade(this)">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" class="trade-btn-up-svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img">
@@ -220,16 +220,14 @@
         </div>
 
     </div>
-    <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800 trade-tab-content hidden" data-tab="opened">
-        @forelse($openedTrades as $trade)
-        <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-gray-300"></div>
-            </div>
+    <div class="rounded-lg bg-gray-50 dark:bg-gray-800 trade-tab-content hidden" data-tab="opened">
+        <div id="expressTradeOpenedList">
+            @if(!empty($openedExpressTrades))
+                @include('mini-pages.express-trade', ['trades' => $openedExpressTrades])
+            @else
+            <a class="bg-[#172832] text-white border border-[#025b44] py-2 rounded-md flex justify-center hover:cursor-pointer" onclick="$('#openExpressTradeBtn').click()">Create new express</a>
+            @endif
         </div>
-        @empty
-        <a class="bg-[#172832] text-white border border-[#025b44] py-2 rounded-md flex justify-center hover:cursor-pointer" onclick="$('#openExpressTradeBtn').click()">Create new express</a>
-        @endforelse
     </div>
     <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800 trade-tab-content hidden" data-tab="closed">
         <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong class="font-medium text-gray-800 dark:text-white">closed tab's associated content</strong>. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling.</p>
@@ -295,8 +293,6 @@
             }
         });
     }
-
-
 
     function removeTrade(index) {
         const removedTrade = selectedTrades[index]; // get the removed trade before removal
@@ -364,6 +360,12 @@
                 selectedTrades = [];
                 renderSelectedTrades();
                 $('#trade-amount').val('');
+                $('.asset-item-groups').removeClass('trade-disabled');
+                if(res.trade) {
+                    const tradeHtml = res.html;
+                    $("#expressTradeOpenedList").prepend(tradeHtml);
+                    // document.getElementById("expressTradeOpenedList").insertAdjacentHTML("afterbegin", tradeHtml);
+                }
             },
             error: function(xhr) {
                 alert('Error: ' + xhr.responseText);

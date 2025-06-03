@@ -350,3 +350,11 @@ if (! function_exists('social_trades')) {
         return response()->json($users);
     }
 }
+
+
+if(! function_exists('generate_uuid')) {
+    function generate_uuid()
+    {
+        return \Str::uuid()->toString();
+    }
+}

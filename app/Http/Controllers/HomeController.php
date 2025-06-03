@@ -33,7 +33,7 @@ class HomeController extends Controller
         $assetCategories = Assets::groupBy('asset_group')->get();
         $chart_coin = $data->symbol;
         $active_trades = Trade::where(["trade_status" => "pending", "user_id" => auth()->id()])->latest()->get();
-        $recent_closed_trades = Trade::whereIn("trade_status", ["pending", "win", "lose"])->whereUserId(auth()->id())->whereBetween('created_at', [now()->subMinutes(10), now()])->latest()->get();
+        $recent_closed_trades = Trade::whereIn("trade_status", ["pending", "win", "lose"])->whereUserId(auth()->id())->whereBetween('created_at', [now()->subMinutes(10), now()])->latest()->limit(6)->get();
         $signals = Signal::latest()->where('is_active', true)->get();
         $traders24hours = Trade::where('trade_status', 'win')->with('user')->orderBy('trade_profit', 'desc')->where('created_at', '>=', now()->subHours(24))->get();
         $tradersTopRanked = Trade::where('trade_status', 'win')->with('user')->orderBy('trade_profit', 'desc')->get();
@@ -72,7 +72,7 @@ class HomeController extends Controller
 
         // Get assets
         $assets = Assets::where('is_otc', true)->get();
-        $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->get();
+        return $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->get();
 
         // return [
         //     $traders24hours,

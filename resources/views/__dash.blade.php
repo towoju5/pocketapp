@@ -389,7 +389,7 @@
 
 <!-- trades -->
 <!-- Main Content Area -->
-<div class="min-h-screen bg-[#222636] w-[20%] ml-auto hide" id="mainContent" style="min-width: 330px;">
+<div class="min-h-screen bg-[#222636] w-[20%] ml-auto hidden" id="mainContent" style="min-width: 330px;">
     <div class="text-white">view(</div>
 </div>
 
