@@ -72,7 +72,7 @@ class HomeController extends Controller
 
         // Get assets
         $assets = Assets::where('is_otc', true)->get();
-        return $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->get();
+        $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->get();
 
         // return [
         //     $traders24hours,

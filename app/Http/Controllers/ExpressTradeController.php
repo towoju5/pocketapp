@@ -8,6 +8,7 @@ use App\Jobs\EvaluateExpressTrade;
 use App\Jobs\EvaluateTrade;
 use App\Models\Assets;
 use App\Models\ExpressTrade;
+use App\Models\Signal;
 use App\Models\Trade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -16,7 +17,9 @@ class ExpressTradeController extends Controller
 {
     public function index()
     {
-        return view('express-trade');
+        $trades = ExpressTrade::with('asset')->whereUserId(auth()->id())->latest()->paginate(10);
+        $signals = Signal::latest()->where('is_active', true)->get();
+        return view('trades.index', compact('trades', 'signals'));
     }
 
     public function store(Request $request)
@@ -60,6 +63,9 @@ class ExpressTradeController extends Controller
             'trades.*.percentage' => 'required|numeric|min:1|max:100',
         ]);
 
+        if(!debit_user($user->trade_wallet ?? 'qt_demo_usd', $validated['amount'], "Express Trade Order")) {
+            return response()->json(['errors' => "Insufficient wallet balance"], 402);
+        }
         
         $user = auth()->user();
         $groupId = generate_uuid(); // For grouping all trades

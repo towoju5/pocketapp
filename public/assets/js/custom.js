@@ -61,9 +61,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 timer.textContent = '00:00';
 
                 const signalCard = timer.closest('.signal-card');
+                const expressCard = timer.closest('.express-trading-card');
                 const closedContainer = document.querySelector('.trade-closed-content.trade_list-page');
+                const expressClosedContainer = document.querySelector('.express-trade-closed-content.express-trade_list-page');
 
-                if (signalCard && closedContainer && !signalCard.classList.contains('moved')) {
+
+                if (expressCard && closedContainer && !expressCard.classList.contains('moved')) {
+                    // closedContainer.appendChild(signalCard);
+                    expressClosedContainer.prepend(expressCard);
+                    if ($noTradeTag) {
+                        $noTradeTag.style.display = 'none';
+                    }
+                    signalCard.classList.add('moved'); // Prevent moving it multiple times
+                } else if (signalCard && closedContainer && !signalCard.classList.contains('moved')) {
                     // closedContainer.appendChild(signalCard);
                     closedContainer.prepend(signalCard);
                     if ($noTradeTag) {

@@ -7,6 +7,7 @@
         <a class="py-2 px-6 rounded shadow-md @if(Route::is('profile.security')) bg-[#434858] @else bg-gray-900 @endif" href="{{ route('profile.security') }}">Security</a>
 
         <a class="py-2 px-6 rounded shadow-md @if(Route::is('trade.index')) bg-[#434858] @else bg-gray-900 @endif" href="{{ route('trade.index') }}">Trading history</a>
-       {{--  <a class="py-2 px-6 rounded shadow-md @if(Route::is('deposit.create')) bg-[#434858] @else bg-gray-900 @endif" href="{{ route('deposit.create') }}">My Safe</a> --}}
+       
+        <a class="py-2 px-6 rounded shadow-md @if(Route::is('express.trade.index')) bg-[#434858] @else bg-gray-900 @endif" href="{{ route('express.trade.index') }}">Express Trade</a>
     </li>
 </ul>

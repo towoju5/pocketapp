@@ -1,5 +1,5 @@
 @foreach($trades as $trade)
-<div class="signal-card max-w-md mx-auto">
+<div class="express-trading-card signal-card max-w-md mx-auto">
     <div class="signal-header">
         <div class="signal-title gap-3">
             <i class="fas fa-star text-[#ff9706]"></i>

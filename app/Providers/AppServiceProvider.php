@@ -40,7 +40,8 @@ class AppServiceProvider extends ServiceProvider
 
                 if (Auth::check()) {
                     $user = Auth::user();
-
+                    
+                    create_user_wallet($user->id);
                     $uwallets = $user->wallets();
 
                     // Fetch user's wallet balance

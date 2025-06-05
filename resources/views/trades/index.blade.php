@@ -29,7 +29,7 @@
                         @foreach($trades as $trade)
                         <tr class="border-b border-gray-700 hover:bg-gray-700">
                             <td class="px-4 py-3">{{ $trade->id }}</td>
-                            <td class="px-4 py-3">{{ $trade->trade_currency }}</td>
+                            <td class="px-4 py-3">{{ $trade->trade_currency ?? $trade->asset->name ?? "N/A" }}</td>
                             <td class="px-4 py-3">${{ number_format(floatval($trade->trade_amount), 6) }}</td>
                             <td class="px-4 py-3">{{ ucfirst($trade->trade_direction) }}</td>
                             <td class="px-4 py-3">${{ number_format(floatval($trade->start_price), 6) }}</td>

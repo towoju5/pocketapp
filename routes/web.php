@@ -29,6 +29,12 @@ Route::get('/', function () {
 });
 
 
+Route::get("iqcent", function () {
+    $asset = getAssetData("TON/USDT.X", true);
+    return response()->json($asset);
+});
+
+
 
 Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('dashboard/demo/{coin?}', [HomeController::class, 'demo'])->middleware(['auth', 'verified'])->name('dashboard.demo');

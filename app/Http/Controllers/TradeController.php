@@ -54,7 +54,7 @@ class TradeController extends Controller
         $validated = $validated->validated();
         $user = auth()->user();
 
-        create_user_wallet($user->id);
+        // create_user_wallet($user->id);
 
         if(!debit_user($user->trade_wallet ?? 'qt_demo_usd', $validated['amount'], "Binary Trade Order")) {
             return response()->json(['errors' => "Insufficient wallet balance"], 402);
