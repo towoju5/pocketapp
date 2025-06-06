@@ -167,52 +167,76 @@ if (! function_exists("getAssetData")) {
     function getAssetData($asset, $rateOnly = false)
     {
         try {
+            // 1️⃣ Calculate time range
             $nowMs = round(microtime(true) * 1000);
             $oneMinuteAgoMs = $nowMs - (60 * 1000);
 
+            // 2️⃣ Build query
             $query = http_build_query([
                 'symbol' => $asset,
                 'from'   => $oneMinuteAgoMs,
                 'to'     => $nowMs
             ]);
 
+            // 3️⃣ Build URLs
             $innerUrl   = "https://iqcent.com/trade-api/api/ticks?{$query}&autoparse=true";
             $encodedUrl = urlencode($innerUrl);
             $zenrowsKey = env('ZENROWS_API_KEY');
             $zenrowsUrl = "https://api.zenrows.com/v1/?apikey={$zenrowsKey}&url={$encodedUrl}";
-            Log::info('getAssetData: ', [$zenrowsUrl]);
 
+            // 4️⃣ Log the URL being used
+            Log::info('getAssetData using Zenrows URL: ', [$zenrowsUrl]);
+
+            // 5️⃣ Setup CURL
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $innerUrl ?? $zenrowsUrl);
+            curl_setopt($ch, CURLOPT_URL, $zenrowsUrl); // Force using Zenrows
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+            curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+                'Accept: application/json'
+            ]);
 
+            // 6️⃣ Execute CURL
             $response = curl_exec($ch);
             if (curl_errno($ch)) {
                 throw new \Exception('Curl error: ' . curl_error($ch));
             }
             curl_close($ch);
 
+            // 7️⃣ Log raw response
+            Log::info('getAssetData raw response: ' . $response);
+
+            // 8️⃣ Decode response
             $arrResponse = json_decode($response, true);
-            // log the response
-            Log::info('getAssetData response: ', [$arrResponse]);
-            if (!isset($arrResponse['data'][0])) {
+
+            // 9️⃣ Log decoded response
+            Log::info('getAssetData decoded response: ', [$arrResponse]);
+
+            // 10️⃣ Basic validation
+            if (!is_array($arrResponse) || !isset($arrResponse['success']) || $arrResponse['success'] !== true) {
+                return "Error: Unexpected response format or failed API call.";
+            }
+
+            if (empty($arrResponse['data']) || !isset($arrResponse['data'][0])) {
                 return "No data available.";
             }
 
+            // 11️⃣ Return data
             $tick = $arrResponse['data'][0];
 
             if ($rateOnly) {
-                // log the strike
                 return $tick['strike'] ?? null;
             }
 
             return $tick;
         } catch (\Exception $e) {
+            Log::error('getAssetData exception: ' . $e->getMessage());
             return "Error fetching data: " . $e->getMessage();
         }
     }
 }
+
 
 if (! function_exists('getWalletIdByCoinTicker')) {
     function getWalletIdByCoinTicker($coin)
