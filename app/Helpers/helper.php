@@ -187,28 +187,22 @@ if (! function_exists("getAssetData")) {
             // 4️⃣ Log the URL being used
             Log::info('getAssetData using Zenrows URL: ', [$zenrowsUrl]);
 
-            // 5️⃣ Setup CURL
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $zenrowsUrl); // Force using Zenrows
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
-            curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
-                'Accept: application/json'
-            ]);
+            // 5️⃣ Make HTTP request using Laravel's HTTP client
+            $response = Http::withHeaders([
+                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+                'Accept' => 'application/json'
+            ])->get($zenrowsUrl);
 
-            // 6️⃣ Execute CURL
-            $response = curl_exec($ch);
-            if (curl_errno($ch)) {
-                throw new \Exception('Curl error: ' . curl_error($ch));
+            // 6️⃣ Check for HTTP errors
+            if ($response->failed()) {
+                throw new \Exception('HTTP request failed: ' . $response->status());
             }
-            curl_close($ch);
 
             // 7️⃣ Log raw response
-            Log::info('getAssetData raw response: ' . $response);
+            Log::info('getAssetData raw response: ' . $response->body());
 
             // 8️⃣ Decode response
-            $arrResponse = json_decode($response, true);
+            $arrResponse = $response->json();
 
             // 9️⃣ Log decoded response
             Log::info('getAssetData decoded response: ', [$arrResponse]);
@@ -229,8 +223,7 @@ if (! function_exists("getAssetData")) {
                 return $tick['strike'] ?? null;
             }
 
-            return $tick;
-        } catch (\Exception $e) {
+            return $tick;        } catch (\Exception $e) {
             Log::error('getAssetData exception: ' . $e->getMessage());
             return "Error fetching data: " . $e->getMessage();
         }

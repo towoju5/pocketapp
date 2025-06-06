@@ -21,3 +21,4 @@ yarn-error.log
 /.vscode
 *.zip
 old
+database/database.sqlite
