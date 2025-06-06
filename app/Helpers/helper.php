@@ -195,8 +195,8 @@ if (! function_exists("getAssetData")) {
 
             $arrResponse = json_decode($response, true);
             // log the response
-            // Log::info('getAssetData response: ', [$arrResponse]);
-            if (! isset($arrResponse['data'][0])) {
+            Log::info('getAssetData response: ', [$arrResponse]);
+            if (!isset($arrResponse['data'][0])) {
                 return "No data available.";
             }
 
@@ -204,7 +204,6 @@ if (! function_exists("getAssetData")) {
 
             if ($rateOnly) {
                 // log the strike
-                // Log::info('getAssetData strike: ', [$tick['strike']]);
                 return $tick['strike'] ?? null;
             }
 
