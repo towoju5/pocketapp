@@ -101,7 +101,7 @@ class ExpressTradeController extends Controller
 
             $trades[] = $trade;
 
-            EvaluateTrade::dispatch($trade)->delay(now()->addSeconds($closeTime));
+            EvaluateExpressTrade::dispatch($trade)->delay(now()->addSeconds($closeTime));
             event(new NewExpressTradeCreated($trade));
         }
 

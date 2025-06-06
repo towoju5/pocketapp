@@ -29,13 +29,13 @@ class EvaluateExpressTrade implements ShouldQueue
             $trade = $this->trade;
 
             Log::debug("Evaluating trade: " . $trade->id);
-
+            $trade_currency = $trade->trade_currency;
             // Get the current price of the asset
-            Log::info("Trade currency is: {$trade->trade_currency}");
-            $currentPrice = getAssetData($trade->trade_currency, true);
+            Log::info("Trade currency is: {$trade_currency}");
+            $currentPrice = getAssetData($trade_currency, true);
 
             if (!is_numeric($currentPrice)) {
-                Log::error("Invalid price received for asset {$trade->trade_currency}: " . json_encode($currentPrice));
+                Log::error("Invalid price received for asset {$trade_currency}: " . json_encode($currentPrice));
                 $trade->trade_status = 'invalid';
                 $trade->end_price = 0;
                 $trade->save();
@@ -45,9 +45,9 @@ class EvaluateExpressTrade implements ShouldQueue
             $finalPrice = $currentPrice;
 
             // Determine win or loss
-            if ($trade->trade_direction === 'up' && $finalPrice > $trade->start_price) {
+            if ($trade->trade_direction === 'up' && $finalPrice > 0 && $finalPrice > $trade->start_price) {
                 $trade->trade_status = 'win';
-            } elseif ($trade->trade_direction === 'down' && $finalPrice < $trade->start_price) {
+            } elseif ($trade->trade_direction === 'down' && $finalPrice > 0 && $finalPrice < $trade->start_price) {
                 $trade->trade_status = 'win';
             } else {
                 $trade->trade_status = 'lose';

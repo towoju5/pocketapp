@@ -6,13 +6,6 @@
       0 => 'Bavix\\Wallet\\WalletServiceProvider',
     ),
   ),
-  'dipeshsukhia/laravel-country-state-city-data' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'DipeshSukhia\\LaravelCountryStateCityData\\LaravelCountryStateCityDataServiceProvider',
-    ),
-  ),
   'laravel/breeze' => 
   array (
     'providers' => 

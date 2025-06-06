@@ -167,11 +167,13 @@ if (! function_exists("getAssetData")) {
     function getAssetData($asset, $rateOnly = false)
     {
         try {
-            $currentUnixTimestamp = time() * 1000;
-            $query                = http_build_query([
+            $nowMs = round(microtime(true) * 1000);
+            $oneMinuteAgoMs = $nowMs - (60 * 1000);
+
+            $query = http_build_query([
                 'symbol' => $asset,
-                'from'   => $currentUnixTimestamp,
-                // 'to' => $currentUnixTimestamp
+                'from'   => $oneMinuteAgoMs,
+                'to'     => $nowMs
             ]);
 
             $innerUrl   = "https://iqcent.com/trade-api/api/ticks?{$query}&autoparse=true";
