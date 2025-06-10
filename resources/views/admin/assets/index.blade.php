@@ -46,8 +46,8 @@
                             <th>Symbol</th>
                             <th>Name</th>
                             <th>Asset Group</th>
-                            <th>Float Type</th>
-                            <th>Float</th>
+                            <th>Is_Active</th>
+                            <th>Is_Float</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -58,8 +58,8 @@
                                 <td>{{ $asset->symbol }}</td>
                                 <td>{{ $asset->name }}</td>
                                 <td>{{ $asset->asset_group }}</td>
-                                <td>{{ ucfirst($asset->exchange_float_type) }}</td>
-                                <td>{{ $asset->exchange_float }}</td>
+                                <td>{{ $asset->is_active }}</td>
+                                <td>{{ $asset->is_float }}</td>
                                 <td>
                                     <a href="{{ route('admin.assets.show', $asset) }}" class="btn btn-sm btn-info text-white">View</a>
                                     <a href="{{ route('admin.assets.edit', $asset) }}" class="btn btn-sm btn-warning text-white">Edit</a>
