@@ -55,12 +55,12 @@ class UpdateAssetStatus extends Command
         // Update the status of assets in the database
         DB::table('assets')
             ->whereIn('symbol', $symbols)
-            ->update(['status' => true]);
+            ->update(['is_active' => true]);
 
-        // Optionally, set the status to 0 for assets not in the API response
+        // Optionally, set the is_active to 0 for assets not in the API response
         DB::table('assets')
             ->whereNotIn('symbol', $symbols)
-            ->update(['status' => false]);
+            ->update(['is_active' => false]);
 
         $this->info('Asset statuses updated successfully.');
 
