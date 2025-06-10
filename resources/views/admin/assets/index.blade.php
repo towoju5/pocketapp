@@ -46,8 +46,8 @@
                             <th>Symbol</th>
                             <th>Name</th>
                             <th>Asset Group</th>
-                            <th>Is_Active</th>
-                            <th>Is_Float</th>
+                            <th>Active</th>
+                            <th>O.T.C</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -59,7 +59,7 @@
                                 <td>{{ $asset->name }}</td>
                                 <td>{{ $asset->asset_group }}</td>
                                 <td>{{ $asset->is_active }}</td>
-                                <td>{{ $asset->is_float }}</td>
+                                <td>{{ $asset->is_otc }}</td>
                                 <td>
                                     <a href="{{ route('admin.assets.show', $asset) }}" class="btn btn-sm btn-info text-white">View</a>
                                     <a href="{{ route('admin.assets.edit', $asset) }}" class="btn btn-sm btn-warning text-white">Edit</a>
