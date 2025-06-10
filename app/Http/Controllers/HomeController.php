@@ -32,7 +32,7 @@ class HomeController extends Controller
         }
 
         // Get assets
-        $assets = Assets::where('is_otc', true)->get();
+        $assets = Assets::where(['is_otc' => true, 'is_active' => true])->get();
         $assetCategories = Assets::groupBy('asset_group')->get();
         $chart_coin = $data->symbol;
         $active_trades = Trade::where(["trade_status" => "pending", "user_id" => auth()->id()])->latest()->get();
