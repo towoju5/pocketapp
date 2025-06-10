@@ -1,10 +1,10 @@
 <?php
+
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Schema;
 
 class UpdateAssetStatus extends Command
 {
@@ -29,15 +29,25 @@ class UpdateAssetStatus extends Command
      */
     public function handle()
     {
-        if (! Schema::hasColumn('assets', 'is_active')) {
-            Schema::table('assets', function ($table) {
-                $table->boolean('is_active')->default(false);
-            });
+        // API endpoint and API key
+        $apiKey = env("ZENROWS_API_KEY");
+        $response = Http::get("https://api.zenrows.com/v1/?apikey={$apiKey}&url=https://iqcent.com/trade-api/api/ticks/current");
+        $data     = $response->json();
+
+        // Check if the response was successful
+        if ($response->failed()) {
+            $this->error('Failed to fetch data from the API. Status code: ' . $response->status());
+            return Command::FAILURE;
         }
 
-        // Fetch data from the API
-        $response = Http::get('https://iqcent.com/trade-api/api/ticks/current');
-        $data     = $response->json();
+        // Decode the JSON response
+        $data = $response->json();
+
+        // Ensure the response is in the expected format
+        if (!isset($data['data']) || !is_array($data['data'])) {
+            $this->error('API response is not in the expected format.');
+            return Command::FAILURE;
+        }
 
         // Extract symbols from the API response
         $symbols = collect($data['data'])->pluck('symbol')->all();
