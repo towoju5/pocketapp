@@ -21,7 +21,7 @@ class AssetController extends Controller
         }
 
         // Paginate the results
-        $assets = $query->paginate(10);
+        $assets = $query->paginate(10)->withQueryString();
 
         // Pass the list of asset groups to the view for filtering
         $assetGroups = Assets::select('asset_group')->distinct()->pluck('asset_group');
