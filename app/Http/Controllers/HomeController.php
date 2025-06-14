@@ -73,7 +73,7 @@ class HomeController extends Controller
         // Top 100 users by total profit (all time)
         $tradersTop100 = $tradersTopRanked->take(100);
 
-        return $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->get();
+        $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->get();
 
         // return [
         //     $traders24hours,
