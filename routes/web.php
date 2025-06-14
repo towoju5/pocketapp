@@ -24,23 +24,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 
 Route::get('/', function () {
-
-    $user = User::find(auth()->id());
-    if($user) {
-        $wallet = $user->getWallet('qt_demo_usd');
-        if ($wallet) {
-            $balance = $wallet->deposit(100000);
-            if($balance) {
-                echo "Deposit successful!";
-            } else {
-                echo "Deposit failed!";
-            }
-        } else {
-            echo "Wallet not found!";
-        }
-    } else {
-        echo "User not found!";
-    }
     return view('act_welcome');
 });
 

@@ -11,12 +11,13 @@ class EvaluateExpressTrade implements ShouldQueue
 {
     use Queueable;
 
+    public $trade;
     /**
      * Create a new job instance.
      */
-    public function __construct()
+    public function __construct($trade)
     {
-        //
+        $this->trade = $trade;
     }
 
     /**

@@ -96,7 +96,7 @@ class ExpressTradeController extends Controller
                 "trade_direction" => $trade['direction'],
                 "trade_amount" => $validated['amount'],
                 "trade_close_time" => $closeTime,
-                "trade_currency" => $trade['asset'],
+                "trade_currency" => $asset->symbol,
                 "start_price" => $current_price,
                 'trade_wallet' => $user->wallet_mode ?? 'qt_demo_usd',
                 'trade_profit' => $calculated_profit,

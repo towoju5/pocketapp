@@ -16,6 +16,7 @@ class ExpressTrade extends Model
         'trade_direction',
         'trade_type',
         'trade_amount',
+        'trade_currency',
         'trade_close_time',
         'end_price',
         'trade_wallet',
