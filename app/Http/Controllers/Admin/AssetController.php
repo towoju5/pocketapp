@@ -26,7 +26,10 @@ class AssetController extends Controller
         // Pass the list of asset groups to the view for filtering
         $assetGroups = Assets::select('asset_group')->distinct()->pluck('asset_group');
 
-        return view('admin.assets.index', compact('assets', 'assetGroups', 'assetGroup'))->with('success', 'Page successfully loaded.');
+        // Flash a success message to the session
+        session()->flash('success', 'Page successfully loaded.');
+
+        return view('admin.assets.index', compact('assets', 'assetGroups', 'assetGroup'));
     }
 
 

@@ -182,7 +182,7 @@ if (! function_exists("getAssetData")) {
             $innerUrl   = "https://iqcent.com/trade-api/api/ticks?{$query}&autoparse=true";
             $encodedUrl = urlencode($innerUrl);
             $zenrowsKey = env('ZENROWS_API_KEY');
-            $zenrowsUrl = "https://api.zenrows.com/v1/?apikey={$zenrowsKey}&url={$encodedUrl}";
+            $zenrowsUrl = "http://polarisoption.io:2300/api?key={$zenrowsKey}&url={$encodedUrl}";
 
             // 4️⃣ Log the URL being used
             Log::info('getAssetData using Zenrows URL: ', [$zenrowsUrl]);
