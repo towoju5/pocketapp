@@ -1,10 +1,18 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\BitgoWallets;
-use Illuminate\Http\Request;
+use App\Models\TransactionHistory;
+use App\Models\WebhookLog;
 use BitGoSDK\BitGo;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\FacadesLog;
+use neto737\BitGoSDK\BitGoExpress;
+use neto737\BitGoSDK\BitGoSDK;
+use Illuminate\Support\Str;
 
 class BitgoController extends Controller
 {
@@ -12,10 +20,7 @@ class BitgoController extends Controller
 
     public function __construct()
     {
-        // $this->bitgo = new Bitgo([
-        //     'accessToken' => config('bitgo.access_token'),
-        //     'env' => config('bitgo.env', 'test'), // 'test' or 'prod'
-        // ]);
+        $this->bitgo = new BitGoExpress(hostname: 'localhost', port: 3080, coin: request()->coin ?? 'btc');
     }
 
     // Generate a new wallet
@@ -26,16 +31,16 @@ class BitgoController extends Controller
 
         try {
             $wallet = $this->bitgo->wallet()->create([
-                'label' => $walletName,
+                'label'      => $walletName,
                 'passphrase' => $passphrase,
             ]);
 
             \App\Models\Bitgo::create([
-                'wallet_id' => $wallet['id'],
-                'wallet_name' => $walletName,
+                'wallet_id'     => $wallet['id'],
+                'wallet_name'   => $walletName,
                 'wallet_ticker' => $wallet['coin'],
-                'type' => $wallet['type'],
-                'require_memo' => $wallet['coin'] === 'xrp' || $wallet['coin'] === 'xlm', 
+                'type'          => $wallet['type'],
+                'require_memo'  => $wallet['coin'] === 'xrp' || $wallet['coin'] === 'xlm',
             ]);
 
             return response()->json(['message' => 'Wallet generated successfully', 'data' => $wallet]);
@@ -55,86 +60,356 @@ class BitgoController extends Controller
     }
 
     // Handle deposit webhook
-    public function depositWebhook(Request $request)
+    // public function depositWebhook(Request $request)
+    // {
+    //     try {
+    //         // Read raw payload
+    //         $rawInput = file_get_contents('php://input');
+    //         $payload  = json_decode($rawInput, true);
+
+    //         Log::debug('📥 Bitgo Webhook Received', [
+    //             'headers'   => $request->headers->all(),
+    //             'raw_input' => $rawInput,
+    //             'payload'   => $payload,
+    //         ]);
+
+    //         // Validate payload type and state
+    //         if (
+    //             ($payload['type'] ?? null) !== 'transfer' ||
+    //             ($payload['transferType'] ?? null) !== 'receive' ||
+    //             ($payload['state'] ?? null) !== 'confirmed'
+    //         ) {
+    //             Log::info('Webhook ignored — not a confirmed receive transfer');
+    //             return response()->json(['message' => 'Ignored webhook'], 200);
+    //         }
+
+    //         // Extract values
+    //         $bitgoWalletId   = $payload['wallet'];
+    //         $transactionHash = $payload['hash'];
+    //         $amountSatoshis  = $payload['value'] ?? 0;
+    //         $amountBTC       = $amountSatoshis / 100_000_000;
+
+    //         // Locate local Bitgo wallet
+    //         $bitgoWallet = BitgoWallets::where('bitgo_id', $bitgoWalletId)->first();
+    //         if (! $bitgoWallet) {
+    //             Log::warning('Wallet not found for Bitgo ID', ['bitgo_id' => $bitgoWalletId]);
+    //             return response()->json(['error' => 'Wallet not found'], 404);
+    //         }
+
+    //         $user = $bitgoWallet->user;
+    //         if (! $user) {
+    //             Log::warning('No user linked to wallet', ['wallet_id' => $bitgoWallet->id]);
+    //             return response()->json(['error' => 'User not found'], 404);
+    //         }
+
+    //         $wallet = $user->wallet;
+
+    //         // Idempotency check — prevent double credit
+    //         $existing = $wallet->transactions()
+    //             ->where('meta->transaction_hash', $transactionHash)
+    //             ->where('type', 'deposit')
+    //             ->first();
+
+    //         if ($existing) {
+    //             Log::info('Duplicate transaction skipped', ['hash' => $transactionHash]);
+    //             return response()->json(['message' => 'Duplicate transaction ignored'], 200);
+    //         }
+
+    //         DB::transaction(function () use (
+    //             $wallet,
+    //             $amountBTC,
+    //             $transactionHash,
+    //             $user,
+    //             $bitgoWallet,
+    //             $payload
+    //         ) {
+    //             // Perform deposit and capture Bavix transaction
+    //             $transaction = $wallet->deposit($amountBTC, [
+    //                 'description'      => 'Bitgo deposit',
+    //                 'transaction_hash' => $transactionHash,
+    //             ]);
+
+    //             // Log to transaction_histories table
+    //             TransactionHistory::create([
+    //                 'user_id'                => $user->id,
+    //                 'transaction_type'       => 'deposit',
+    //                 'transaction_type_id'    => $transactionHash,
+    //                 'transaction_amount'     => (string) $amountBTC,
+    //                 'transaction_extra_info' => [
+    //                     'wallet_id'       => $wallet->id,
+    //                     'bitgo_wallet_id' => $bitgoWallet->bitgo_id,
+    //                     'coin'            => $payload['coin'] ?? null,
+    //                     'tx_fee'          => $payload['feeString'] ?? null,
+    //                     'simulation'      => $payload['simulation'] ?? false,
+    //                     'raw_payload'     => $payload,
+    //                 ],
+    //             ]);
+
+    //             Log::info('✅ Deposit and transaction history recorded', [
+    //                 'user_id'          => $user->id,
+    //                 'wallet_id'        => $wallet->id,
+    //                 'tx_hash'          => $transactionHash,
+    //                 'amount'           => $amountBTC,
+    //                 'transaction_uuid' => $transaction->uuid,
+    //             ]);
+    //         });
+
+    //         return response()->json(['message' => 'Deposit processed']);
+    //     } catch (\Exception $e) {
+    //         Log::error('🚨 Error handling Bitgo webhook', [
+    //             'message' => $e->getMessage(),
+    //             'trace'   => $e->getTrace(),
+    //         ]);
+    //         return response()->json(['error' => 'Internal server error'], 500);
+    //     }
+    // }
+
+    // // Payout
+    // public function payout(Request $request, $walletId)
+    // {
+    //     $wallet = ModelsBitgo::where('wallet_id', $walletId)->first();
+
+    //     if (! $wallet) {
+    //         return response()->json(['error' => 'Wallet not found'], 404);
+    //     }
+
+    //     $address    = $request->input('address');
+    //     $amount     = $request->input('amount');
+    //     $passphrase = config('bitgo.passphrase');
+
+    //     try {
+    //         $response = $this->bitgo->wallet()->get($walletId)->sendCoins([
+    //             'address'          => $address,
+    //             'amount'           => $amount,
+    //             'walletPassphrase' => $passphrase,
+    //         ]);
+
+    //         $wallet->balance -= $amount;
+    //         $wallet->save();
+
+    //         // Log transaction
+    //         $wallet->transactions()->create([
+    //             'amount'         => $amount,
+    //             'type'           => 'payout',
+    //             'transaction_id' => $response['txid'],
+    //         ]);
+
+    //         return response()->json(['message' => 'Payout successful', 'data' => $response]);
+    //     } catch (\Exception $e) {
+    //         return response()->json(['error' => 'Failed to process payout', 'details' => $e->getMessage()], 500);
+    //     }
+    // }
+
+    public function withdrawalRequest(Request $request)
     {
-        $payload = $request->all();
+        try {
+            // Validate the request inputs
+            $validate = $request->validate([
+                'amount'         => 'required|numeric',
+                'coin'           => 'required|string',
+                'wallet_address' => 'required|string',
+            ]);
 
-        if ($payload['event'] === 'deposit') {
-            try {
-                // Find the wallet address in the BitgoWallet model
-                $bitgoWallet = BitgoWallets::where('address', $payload['address'])->first();
+            $minimum_payout = get_option('bitgo_minimum_payout');
+            $maximum_payout = get_option('bitgo_maximum_payout');
+            $fixedFee       = get_option('bitgo_fixed_withdrawal_charges');
+            $floatFee       = get_option('bitgo_float_withdrawal_charges');
 
-                if ($bitgoWallet) {
-                    // Retrieve the user associated with the wallet
-                    $user = $bitgoWallet->user;
+            // Calculate the percentage fee
+            $percentageFee = ($request->amount * $floatFee) / 100;
 
-                    if ($user) {
-                        // Credit the user's wallet using Bavix Multi-Wallet system
-                        $wallet = $user->wallet; // Assuming `wallet` is the default wallet
-                        $amount = $payload['amount'] / 100000000; // Convert satoshis to coins, adjust decimals as needed
+            // Calculate the total fee
+            $totalFee = $fixedFee + $percentageFee;
 
-                        $wallet->deposit($amount, [
-                            'description' => 'Deposit from BitGo wallet',
-                            'transaction_id' => $payload['transactionId'],
-                        ]);
+            $maxDailyWithdrawal     = get_option('bitgo_maximum_daily_payout');
+            $totalAlreadyWithdrawed = TransactionHistory::whereUserId(auth()->id())->where('trx_type', 'Withdraw')->where('created_at', Carbon::today())->sum('amount');
 
-                        // Optionally log the transaction in your database
-                        $bitgoWallet->transactions()->create([
-                            'user_id' => $user->id,
-                            'amount' => $amount,
-                            'type' => 'deposit',
-                            'transaction_id' => $payload['transactionId'],
-                        ]);
+            if ($totalAlreadyWithdrawed >= $maxDailyWithdrawal) {
+                return back()->with('error', "Sorry you have reached your daily withdrawal limit");
+            }
 
-                        return response()->json(['message' => 'Deposit processed successfully']);
-                    } else {
-                        return response()->json(['error' => 'User not found for the wallet address'], 404);
-                    }
+            if (($totalAlreadyWithdrawed + $request->amount) >= $maxDailyWithdrawal) {
+                $todoBalance = floatval($maxDailyWithdrawal - $totalAlreadyWithdrawed);
+                return back()->with('error', "This transaction is above your daily limit, please updated withdrawal amount to: {$todoBalance}");
+            }
+
+            if ($request->amount < $minimum_payout) {
+                return back()->with('error', "Withdrawal amount can not be less than $minimum_payout");
+            }
+
+            if ($request->amount > $maximum_payout) {
+                return back()->with('error', "Withdrawal amount can not be higher than $maximum_payout");
+            }
+            $user = $request->user();
+            // Get the balance of balance
+            $wallets = $user->getWallet($request->debit_wallet);
+            // echo get_option('bitgo_sweep_coins_rate') * $request->amount; exit;
+            $withdrawable = get_option('bitgo_sweep_coins_rate') * $request->amount;
+
+            // Check if the requested amount exceeds the withdrawable amount
+            if ($request->amount > $wallets->quantity) {
+                return back()->with('error', 'Insufficient sweepcoin balance');
+            }
+
+            // Charge user sweep_coins wallet balance
+            if (!debit_user(wallet_slug: $request->debit_wallet, amount: floatval($request->amount + $totalFee), type: 'debit', userId: auth()->id(), sweep_coin: $wallets->id)) {
+                return back()->with('error', 'You do not have sufficient balance to complete this transaction.');
+            }
+            $coin     = $request->coin;
+            $walletId = getWalletByCoin($coin);
+           
+            
+            $btcAmount     = self::coinToUsd($withdrawable, strtoupper($coin));
+            $satoshiAmount = BitGoSDK::toSatoshi($btcAmount);
+
+            // Send coins using the session token
+            $response = Http::withHeaders([
+                'Content-Type'  => 'application/json',
+                'Authorization' => 'Bearer ' . getenv('BITGO_API_KEY'),
+            ])->post("http://localhost:3080/api/v2/{$coin}/wallet/{$walletId}/sendcoins", [
+                'amount'           => $satoshiAmount,
+                'address'          => $request->wallet_address,
+                'walletPassphrase' => getWalletPhraseByCoin($coin),
+            ]);
+
+            $bitgoResult = (array) $response->json();
+            Log::info(json_encode(['payout' => $bitgoResult]));
+
+            // Check if the request was successful
+            $transaction               = new TransactionHistory();
+            $transaction->user_id      = auth()->id();
+            $transaction->amount       = $request->amount;
+            $transaction->charge       = $totalFee;
+            $transaction->post_balance = $wallets->quantity - $request->amount;
+            $transaction->trx_type     = 'Withdraw';
+            $transaction->details      = 'Coins withdraw';
+            $transaction->remark       = 'payout';
+            $transaction->wallet_type  = 'sweep_coins';
+            if ($response->successful()) {
+                $transaction->trx    = $bitgoResult['txid'];
+                $transaction->status = 0;
+                $transaction->save();
+                return back()->with('success', "Withdrawal successful please check your wallet.");
+            } elseif ($response->failed()) {
+                // refund user the withdrawed fund
+                credit_user(wallet_slug: $request->debit_wallet, amount: floatval($request->amount + $totalFee), description: "Refund failed withdrawal request");
+                $transaction->trx    = Str::random();
+                $transaction->status = 0;
+                $transaction->save();
+                $resp = $response->json();
+                if (isset($resp['name']) && $resp['name'] == "InsufficientBalance") {
+                    return back()->with('error', "Sorry we're currently unable to complete your transaction, please contact support with Erorr: 400InsfBal0Bal.");
                 }
+                return back()->with('error', $response->json()['error'] ?? 'An error occurred');
+            } else {
+                return back()->with('error', 'Transaction failed, please try again.');
+            }
+        } catch (\Throwable $th) {
+            // Handle any errors
+            return back()->with('error', $th->getMessage());
+        }
+    }
 
-                return response()->json(['error' => 'Wallet address not found'], 404);
+    private function coinToUsd($amount, $coin)
+    {
+        $coin  = strtoupper($coin);
+        $url   = 'https://min-api.cryptocompare.com/data/price';
+        $query = [
+            'fsym'  => 'USD',
+            'tsyms' => $coin,
+        ];
+
+        $cacheKey   = 'crypto_price_' . $coin;
+        $cachedData = Cache::get($cacheKey);
+
+        if ($cachedData) {
+            $data = $cachedData;
+        } else {
+            try {
+                $response = Http::get($url, $query);
+                $data     = $response->json();
+                Cache::put($cacheKey, $data, 20);
             } catch (\Exception $e) {
-                return response()->json(['error' => 'An error occurred', 'details' => $e->getMessage()], 500);
+                return null;
             }
         }
 
-        return response()->json(['error' => 'Invalid webhook event'], 400);
+        if (isset($data[$coin])) {
+            return floatval($data[$coin] * $amount);
+        }
     }
 
-
-    // Payout
-    public function payout(Request $request, $walletId)
+    public function histories()
     {
-        $wallet = Bitgo::where('wallet_id', $walletId)->first();
-
-        if (!$wallet) {
-            return response()->json(['error' => 'Wallet not found'], 404);
-        }
-
-        $address = $request->input('address');
-        $amount = $request->input('amount');
-        $passphrase = config('bitgo.passphrase');
+        $coin        = request()->coin ?? 'BTC';
+        $accessToken = getenv('BITGO_API_KEY');
+        $walletId    = getWalletByCoin($coin);
+        $url         = "https://www.bitgo.com/api/v2/{$coin}/wallet/{$walletId}/transfer";
 
         try {
-            $response = $this->bitgo->wallet()->get($walletId)->sendCoins([
-                'address' => $address,
-                'amount' => $amount,
-                'walletPassphrase' => $passphrase,
-            ]);
-
-            $wallet->balance -= $amount;
-            $wallet->save();
-
-            // Log transaction
-            $wallet->transactions()->create([
-                'amount' => $amount,
-                'type' => 'payout',
-                'transaction_id' => $response['txid'],
-            ]);
-
-            return response()->json(['message' => 'Payout successful', 'data' => $response]);
+            $response = Http::withToken($accessToken)->get($url);
+            if (! $response->failed()) {
+                $transferDetails = json_decode($response, true);
+                return $transferDetails;
+            }
+            return false;
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to process payout', 'details' => $e->getMessage()], 500);
+            return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
+
+    public function bitgoWebhook(Request $request)
+    {
+        $webhook = $request->all();
+        if (! isset($webhook['coin'])) {
+            abort(403);
+        }
+        Log::info(json_encode($webhook));
+        $userWallet = BitgoWallets::where('coin_ticker', $webhook['coin'])
+            ->where('address', $webhook['receiver'])
+            ->first();
+
+        if ($userWallet) {
+            $user = $userWallet->user;
+            // Check if the webhook has already been processed
+            $existingWebhook = WebhookLog::where('hash', $webhook['hash'])->first();
+
+            if (! $existingWebhook) {
+                // Log the webhook
+                WebhookLog::create([
+                    'user_id'      => $userWallet->user_id,
+                    'hash'         => $webhook['hash'],
+                    'status'       => $webhook['state'],
+                    'coin'         => $webhook['coin'],
+                    'receiver'     => $webhook['receiver'],
+                    'transferType' => $webhook['transferType'],
+                    'metadata'     => (array) $webhook,
+                ]);
+
+                if ($webhook['transferType'] === 'receive') {
+                    $payLog        = getTransferDetails($webhook['coin'], $webhook['hash']);
+                    $user->balance = floatval($user->balance + $payLog['usd']);
+                    $user->save();
+                }
+
+                if ($webhook['transferType'] === 'send') {
+                    $transaction = TransactionHistory::whereTrx($webhook['hash'])->first();
+                    if ($transaction) {
+                        $transaction->status = 1;
+                        if ($transaction->save()) {
+                            return response()->json(['status' => 'success'], 200);
+                        }
+                    }
+                }
+
+                Log::info("Processed a BitGo webhook for user ID: {$user->id}", $webhook);
+            } else {
+                Log::info("Webhook already processed for hash: {$webhook['hash']}");
+            }
+        } else {
+            Log::warning("No user found for BitGo webhook receiver: {$webhook['receiver']}", $webhook);
+        }
+
+        return response()->json(['status' => 'success'], 200);
     }
 }

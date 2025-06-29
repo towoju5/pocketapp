@@ -38,7 +38,7 @@ class TransactionHistoryController extends Controller
         }
 
         // Paginate results and return the view
-        return $transactions = $transactions->latest()->paginate(10)->appends($request->query());
+        $transactions = $transactions->latest()->paginate(10)->appends($request->query());
         return view('finance.history', compact('transactions'));
     }
 }

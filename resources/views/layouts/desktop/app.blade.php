@@ -1,5 +1,11 @@
     <!DOCTYPE html>
-    <html lang="en">
+    <?php
+        if (auth()->check()) {
+            $user = auth()->user();
+            $lang = $user->config['default_language'];
+        }
+    ?>
+    <html lang="{{ $lang }}">
 
     <head>
         <meta charset="UTF-8">

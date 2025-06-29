@@ -10,11 +10,18 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Bitgo extends Model
 {
     use HasFactory, SoftDeletes;
-
-    protected $fillable = ['wallet_id', 'wallet_name', 'type', 'balance'];
+    
+    protected $fillable = [
+        'wallet_id', 'wallet_name', 'wallet_ticker',
+        'type', 'require_memo', 'can_deposit',
+        'can_payout', 'coin_logo', 'meta_data',
+    ];
 
     protected $casts = [
-        "meta_data" => "array"
+        'require_memo' => 'boolean',
+        'can_deposit' => 'boolean',
+        'can_payout' => 'boolean',
+        'meta_data' => 'array',
     ];
 
     public function transactions()

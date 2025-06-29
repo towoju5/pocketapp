@@ -63,10 +63,16 @@ class SignalCopyController extends Controller
         event(new TradeUpdated($trade));
         EvaluateTrade::dispatch($trade)->delay(now()->addSeconds($signal->duration));
 
+        // return response()->json([
+        //     'status' => true,
+        //     'message' => 'Signal copied and trade placed successfully!',
+        //     'trade' => $trade,
+        // ]);
         return response()->json([
-            'status' => true,
+            'status' => true, 
             'message' => 'Signal copied and trade placed successfully!',
             'trade' => $trade,
+            'html' => view("mini-pages.trade-list", compact('trade'))->render()
         ]);
     }
 }

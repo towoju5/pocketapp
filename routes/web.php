@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ApiController;
+use App\Http\Controllers\BitgoController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\DepositController;
 use App\Http\Controllers\ExpressTradeController;
@@ -17,11 +18,17 @@ use App\Http\Controllers\GitHubArtifactController;
 use App\Http\Controllers\MySafeController;
 use App\Http\Controllers\PromoCodeController;
 use App\Http\Controllers\TradeController;
+use App\Models\Bitgo;
 use App\Models\Trade;
 use App\Services\ExternalTradeWebSocketService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
+
+
+
+// dd(Bitgo::all());
+
 
 Route::get('/', function () {
     return view('act_welcome');
@@ -33,6 +40,24 @@ Route::get("iqcent", function () {
     return response()->json($asset);
 });
 
+Route::get('/components/{page}', function ($page) {
+    if (view()->exists("layouts.mobile.components.$page")) {
+        return view("layouts.mobile.components.$page");
+    }
+
+    abort(404);
+});
+
+Route::get('/pages/{page}', function ($page) {
+    if (view()->exists("layouts.mobile.pages.$page")) {
+        return view("layouts.mobile.pages.$page");
+    }
+
+    abort(404);
+});
+
+
+Route::any('callback/webhook/bitgo-deposit', [BitgoController::class, 'depositWebhook'])->name('bitgo.deposit.webhook')->withoutMiddleware(VerifyCsrfToken::class);
 
 
 Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
@@ -56,7 +81,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('submit-express-trade', [ExpressTradeController::class, 'bulk'])->name('submit.express.trade');
 
 
-    Route::post('payout/create', [PayoutController::class, 'store'])->name('payout.create');
+    Route::post('payout/create', [PayoutController::class, 'store'])->name('payout.create.submit');
     // });
 
     Route::get("finance-history", [TransactionHistoryController::class, 'history'])->name('finance.history');
@@ -83,6 +108,8 @@ Route::middleware(['auth'])->group(function () {
     Route::match(['post', 'patch'], 'profile-update', [ProfileController::class, 'updateProfile'])
         ->name('profile.update.pk')
         ->withoutMiddleware(VerifyCsrfToken::class);
+
+    Route::post('settings/update', [ProfileController::class, 'updateUserConfig']);
 
     Route::group(['prefix' => 'deposit', 'as' => 'deposit.'], function () {
         Route::get('/', [DepositController::class, 'create'])->name('step_1');

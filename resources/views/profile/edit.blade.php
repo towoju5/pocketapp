@@ -37,10 +37,17 @@
                         </tr>
                         <tr>
                             <td>Email</td>
-                            <td>
+                            <td class="lg:flex gap-3 lg:gap-5">
                                 <span class="user_email"><strong>{{ $user->email }}</strong></span>
                                 <span class="email_status_block-js">
-                                    <span class="label label-success">Verified</span>
+                                    @if(auth()->user()->email_verified_at == null)
+                                        <form method="POST" action="{{ route('verification.send') }}">
+                                            @csrf
+                                            <button type="submit" class="bg-green-500 text-white text-xs px-2 py-1 rounded">send verification</button>
+                                        </form>
+                                    @else
+                                        <span class="bg-green-500 text-white text-xs px-2 py-1 rounded">verified</span>
+                                    @endif
                                 </span>
                             </td>
                         </tr>
@@ -187,10 +194,24 @@
                             </tr>
                             <tr>
                                 <td>Nickname</td>
-                                <td><a class="editable-click editable"
+                                <td>
+                                    <a href="#" class="editable-click" 
+                                        data-name="username" 
+                                        data-type="text" 
+                                        data-value="{{ $user->username ?? 'Nameless' }}"
+                                        data-pk="1"                                        
+                                        data-url="{{ route('profile.update.pk') }}" 
+                                        data-title="Edit username">
+                                        {!! $user->username ?? '<span class="text-red-600 italic">Empty</span>' !!}
+                                    </a>
+                                    <a hidden class="hidden editable-click editable"                                        
+                                        data-url="{{ route('profile.update.pk') }}" 
                                         data-value="{{ $user->username ?? 'Usernameless' }}"
                                         value="{{ $user->username ?? 'Usernameless' }}"
-                                        data-name="nickname">{{ $user->username ?? 'Usernameless' }}</a></td>
+                                        data-name="nickname">
+                                        {{ $user->username ?? 'Usernameless' }}
+                                    </a>
+                                </td>
                             </tr>
                         </tbody>
                     </table>
@@ -264,16 +285,17 @@
                                     @foreach ($languages as $code => $name)
                                         @php $isActive = $currentLanguage === $code; @endphp
                                         <li class="{{ $isActive ? 'active' : '' }}">
-                                            <a href="#" class="change-language" data-key="default_language"
-                                                data-value="{{ $code }}">
-                                                {{ $name }}
+                                            <a href="#"
+                                            class="change-language d-flex justify-between items-center gap-3"
+                                            data-key="default_language"
+                                            data-value="{{ $code }}">
+                                                <span>{{ $name }}</span>
                                                 @if ($isActive)
-                                                    <svg class="svg-icon languages-check-icon" width="16"
-                                                        height="16" viewBox="0 0 16 16" fill="none"
+                                                    <svg class="svg-icon languages-check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"
                                                         xmlns="http://www.w3.org/2000/svg">
                                                         <path fill-rule="evenodd" clip-rule="evenodd"
                                                             d="M4.296 2.457a6.667 6.667 0 1 1 7.408 11.086A6.667 6.667 0 0 1 4.296 2.457ZM9.813 5.86l-2.86 2.867-1.1-1.1a.666.666 0 1 0-.94.94L6.48 10.14a.667.667 0 0 0 .94 0l3.334-3.333a.666.666 0 0 0-.47-1.14.667.667 0 0 0-.47.193Z"
-                                                            fill="currentColor"></path>
+                                                            fill="currentColor"/>
                                                     </svg>
                                                 @endif
                                             </a>
@@ -295,72 +317,93 @@
     <script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.5.0/jqueryui-editable/js/jqueryui-editable.min.js"></script>
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Set X-editable to inline mode
             $.fn.editable.defaults.mode = 'inline';
 
-            // Initialize editable elements
+            const getCSRFToken = () => $('meta[name="csrf-token"]').attr('content');
+
+            const postSettingUpdate = (url, name, value, onSuccess, onFail) => {
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: {
+                        _token: getCSRFToken(),
+                        name: name,
+                        value: value
+                    },
+                    success: function (response) {
+                        if (response.success) {
+                            onSuccess?.(response);
+                        } else {
+                            onFail?.(response);
+                        }
+                    },
+                    error: function () {
+                        onFail?.();
+                    }
+                });
+            };
+
+            // Initialize editable fields
             $('.editable-click').editable();
 
             // Handle toggle switches
-            $('.toggle-setting').on('change', function() {
+            $('.toggle-setting').on('change', function () {
                 const checkbox = $(this);
                 const key = checkbox.data('key');
                 const value = checkbox.is(':checked') ? 1 : 0;
 
-                $.ajax({
-                    url: "{{ route('profile.update.pk') }}",
-                    method: 'POST',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        name: key,
-                        value: value
+                postSettingUpdate(
+                    "{{ route('profile.update.pk') }}",
+                    key,
+                    value,
+                    () => {
+                        // Successfully updated, do nothing
                     },
-                    success: function(response) {
-                        if (response.status !== 200) {
-                            // Revert the checkbox if the response is not successful
-                            checkbox.prop('checked', !checkbox.is(':checked'));
-                            alert('Failed to update setting. Please try again.');
-                        }
-                    },
-                    error: function() {
-                        // Revert the checkbox on error
+                    () => {
+                        // Revert checkbox if update fails
                         checkbox.prop('checked', !checkbox.is(':checked'));
-                        alert('An error occurred. Please try again.');
+                        alert('Failed to update setting. Please try again.');
                     }
-                });
+                );
             });
 
-            // Handle language change
-            $('.change-language').on('click', function(e) {
+            // Handle language selection and checkmark update
+            $('.change-language').on('click', function (e) {
                 e.preventDefault();
                 const link = $(this);
                 const key = link.data('key');
                 const value = link.data('value');
 
-                $.ajax({
-                    url: '/settings/update',
-                    method: 'POST',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        name: key,
-                        value: value
-                    },
-                    success: function(response) {
-                        if (response.status === 200) {
-                            // Highlight the selected language
-                            $('.profile__languages li').removeClass('active');
-                            link.closest('li').addClass('active');
-                        } else {
-                            alert('Failed to update language. Please try again.');
-                        }
-                    },
-                    error: function() {
-                        alert('An error occurred. Please try again.');
-                    }
-                });
-            });
+                postSettingUpdate(
+                    "{{ url('settings/update') }}",
+                    key,
+                    value,
+                    () => {
+                        // Remove active class from all
+                        $('.profile__languages li').removeClass('active');
+                        $('.profile__languages svg.languages-check-icon').remove();
 
+                        // Mark selected language
+                        const selectedLi = link.closest('li');
+                        selectedLi.addClass('active');
+
+                        // Append checkmark icon
+                        link.append(`
+                            <svg class="svg-icon languages-check-icon" width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" clip-rule="evenodd"
+                                    d="M4.296 2.457a6.667 6.667 0 1 1 7.408 11.086A6.667 6.667 0 0 1 4.296 2.457ZM9.813 5.86l-2.86 2.867-1.1-1.1a.666.666 0 1 0-.94.94L6.48 10.14a.667.667 0 0 0 .94 0l3.334-3.333a.666.666 0 0 0-.47-1.14.667.667 0 0 0-.47.193Z"
+                                    fill="currentColor"/>
+                            </svg>
+                        `);
+                    },
+                    () => {
+                        alert('Failed to update language. Please try again.');
+                    }
+                );
+            });
         });
     </script>
 @endpush

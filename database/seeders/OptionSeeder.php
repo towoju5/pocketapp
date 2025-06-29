@@ -28,6 +28,31 @@ class OptionSeeder extends Seeder
                 "option_name" => "deposit_bonus_type",
                 "option_value" => "float" // float or fixed
             ],
+            [
+                "autoload" => true,
+                "aoption_name" => "bitgo_minimum_payout",
+                "option_value" => 5
+            ],
+            [
+                "autoload" => true,
+                "aoption_name" => "bitgo_maximum_payout",
+                "option_value" => 10000
+            ],
+            [
+                "autoload" => true,
+                "aoption_name" => "bitgo_fixed_withdrawal_charges",
+                "option_value" => 1
+            ],
+            [
+                "autoload" => true,
+                "aoption_name" => "bitgo_float_withdrawal_charges",
+                "option_value" => 0.5
+            ],
+            [
+                "autoload" => true,
+                "aoption_name" => "bitgo_maximum_daily_payout",
+                "option_value" => 100000
+            ]
         ];
     }
 }            

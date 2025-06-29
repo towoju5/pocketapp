@@ -1,11 +1,9 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Models\Trade;
 use App\Models\User;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -13,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\View\View;
 use PragmaRX\Google2FA\Google2FA;
 
@@ -53,9 +52,9 @@ class ProfileController extends Controller
 
     public function changeDefaultWallet($newDefaultWallet)
     {
-        $user = auth()->user();
+        $user                     = auth()->user();
         $user->active_wallet_slug = $newDefaultWallet;
-        if($user->save()) {
+        if ($user->save()) {
             return back()->with('success', 'Default wallet updated successfully.');
         }
 
@@ -86,17 +85,17 @@ class ProfileController extends Controller
     public function tradingProfile()
     {
         $trades = Trade::whereUserId(auth()->id())->get();
-        $user = auth()->user();
+        $user   = auth()->user();
 
         // Calculate trading statistics
-        $totalTrades = $trades->count();
-        $profitableTrades = $trades->where('trade_profit', '>', 0)->count(); // Assuming 'trade_profit' field exists
+        $totalTrades                = $trades->count();
+        $profitableTrades           = $trades->where('trade_profit', '>', 0)->count(); // Assuming 'trade_profit' field exists
         $profitableTradesPercentage = $totalTrades > 0 ? ($profitableTrades / $totalTrades) * 100 : 0;
-        $tradingTurnover = $trades->sum('amount'); // Assuming 'amount' field exists
-        $tradingProfit = $trades->sum('trade_profit'); // Assuming 'trade_profit' field exists
-        $maxTrade = $trades->max('amount');
-        $minTrade = $trades->min('amount');
-        $maxProfit = $trades->max('trade_profit');
+        $tradingTurnover            = $trades->sum('amount');       // Assuming 'amount' field exists
+        $tradingProfit              = $trades->sum('trade_profit'); // Assuming 'trade_profit' field exists
+        $maxTrade                   = $trades->max('amount');
+        $minTrade                   = $trades->min('amount');
+        $maxProfit                  = $trades->max('trade_profit');
 
         // Chart Data: Profitability over time
         $profitabilityData = $trades->groupBy(function ($trade) {
@@ -115,6 +114,19 @@ class ProfileController extends Controller
             return $group->count(); // Count trades per currency
         });
 
+        // return [
+        //     'user' => $user,
+        //     'totalTrades' => $totalTrades,
+        //     'profitableTradesPercentage' => $profitableTradesPercentage,
+        //     'tradingTurnover' => $tradingTurnover,
+        //     'tradingProfit' => $tradingProfit,
+        //     'maxTrade' => $maxTrade,
+        //     'minTrade' => $minTrade,
+        //     'maxProfit' => $maxProfit,
+        //     'profitabilityData' => $profitabilityData,
+        //     'tradeAmountsByAssets' => $tradeAmountsByAssets,
+        //     'tradesDistributionByAssets' => $tradesDistributionByAssets
+        // ];
 
         return view('profile.trading-profile', compact(
             'user',
@@ -131,44 +143,65 @@ class ProfileController extends Controller
         ));
     }
 
-
     public function updateProfile(Request $request)
     {
         $request->validate([
-            "name" => "required|string",
+            "name"  => "required|string",
             "value" => "required|string",
         ]);
 
         $user = auth()->user();
-        $user = User::findOrFail($user->id);
 
-        if (array_key_exists($request->name, $user->config)) {
-            $user->config[$request->name] = $$request->value;
-            $user->save();
+        // Safely get config as array
+        $config = is_array($user->config) ? $user->config : json_decode($user->config, true);
+        $key    = $request->name;
+        $value  = $request->value;
 
-            return response()->json(['status' => 200, 'message' => 'Language updated successfully']);
+        if (array_key_exists($key, $config)) {
+            $config[$key] = $value;
+            $user->config = $config;
+
+            if ($user->save()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Setting updated successfully!',
+                    'updated' => ['key' => $key, 'value' => $value]
+                ]);
+            }
+        } else {
+            // If it's not part of config, update a normal column (e.g., name, email, etc.)
+            if (in_array($key, ['name', 'email', 'phone', 'username'])) {
+                $user->$key = $value;
+                if ($user->save()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Profile updated successfully!',
+                        'updated' => ['key' => $key, 'value' => $value]
+                    ]);
+                }
+            }
         }
 
-        $column = $request->name;
-        $user->$column = $request->value;
-
-        if ($user->save()) {
-            return response()->json(['status' => true, 'message' => 'Profile updated successfully!']);
-        }
+        // Fallback error response
+        return response()->json([
+            'success' => false,
+            'message' => 'Update failed or invalid field.',
+        ], 422);
     }
+
 
     public function security()
     {
-        $userId = auth()->id();
-        $logins = User::find($userId)->authentications;
+        $userId   = auth()->id();
+        $logins   = User::find($userId)->authentications;
         $sessions = $this->getActiveSessions($userId);
-        
-        $user = Auth::user();
+
+        $user   = Auth::user();
         $secret = $user->google2fa_secret;
 
-        if (!$secret) {
+        if (! $secret) {
             // If the user hasn't set up 2FA, generate a new secret and QR code
-            $secret = $this->google2fa->generateSecretKey();
+            $secret                 = $this->google2fa->generateSecretKey();
             $user->google2fa_secret = $secret;
             $user->save();
         }
@@ -198,31 +231,29 @@ class ProfileController extends Controller
         return response()->json(['status' => true, 'message' => 'Session destroyed successfully!']);
     }
 
-
     public function logoutSession($sessionId)
     {
         if ($sessionId === Session::getId()) {
             return redirect()->route('profile.security')->with('error', 'You cannot logout the current session.');
         }
-    
+
         DB::table('sessions')->where('id', $sessionId)->delete();
-    
+
         return redirect()->route('profile.security')->with('success', 'Session logged out successfully.');
     }
-    
 
     // Method to handle password change request via AJAX
     public function updatePassword(Request $request)
     {
         $request->validate([
             'current_password' => 'required|string',
-            'new_password' => 'required|string|min:8|confirmed',
+            'new_password'     => 'required|string|min:8|confirmed',
         ]);
 
         $user = Auth::user();
 
         // Check if the current password is correct
-        if (!Hash::check($request->current_password, $user->password)) {
+        if (! Hash::check($request->current_password, $user->password)) {
             return response()->json(['status' => 'error', 'message' => 'Current password is incorrect.']);
         }
 
@@ -237,10 +268,10 @@ class ProfileController extends Controller
     public function verify2fa(Request $request)
     {
         $request->validate([
-            'one_time_password' => 'required|string|size:6'
+            'one_time_password' => 'required|string|size:6',
         ]);
 
-        $user = Auth::user();
+        $user   = Auth::user();
         $secret = $user->google2fa_secret;
 
         // Verify the OTP
@@ -257,11 +288,65 @@ class ProfileController extends Controller
     // Disable 2FA
     public function disable2fa(Request $request)
     {
-        $user = Auth::user();
-        $user->google2fa_secret = null;
+        $user                    = Auth::user();
+        $user->google2fa_secret  = null;
         $user->google2fa_enabled = false;
         $user->save();
 
         return redirect()->route('profile')->with('status', 'Two-factor authentication disabled successfully.');
+    }
+
+    public function updateUserConfig(Request $request)
+    {
+        $validate = Validator::make($request->all(), [
+            "name"  => "required|string",
+            "value" => "required",
+        ]);
+
+        if ($validate->fails()) {
+            return back()->withErrors($validate)->withInput();
+        }
+
+        $allowedKeys = [
+            'email_notifications',
+            'manager_updates',
+            'company_news',
+            'company_promotions',
+            'trading_analytics',
+            'trading_statements',
+            'education_emails',
+            'sound_notifications',
+            'default_language',
+        ];
+
+        $key = $request->name;
+
+        if (! in_array($key, $allowedKeys)) {
+            return response()->json([
+                "status"  => "error",
+                "success" => false,
+                "message" => "Invalid configuration key.",
+            ], 400);
+        }
+
+        $user         = $request->user();
+        $config       = is_array($user->config) ? $user->config : json_decode($user->config, true);
+        $config[$key] = $request->value;
+        $user->config = $config;
+
+        if ($user->save()) {
+            return response()->json([
+                "status"  => "success",
+                "success" => true,
+                "message" => "User config updated successfully",
+                "user"    => $user,
+            ]);
+        }
+
+        return response()->json([
+            "status"  => "error",
+            "success" => false,
+            "message" => "Failed to update user config",
+        ], 500);
     }
 }

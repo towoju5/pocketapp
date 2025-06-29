@@ -5,8 +5,8 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
-            <div class="card bg-dark text-light border-secondary">
-                <div class="card-header bg-secondary text-white">
+            <div class="card text-light border-secondary text-dark">
+                <div class="card-header bg-secondary">
                     <h4 class="mb-0">Edit Asset</h4>
                 </div>
 

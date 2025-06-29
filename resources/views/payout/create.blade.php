@@ -31,7 +31,7 @@
                 </div>
                 -->
 
-                <form action="" method="post" class="mt-6 space-y-4">
+                <form action="{{ route('payout.create.submit') }}" method="post" class="mt-6 space-y-4">
                     @csrf
 
                     <div class="grid grid-cols-2 gap-4 items-center">

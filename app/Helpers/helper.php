@@ -176,7 +176,7 @@ if (! function_exists("getAssetData")) {
                 'symbol' => $asset
             ]);
 
-            Log::info("Query params are: ", [$query]);
+            // Log::info("Query params are: ", [$query]);
 
             // 3️⃣ Build URLs
             $innerUrl   = "https://iqcent.com/trade-api/api/ticks?{$query}&autoparse=true";
@@ -185,7 +185,7 @@ if (! function_exists("getAssetData")) {
             $zenrowsUrl = "http://polarisoption.io:2300/api?key={$zenrowsKey}&url={$encodedUrl}";
 
             // 4️⃣ Log the URL being used
-            Log::info('getAssetData using Zenrows URL: ', [$zenrowsUrl]);
+            // Log::info('getAssetData using Zenrows URL: ', [$zenrowsUrl]);
 
             // 5️⃣ Make HTTP request using Laravel's HTTP client
             $response = Http::withHeaders([
@@ -199,13 +199,13 @@ if (! function_exists("getAssetData")) {
             }
 
             // 7️⃣ Log raw response
-            Log::info('getAssetData raw response: ' . $response->body());
+            // Log::info('getAssetData raw response: ' . $response->body());
 
             // 8️⃣ Decode response
             $arrResponse = $response->json();
 
             // 9️⃣ Log decoded response
-            Log::info('getAssetData decoded response: ', [$arrResponse]);
+            // Log::info('getAssetData decoded response: ', [$arrResponse]);
 
             // 10️⃣ Basic validation
             if (! is_array($arrResponse) || ! isset($arrResponse['success']) || $arrResponse['success'] !== true) {
@@ -373,5 +373,31 @@ if (! function_exists('generate_uuid')) {
     function generate_uuid()
     {
         return \Str::uuid()->toString();
+    }
+}
+
+
+if (!function_exists('getWalletByCoin')) {
+    function getWalletByCoin($coin)
+    {
+        $wallet = BitGoWallets::whereCoin($coin)->first();
+        if (!$wallet) {
+            return back(404)->with('error', 'Wallet not found');
+        }
+
+        return $wallet->wallet_id;
+    }
+}
+
+
+if (!function_exists('getWalletPhraseByCoin')) {
+    function getWalletPhraseByCoin($coin)
+    {
+        $wallet = Bitgo::where('wallet_ticker', $coin)->first();
+        if (!$wallet) {
+            return back(404)->with('error', 'Wallet not found');
+        }
+
+        return $wallet->passphrase;
     }
 }

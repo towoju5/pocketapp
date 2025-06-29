@@ -35,11 +35,11 @@
                         </tr>
                         <tr>
                             <th>Created At</th>
-                            <td>{{ $asset->created_at->format('d-m-Y H:i:s') }}</td>
+                            <td>{{ $asset->created_at }}</td>
                         </tr>
                         <tr>
                             <th>Updated At</th>
-                            <td>{{ $asset->updated_at->format('d-m-Y H:i:s') }}</td>
+                            <td>{{ $asset->updated_at }}</td>
                         </tr>
                     </table>
 
