@@ -28,6 +28,34 @@
             @include('layouts.admin.navbar')
             <!-- end of navbar navigation -->
             <div class="content">
+                <div class="container">
+                    {{-- Validation Errors --}}
+                    @if($errors->any())
+                        <div class="alert alert-danger">
+                            <strong>There were some problems with your input:</strong>
+                            <ul class="mb-0">
+                                @foreach($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
+                    {{-- Flash Error Message --}}
+                    @if(session('error'))
+                        <div class="alert alert-danger">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+
+                    {{-- Flash Success Message --}}
+                    @if(session('success'))
+                        <div class="alert alert-success">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+
+                </div>
                 @yield('content')
             </div>
         </div>

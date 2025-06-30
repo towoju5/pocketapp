@@ -32,6 +32,20 @@
                 <i class="fas fa-chart-bar"></i>
                 Signals</a>
         </li>
+        <li>
+            <a href="#bitgo-settings" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle no-caret-down {{ request()->routeIs('admin.bitgo.*') ? 'active' : '' }}">
+                <i class="fas fa-layer-group"></i> 
+                Bitgo
+            </a>
+            <ul class="collapse list-unstyled" id="bitgo-settings">
+                <li>
+                    <a href="{{ route('admin.bitgo.index') }}"><i class="fas fa-bitcoin"></i> Bitgo Settings</a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.bitgo.index') }}"><i class="fas fa-angle-right"></i> Bitgo Wallets</a>
+                </li>
+            </ul>
+        </li>
         <!-- <li>
             <a href="icons.html"><i class="fas fa-icons"></i> Icons</a>
         </li>

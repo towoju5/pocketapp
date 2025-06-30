@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\{
     AssetController,
+    BitgoController,
     UserController,
     CashbackRuleController,
     SignalController,
@@ -25,6 +26,6 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->as('admin.')->group(fu
         Route::post('/{userId}/debit', [WalletController::class, 'debit'])->name('wallets.debit');
     });
     Route::post('{user}/wallet', [UserController::class, 'updateWalletAction'])->name('wallets.update');
-
+    Route::resource('bitgo', BitgoController::class);
     
 });
