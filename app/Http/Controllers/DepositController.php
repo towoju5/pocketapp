@@ -9,10 +9,9 @@ use App\Models\User;
 use Bavix\Wallet\Models\Wallet;
 use Carbon\Carbon;
 use Flasher\Laravel\Facade\Flasher;
+use function Illuminate\Log\log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
-use function Illuminate\Log\log;
 
 class DepositController extends Controller
 {
@@ -88,7 +87,7 @@ class DepositController extends Controller
             $deposit_method_id = $request->deposit_method_id;
 
             $ticker = $deposit_method->wallet_ticker;
-            if (! $ticker) {
+            if (! $ticker || empty($ticker)) {
                 return response()->json(['message' => 'Invalid deposit method.'], 422);
             }
 
