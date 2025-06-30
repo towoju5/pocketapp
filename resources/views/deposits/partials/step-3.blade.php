@@ -49,7 +49,7 @@
             <div>
                 <label for="wallet-address" class="block text-sm text-gray-400 mb-1">to the address:</label>
                 <div class="relative">
-                    <input type="text" id="wallet-address" value="{{ $wallet->address }}" readonly class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600">
+                    <input type="text" id="wallet-address" value="{{ $wallet->address ?? $wallet['address'] }}" readonly class="w-full bg-gray-700 text-white p-3 rounded-lg border border-gray-600">
                     <button class="absolute right-3 top-2 bg-teal-500 text-white px-3 py-1 rounded-lg hover:bg-teal-600">
                         Copy
                     </button>
@@ -58,7 +58,7 @@
 
             <!-- QR Code -->
             <div class="text-center mt-6">
-                <img src="https://quickchart.io/qr?text={{ $wallet->address }}&margin=0&size=400" alt="QR Code" class="w-32 h-32 mx-auto mb-4">
+                <img src="https://quickchart.io/qr?text={{ $wallet->address ?? $wallet['address'] }}&margin=0&size=400" alt="QR Code" class="w-32 h-32 mx-auto mb-4">
                 <p class="text-sm text-gray-400">Or simply scan the generated QR code to make your payment.</p>
             </div>
         </div>
