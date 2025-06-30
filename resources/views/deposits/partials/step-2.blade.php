@@ -74,10 +74,11 @@
              <p class="text-2xl font-bold mb-2">$<span class="deposit_price">30</span></p>
              <p class="text-sm text-gray-400 mb-6">+ Trader's box</p>
 
-             <!-- Action Button -->
-             <button class="bg-teal-500 text-white w-full py-3 rounded-lg hover:bg-teal-600">
-                 Continue and pay $<span class="deposit_price">30</span>
-             </button>
+            <!-- Action Button -->
+            <button type="submit" id="bitgoDepositBtn" class="bg-teal-500 text-white w-full py-3 rounded-lg hover:bg-teal-600 flex items-center justify-center gap-2">
+                <span class="btn-icon hidden"><i class="fas fa-spinner fa-spin"></i></span>
+                <span class="btn-text">Continue and pay $<span class="deposit_price">30</span></span>
+            </button>
 
              <!-- Support Links -->
              <div class="mt-6 text-sm text-gray-400">
@@ -93,4 +94,11 @@
          $('.deposit_price').text(amount)
          $('#amount').val(amount)
      }
+
+    $("#bitgoDepositBtn").on("click", function () {
+        const $btn = $(this);
+        $btn.find(".btn-icon").removeClass("hidden");
+        $btn.prop("disabled", true).addClass("opacity-75 cursor-not-allowed");
+        $("#payment-methods").submit();
+    });
  </script>

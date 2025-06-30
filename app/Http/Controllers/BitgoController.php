@@ -72,9 +72,9 @@ class BitgoController extends Controller
                 }
             }
 
-            return $wallet;
+            return $wallet->toArray();
         } catch (\Exception $e) {
-            \Log::error('Failed to get or generate Bitgo wallet', [
+            Log::error('Failed to get or generate Bitgo wallet', [
                 'coin'    => $coin,
                 'user_id' => auth()->id(),
                 'message' => $e->getMessage(),
@@ -393,7 +393,7 @@ class BitgoController extends Controller
         }
         Log::info(json_encode($webhook));
         $userWallet = BitgoWallets::where('coin_ticker', $webhook['coin'])
-            // ->where('address', $webhook['receiver'])
+        // ->where('address', $webhook['receiver'])
             ->first();
 
         if ($userWallet) {

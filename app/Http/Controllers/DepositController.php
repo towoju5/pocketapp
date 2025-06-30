@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Models\Bitgo;
@@ -8,10 +7,12 @@ use App\Models\Deposit;
 use App\Models\User;
 // use App\Models\Wallet;
 use Bavix\Wallet\Models\Wallet;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Flasher\Laravel\Facade\Flasher;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+use function Illuminate\Log\log;
 
 class DepositController extends Controller
 {
@@ -37,7 +38,7 @@ class DepositController extends Controller
 
     public function create()
     {
-        $user = Auth::user();
+        $user    = Auth::user();
         $wallets = $user->wallets;
         if (empty($wallets)) {
             create_user_wallet($user->id);
@@ -55,39 +56,39 @@ class DepositController extends Controller
 
         if ($request->deposit_step == 1) {
             $request->validate([
-                'deposit_method' => 'required|string'
+                'deposit_method' => 'required|string',
             ]);
 
             // Validate and find the selected deposit method
             $deposit_method = Bitgo::whereId($request->deposit_method)->where('can_deposit', true)->first();
-            if (!$deposit_method) {
+            if (! $deposit_method) {
                 return response()->json(['message' => 'Invalid deposit method.'], 422);
             }
 
             // // Update session with the newly selected deposit method
             // session()->put('deposit_method', $deposit_method);
             // session()->put('deposit_method_id', $request->deposit_method);
-			$deposit_method_id = $request->deposit_method;
+            $deposit_method_id = $request->deposit_method;
             // After updating the session, return to step 2 with the new deposit method
             return view('deposits.partials.step-2', compact('deposit_method', 'deposit_method_id'));
         }
 
         if ($request->deposit_step == 2) {
             $request->validate([
-                'deposit_amount' => 'required',
-				'deposit_method' => 'required',
-				'deposit_method_id' => 'required'
+                'deposit_amount'    => 'required',
+                'deposit_method'    => 'required',
+                'deposit_method_id' => 'required',
             ]);
 
             // Set the deposit amount
             $deposit_amount = $request->deposit_amount;
 
             // Save the deposit data in the session for future steps
-             $deposit_method = json_decode($request->deposit_method);
-             $deposit_method_id = $request->deposit_method_id;
+            $deposit_method    = json_decode($request->deposit_method);
+            $deposit_method_id = $request->deposit_method_id;
 
             $ticker = $deposit_method->wallet_ticker;
-            if (!$ticker) {
+            if (! $ticker) {
                 return response()->json(['message' => 'Invalid deposit method.'], 422);
             }
 
@@ -98,10 +99,14 @@ class DepositController extends Controller
 
             // var_dump($wallet); exit;
 
-            if (!$wallet) {
+            if (! $wallet) {
                 // Generate a new wallet address if not found
-                $bitgo = new BitgoController();
+                $bitgo  = new BitgoController();
                 $wallet = $bitgo->generateWalletAddress($ticker);
+                if (is_object($wallet)) {
+                    $wallet = (collect($wallet));
+                }
+                log("error", ['wallet' => $wallet]);
                 if (isset($wallet['error'])) {
                     return response()->json(['message' => $wallet['error']], 422);
                 }
@@ -122,14 +127,14 @@ class DepositController extends Controller
         $bonus = $request->deposit_amount >= get_option('min_deposit_for_bonus') ? $request->deposit_amount * get_option('deposit_bonus', 0) : 0;
 
         $deposit = new Deposit([
-            'user_id' => Auth::id(),
-            'wallet_id' => $request->wallet_id,
-            'deposit_amount' => $request->deposit_amount,
-            'deposit_date_time' => Carbon::now(),
-            'deposit_status' => 'pending',
-            'deposit_method' => $request->deposit_method,
+            'user_id'            => Auth::id(),
+            'wallet_id'          => $request->wallet_id,
+            'deposit_amount'     => $request->deposit_amount,
+            'deposit_date_time'  => Carbon::now(),
+            'deposit_status'     => 'pending',
+            'deposit_method'     => $request->deposit_method,
             'deposit_extra_info' => $request->extra_info ? json_encode($request->extra_info) : null,
-            'deposit_bonus' => $bonus
+            'deposit_bonus'      => $bonus,
         ]);
 
         $deposit->save();
@@ -154,8 +159,6 @@ class DepositController extends Controller
         }
     }
 
-
-
     public function show(Deposit $deposit)
     {
         if ($deposit->user_id !== Auth::id()) {
@@ -174,7 +177,7 @@ class DepositController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $deposits
+            'data'    => $deposits,
         ]);
     }
 
@@ -183,7 +186,7 @@ class DepositController extends Controller
         if ($deposit->user_id !== Auth::id() || $deposit->deposit_status !== 'pending') {
             return response()->json([
                 'success' => false,
-                'message' => 'Unable to cancel this deposit'
+                'message' => 'Unable to cancel this deposit',
             ], 403);
         }
 
@@ -196,23 +199,23 @@ class DepositController extends Controller
     public function getDepositStats()
     {
         $stats = [
-            'total_deposits' => Deposit::where('user_id', Auth::id())
+            'total_deposits'     => Deposit::where('user_id', Auth::id())
                 ->where('deposit_status', 'completed')
                 ->sum('deposit_amount'),
-            'total_bonus' => Deposit::where('user_id', Auth::id())
+            'total_bonus'        => Deposit::where('user_id', Auth::id())
                 ->where('deposit_status', 'completed')
                 ->sum('deposit_bonus'),
             'completed_deposits' => Deposit::where('user_id', Auth::id())
                 ->where('deposit_status', 'completed')
                 ->count(),
-            'pending_deposits' => Deposit::where('user_id', Auth::id())
+            'pending_deposits'   => Deposit::where('user_id', Auth::id())
                 ->where('deposit_status', 'pending')
-                ->count()
+                ->count(),
         ];
 
         return response()->json([
             'success' => true,
-            'data' => $stats
+            'data'    => $stats,
         ]);
     }
 }

@@ -268,7 +268,7 @@ if (! function_exists('bitgoDepositAddress')) {
         try {
             $walletId        = getWalletIdByCoinTicker($coin);
             $coin            = strtolower($coin);
-            $testNet         = env('BITGO_ENV', 'true');
+            $testNet         = env('BITGO_ENV', false);
             $bitgo           = new BitGoSDK(env('BITGO_API_KEY'), $coin, $testNet);
             $bitgo->walletId = $walletId;
 
