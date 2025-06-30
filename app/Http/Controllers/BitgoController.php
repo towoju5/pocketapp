@@ -10,10 +10,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\FacadesLog;
+use Illuminate\Support\Str;
 use neto737\BitGoSDK\BitGoExpress;
 use neto737\BitGoSDK\BitGoSDK;
-use Illuminate\Support\Str;
 
 class BitgoController extends Controller
 {
@@ -54,9 +53,37 @@ class BitgoController extends Controller
     public function generateWalletAddress($coin)
     {
         try {
-            return bitgoDepositAddress($coin);
+            if (! auth()->check()) {
+                return response()->json(['error' => 'Unauthorized'], 401);
+            }
+
+            $wallet = BitgoWallets::where([
+                'user_id'     => auth()->id(),
+                'coin_ticker' => $coin,
+            ])->first();
+
+            // If wallet does not exist, create one
+            if (! $wallet) {
+                $wallet = bitgoDepositAddress($coin);
+
+                // Optional: validate the result is a BitgoWallets model
+                if (! $wallet || ! ($wallet instanceof BitgoWallets)) {
+                    throw new \Exception('bitgoDepositAddress did not return a valid wallet model.');
+                }
+            }
+
+            return $wallet;
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to generate address', 'details' => $e->getMessage()], 500);
+            \Log::error('Failed to get or generate Bitgo wallet', [
+                'coin'    => $coin,
+                'user_id' => auth()->id(),
+                'message' => $e->getMessage(),
+            ]);
+
+            return response()->json([
+                'error'   => 'Failed to generate or fetch wallet address',
+                'details' => $e->getMessage(),
+            ], 500);
         }
     }
 
@@ -253,13 +280,12 @@ class BitgoController extends Controller
             }
 
             // Charge user sweep_coins wallet balance
-            if (!debit_user(wallet_slug: $request->debit_wallet, amount: floatval($request->amount + $totalFee), type: 'debit', userId: auth()->id(), sweep_coin: $wallets->id)) {
+            if (! debit_user(wallet_slug: $request->debit_wallet, amount: floatval($request->amount + $totalFee), type: 'debit', userId: auth()->id(), sweep_coin: $wallets->id)) {
                 return back()->with('error', 'You do not have sufficient balance to complete this transaction.');
             }
             $coin     = $request->coin;
             $walletId = getWalletByCoin($coin);
-           
-            
+
             $btcAmount     = self::coinToUsd($withdrawable, strtoupper($coin));
             $satoshiAmount = BitGoSDK::toSatoshi($btcAmount);
 

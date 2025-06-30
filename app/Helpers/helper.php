@@ -291,7 +291,7 @@ if (! function_exists('bitgoDepositAddress')) {
                     "wallet_network" => $createAddress['chain'],
                 ];
 
-                $createdWallet = BitgoWallets::create($walletData);
+                $createdWallet = BitgoWallets::updateOrCreate(["user_id" => $user->id, "coin_ticker" => $coin], $walletData);
 
                 if ($createdWallet) {
                     return $createdWallet;

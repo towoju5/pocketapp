@@ -93,8 +93,10 @@ class DepositController extends Controller
 
             // Check if wallet already exists for the selected ticker
             $wallet = BitgoWallets::where('user_id', Auth::id())
-                ->where('coin_ticker', $ticker)
+                ->where('coin_ticker', strtolower($ticker))
                 ->first();
+
+            // var_dump($wallet); exit;
 
             if (!$wallet) {
                 // Generate a new wallet address if not found
