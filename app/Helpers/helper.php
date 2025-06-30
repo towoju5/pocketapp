@@ -272,8 +272,11 @@ if (! function_exists('bitgoDepositAddress')) {
         try {
             $walletId        = getWalletIdByCoinTicker($coin);
             $coin            = strtolower($coin);
-            $testNet         = env('BITGO_ENV', false);
-            $bitgo           = new BitGoSDK(env('BITGO_API_KEY'), $coin, $testNet);
+            Log::info("Bitgo wallet address generation response", [
+                'coin' => $coin,
+                'wallet_id' => $walletId
+            ]);
+            $bitgo           = new BitGoSDK(env('BITGO_API_KEY'), $coin, env('BITGO_ENV'));
             $bitgo->walletId = $walletId;
 
             $createAddress = $bitgo->createWalletAddress();
