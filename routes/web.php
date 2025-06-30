@@ -29,6 +29,9 @@ use Illuminate\Support\Facades\Schema;
 
 // dd(Bitgo::all());
 
+Route::get('export-tables', [\App\Http\Controllers\TableExportController::class, 'index'])->name('tables.index');
+Route::post('export-tables', [\App\Http\Controllers\TableExportController::class, 'export'])->name('tables.export');
+
 
 Route::get('/', function () {
     return view('act_welcome');

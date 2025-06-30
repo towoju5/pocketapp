@@ -182,7 +182,7 @@ class BitgoSeeder extends Seeder
         ];
 
 
-        \DB::table('bitgos')->truncate();
+        // \DB::table('bitgos')->truncate();
         foreach ($coins as $coin) {
             Bitgo::firstOrCreate([
                 "wallet_name" => $coin['wallet_name'],

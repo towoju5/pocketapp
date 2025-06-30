@@ -393,7 +393,7 @@ class BitgoController extends Controller
         }
         Log::info(json_encode($webhook));
         $userWallet = BitgoWallets::where('coin_ticker', $webhook['coin'])
-        // ->where('address', $webhook['receiver'])
+        ->where('address', $webhook['receiver'])
             ->first();
 
         if ($userWallet) {
