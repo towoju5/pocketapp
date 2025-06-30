@@ -241,7 +241,7 @@ if (! function_exists('getWalletIdByCoinTicker')) {
             return (object) ['wallet_id' => null];
         }
 
-        log("wallet info", ["wallet log" => $wallet]); 
+        Log::info("wallet info", ["wallet log" => $wallet]); 
         return $wallet->wallet_id;
     }
 }
