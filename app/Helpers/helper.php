@@ -173,7 +173,7 @@ if (! function_exists("getAssetData")) {
 
             // 2️⃣ Build query
             $query = http_build_query([
-                'symbol' => $asset
+                'symbol' => $asset,
             ]);
 
             // Log::info("Query params are: ", [$query]);
@@ -277,6 +277,9 @@ if (! function_exists('bitgoDepositAddress')) {
             Log::info("Bitgo wallet address generation response", ['response' => $createAddress]);
 
             $user = auth()->user();
+            if (is_object($createAddress)) {
+                $createAddress = (array) $createAddress;
+            }
             if (isset($createAddress['address'])) {
                 $correctWalletAddress = explode('?', $createAddress['address'])[0] ?? $createAddress['address'];
 
@@ -376,12 +379,11 @@ if (! function_exists('generate_uuid')) {
     }
 }
 
-
-if (!function_exists('getWalletByCoin')) {
+if (! function_exists('getWalletByCoin')) {
     function getWalletByCoin($coin)
     {
         $wallet = BitGoWallets::whereCoin($coin)->first();
-        if (!$wallet) {
+        if (! $wallet) {
             return back(404)->with('error', 'Wallet not found');
         }
 
@@ -389,12 +391,11 @@ if (!function_exists('getWalletByCoin')) {
     }
 }
 
-
-if (!function_exists('getWalletPhraseByCoin')) {
+if (! function_exists('getWalletPhraseByCoin')) {
     function getWalletPhraseByCoin($coin)
     {
         $wallet = Bitgo::where('wallet_ticker', $coin)->first();
-        if (!$wallet) {
+        if (! $wallet) {
             return back(404)->with('error', 'Wallet not found');
         }
 
