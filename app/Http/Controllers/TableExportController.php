@@ -13,10 +13,19 @@ class TableExportController extends Controller
 {
     public function index()
     {
-        // Get all table names
-        $tables = DB::select('SHOW TABLES');
-        $key = 'Tables_in_' . DB::getDatabaseName();
-        $tableNames = collect($tables)->pluck($key);
+        // Check which driver is being used
+        $driver = DB::getDriverName();
+
+        if ($driver === 'sqlite') {
+            // SQLite-compatible table query
+            $tables = DB::select("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'");
+            $tableNames = collect($tables)->pluck('name');
+        } else {
+            // MySQL-compatible query
+            $key = 'Tables_in_' . DB::getDatabaseName();
+            $tables = DB::select('SHOW TABLES');
+            $tableNames = collect($tables)->pluck($key);
+        }
 
         return view('export-tables', compact('tableNames'));
     }
