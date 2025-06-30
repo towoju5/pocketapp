@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use neto737\BitGoSDK\BitGoSDK;
 
+use function Illuminate\Log\log;
+
 if (! function_exists('get_assets')) {
     function get_assets()
     {
@@ -238,6 +240,8 @@ if (! function_exists('getWalletIdByCoinTicker')) {
         if (! $wallet) {
             return (object) ['wallet_id' => null];
         }
+
+        log("wallet info", ["wallet log" => $wallet]); 
         return $wallet->wallet_id;
     }
 }
