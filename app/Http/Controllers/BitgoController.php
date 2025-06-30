@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BitgoWallets;
 use App\Models\TransactionHistory;
+use App\Models\User;
 use App\Models\WebhookLog;
 use BitGoSDK\BitGo;
 use Illuminate\Http\Request;
@@ -358,7 +359,7 @@ class BitgoController extends Controller
         }
     }
 
-    public function bitgoWebhook(Request $request)
+    public function depositWebhook(Request $request)
     {
         $webhook = $request->all();
         if (! isset($webhook['coin'])) {
@@ -387,9 +388,17 @@ class BitgoController extends Controller
                 ]);
 
                 if ($webhook['transferType'] === 'receive') {
-                    $payLog        = getTransferDetails($webhook['coin'], $webhook['hash']);
-                    $user->balance = floatval($user->balance + $payLog['usd']);
-                    $user->save();
+                    $payLog = getTransferDetails($webhook['coin'], $webhook['hash']);
+                    $amount = $payLog['usd'];
+                    $user   = User::whereId($userWallet->user_id)->first();
+                    $wallet = $user->getWallet($user->trade_wallet);
+
+                    if ($wallet) { // Ensure wallet exists before attempting deposit
+                        if ($wallet->deposit($amount, ["description" => "crypto deposit"])) {
+                            return true;
+                        }
+                    }
+
                 }
 
                 if ($webhook['transferType'] === 'send') {
