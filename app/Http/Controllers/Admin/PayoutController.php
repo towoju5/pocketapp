@@ -1,10 +1,9 @@
 <?php
-
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Payout;
+use Illuminate\Http\Request;
 
 class PayoutController extends Controller
 {
@@ -20,7 +19,7 @@ class PayoutController extends Controller
             $query->where('payout_status', $request->status);
         }
 
-        $payouts = $query->orderBy('created_at', 'desc')->paginate(20);
+        $payouts = $query->with('method')->orderBy('created_at', 'desc')->paginate(15);
 
         return view('admin.payouts.index', compact('payouts'));
     }
@@ -35,11 +34,15 @@ class PayoutController extends Controller
         ]);
 
         $payout = Payout::findOrFail($id);
+
+        if ($payout->payout_status == "rejected") {
+            return back()->withErrors('Transaction already cancelled/rejected');
+        }
         $payout->payout_status = $request->status;
         $payout->save();
 
-        if($request->status === "rejected") {
-            if (! credit_user('qt_real_usd', $request['amount'], "Failed Payout Refund")) {
+        if ($request->status === "rejected") {
+            if (! credit_user('qt_real_usd', $payout['payout_amount'], "Failed Payout Refund")) {
                 return back()->with('error', 'Could not refund customer.')->withInput();
             }
         }

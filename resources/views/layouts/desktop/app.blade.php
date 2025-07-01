@@ -321,7 +321,7 @@
                 // input mask for time.
                 $("#hs-trailing-icon").inputmask(
                     "99:59:59", {
-                        placeholder: "00:01:00",
+                        placeholder: "00:00:50",
                         insertMode: false,
                         showMaskOnHover: false,
                         definitions: {

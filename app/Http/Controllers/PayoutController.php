@@ -10,7 +10,7 @@ class PayoutController extends Controller
 {
     public function index()
     {
-        $payouts = Payout::whereUserId(auth()->id())->latest()->get();
+        $payouts = Payout::with('method')->whereUserId(auth()->id())->latest()->get();
         return view('payout.index', compact('payouts'));
     }
 

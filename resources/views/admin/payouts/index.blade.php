@@ -43,18 +43,19 @@
                 @foreach($payouts as $payout)
                     <tr>
                         <td>{{ $loop->iteration }}</td>
-                        <td>{{ $payout->user->name ?? 'N/A' }}</td>
-                        <td>{{ number_format($payout->amount, 2) }}</td>
-                        <td>{{ ucfirst($payout->method ?? 'N/A') }}</td>
+                        <td>{{ $payout->user->last_name.' '.$payout->user->first_name ?? 'N/A' }}</td>
+                        <td>{{ formatPrice($payout->payout_amount, 2) }}</td>
+                        <td>{{ ucfirst($payout->method->wallet_name ?? 'N/A') }}</td>
                         <td>
-                            <span class="badge badge-{{ $payout->status === 'pending' ? 'warning' : ($payout->status === 'approved' ? 'primary' : ($payout->status === 'paid' ? 'success' : 'danger')) }}">
-                                {{ ucfirst($payout->status) }}
+                            <span class="badge badge-{{ $payout->payout_status === 'pending' ? 'warning' : ($payout->payout_status === 'approved' ? 'primary' : ($payout->payout_status === 'paid' ? 'success' : 'danger')) }}">
+                                {{ ucfirst($payout->payout_status) }}
                             </span>
                         </td>
                         <td>{{ $payout->created_at->format('d M Y') }}</td>
                         <td>
-                            <form action="{{ route('admin.payouts.update', $payout->id) }}" method="POST" class="form-inline">
+                            <form action="{{ route('admin.payouts.update', $payout->id) }}" method="POST" class="form-inline flex gap-1">
                                 @csrf
+                                @method("PUT")
                                 <select name="status" class="form-control form-control-sm mr-2">
                                     <option value="pending" {{ $payout->status == 'pending' ? 'selected' : '' }}>Pending</option>
                                     <option value="approved" {{ $payout->status == 'approved' ? 'selected' : '' }}>Approved</option>
@@ -71,7 +72,7 @@
 
         <!-- Pagination -->
         <div class="mt-4">
-            {{ $payouts->withQueryString()->links() }}
+            {{ $payouts->withQueryString()->links('pagination::bootstrap-5') }}
         </div>
     @else
         <p>No payout requests found.</p>

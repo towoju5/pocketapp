@@ -18,8 +18,8 @@ class Payout extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function payout_method()
+    public function method()
     {
-        return $this->belongsTo(Bitgo::class);
+        return $this->belongsTo(Bitgo::class, 'payout_method');
     }
 }

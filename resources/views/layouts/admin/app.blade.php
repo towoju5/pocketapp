@@ -15,6 +15,7 @@
     <link href="{{ asset('base') }}/assets/vendor/fontawesome/css/fontawesome.min.css" rel="stylesheet">
     <link href="{{ asset('base') }}/assets/vendor/fontawesome/css/solid.min.css" rel="stylesheet">
     <link href="{{ asset('base') }}/assets/vendor/fontawesome/css/brands.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
     <link href="{{ asset('base') }}/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link href="{{ asset('base') }}/assets/css/master.css" rel="stylesheet">
     <link href="{{ asset('base') }}/assets/vendor/flagiconcss/css/flag-icon.min.css" rel="stylesheet">
