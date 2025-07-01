@@ -172,7 +172,8 @@
 				</div>
 				<span></span>
 			</a>
-
+			
+	<?php /*
 			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
@@ -262,7 +263,7 @@
 					<span class="text-sm">Forex MT5 Demo Account</span>
 				</div>
 				<span></span>
-			</div>
+			</div> */ ?>
 		</div>
 	</div>
 

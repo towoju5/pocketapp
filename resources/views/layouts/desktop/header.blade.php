@@ -129,8 +129,8 @@
   								</div>
   								<!-- Texts -->
   								<div class="w-[60%] text-left text-md">
-  									<h2> Quick Trading Demo</h2>
-  									<span class="text-sm text-[#8ea5c0]">$50,000</span>
+  									<h2>&nbsp; {{ $wallet_balance['name'] }} &nbsp;</h2>
+  									<span class="text-sm text-[#8ea5c0]">{{ formatPrice($wallet_balance['balance'] ?? 0) }}</span>
   								</div>
   							</div>
   						</div>

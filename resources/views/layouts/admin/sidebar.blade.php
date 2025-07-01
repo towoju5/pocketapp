@@ -33,6 +33,12 @@
                 Signals</a>
         </li>
         <li>
+            <a class="{{ request()->routeIs('admin.payouts.*') ? 'active' : '' }}" href="{{ route('admin.payouts.index') }}">
+                <i class="fas fa-chart-bar"></i>
+                Withdrawals
+            </a>
+        </li>
+        <li>
             <a href="#bitgo-settings" data-bs-toggle="collapse" aria-expanded="false" class="dropdown-toggle no-caret-down {{ request()->routeIs('admin.bitgo.*') ? 'active' : '' }}">
                 <i class="fas fa-layer-group"></i> 
                 Bitgo

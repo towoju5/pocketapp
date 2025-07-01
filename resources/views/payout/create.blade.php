@@ -13,15 +13,15 @@
             <div class="space-y-4">
                 <div class="grid grid-cols-2 gap-4">
                     <span class="text-right font-medium">Free balance:</span>
-                    <span>$0</span>
+                    <span>{{ formatPrice($wallet_balance['balance'] ?? 0) }}</span>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <span class="text-right font-medium">Minimum withdrawal amount:</span>
-                    <span>$0</span>
+                    <span>$10</span>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <span class="text-right font-medium">Commission:</span>
-                    <span>$0</span>
+                    <span>$30,000</span>
                 </div>
 
                 <!-- Withdrawal info alert -->
@@ -37,13 +37,16 @@
                     <div class="grid grid-cols-2 gap-4 items-center">
                         <label for="payment_method" class="text-right font-medium">Payment Method:</label>
                         <select name="payment_method" id="payment_method" class="w-full bg-gray-800 border border-gray-600 rounded-md px-3 py-2 text-white">
-                            <option value="usdt">USDT</option>
+                            <option disabled selected>Select Payment Mode</option>
+                            @foreach($methods as $method)
+                            <option value="{{ $method->id }}">{{ $method->wallet_name }}</option>
+                            @endforeach
                         </select>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4 items-center">
                         <label for="amount" class="text-right font-medium">Amount:</label>
-                        <input type="text" name="amount" id="amount" placeholder="Enter withdrawal amount"
+                        <input type="number" min="10" max="30000" name="amount" id="amount" placeholder="Enter withdrawal amount"
                             class="w-full bg-gray-800 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                     </div>
 

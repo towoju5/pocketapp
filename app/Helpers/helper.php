@@ -104,31 +104,31 @@ if (! function_exists('allowed_wallets')) {
             [
                 "name"   => "QT Demo USD",
                 "symbol" => "qt_demo_usd",
-            ],
-            [
-                "name"   => "MT4 Demo USD",
-                "symbol" => "mt4_demo_usd",
-            ],
-            [
-                "name"   => "MT4 Real USD",
-                "symbol" => "mt4_real_usd",
-            ],
-            [
-                "name"   => "MT5 Demo USD",
-                "symbol" => "mt5_demo_usd",
-            ],
-            [
-                "name"   => "MT5 Real USD",
-                "symbol" => "mt5_real_usd",
-            ],
-            [
-                "name"   => "Shares Real USD",
-                "symbol" => "sh_real_usd",
-            ],
-            [
-                "name"   => "Shares Demo USD",
-                "symbol" => "sh_demo_usd",
-            ],
+            ]
+            // [
+            //     "name"   => "MT4 Demo USD",
+            //     "symbol" => "mt4_demo_usd",
+            // ],
+            // [
+            //     "name"   => "MT4 Real USD",
+            //     "symbol" => "mt4_real_usd",
+            // ],
+            // [
+            //     "name"   => "MT5 Demo USD",
+            //     "symbol" => "mt5_demo_usd",
+            // ],
+            // [
+            //     "name"   => "MT5 Real USD",
+            //     "symbol" => "mt5_real_usd",
+            // ],
+            // [
+            //     "name"   => "Shares Real USD",
+            //     "symbol" => "sh_real_usd",
+            // ],
+            // [
+            //     "name"   => "Shares Demo USD",
+            //     "symbol" => "sh_demo_usd",
+            // ],
         ];
     }
 }
@@ -316,24 +316,50 @@ if (! function_exists('bitgoDepositAddress')) {
 }
 
 if (! function_exists('debit_user')) {
-    function debit_user(string $wallet_slug, int | string $amount, string $description): bool
+    function debit_user(string $wallet_slug, int|string $amount, string $description): bool
     {
         try {
-            $user   = auth()->user();
-            $wallet = $user->getWallet($wallet_slug);
-
-            if ($wallet) { // Ensure wallet exists before attempting withdrawal
-                if ($wallet->withdraw($amount, ["description" => $description])) {
-                    return true;
-                }
+            $user = auth()->user();
+            if (!$user) {
+                Log::warning("debit_user: No authenticated user.");
+                return false;
             }
 
+            $wallet = $user->getWallet($wallet_slug);
+
+            if (!$wallet) {
+                Log::warning("debit_user: Wallet not found for slug [$wallet_slug].", ['user_id' => $user->id]);
+                return false;
+            }
+
+            $amount = floatval(str_replace(',', '', $amount));
+
+            $result = $wallet->withdraw($amount, ['description' => $description]);
+
+            if ($result) {
+                return true;
+            }
+
+            Log::info("debit_user: Withdrawal failed", [
+                'user_id' => $user->id,
+                'wallet' => $wallet_slug,
+                'amount' => $amount,
+                'description' => $description,
+            ]);
             return false;
+
         } catch (\Throwable $th) {
+            Log::error("debit_user exception", [
+                'wallet' => $wallet_slug,
+                'amount' => $amount,
+                'description' => $description,
+                'error' => $th->getMessage(),
+            ]);
             return false;
         }
     }
 }
+
 
 if (! function_exists('credit_user')) {
     function credit_user(string $wallet_slug, int | string $amount, string $description): bool

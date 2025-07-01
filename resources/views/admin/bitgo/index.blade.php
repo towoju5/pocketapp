@@ -55,6 +55,6 @@
         </tbody>
     </table>
 
-    {{ $wallets->links() }}
+    {{ $wallets->links('pagination::bootstrap-4') }}
 </div>
 @endsection

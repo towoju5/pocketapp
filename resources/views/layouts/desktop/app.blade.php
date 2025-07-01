@@ -269,33 +269,51 @@
         <script src="//cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
         <script src="{{ asset('assets/js/custom.js') }}"></script>
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+        <link rel="stylesheet" href="//cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
+        <script src="//cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
+        @if ($errors->any())
+            @foreach ($errors->all() as $error)
+                <script>
+                    toastr.error('{{ $error }}');
+                </script>
+            @endforeach
+        @endif
+
+        @if (session('error'))
+            <script>
+                toastr.error('{{ session('error') }}');
+            </script>
+        @endif
+
+        @if (session('success'))
+            <script>
+                toastr.success('{{ session('success') }}');
+            </script>
+        @endif
+
+        @if (session('info'))
+            <script>
+                toastr.info('{{ session('info') }}');
+            </script>
+        @endif
+
+        @if (session('message'))
+            <script>
+                toastr.info('{{ session('message') }}');
+            </script>
+        @endif
         <script>
-            @if ($errors->any())
-                @foreach ($errors->all() as $error)
-                    toastr.error("{!! $error !!}");
-                @endforeach
-            @endif
-
-            @if (session('error'))
-                toastr.error("{!! session('error') !!}");
-            @endif
-
-            @if (session('success'))
-                toastr.success("{!! session('success') !!}");
-            @endif
-
-            @if (session('info'))
-                toastr.info("{!! session('info') !!}");
-            @endif
-
-            @if (session('warning'))
-                toastr.warning("{!! session('warning') !!}");
-            @endif
+            toastr.options = {
+                "closeButton": true,
+                "progressBar": true,
+                "positionClass": "toast-top-right",
+                "timeOut": "5000"
+            };
         </script>
 
         @stack('js')
         @stack('scripts')
+        @stack('script')
 
         <script>
             $(document).ready(function() {
