@@ -427,7 +427,7 @@ class BitgoController extends Controller
 
             if ($wallet) {
                 if ($wallet->deposit($amount, ["description" => "{$coin} wallet deposit"])) {
-                    $user->notify(new DepositNotification($amount, $coin, $wallet->balance))
+                    $user->notify(new DepositNotification($amount, $coin, $wallet->balance));
                 }
             }
         }
