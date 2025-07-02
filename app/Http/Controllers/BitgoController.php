@@ -419,21 +419,12 @@ class BitgoController extends Controller
         }
 
         $userWallet = BitgoWallets::where('coin_ticker', $webhook['coin'])->where('address', $matchingAddress)->first(); 
+        $user   = User::whereId($userWallet->user_id)->first();
 
         if ($webhook['transferType'] === 'receive') {
             $amount = $payLog['usd'];
-            $user   = User::whereId($userWallet->user_id)->first();
             $wallet = $user->getWallet("qt_real_usd");
 
-            if ($wallet) {
-                if ($wallet->deposit($amount, ["description" => "{$coin} wallet deposit"])) {
-                    $user->notify(new DepositNotification($amount, $coin, $wallet->balance));
-                }
-            }
-        }
-
-        if ($userWallet) {
-            $user = $userWallet->user;
             // Check if the webhook has already been processed
             $existingWebhook = WebhookLog::where('hash', $webhook['hash'])->first();
 
@@ -449,12 +440,15 @@ class BitgoController extends Controller
                     'metadata'     => (array) $webhook,
                 ]);
 
-                Log::info("Processed a BitGo webhook for user ID: {$user->id}", $webhook);
+                if ($wallet) {
+                    if ($wallet->deposit($amount, ["description" => "{$coin} wallet deposit"])) {
+                        $user->notify(new DepositNotification($amount, $coin, $wallet->balance));
+                    Log::info("Processed a BitGo webhook for user ID: {$user->id}", $webhook);
+                    }
+                }
             } else {
                 Log::info("Webhook already processed for hash: {$webhook['hash']}");
             }
-        } else {
-            Log::warning("No user found for BitGo webhook receiver: {$webhook['receiver']}", $webhook);
         }
 
         return response()->json(['status' => 'success'], 200);
