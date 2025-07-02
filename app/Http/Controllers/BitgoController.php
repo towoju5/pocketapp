@@ -422,7 +422,7 @@ class BitgoController extends Controller
         if ($webhook['transferType'] === 'receive') {
             $amount = $payLog['usd'];
             $user   = User::whereId($userWallet->user_id)->first();
-            $wallet = $user->getWallet($user->trade_wallet);
+            $wallet = $user->getWallet("qt_real_usd");
 
             if ($wallet) {
                 if ($wallet->deposit($amount, ["description" => "{$coin} wallet deposit"])) {
@@ -430,17 +430,6 @@ class BitgoController extends Controller
                 }
             }
         }
-
-        // if ($webhook['transferType'] === 'send') {
-            // $transaction = Payout::whereTrx($webhook['hash'])->first();
-            // if ($transaction) {
-            //     $transaction->status = 1;
-            //     if ($transaction->save()) {
-            //         return response()->json(['status' => 'success'], 200);
-            //     }
-            // }
-        // }
-
 
         if ($userWallet) {
             $user = $userWallet->user;
