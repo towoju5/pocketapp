@@ -247,10 +247,10 @@ if (! function_exists('getWalletIdByCoinTicker')) {
 }
 
 if (! function_exists('getTransferDetails')) {
-    function getTransferDetails($coin, $transferId)
+    function getTransferDetails($coin, $walletId, $transferId)
     {
         $accessToken = getenv('BITGO_API_KEY');
-        $walletId    = getWalletIdByCoinTicker($coin);
+        // $walletId    = getWalletIdByCoinTicker($coin);
         $url         = "https://www.bitgo.com/api/v2/{$coin}/wallet/{$walletId}/transfer/{$transferId}";
 
         try {

@@ -2,6 +2,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BitgoWallets;
+use App\Models\Payout;
 use App\Models\TransactionHistory;
 use App\Models\User;
 use App\Models\WebhookLog;
@@ -392,9 +393,54 @@ class BitgoController extends Controller
             abort(403);
         }
         Log::info(json_encode($webhook));
-        $userWallet = BitgoWallets::where('coin_ticker', $webhook['coin'])
-        ->where('address', $webhook['receiver'])
-            ->first();
+
+        $payLog = getTransferDetails($webhook['coin'], $webhook['wallet'], $webhook['hash']);
+        $baseValue       = $payLog['baseValue'];
+        $matchingAddress = null;
+        $coin = $webhook['coin'];
+
+        // Search outputs
+        foreach ($payLog['outputs'] as $output) {
+            if (isset($output['value']) && $output['value'] === $baseValue) {
+                $matchingAddress = $output['address'] ?? null;
+                break;
+            }
+        }
+
+        // If not found in outputs, search inputs
+        if (! $matchingAddress) {
+            foreach ($payLog['inputs'] as $input) {
+                if (isset($input['value']) && $input['value'] === $baseValue) {
+                    $matchingAddress = $input['address'] ?? null;
+                    break;
+                }
+            }
+        }
+
+        $userWallet = BitgoWallets::where('coin_ticker', $webhook['coin'])->where('address', $matchingAddress)->first(); 
+
+        if ($webhook['transferType'] === 'receive') {
+            $amount = $payLog['usd'];
+            $user   = User::whereId($userWallet->user_id)->first();
+            $wallet = $user->getWallet($user->trade_wallet);
+
+            if ($wallet) {
+                if ($wallet->deposit($amount, ["description" => "{$coin} wallet deposit"])) {
+                    return true;
+                }
+            }
+        }
+
+        // if ($webhook['transferType'] === 'send') {
+            // $transaction = Payout::whereTrx($webhook['hash'])->first();
+            // if ($transaction) {
+            //     $transaction->status = 1;
+            //     if ($transaction->save()) {
+            //         return response()->json(['status' => 'success'], 200);
+            //     }
+            // }
+        // }
+
 
         if ($userWallet) {
             $user = $userWallet->user;
@@ -412,30 +458,6 @@ class BitgoController extends Controller
                     'transferType' => $webhook['transferType'],
                     'metadata'     => (array) $webhook,
                 ]);
-
-                if ($webhook['transferType'] === 'receive') {
-                    $payLog = getTransferDetails($webhook['coin'], $webhook['hash']);
-                    $amount = $payLog['usd'];
-                    $user   = User::whereId($userWallet->user_id)->first();
-                    $wallet = $user->getWallet($user->trade_wallet);
-
-                    if ($wallet) { // Ensure wallet exists before attempting deposit
-                        if ($wallet->deposit($amount, ["description" => "crypto deposit"])) {
-                            return true;
-                        }
-                    }
-
-                }
-
-                if ($webhook['transferType'] === 'send') {
-                    $transaction = TransactionHistory::whereTrx($webhook['hash'])->first();
-                    if ($transaction) {
-                        $transaction->status = 1;
-                        if ($transaction->save()) {
-                            return response()->json(['status' => 'success'], 200);
-                        }
-                    }
-                }
 
                 Log::info("Processed a BitGo webhook for user ID: {$user->id}", $webhook);
             } else {
