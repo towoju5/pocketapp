@@ -6,6 +6,7 @@ use App\Models\Payout;
 use App\Models\TransactionHistory;
 use App\Models\User;
 use App\Models\WebhookLog;
+use App\Notifications\DepositNotification;
 use BitGoSDK\BitGo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -426,7 +427,7 @@ class BitgoController extends Controller
 
             if ($wallet) {
                 if ($wallet->deposit($amount, ["description" => "{$coin} wallet deposit"])) {
-                    return true;
+                    $user->notify(new DepositNotification($amount, $coin, $wallet->balance))
                 }
             }
         }

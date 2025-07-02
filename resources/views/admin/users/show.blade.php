@@ -38,7 +38,7 @@
                             <option value="" disabled selected>Choose wallet</option>
                             @foreach($user->wallets as $wallet)
                                 <option value="{{ $wallet->slug }}">
-                                    {{ ucfirst($wallet->name) }} (Balance: ${{ number_format($wallet->balance, 2) }})
+                                    {{ ucfirst($wallet->name) }} (Balance: {{ formatPrice($wallet->balance, 2) }})
                                 </option>
                             @endforeach
                         </select>
