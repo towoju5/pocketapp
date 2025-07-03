@@ -1,7 +1,7 @@
 <div class="content p-5">
     <!-- Tradding sub left nav -->
     <div id="tradingContent" class="hidden">
-        <p class="flex items-center gap-2" onclick="goBack()">
+        <p class="flex items-center gap-2 cursor-pointer"  onclick="goBack()">
         <span style="background: #262b3d; color: #8ea5c0"
             class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
         </p>
@@ -162,7 +162,7 @@
 
     <!-- Finance sub left nav -->
     <div id="financeContent" class="hidden">
-        <p class="flex items-center gap-2" onclick="goBack()">
+        <p class="flex items-center gap-2 cursor-pointer"  onclick="goBack()">
         <span style="background: #262b3d; color: #8ea5c0"
             class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
         </p>
@@ -285,7 +285,7 @@
 
     <!-- Profile sub left nav -->
     <div id="profileContent" class="hidden">
-        <p class="flex items-center gap-2" onclick="goBack()">
+        <p class="flex items-center gap-2 cursor-pointer"  onclick="goBack()">
         <span style="background: #262b3d; color: #8ea5c0"
             class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
         </p>
@@ -393,7 +393,7 @@
 
     <!-- Market sub left nav -->
     <div id="marketContent" class="hidden">
-        <p class="flex items-center gap-2" onclick="goBack()">
+        <p class="flex items-center gap-2 cursor-pointer"  onclick="goBack()">
         <span style="background: #262b3d; color: #8ea5c0"
             class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
         </p>
@@ -467,7 +467,7 @@
 
     <!-- Acheivemeent sub left nav -->
     <div id="achievementsContent" class="hidden">
-        <p class="flex items-center gap-2" onclick="goBack()">
+        <p class="flex items-center gap-2 cursor-pointer"  onclick="goBack()">
         <span style="background: #262b3d; color: #8ea5c0"
             class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
         </p>
@@ -553,7 +553,7 @@
 
     <!-- chat sub left nav -->
     <div id="chatContent" class="hidden">
-        <p class="flex items-center gap-2" onclick="goBack()">
+        <p class="flex items-center gap-2 cursor-pointer"  onclick="goBack()">
         <span style="background: #262b3d; color: #8ea5c0"
             class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
         </p>
@@ -623,7 +623,7 @@
 
     <!-- help sub left nav -->
     <div id="helpContent" class="hidden">
-        <p class="flex items-center gap-2" onclick="goBack()">
+        <p class="flex items-center gap-2 cursor-pointer"  onclick="goBack()">
         <span style="background: #262b3d; color: #8ea5c0"
             class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
         </p>

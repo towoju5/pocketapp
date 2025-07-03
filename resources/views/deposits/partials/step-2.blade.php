@@ -1,6 +1,6 @@
  <!-- Payment Details Section -->
- <form action="{{ route('deposit.step_1') }}" id="payment-methods" class="payinForm mx-auto px-4 lg:px-10 py-6">
-     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+ <form action="{{ route('deposit.step_1') }}" id="payment-methods" class="payinForm mx-auto lg:px-10 py-3">
+     <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
          @csrf
          <input type="hidden" name="deposit_step" value="2">
          <!-- Left Side -->

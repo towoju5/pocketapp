@@ -4,12 +4,15 @@
 @section('content')
     <div class="container -mt-4">
         <div class="bg-[#15182a] rounded-lg text-white">
+            @if(!is_mobile())
             <div class="px-4 py-2">
                 @include('partials.finance-header')
             </div>
+            @endif
             <!-- Multi-Step Wizard -->
-            <div class="shadow-lg p-6 lg:p-10">
+            <div class="shadow-lg p-3 lg:p-10">
                 <!-- Step Progress -->
+                 @if(!is_mobile())
                 <div class="flex items-center justify-between mb-8">
                     <div class="text-teal-500 flex items-center">
                         <span
@@ -32,6 +35,7 @@
                         <span class="ml-2">Payment execution</span>
                     </div>
                 </div>
+                @endif
 
                 <!-- Deposit Form -->
                 <div class="grid grid-cols-1 gap-6" id="contentArea">

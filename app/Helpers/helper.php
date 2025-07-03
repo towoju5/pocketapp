@@ -5,6 +5,7 @@ use App\Models\Bitgo;
 use App\Models\BitgoWallets;
 use App\Models\Option;
 use App\Models\User;
+use Detection\MobileDetect;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -18,6 +19,30 @@ if (! function_exists('get_assets')) {
     {
         $assets = Assets::all();
         return $assets;
+    }
+}
+
+if(!function_exists('is_mobile')) {
+    function is_mobile() {
+        $browser = new MobileDetect();
+        if ($browser->isMobile() || $browser->isTablet()):
+            return true;
+        else :
+            return false;
+        endif;
+    }
+}
+
+if(!function_exists('page_view')) {
+    function page_view($page, $compact) {
+        $browser = new MobileDetect();
+        if (is_mobile()):
+            $path = $page;
+        else :
+            $path = "layouts.mobile.pages.$page";
+        endif;
+
+        return view($path, $compact);
     }
 }
 
