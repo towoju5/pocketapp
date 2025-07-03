@@ -14,6 +14,15 @@ class HomeController extends Controller
     public function dashboard(Request $request, $coin = null)
     {
         $user = auth()->user();
+
+        if($request->routeIs('dashboard.demo')) {
+            $user->active_wallet_slug = 'qt_demo_usd';
+            $user->save();
+        } else {
+            $user->active_wallet_slug = 'qt_real_usd';
+            $user->save();
+        }
+
         $isOutOfTradingHours = false;
         if (isset($coin)) {
             $coin = str_replace('--', '/', $coin);
@@ -81,7 +90,7 @@ class HomeController extends Controller
         //     $tradersTop100,
         // ];
 
-        return page_view('__dash', compact([
+        return view('__dash', compact([
             'data',
             'assetCategories',
             'isOutOfTradingHours',
@@ -97,28 +106,31 @@ class HomeController extends Controller
         ]));
     }
 
-    public function demo(Request $request, $coin = null)
-    {
-        $user = auth()->user();
-        $isOutOfTradingHours = false;
-        if (isset($coin)) {
-            $coin = str_replace('--', '/', $coin);
-        }
+    // public function demo(Request $request, $coin = null)
+    // {
+    //     $user = auth()->user();
+    //     $user->active_wallet_slug = 'qt_demo_usd';
+    //     $user->save();
 
-        $data = Assets::where('symbol', $coin)->first();
+    //     $isOutOfTradingHours = false;
+    //     if (isset($coin)) {
+    //         $coin = str_replace('--', '/', $coin);
+    //     }
 
-        if (!$data or $coin == null) {
-            $data = Assets::first();
-        }
+    //     $data = Assets::where('symbol', $coin)->first();
 
-        $assetCategories = Assets::groupBy('asset_group')->get();
-        $chart_coin = $data->symbol;
-        $active_trades = Trade::where(["trade_status" => "pending", "user_id" => auth()->id()])->get();
+    //     if (!$data or $coin == null) {
+    //         $data = Assets::first();
+    //     }
 
-        $wallet_balance = $user->getWallet($user->active_wallet_slug ?? 'qt_demo_usd') ?? ["balance" => 0];
+    //     $assetCategories = Assets::groupBy('asset_group')->get();
+    //     $chart_coin = $data->symbol;
+    //     $active_trades = Trade::where(["trade_status" => "pending", "user_id" => auth()->id()])->get();
 
-        return view('__dash', compact('data', 'assetCategories', 'isOutOfTradingHours', 'active_trades', 'chart_coin', 'wallet_balance'));
-    }
+    //     $wallet_balance = $user->getWallet($user->active_wallet_slug) ?? ["balance" => 0];
+
+    //     return view('__dash', compact('data', 'assetCategories', 'isOutOfTradingHours', 'active_trades', 'chart_coin', 'wallet_balance'));
+    // }
 
     public function get_asset_history($ticker, $isOTC = true)
     {

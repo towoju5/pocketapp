@@ -21,6 +21,7 @@
         "munafio/chatify": "*",
         "necmicolak/yahoo-finance": "^1.0",
         "neto737/bitgosdk-php": "^2.2",
+        "php-flasher/flasher-laravel": "^2.1",
         "pragmarx/google2fa-laravel": "^2.2",
         "pragmarx/google2fa-qrcode": "^3.0",
         "prevailexcel/laravel-nowpayments": "^1.0",

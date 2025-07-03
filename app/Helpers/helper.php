@@ -36,7 +36,7 @@ if(!function_exists('is_mobile')) {
 if(!function_exists('page_view')) {
     function page_view($page, $compact) {
         $browser = new MobileDetect();
-        if (is_mobile()):
+        if (!is_mobile()):
             $path = $page;
         else :
             $path = "layouts.mobile.pages.$page";

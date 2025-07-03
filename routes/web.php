@@ -64,7 +64,7 @@ Route::any('callback/webhook/bitgo-deposit', [BitgoController::class, 'depositWe
 
 
 Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
-Route::get('dashboard/demo/{coin?}', [HomeController::class, 'demo'])->middleware(['auth', 'verified'])->name('dashboard.demo');
+Route::get('dashboard/demo/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard.demo');
 
 Route::get('dashboard-2', function () {
     return view('dash');

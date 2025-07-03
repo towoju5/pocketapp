@@ -26,7 +26,7 @@
         @csrf
 
         <div class="grid gap-4 items-center">
-            <label for="payment_method" class="text-right font-medium">Payment Method:</label>
+            <label for="payment_method" class="lg:text-right font-medium">Payment Method:</label>
             <select name="payment_method" id="payment_method" class="w-full bg-gray-800 border border-gray-600 rounded-md px-3 py-2 text-white">
                 <option disabled selected>Select Payment Mode</option>
                 @foreach($methods as $method)
@@ -36,13 +36,13 @@
         </div>
 
         <div class="grid gap-4 items-center">
-            <label for="amount" class="text-right font-medium">Amount:</label>
+            <label for="amount" class="lg:text-right font-medium">Amount:</label>
             <input type="number" min="10" max="30000" name="amount" id="amount" placeholder="Enter withdrawal amount"
                 class="w-full bg-gray-800 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
 
         <div class="grid gap-4 items-center">
-            <label for="address" class="text-right font-medium">Tether (USDT) TRC-20 Address:</label>
+            <label for="address" class="lg:text-right font-medium">Tether (USDT) TRC-20 Address:</label>
             <input type="text" name="address" id="address" placeholder="Enter your USDT TRC-20 address"
                 class="w-full bg-gray-800 border border-gray-600 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500">
         </div>
