@@ -1,4 +1,4 @@
-<div class="p-4 h-full overflow-y-auto" style="background: #151726">
+<div class="p-4 h-full" style="background: #151726">
   <h2 class="text-lg font-semibold">Pending Trades</h2>
   <div class="flex items-center justify-between gap-2 my-3">
     <button

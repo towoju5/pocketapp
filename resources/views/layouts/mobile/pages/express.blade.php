@@ -1,4 +1,4 @@
-<div class="p-4 h-full overflow-y-auto">
+<div class="p-4 h-full">
   <!-- Express Trades Section -->
   <div class="mb-4 text-lg font-semibold">Express Trades</div>
   <div class="flex justify-between gap-2 mt-2">

@@ -3,15 +3,16 @@
 @section('title', 'Profile')
 @section('content')
     <div class="m-4 ml-2 container py-4" style="margin: 1rem">
-        @include('partials.profile')
+        @if(!is_mobile())
+            @include('partials.profile')
+        @endif
         <div class="panel box-border personal-info-panel mb-3">
             <div class="panel-heading">
                 <div class="panel-title">Trading profile</div>
             </div>
             <div class="panel-body text-white">
-            <div class="min-h-screen bg-gray-900 text-white">
-                    
-                </div>
+            <div class="min-h-screen bg-gray-900 text-white" @if(is_mobile()) style="margin-bottom: 10rem;" @endif">
+                @include('profile._trading-profile')
             </div>
         </div>
     </div>

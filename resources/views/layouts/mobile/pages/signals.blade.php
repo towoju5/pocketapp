@@ -1,7 +1,7 @@
 <body>
   <div class="text-white h-full">
     <!-- Signals Header -->
-    <div class="h-full overflow-y-auto pb-20">
+    <div class="h-full pb-20">
       <h1 class="text-lg font-medium mb-4 px-4">Signals</h1>
 
       <!-- Filter Buttons -->

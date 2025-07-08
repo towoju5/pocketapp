@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="w-full" style="margin: 1rem">
+    <div class="w-full" @if(!is_mobile()) style="margin: 1rem" @endif>
         @include('partials.finance-header')
         <div class="grid lg:grid-cols-3 gap-5 mt-5">
             <div class="bg-gray-900 text-white p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
@@ -11,12 +11,12 @@
                 </div>
 
                 <div class="grid grid-cols-2 gap-4 mt-6 text-center">
-                    <div class="border border-gray-700 p-4 rounded-lg">Last payout<br>-</div>
-                    <div class="border border-gray-700 p-4 rounded-lg">Total cashback<br>-</div>
-                    <div class="border border-gray-700 p-4 rounded-lg">Max. payout<br>-</div>
-                    <div class="border border-gray-700 p-4 rounded-lg">Next payout<br>-</div>
-                    <div class="border border-gray-700 p-4 rounded-lg">Date of activation<br>-</div>
-                    <div class="border border-gray-700 p-4 rounded-lg">Valid until<br>-</div>
+                    <div class="border border-dashed border-gray-700 p-4 rounded-lg bg-[#1f2334]">Last payout<br>-</div>
+                    <div class="border border-dashed border-gray-700 p-4 rounded-lg bg-[#1f2334]">Total cashback<br>-</div>
+                    <div class="border border-dashed border-gray-700 p-4 rounded-lg bg-[#1f2334]">Max. payout<br>-</div>
+                    <div class="border border-dashed border-gray-700 p-4 rounded-lg bg-[#1f2334]">Next payout<br>-</div>
+                    <div class="border border-dashed border-gray-700 p-4 rounded-lg bg-[#1f2334]">Date of activation<br>-</div>
+                    <div class="border border-dashed border-gray-700 p-4 rounded-lg bg-[#1f2334]">Valid until<br>-</div>
                 </div>
 
                 <div class="mt-6 text-sm text-gray-400">

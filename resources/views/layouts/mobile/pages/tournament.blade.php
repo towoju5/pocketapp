@@ -1,4 +1,4 @@
-<div class="p-4 h-full overflow-y-auto">
+<div class="p-4 h-full">
   <!-- Header -->
   <div class="flex w-full h-12 justify-between space-x-4 items-center mb-6">
     <button
