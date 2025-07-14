@@ -85,7 +85,7 @@ if (! function_exists('formatPrice')) {
      */
     function formatPrice($amount)
     {
-        return "$" . number_format($amount, 2);
+        return "$" . number_format(floatval($amount), 2);
     }
 }
 

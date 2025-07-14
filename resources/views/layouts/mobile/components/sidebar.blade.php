@@ -265,7 +265,7 @@
                 </div>
             </a>
 
-            <a href="#" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+            <a href="{{ route('express.index') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
                 <svg class="svg-icon pocket-friends-icon" width="24" height="24" fill="#8ea5c0" viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg">
                 <circle cx="16.6647" cy="13.457" r="3.32188" fill="currentColor"></circle>
@@ -274,7 +274,7 @@
                     fill="currentColor"></path>
                 </svg>
                 <div class="text-sm">
-                <p>Pocket Friends</p>
+                <p>Express Tradings</p>
                 </div>
             </a>
         </div>

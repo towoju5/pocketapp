@@ -2,10 +2,11 @@
 
 @section('title', 'Profile')
 @section('content')
-    <div class="m-4 ml-2 container py-4" style="margin: 1rem">
+    <div class="lg:m-4 lg:ml-2 container py-4 w-full" style="margin: 1rem">
         @if(!is_mobile())
             @include('partials.profile')
         @endif
+       
         <div class="panel box-border personal-info-panel mb-3">
             <div class="panel-heading">
                 <div class="panel-title">Trading profile</div>

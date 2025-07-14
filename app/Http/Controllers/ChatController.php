@@ -1,10 +1,11 @@
 <?php
-// app/Http/Controllers/ChatController.php
+
 namespace App\Http\Controllers;
 
-use App\Events\ChatEvent;
-use App\Models\Message;
 use Illuminate\Http\Request;
+use App\Models\Message;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ChatController extends Controller
 {
@@ -13,20 +14,31 @@ class ChatController extends Controller
         return view('chat');
     }
 
-    public function send(Request $request)
+    public function fetchMessages()
     {
-        $message = Message::create([
-            'user_id' => auth()->id(),
-            'content' => $request->content
-        ]);
-
-        broadcast(new ChatEvent($message))->toOthers();
-
-        return response()->json(['status' => 'success']);
+        return Message::with('user')->latest()->take(50)->get()->reverse();
     }
 
-    public function getMessages()
+    public function sendMessage(Request $request)
     {
-        return Message::where('user_id', auth()->id())->get();
+        $request->validate([
+            'message' => 'nullable|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $message = new Message();
+        $message->user_id = Auth::id();
+        $message->message = $request->input('message');
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('chat_images', 'public');
+            $message->image = $path;
+        }
+
+        $message->save();
+
+        broadcast(new \App\Events\MessageSent($message))->withExceptionHandling();
+
+        return response()->json(['status' => 'Message sent']);
     }
 }

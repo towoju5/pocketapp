@@ -56,7 +56,7 @@ function initializeDropdowns() {
 }
 
 // Initialize on page load and content changes
-document.addEventListener('DOMContentLoaded', initializeDropdowns);
-document.getElementById('main-content').addEventListener('DOMNodeInserted', () => {
-    setTimeout(initializeDropdowns, 0);
-});
+// document.addEventListener('DOMContentLoaded', initializeDropdowns);
+// document.getElementById('main-content').addEventListener('DOMNodeInserted', () => {
+//     setTimeout(initializeDropdowns, 0);
+// });

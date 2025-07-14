@@ -90,7 +90,7 @@ class HomeController extends Controller
         //     $tradersTop100,
         // ];
 
-        return view('__dash', compact([
+        return page_view('__dash', compact([
             'data',
             'assetCategories',
             'isOutOfTradingHours',

@@ -30,6 +30,15 @@
                 font-size: 13px !important;
                 -webkit-tap-highlight-color: transparent;
             } */
+            .skiptranslate {
+                display: none;
+            }
+            #goog-gt-tt {
+                display: none!important;
+            }
+            body {
+                top: 0px!important;
+            }
         </style>
 
         <!-- Scripts -->
@@ -164,6 +173,8 @@
             @csrf
         </form>
 
+        <!-- Hidden container for Google Translate -->
+        <div id="google_translate_element" style="display:none;"></div>
 
         <!-- Include jQuery -->
         <script src="{{ asset('assets/js/jquery.min.js') }}"></script>
@@ -511,6 +522,52 @@
 
             // Call the function when the page loads
             document.addEventListener('DOMContentLoaded', fetchIPData);
+        </script>
+
+        <script type="text/javascript">
+            function googleTranslateElementInit() {
+                // Initialize Google Translate with page language
+                new google.translate.TranslateElement({pageLanguage: '{{ $lang ?? 'en' }}'}, 'google_translate_element');
+            }
+
+            // Load Google Translate script
+            (function () {
+                var gtScript = document.createElement('script');
+                gtScript.type = 'text/javascript';
+                gtScript.src = '//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
+                document.body.appendChild(gtScript);
+            })();
+
+            // Apply selected language without refresh
+            function changeLanguage(langCode) {
+                const select = document.querySelector('.goog-te-combo');
+                if (select) {
+                    select.value = langCode;
+                    select.dispatchEvent(new Event('change'));
+                } else {
+                    // Fallback: try again in 0.5s
+                    setTimeout(() => changeLanguage(langCode), 500);
+                }
+            }
+
+            document.addEventListener('DOMContentLoaded', function () {
+                const userLang = "{{ $lang ?? 'en' }}";
+
+                // Wait for the Google Translate dropdown to exist
+                const interval = setInterval(() => {
+                    const select = document.querySelector('.goog-te-combo');
+                    if (select) {
+                        clearInterval(interval);
+
+                        // If already on correct language, stop here
+                        if (select.value === userLang) return;
+
+                        // Set the language
+                        select.value = userLang;
+                        select.dispatchEvent(new Event('change'));
+                    }
+                }, 500);
+            });
         </script>
 
     </body>

@@ -327,8 +327,7 @@
                         <input type="hidden" name="direction" id="direction" value="">
                         <input type="hidden" name="order_token" id="order_token" value="">
                         <input type="hidden" name="order_time" id="order_time" value="">
-                        <div
-                            class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-10 border-l p-3 border-[#293341]">
+                        <div class="absolute inset-y-0 end-0 flex items-center pointer-events-none z-10 border-l p-3 border-[#293341]">
                             <svg class="currency-icon currency-icon--usd" width="18" height="18"
                                 viewBox="0 0 24 24" fill="none" xmlns="//www.w3.org/2000/svg">
                                 <circle cx="12" cy="12" r="11" stroke="currentColor" stroke-width="2">
@@ -345,8 +344,7 @@
             <!-- Payout Display -->
             <div class="text-sm">
                 <label>Payout</label>
-                <div
-                    class="text-green-400 border border-dashed rounded-lg mb-3 border-[#293341] p-3 flex justify-between">
+                <div class="text-green-400 border border-dashed rounded-lg mb-3 border-[#293341] p-3 flex justify-between">
                     <span id="profit_percentage">+{{ $data->asset_profit_margin }}% </span>
                     <span id="payout">$0.0</span>
                 </div>

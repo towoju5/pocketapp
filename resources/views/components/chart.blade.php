@@ -9,8 +9,9 @@
         if (!isNaN(asset_profit) && !isNaN(input_amount)) {
             const profit = (asset_profit / 100) * input_amount;
             document.getElementById('payout').textContent = '$' + profit.toFixed(2);
+            document.getElementById('payout_total').textContent = '$' + (profit + input_amount).toFixed(2);
         } else {
-            // console.log('Invalid number entered');
+            console.log('Invalid number entered');
         }
     }
     
@@ -397,8 +398,8 @@
 	// stock dropdown
 	document.getElementById("chartTpyeBtn").addEventListener("click", function () {
 		document.getElementById("chartTpyeDropDown").classList.toggle("hidden");
-		});
-		document.addEventListener("click", function (event) {
+    });
+    document.addEventListener("click", function (event) {
 		if (
 			!document.getElementById("chartTpyeBtn").contains(event.target) &&
 			!document.getElementById("chartTpyeDropDown").contains(event.target)
@@ -413,21 +414,22 @@
 @push('css')
 <!-- Styles -->
 <style>
-        #chart-container {
-            margin-top: -1rem;
-            width: 100%;
-            height: 90vh; /* Adjust height as needed */
-            background-color: transparent;
-        }
-        #controls {
-            padding: 10px;
-            background: #f8f8f8;
-        }
-        button {
-            margin: 5px;
-            padding: 8px;
-            cursor: pointer;
-        }
+    #chart-container {
+        margin-top: -1rem;
+        width: 100%;
+        height: 90vh; /* Adjust height as needed */
+        background-color: transparent;
+    }
+    #controls {
+        padding: 10px;
+        background: #f8f8f8;
+    }
+    button {
+        margin: 5px;
+        padding: 8px;
+        cursor: pointer;
+    }
+    
     .active-tab {
         border-bottom: 2px solid #3b82f6;
         /* blue-500 */

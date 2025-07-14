@@ -54,6 +54,7 @@ class ExpressTradeController extends Controller
     public function show($id)
     {
         $trade = ExpressTrade::findOrFail($id);
+        // return response()->json($trade);
         return view('trades.show', compact('trade'));
     }
 

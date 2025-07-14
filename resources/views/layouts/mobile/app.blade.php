@@ -136,7 +136,7 @@
 
     .input-container div {
       width: 100%;
-      padding: 0.5rem;
+      /* padding: 0.5rem; */
       background-color: #19212c;
       /* Tailwind's bg-gray-800 */
       border-radius: 0.5rem;
@@ -191,6 +191,8 @@
     }
   </style>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
+  <!-- Include Flowbite CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/flowbite @2.5.1/dist/flowbite.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
@@ -198,7 +200,7 @@
 </head>
 
 <body>
-  <div class="mobile-container bg-gray-900 text-white">
+  <div class="mobile-container bg-gray-900 text-white p-2">
     <!-- Add the left navbar markup -->
     <div class="navbar-overlay"></div>
     <div class="left-navbar">
@@ -547,7 +549,7 @@
         @include('layouts.mobile.components.top-nav')
     </div>
     <!-- Restore original single container -->
-    <div class="h-full overflow-scroll mb-20">
+    <div class="h-full overflow-scroll" style="padding-bottom: 7rem">
       @yield('content')
     </div>
     <div class="bottom-nav">
@@ -658,6 +660,8 @@
 
 
   <!-- Move scripts to end of body -->
+  <script src="//cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+  <script src="{{ asset('assets/js/custom.js') }}"></script>
   <script src="{{ asset('mobile/js/custom-chart.js') }}"></script>
   <script src="{{ asset('mobile/js/navigation.js') }}"></script>
   <script src="{{ asset('mobile/js/dropdown.js') }}"></script>
@@ -665,16 +669,16 @@
   <script src="{{ asset('mobile/js/wallet-modal.js') }}"></script>
   <script src="{{ asset('mobile/js/tabs.js') }}"></script>
   <script src="{{ asset('mobile/js/custom.js') }}"></script>
-        <link rel="stylesheet" href="//cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
-        <script src="//cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
-        <script>
-            toastr.options = {
-                "closeButton": true,
-                "progressBar": true,
-                "positionClass": "toast-top-right",
-                "timeOut": "5000"
-            };
-        </script>
+  <link rel="stylesheet" href="//cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
+  <script src="//cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
+  <script>
+      toastr.options = {
+          "closeButton": true,
+          "progressBar": true,
+          "positionClass": "toast-top-right",
+          "timeOut": "5000"
+      };
+  </script>
 
   <script>
       @if ($errors->any())

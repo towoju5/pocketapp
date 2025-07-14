@@ -162,3 +162,10 @@ Route::fallback(function () {
         "data" => null
     ], 404);
 });
+
+// Chat Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/chat', [App\Http\Controllers\ChatController::class, 'index'])->name('chat');
+    Route::post('/chat/send', [App\Http\Controllers\ChatController::class, 'sendMessage']);
+    Route::get('/chat/messages', [App\Http\Controllers\ChatController::class, 'fetchMessages']);
+});
