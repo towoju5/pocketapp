@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function dashboard(Request $request, $coin = null)
+    public function dashboard(Request $request, $coin = 'EUR--SGD.X')
     {
         $user = auth()->user();
 
@@ -28,7 +28,7 @@ class HomeController extends Controller
             $coin = str_replace('--', '/', $coin);
         }
 
-        $data = Assets::where('symbol', $coin)->first();
+        $data = Assets::where(['symbol' => $coin])->first();
 
         if (!$data or $coin == null) {
             $data = Assets::first();
