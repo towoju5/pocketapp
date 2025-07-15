@@ -60,7 +60,7 @@
             },
             timeScale: {
                 rightOffset: 30,
-                barSpacing: 8,
+                barSpacing: 4,
                 fixLeftEdge: false,
             },
         });
@@ -256,16 +256,16 @@
             } catch (error) {
                 console.error("Failed to process WebSocket message:", error);
             }
-        };
+        }
 
         ws.onerror = (err) => {
             console.error("WebSocket error", err);
-        };
+        }
 
         ws.onclose = () => {
             console.warn("WebSocket closed. Reconnecting...");
-            setTimeout(connectWebSocket, 3000);
-        };
+            setTimeout(connectWebSocket, 1000);
+        }
     }
 
 

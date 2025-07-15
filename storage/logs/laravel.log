@@ -6586,3 +6586,5 @@ Polaris Option
 #33 /home/ignite/Documents/GitHub/pocketapp/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1235): Illuminate\Foundation\Console\Kernel->handle(Object(Symfony\Component\Console\Input\ArgvInput), Object(Symfony\Component\Console\Output\ConsoleOutput))
 #34 /home/ignite/Documents/GitHub/pocketapp/artisan(13): Illuminate\Foundation\Application->handleCommand(Object(Symfony\Component\Console\Input\ArgvInput))
 #35 {main}  
+[2025-07-15 00:11:37] local.ERROR: getAssetData exception: cURL error 6: Could not resolve host: polarisoption.io (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://polarisoption.io:2300/api?key=670ad2b465a88088600ed7be663b0d6d5a22c395&url=https%3A%2F%2Fiqcent.com%2Ftrade-api%2Fapi%2Fticks%3Fsymbol%3DEUR%252FSGD.X%26autoparse%3Dtrue  
+[2025-07-15 00:37:50] local.ERROR: getAssetData exception: cURL error 6: Could not resolve host: polarisoption.io (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://polarisoption.io:2300/api?key=670ad2b465a88088600ed7be663b0d6d5a22c395&url=https%3A%2F%2Fiqcent.com%2Ftrade-api%2Fapi%2Fticks%3Fsymbol%3DNZD%252FUSD%26autoparse%3Dtrue  

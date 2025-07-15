@@ -29,7 +29,7 @@
       height: calc(100% - 130px);
       /* Adjust calculation for nav heights */
       overflow: hidden;
-      position: relative;
+      z-index: -5;
     }
 
     .chart-container {
@@ -549,7 +549,7 @@
         @include('layouts.mobile.components.top-nav')
     </div>
     <!-- Restore original single container -->
-    <div class="h-full overflow-scroll" style="padding-bottom: 7rem">
+    <div class="h-full overflow-scroll" id="main-content" style="padding-bottom: 7rem">
       @yield('content')
     </div>
     <div class="bottom-nav">
@@ -661,6 +661,7 @@
 
   <!-- Move scripts to end of body -->
   <script src="//cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+  <script src="//unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
   <script src="{{ asset('assets/js/custom.js') }}"></script>
   <script src="{{ asset('mobile/js/custom-chart.js') }}"></script>
   <script src="{{ asset('mobile/js/navigation.js') }}"></script>
