@@ -184,11 +184,5 @@
 		</form>
 	</div>
 </template>
-<div class="hidden">
-	<div id="stockList"></div>
-	<div id="bythetime"></div>
-	<div id="chartTpyeBtn"></div>
-	<div id="chartTpyeDropDown"></div>
-</div>
 @include("components.chart", ["data" => $data])
 @endsection

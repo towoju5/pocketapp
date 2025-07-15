@@ -55,20 +55,7 @@
 
     <div class="flex relative gap-2">
       <!-- QT Real button -->
-      <button
-        class="bg-gray-800 px-3 py-2 rounded-md flex items-center space-x-2 hover:bg-gray-700 transition-colors dropdown-toggle"
-        aria-expanded="false" aria-controls="dropModal" id="accountDropdown"
-        data-modal-target="q_dropModal" data-modal-toggle="q_dropModal">
-        <div>
-          <span class="text-xs text-gray-400 account-type">QT Real NGN</span>
-          <span class="text-lg font-medium account-balance">0</span>
-        </div>
-        <span class="bg-gray-700 p-1 rounded-md">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-          </svg>
-        </span>
-      </button>
+       @include('partials.balance')
 
       <!-- Wallet button -->
       <button class="bg-green-600 p-2 rounded-md hover:bg-green-700 transition-colors" aria-label="Open wallet"

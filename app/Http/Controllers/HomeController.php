@@ -18,10 +18,7 @@ class HomeController extends Controller
         if($request->routeIs('dashboard.demo')) {
             $user->active_wallet_slug = 'qt_demo_usd';
             $user->save();
-        } else {
-            $user->active_wallet_slug = 'qt_real_usd';
-            $user->save();
-        }
+        } 
 
         $isOutOfTradingHours = false;
         if (isset($coin)) {
