@@ -545,7 +545,7 @@
       @include('layouts.mobile.components.sidebar')
     </div>
 
-    <div class="top-nav">
+    <div class="top-nav z-20" style="position: relative;">
         @include('layouts.mobile.components.top-nav')
     </div>
     <!-- Restore original single container -->

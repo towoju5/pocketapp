@@ -20,7 +20,7 @@
     <!-- Balance dropdown -->
     <div
         id="balance-info" style="left: -10px;"
-        class="absolute -translate-x-1/2 mt-1 w-[330px] bg-[#262c41] text-slate-400 rounded-lg p-4 flex flex-col gap-2 hidden border border-gray-700 z-50">
+        class="absolute -translate-x-1/2 mt-1 w-[330px] bg-[#262c41] text-slate-400 rounded-lg p-4 flex flex-col gap-2 hidden border border-gray-700 z-20">
         <!-- FIRST LIST -->
         <div class="bg-[#1f2536] rounded-md text-white flex flex-col w-full text-center">
             <!-- TOP SECTION -->

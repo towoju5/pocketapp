@@ -100,11 +100,11 @@
 <section class="flex flex-grow w-full box-contain overflow-hidden">
     <!-- EVERYTHING CHART IS DONE IN THE SECTION ELEMENT -->
     <!-- MY ATTEMPT AT DOING THE GRAPH MY SELF graph container -->
-    <section class="text-gray-400 min-h-screen z-20 w-full" style="background-image: url('/assets/images/bg.jpg');">
+    <section class="text-gray-400 min-h-screen w-full" style="background-image: url('/assets/images/bg.jpg');">
         <!-- Background Image -->
 
         <!-- Main Content -->
-        <div class="relative z-10 min-h-screen w-full">
+        <div class="relative min-h-screen w-full">
             <!-- CHART CONTROLS Top Navigation Bar -->
             <div class="flex items-center space-x-2 p-2 bg-[#1a1f2e]/50 z-10">
                 <!-- Stock Selector -->
