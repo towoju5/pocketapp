@@ -4,6 +4,8 @@ use App\Models\Assets;
 use App\Models\Bitgo;
 use App\Models\BitgoWallets;
 use App\Models\Option;
+use App\Models\Signal;
+use App\Models\Trade;
 use App\Models\User;
 use Detection\MobileDetect;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +21,14 @@ if (! function_exists('get_assets')) {
     {
         $assets = Assets::all();
         return $assets;
+    }
+}
+
+if (! function_exists('get_my_trades')) {
+    function get_my_trades()
+    {
+        $trades = Trade::whereUserId(auth()->id())->latest()->paginate(10);
+        return $trades;
     }
 }
 

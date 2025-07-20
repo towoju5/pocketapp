@@ -4,10 +4,14 @@ namespace App\Providers;
 
 use App\Models\Bitgo;
 use App\Models\Option;
+use Closure;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Collection;
+
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,8 +28,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        \App\Models\Assets::whereRaw('LOWER(name) NOT LIKE ?', ['%otc%'])->update(['is_otc' => false]);
-        \App\Models\Assets::whereRaw('LOWER(name) LIKE ?', ['%otc%'])->update(['is_otc' => true]);
+        // \App\Models\Assets::whereRaw('LOWER(name) NOT LIKE ?', ['%otc%'])->update(['is_otc' => false]);
+        // \App\Models\Assets::whereRaw('LOWER(name) LIKE ?', ['%otc%'])->update(['is_otc' => true]);
 
         // Check if the options table exists before querying
         if (Schema::hasTable('options')) {
@@ -39,15 +43,13 @@ class AppServiceProvider extends ServiceProvider
 
             // Share data with all views
             View::composer('*', function ($view) use ($u_option) {
-                $wallet_balance = ["balance" => 0]; // Default wallet balance
+                $wallet_balance = ["balance" => 0];
 
                 if (Auth::check()) {
                     $user = Auth::user();
-                    
+
                     create_user_wallet($user->id);
                     $uwallets = $user->wallets();
-
-                    // Fetch user's wallet balance
                     $wallet_balance = $user->getWallet($user->active_wallet_slug ?? 'qt_demo_usd') ?? ["balance" => 0];
 
                     $view->with('_user', $user);
@@ -55,9 +57,29 @@ class AppServiceProvider extends ServiceProvider
                     $view->with('wallet_balance', $wallet_balance);
                 }
 
-                // Share options regardless of authentication
                 $view->with('u_option', $u_option);
             });
         }
+
+
+        Route::macro('groupWithLabel', function ($attributes, Closure $callback) {
+            $label = $attributes['label'] ?? null;
+
+            $before = Route::getRoutes()->getRoutes();
+
+            Route::group($attributes, $callback);
+
+            $after = Route::getRoutes()->getRoutes();
+
+            $newRoutes = array_udiff($after, $before, function ($a, $b) {
+                return $a->uri() <=> $b->uri();
+            });
+
+            foreach ($newRoutes as $route) {
+                if ($label) {
+                    $route->defaults['label'] = $label;
+                }
+            }
+        });
     }
 }

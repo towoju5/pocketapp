@@ -278,7 +278,7 @@
 
         <!-- Custom JS files -->
         <script src="//cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
-        <script src="{{ asset('assets/js/custom.js') }}"></script>
+        <!-- <script src="{{ asset('assets/js/custom.js') }}"></script> -->
         <script src="//cdnjs.cloudflare.com/ajax/libs/jquery.inputmask/5.0.7/jquery.inputmask.min.js"></script>
         <link rel="stylesheet" href="//cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
         <script src="//cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>

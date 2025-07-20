@@ -4,7 +4,7 @@
          @csrf
          <input type="hidden" name="deposit_step" value="2">
          <!-- Left Side -->
-         <div class="col-span-2 bg-gray-800 rounded-lg p-6">
+         <div class="lg:col-span-2 bg-gray-800 rounded-lg p-3">
              <button class="text-teal-500 flex items-center mb-4">
                  <i class="fas fa-arrow-left mr-2"></i> Back
              </button>
@@ -22,6 +22,8 @@
                  </div>
              </div>
 
+
+
              <!-- Amount Input -->
              <div class="mb-4">
                  <label for="amount" class="block text-sm text-gray-400 mb-2">Amount:</label>
@@ -35,7 +37,7 @@
              </div>
 
              <!-- Quick Amount Buttons -->
-             <div class="flex space-x-4 mb-6">
+             <div class="flex justify-between mb-6">
                  <button type="button" onclick="_updateDepositAmount(150)" class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600">$150</button>
                  <button type="button" onclick="_updateDepositAmount(200)" class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600">$200</button>
                  <button type="button" onclick="_updateDepositAmount(300)" class="bg-gray-700 text-white px-4 py-2 rounded-lg hover:bg-gray-600">$300</button>
@@ -45,12 +47,23 @@
              <!-- Promo Code -->
              <div class="mb-6">
                  <label class="flex items-center text-sm text-gray-400">
-                     <input type="checkbox" class="mr-2 bg-gray-700 border-gray-600 text-teal-500 focus:ring-teal-500">
+                     <!-- <input type="checkbox" class="mr-2 bg-gray-700 border-gray-600 text-teal-500 focus:ring-teal-500"> -->
+                    <input type="checkbox" id="usePromo" class="mr-2 bg-gray-700 border-gray-600 text-teal-500 focus:ring-teal-500">
                      <input type="hidden" name="deposit_method" value="{{ $deposit_method }}">
                      <input type="hidden" name="deposit_method_id" value="{{ $deposit_method_id }}">
                      I have a promo code
                  </label>
              </div>
+
+            <!-- promo code Input -->
+            <div class="mb-4">
+                <div id="promoInputWrapper" class="mt-2 hidden">
+                    <label for="amount" class="block text-sm text-gray-400 mb-2">Promo Code:</label>
+                    <input type="text" id="promoCode" name="promo_code"
+                    class="w-full px-3 py-2 border border-gray-600 bg-gray-800 text-white rounded-md"
+                    placeholder="Enter Promo Code">
+                </div>
+            </div>
 
              <!-- Gift Selection -->
              <div class="hidden">
@@ -101,4 +114,27 @@
         $btn.prop("disabled", true).addClass("opacity-75 cursor-not-allowed");
         $("#payment-methods").submit();
     });
- </script>
+
+
+    const usePromo = document.getElementById('usePromo');
+    const promoInputWrapper = document.getElementById('promoInputWrapper');
+    const promoCode = document.getElementById('promoCode');
+    const form = document.getElementById('payment-methods');
+
+    usePromo.addEventListener('change', () => {
+        if (usePromo.checked) {
+            promoInputWrapper.classList.remove('hidden');
+            promoCode.setAttribute('required', 'required');
+        } else {
+            promoInputWrapper.classList.add('hidden');
+            promoCode.removeAttribute('required');
+        }
+    });
+
+    form.addEventListener('submit', (e) => {
+        if (usePromo.checked && promoCode.value.trim() === '') {
+            e.preventDefault();
+            alert('Please enter a promo code.');
+        }
+    });
+</script>

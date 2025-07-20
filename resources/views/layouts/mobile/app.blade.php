@@ -549,7 +549,7 @@
         @include('layouts.mobile.components.top-nav')
     </div>
     <!-- Restore original single container -->
-    <div class="h-full overflow-scroll" id="main-content" style="padding-bottom: 7rem">
+    <div class="h-full overflow-scroll" style="overflow-y: auto;padding-bottom: 7rem">
       @yield('content')
     </div>
     <div class="bottom-nav">
@@ -679,6 +679,47 @@
           "positionClass": "toast-top-right",
           "timeOut": "5000"
       };
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const mainContent = document.getElementById("mainContent");
+        const hiddenSections = document.getElementById("hidden-sections");
+
+        let activeTarget = null;
+
+        window.handleNavigation = function (button) {
+            const targetId = button.dataset.target;
+            const content = hiddenSections.querySelector(`#${targetId}`);
+
+            if (!content) {
+                mainContent.innerHTML = "<div class='text-white'>Content not found</div>";
+                mainContent.classList.remove("hidden");
+                activeTarget = null;
+                return;
+            }
+
+            if (activeTarget === targetId) {
+                // Same item tapped again — close
+                mainContent.innerHTML = "";
+                mainContent.classList.add("hidden");
+                button.classList.remove("bg-[#23283b]");
+                activeTarget = null;
+                return;
+            }
+
+            // Show new section
+            mainContent.innerHTML = content.innerHTML;
+            mainContent.classList.remove("hidden");
+
+            // Update button states
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove("bg-[#23283b]");
+            });
+            button.classList.add("bg-[#23283b]");
+
+            activeTarget = targetId;
+        };
+    });
   </script>
 
   <script>

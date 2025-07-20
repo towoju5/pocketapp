@@ -118,9 +118,9 @@
             </div>
             <div class="panel-body text-white">
                 @if(is_mobile())
-                <div class="w-full  border border-[#292d4a] rounded-b-lg">
+                <div class="w-full  border border-[#292d4a] rounded-b-lg px-2">
                     @foreach($logins->take(5) as $login)
-                    <div class="bg-[#1b1e35] border border-[#292d4a] text-white p-3 rounded-xl shadow-lg m-3">
+                    <div class="bg-[#1b1e35] border border-[#292d4a] text-white p-3 rounded-xl shadow-lg my-3 mx-2">
                         <div class="p-2 text-sm">
                             <div class="flex items-center gap-5 border-b border-[#292d4a] pb-2">
                                 <span>
@@ -191,13 +191,14 @@
         </div>
 
         <div class="panel box-border personal-info-panel mb-3">
-            <div class="panel-heading">
-                <div class="panel-title">Active sessions</div>
+            <div class="panel-heading bg-gray-100 dark:bg-gray-700 py-2 px-4 rounded-t-xl">
+                <div class="panel-title text-lg font-semibold text-gray-100">Active sessions</div>
             </div>
+            <div class="panel-body text-white">
             @if(is_mobile())
-            <div class="w-full">
+            <div class="w-full  border border-[#292d4a] rounded-b-lg px-2">
                 @foreach($sessions as $session)
-                <div class="bg-[#1b1e35] border border-[#292d4a] text-white p-3 rounded-xl shadow-lg space-y-4 m-4">
+                <div class="bg-[#1b1e35] border border-[#292d4a] text-white p-3 rounded-xl shadow-lg space-y-4 my-3">
                     <div class="p-2 text-sm">
                         <div class="flex items-center gap-5 border-b border-[#292d4a] pb-2">
                             <span>

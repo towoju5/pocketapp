@@ -8,7 +8,8 @@
 	}
 </style>
 <div id="welcome-div">
-	<div class="min-h-full">
+	<div class="min-h-full" id="main-content">
+		<div id="mainContent" class="hidden w-full min-h-screen bg-[#1a1c2c] text-white p-4"></div>
 		<!-- Full screen chart -->
 		<div id="chart-container" class="relative"></div>
 
@@ -182,6 +183,38 @@
 				</button>
 			</div>
 		</form>
+	</div>
+	
+	<!-- RIGHT NAV BAR Hidden Content Sections -->
+	<div id="hidden-sections" class="hidden">
+		<div id="rightTrades">
+			@include('partials.dashboard._tradings')
+		</div>
+
+		<div id="rightSignals">
+			@include('partials.dashboard._signal')
+		</div>
+		<div id="rightSocialTrading" class="bg-[#151726]">
+			@include('partials.dashboard._social')
+		</div>
+		<div id="rightExpressTrades">
+			@include('partials.dashboard._express', ['openedTrades' => $openedExpressTrades])
+		</div>
+		<div id="rightTournaments">
+			@include('partials.dashboard._tournaments')
+		</div>
+		<div id="rightPendingTrades">
+			<div class="p-3 text-white">
+				<h2 class="text-2xl font-bold mb-4">Pending Trades</h2>
+				<p>Monitor and manage your pending trade orders.</p>
+			</div>
+		</div>
+		<div id="rightHotkeys">
+			<div class="p-3 text-white">
+				<h2 class="text-2xl font-bold mb-4">Hotkey Settings</h2>
+				<p>Configure and view your trading hotkeys.</p>
+			</div>
+		</div>
 	</div>
 </template>
 @include("components.chart", ["data" => $data])

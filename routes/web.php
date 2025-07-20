@@ -63,68 +63,69 @@ Route::get('/pages/{page}', function ($page) {
 Route::any('callback/webhook/bitgo-deposit', [BitgoController::class, 'depositWebhook'])->name('bitgo.deposit.webhook')->withoutMiddleware(VerifyCsrfToken::class);
 
 
-Route::get('dashboard/demo/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard.demo');
-Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::groupWithLabel(['label' => 'trading'], function () {
+    Route::get('dashboard/demo/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard.demo');
+    Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+});
 
 Route::get('dashboard-2', function () {
     return view('dash');
 })->middleware(['auth', 'verified'])->name('dash');
 
 Route::middleware(['auth'])->group(function () {
-    Route::resource('deposits', DepositController::class);
-    Route::get('deposit-history', [DepositController::class, 'getDepositHistory']);
-    Route::post('deposits/{deposit}/cancel', [DepositController::class, 'cancelDeposit']);
-    Route::get('deposit-stats', [DepositController::class, 'getDepositStats']);
 
-    Route::resource('payout', PayoutController::class)->names('withdrawals');
-    Route::resource('deposit', DepositController::class)->names('deposit');
-    Route::resource('payout', PayoutController::class)->names('payout');
-
-
-    Route::post('submit-express-trade', [ExpressTradeController::class, 'bulk'])->name('submit.express.trade');
-
-
-    Route::post('payout/create', [PayoutController::class, 'store'])->name('payout.create.submit');
-    // });
-
-    Route::get("finance-history", [TransactionHistoryController::class, 'history'])->name('finance.history');
-
-    // Route::middleware('auth')->group(function () {
-    Route::get('profile/security', [ProfileController::class, 'security'])->name('profile.security');
-    Route::delete('/sessions/{sessionId}/logout', [ProfileController::class, 'logoutSession'])->name('sessions.logout');
-    Route::get('trading-profile', [ProfileController::class, 'tradingProfile'])->name('trading.profile');
-    Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::match(['post', 'patch'], 'profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::patch('profile/photo/update', [ProfileController::class, 'update'])->name('profile.photo.update');
-    Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-    Route::post('/change-password', [ProfileController::class, 'updatePassword'])->name('password.update');
+    Route::groupWithLabel(['label' => 'finance'], function () {
+        Route::resource('deposits', DepositController::class);
+        Route::get('deposit-history', [DepositController::class, 'getDepositHistory']);
+        Route::post('deposits/{deposit}/cancel', [DepositController::class, 'cancelDeposit']);
+        Route::get('deposit-stats', [DepositController::class, 'getDepositStats']);
+        Route::resource('payout', PayoutController::class)->names('withdrawals');
+        Route::resource('deposit', DepositController::class)->names('deposit');
+        Route::resource('payout', PayoutController::class)->names('payout');
+        Route::post('submit-express-trade', [ExpressTradeController::class, 'bulk'])->name('submit.express.trade');
+        Route::post('payout/create', [PayoutController::class, 'store'])->name('payout.create.submit');
+        Route::get("finance-history", [TransactionHistoryController::class, 'history'])->name('finance.history');
 
 
-    Route::middleware('auth')->group(function () {
-        Route::get('/profile/2fa', [ProfileController::class, 'show2faForm'])->name('profile.twofa');
-        Route::post('/profile/2fa/verify', [ProfileController::class, 'verify2fa'])->name('profile.verify2fa');
-        Route::post('/profile/2fa/disable', [ProfileController::class, 'disable2fa'])->name('profile.disable2fa');
+        Route::group(['prefix' => 'deposit', 'as' => 'deposit.'], function () {
+            Route::get('/', [DepositController::class, 'create'])->name('step_1');
+            Route::patch('step-2', [DepositController::class, 'step_2'])->name('step_2');
+            Route::delete('step-3', [DepositController::class, 'step_3'])->name('step_3');
+            Route::delete('step-4', [DepositController::class, 'step_4'])->name('step_4');
+        });
+
+        Route::group(['as' => 'finance.', 'prefix' => 'finance'], function () {
+            Route::get('cashback', [ChartController::class, 'cashback'])->name('cashback');
+            Route::get('promo-codes', [PromoCodeController::class, 'index'])->name('promo-codes');
+            Route::get('my-safe', [MySafeController::class, 'index'])->name('my-safe');
+        });
     });
 
-    Route::get('wallet-change-default/{slug}', [ProfileController::class, 'changeDefaultWallet'])->name('wallet.change.default');
+    Route::groupWithLabel(['label' => 'profile'], function () {
+        // Route::middleware('auth')->group(function () {
+        Route::get('profile/security', [ProfileController::class, 'security'])->name('profile.security');
+        Route::delete('/sessions/{sessionId}/logout', [ProfileController::class, 'logoutSession'])->name('sessions.logout');
+        Route::get('trading-profile', [ProfileController::class, 'tradingProfile'])->name('trading.profile');
+        Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
+        Route::match(['post', 'patch'], 'profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::patch('profile/photo/update', [ProfileController::class, 'update'])->name('profile.photo.update');
+        Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        Route::post('/change-password', [ProfileController::class, 'updatePassword'])->name('password.update');
 
-    Route::match(['post', 'patch'], 'profile-update', [ProfileController::class, 'updateProfile'])
-        ->name('profile.update.pk')
-        ->withoutMiddleware(VerifyCsrfToken::class);
 
-    Route::post('settings/update', [ProfileController::class, 'updateUserConfig']);
+        Route::middleware('auth')->group(function () {
+            Route::get('/profile/2fa', [ProfileController::class, 'show2faForm'])->name('profile.twofa');
+            Route::post('/profile/2fa/verify', [ProfileController::class, 'verify2fa'])->name('profile.verify2fa');
+            Route::post('/profile/2fa/disable', [ProfileController::class, 'disable2fa'])->name('profile.disable2fa');
+        });
 
-    Route::group(['prefix' => 'deposit', 'as' => 'deposit.'], function () {
-        Route::get('/', [DepositController::class, 'create'])->name('step_1');
-        Route::patch('step-2', [DepositController::class, 'step_2'])->name('step_2');
-        Route::delete('step-3', [DepositController::class, 'step_3'])->name('step_3');
-        Route::delete('step-4', [DepositController::class, 'step_4'])->name('step_4');
-    });
+        Route::get('wallet-change-default/{slug}', [ProfileController::class, 'changeDefaultWallet'])->name('wallet.change.default');
 
-    Route::group(['as' => 'finance.', 'prefix' => 'finance'], function () {
-        Route::get('cashback', [ChartController::class, 'cashback'])->name('cashback');
-        Route::get('promo-codes', [PromoCodeController::class, 'index'])->name('promo-codes');
-        Route::get('my-safe', [MySafeController::class, 'index'])->name('my-safe');
+        Route::match(['post', 'patch'], 'profile-update', [ProfileController::class, 'updateProfile'])
+            ->name('profile.update.pk')
+            ->withoutMiddleware(VerifyCsrfToken::class);
+
+        Route::post('settings/update', [ProfileController::class, 'updateUserConfig']);
     });
 });
 

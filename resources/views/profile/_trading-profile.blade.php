@@ -22,17 +22,17 @@
         transition: opacity .4s ease-out;
     }
 </style>
-<div class="lg:m-4 lg:py-4 w-full" style="margin: 1rem">
+<div class="lg:m-4 lg:py-4" style="margin: 1rem">
 
     @if(!is_mobile())
     @include('partials.profile')
     @endif
-    <div class="panel box-border personal-info-panel w-full">
+    <div class="panel box-border personal-info-panel">
         <div class="panel-heading">
             <div class="hidden lg:block panel-title">Identity info</div>
         </div>
         <div class="panel-body">
-            <div class="min-h-screen bg-gray-900 text-white">
+            <div class="bg-gray-900 text-white">
                 <!-- Container -->
                 <div class="lg:p-8">
                     <!-- Header -->

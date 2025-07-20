@@ -1,4 +1,4 @@
-<nav class="flex justify-between items-center bg-gray-900/95 backdrop-blur-sm" role="navigation"
+<nav class="flex justify-between items-center bg-gray-900/95 backdrop-blur-sm py-2" role="navigation"
   aria-label="Main navigation">
   <div class="flex items-center space-x-3">
     <!-- Profile Icon -->

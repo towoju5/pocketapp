@@ -1,15 +1,256 @@
 @php
-    $navRoutes = ['dashboard', 'dashboard.demo'];
-    $showBottomNav = in_array(Route::currentRouteName(), $navRoutes);
+  $label = request()->route()?->defaults['label'] ?? null;
 @endphp
 
-@if($showBottomNav)
+@if (strtolower($label) === 'finance')
 <section class="block">
   <div style="background: #202434" class="absolute bottom-0 left-0 right-0 backdrop-blur-sm border-t border-gray-700 z-50">
     <div class="flex justify-between px-0.5 py-0.5 gap-1 max-w-[390px] mx-auto">
-      <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex rounded-md flex-col items-center p-1 text-gray-400 flex-1" data-target="trades"
-        onclick="handleNavigation(this)">
+      
+      <a href="{{ route('deposit.create') }}" style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightTrades">
+        <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#8ea5c0"
+          transform="rotate(90)matrix(1, 0, 0, -1, 0, 0)">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <style type="text/css">
+              .st0 {
+                fill: #8ea5c0;
+              }
+            </style>
+            <g>
+              <path class="st0"
+                d="M184.488,220.595l51.016,39.35c1.966,15.861,15.336,28.191,31.73,28.191c17.754,0,32.14-14.394,32.14-32.14 c0-0.68-0.156-1.327-0.205-1.999l74.758-88.44c5.21-5.85,5.309-14.28,0.213-18.802c-5.088-4.531-13.436-3.45-18.647,2.408 l-73.447,78.47c-4.457-2.335-9.438-3.777-14.813-3.777c-5.742,0-11.06,1.63-15.73,4.277l-48.026-33.443 c-6.194-4.563-15.484-2.45-20.736,4.712C177.508,206.544,178.278,216.04,184.488,220.595z">
+              </path>
+              <path class="st0"
+                d="M440.314,82.925c-44.2-44.257-105.58-71.703-173.08-71.686V70.57c51.303,0.017,97.469,20.712,131.124,54.31 c33.59,33.647,54.285,79.821,54.302,131.116c-0.017,51.294-20.712,97.468-54.302,131.116 c-33.655,33.606-79.821,54.301-131.124,54.309c-51.294-0.008-97.468-20.703-131.116-54.309 c-33.598-33.648-54.293-79.822-54.309-131.116c0.008-16.82,2.302-33.017,6.464-48.444l24.046,14.977 c3.187,1.975,7.062,2.393,10.241,1.09c3.203-1.319,5.3-4.162,5.546-7.57l10.356-135.614c0.278-3.884-1.852-7.8-5.472-10.077 c-3.654-2.244-8.119-2.45-11.47-0.459L4.372,138.971c-2.957,1.729-4.58,4.858-4.35,8.299c0.229,3.458,2.302,6.743,5.497,8.725 l30.698,19.122c-8.872,25.357-13.747,52.59-13.747,80.879c-0.016,67.491,27.446,128.871,71.687,173.079 c44.207,44.241,105.579,71.703,173.078,71.686c67.492,0.017,128.88-27.445,173.08-71.686 c44.24-44.208,71.703-105.588,71.686-173.079C512.017,188.497,484.554,127.117,440.314,82.925z">
+              </path>
+            </g>
+          </g>
+        </svg>
+        <span class="text-xs mt-0.5 truncate w-full text-center">Deposit</span>
+      </a>
+
+      <a href="{{ route('payout.create') }}" style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSignals">
+        <svg fill="#8ea5c0" class="w4 h-4" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <title>wireless-signal</title>
+            <path
+              d="M8.623 2.424c-4.412 2.534-7.398 7.265-7.398 12.718 0 5.482 3.019 10.231 7.47 12.754-2.961-2.913-4.883-7.522-4.883-12.754-0-5.195 1.885-9.8 4.811-12.718zM23.455 2.571c2.844 2.924 4.664 7.461 4.664 12.572 0 5.125-1.844 9.65-4.701 12.572 4.286-2.566 7.179-7.214 7.179-12.572s-2.872-10.004-7.142-12.572zM7.966 15.143c0-4.141 1.734-7.765 4.3-9.657-3.833 1.536-6.56 5.275-6.56 9.657 0 4.393 2.746 8.129 6.596 9.657-2.58-1.888-4.337-5.503-4.337-9.657zM26.551 15.143c0.001-3.924-2.186-7.336-5.393-9.111 2.195 1.994 3.608 5.339 3.608 9.111 0 3.815-1.442 7.161-3.681 9.147 3.245-1.763 5.466-5.194 5.466-9.147zM11.169 15.144c0-2.781 1.151-5.183 2.8-6.361-2.661 0.895-4.563 3.398-4.563 6.361 0 2.989 1.934 5.522 4.632 6.395-1.688-1.158-2.869-3.574-2.869-6.395zM18.843 8.991c1.488 1.243 2.455 3.54 2.455 6.153 0 2.653-0.998 4.958-2.524 6.188 2.397-1.027 4.079-3.415 4.079-6.188-0-2.745-1.651-5.109-4.010-6.153zM16.349 13.187c-1.267 0-2.294 1.027-2.294 2.294 0 0.966 0.598 1.792 1.443 2.13v13.3h1.7v-13.3c0.846-0.338 1.444-1.164 1.444-2.13 0-1.266-1.027-2.293-2.294-2.294z">
+            </path>
+          </g>
+        </svg>
+        <span class="text-xs mt-0.5 truncate w-full text-center">Withdrawal</span>
+      </a>
+
+      <a href="{{ route('finance.history') }}" style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSocialTrading">
+        <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <style type="text/css">
+              .st0 {
+                fill: #b5b5b5;
+              }
+            </style>
+            <g>
+              <path class="st0"
+                d="M256,215.41c44.322,0,80.26-35.938,80.26-80.264c0-44.318-35.938-80.256-80.26-80.256 s-80.255,35.937-80.255,80.256C175.744,179.472,211.677,215.41,256,215.41z">
+              </path>
+              <path class="st0"
+                d="M432.905,251.47c33.044,0,59.836-26.793,59.836-59.845c0-33.044-26.792-59.836-59.836-59.836 c-33.045,0-59.845,26.792-59.845,59.836C373.06,224.677,399.86,251.47,432.905,251.47z">
+              </path>
+              <path class="st0"
+                d="M433.584,265.224c-23.007,0-40.602,7.161-53.326,16.717c2.694,5.893,4.603,11.587,5.725,16.816l0.55,2.572 v130.352h56.433c38.128,0,69.035-30.907,69.035-69.035v-45.151C507.878,298.247,483.108,265.224,433.584,265.224z">
+              </path>
+              <path class="st0"
+                d="M79.096,131.788c-33.048,0-59.837,26.792-59.837,59.836c0,33.052,26.789,59.845,59.837,59.845 s59.841-26.793,59.841-59.845C138.937,158.581,112.144,131.788,79.096,131.788z">
+              </path>
+              <path class="st0"
+                d="M0,317.497v45.151c0,38.128,30.907,69.035,69.035,69.035h56.432V301.33l0.55-2.572 c1.122-5.229,3.034-10.924,5.726-16.816c-12.729-9.556-30.323-16.717-53.326-16.717C28.892,265.224,4.126,298.247,0,317.497z">
+              </path>
+              <path class="st0"
+                d="M256,233.86c-66.42,0-99.629,44.28-105.167,70.111v115.483c0,20.792,16.862,37.655,37.655,37.655h135.024 c20.793,0,37.655-16.862,37.655-37.655V303.971C355.633,278.14,322.421,233.86,256,233.86z">
+              </path>
+            </g>
+          </g>
+        </svg>
+        <span class="text-xs mt-0.5 truncate w-full text-center">History</span>
+      </a>
+
+      <a href="{{ route('finance.promo-codes') }}" style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
+        <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <path fill="#8ea5c0"
+              d="M255.225 46.588c-26.494 0-47.772 21.275-47.772 47.77 0 26.495 21.278 47.775 47.772 47.775 26.493 0 47.77-21.28 47.77-47.774 0-26.497-21.276-47.772-47.77-47.772zm-69.67 5.285c-32.036 21.7-53.203 57.98-53.203 99.02 0 66.417 54.854 120.078 122.668 120.078 67.813 0 123.035-53.66 123.035-120.077 0-41.04-21.17-77.32-53.205-99.02 17.492 17.676 28.082 41.888 28.082 68.72 0 54.042-43.87 97.915-97.91 97.915-54.042 0-97.913-43.873-97.913-97.916 0-26.83 10.958-51.043 28.45-68.72h-.005zm-63.36 4.666C61.015 97.982 20.59 167.265 20.59 245.64c0 126.838 104.755 229.32 234.26 229.32 129.504 0 234.964-102.482 234.964-229.32 0-78.374-40.426-147.657-101.605-189.1 33.403 33.756 53.624 79.993 53.624 131.237 0 103.206-83.78 186.987-186.984 186.987-103.204 0-186.987-83.78-186.987-186.987 0-51.244 20.928-97.48 54.332-131.238z">
+            </path>
+          </g>
+        </svg>
+        <span class="text-xs mt-0.5 truncate w-full text-center">Promot Co..</span>
+      </a>
+
+      <a href="{{ route('finance.cashback') }}" style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
+        <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <path fill="#8ea5c0"
+              d="M255.225 46.588c-26.494 0-47.772 21.275-47.772 47.77 0 26.495 21.278 47.775 47.772 47.775 26.493 0 47.77-21.28 47.77-47.774 0-26.497-21.276-47.772-47.77-47.772zm-69.67 5.285c-32.036 21.7-53.203 57.98-53.203 99.02 0 66.417 54.854 120.078 122.668 120.078 67.813 0 123.035-53.66 123.035-120.077 0-41.04-21.17-77.32-53.205-99.02 17.492 17.676 28.082 41.888 28.082 68.72 0 54.042-43.87 97.915-97.91 97.915-54.042 0-97.913-43.873-97.913-97.916 0-26.83 10.958-51.043 28.45-68.72h-.005zm-63.36 4.666C61.015 97.982 20.59 167.265 20.59 245.64c0 126.838 104.755 229.32 234.26 229.32 129.504 0 234.964-102.482 234.964-229.32 0-78.374-40.426-147.657-101.605-189.1 33.403 33.756 53.624 79.993 53.624 131.237 0 103.206-83.78 186.987-186.984 186.987-103.204 0-186.987-83.78-186.987-186.987 0-51.244 20.928-97.48 54.332-131.238z">
+            </path>
+          </g>
+        </svg>
+        <span class="text-xs mt-0.5 truncate w-full text-center">Cashback</span>
+      </a>
+
+      <a href="{{ route('finance.my-safe') }}" style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
+        <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <path fill="#8ea5c0"
+              d="M255.225 46.588c-26.494 0-47.772 21.275-47.772 47.77 0 26.495 21.278 47.775 47.772 47.775 26.493 0 47.77-21.28 47.77-47.774 0-26.497-21.276-47.772-47.77-47.772zm-69.67 5.285c-32.036 21.7-53.203 57.98-53.203 99.02 0 66.417 54.854 120.078 122.668 120.078 67.813 0 123.035-53.66 123.035-120.077 0-41.04-21.17-77.32-53.205-99.02 17.492 17.676 28.082 41.888 28.082 68.72 0 54.042-43.87 97.915-97.91 97.915-54.042 0-97.913-43.873-97.913-97.916 0-26.83 10.958-51.043 28.45-68.72h-.005zm-63.36 4.666C61.015 97.982 20.59 167.265 20.59 245.64c0 126.838 104.755 229.32 234.26 229.32 129.504 0 234.964-102.482 234.964-229.32 0-78.374-40.426-147.657-101.605-189.1 33.403 33.756 53.624 79.993 53.624 131.237 0 103.206-83.78 186.987-186.984 186.987-103.204 0-186.987-83.78-186.987-186.987 0-51.244 20.928-97.48 54.332-131.238z">
+            </path>
+          </g>
+        </svg>
+        <span class="text-xs mt-0.5 truncate w-full text-center">My Safe</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+@elseif (strtolower($label) === 'profile')
+<section class="block">
+  <div style="background: #202434" class="absolute bottom-0 left-0 right-0 backdrop-blur-sm border-t border-gray-700 z-50">
+    <div class="flex justify-between px-0.5 py-0.5 gap-1 max-w-[390px] mx-auto">
+      
+      <a href="{{ route('trading.profile') }}" style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightTrades">
+        <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#8ea5c0"
+          transform="rotate(90)matrix(1, 0, 0, -1, 0, 0)">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <style type="text/css">
+              .st0 {
+                fill: #8ea5c0;
+              }
+            </style>
+            <g>
+              <path class="st0"
+                d="M184.488,220.595l51.016,39.35c1.966,15.861,15.336,28.191,31.73,28.191c17.754,0,32.14-14.394,32.14-32.14 c0-0.68-0.156-1.327-0.205-1.999l74.758-88.44c5.21-5.85,5.309-14.28,0.213-18.802c-5.088-4.531-13.436-3.45-18.647,2.408 l-73.447,78.47c-4.457-2.335-9.438-3.777-14.813-3.777c-5.742,0-11.06,1.63-15.73,4.277l-48.026-33.443 c-6.194-4.563-15.484-2.45-20.736,4.712C177.508,206.544,178.278,216.04,184.488,220.595z">
+              </path>
+              <path class="st0"
+                d="M440.314,82.925c-44.2-44.257-105.58-71.703-173.08-71.686V70.57c51.303,0.017,97.469,20.712,131.124,54.31 c33.59,33.647,54.285,79.821,54.302,131.116c-0.017,51.294-20.712,97.468-54.302,131.116 c-33.655,33.606-79.821,54.301-131.124,54.309c-51.294-0.008-97.468-20.703-131.116-54.309 c-33.598-33.648-54.293-79.822-54.309-131.116c0.008-16.82,2.302-33.017,6.464-48.444l24.046,14.977 c3.187,1.975,7.062,2.393,10.241,1.09c3.203-1.319,5.3-4.162,5.546-7.57l10.356-135.614c0.278-3.884-1.852-7.8-5.472-10.077 c-3.654-2.244-8.119-2.45-11.47-0.459L4.372,138.971c-2.957,1.729-4.58,4.858-4.35,8.299c0.229,3.458,2.302,6.743,5.497,8.725 l30.698,19.122c-8.872,25.357-13.747,52.59-13.747,80.879c-0.016,67.491,27.446,128.871,71.687,173.079 c44.207,44.241,105.579,71.703,173.078,71.686c67.492,0.017,128.88-27.445,173.08-71.686 c44.24-44.208,71.703-105.588,71.686-173.079C512.017,188.497,484.554,127.117,440.314,82.925z">
+              </path>
+            </g>
+          </g>
+        </svg>
+        <span class="text-xs mt-0.5 truncate w-full text-center">Trading Pr..</span>
+      </a>
+
+      <a href="{{ route('profile.edit') }}" style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSignals">
+        <svg fill="#8ea5c0" class="w4 h-4" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <title>wireless-signal</title>
+            <path
+              d="M8.623 2.424c-4.412 2.534-7.398 7.265-7.398 12.718 0 5.482 3.019 10.231 7.47 12.754-2.961-2.913-4.883-7.522-4.883-12.754-0-5.195 1.885-9.8 4.811-12.718zM23.455 2.571c2.844 2.924 4.664 7.461 4.664 12.572 0 5.125-1.844 9.65-4.701 12.572 4.286-2.566 7.179-7.214 7.179-12.572s-2.872-10.004-7.142-12.572zM7.966 15.143c0-4.141 1.734-7.765 4.3-9.657-3.833 1.536-6.56 5.275-6.56 9.657 0 4.393 2.746 8.129 6.596 9.657-2.58-1.888-4.337-5.503-4.337-9.657zM26.551 15.143c0.001-3.924-2.186-7.336-5.393-9.111 2.195 1.994 3.608 5.339 3.608 9.111 0 3.815-1.442 7.161-3.681 9.147 3.245-1.763 5.466-5.194 5.466-9.147zM11.169 15.144c0-2.781 1.151-5.183 2.8-6.361-2.661 0.895-4.563 3.398-4.563 6.361 0 2.989 1.934 5.522 4.632 6.395-1.688-1.158-2.869-3.574-2.869-6.395zM18.843 8.991c1.488 1.243 2.455 3.54 2.455 6.153 0 2.653-0.998 4.958-2.524 6.188 2.397-1.027 4.079-3.415 4.079-6.188-0-2.745-1.651-5.109-4.010-6.153zM16.349 13.187c-1.267 0-2.294 1.027-2.294 2.294 0 0.966 0.598 1.792 1.443 2.13v13.3h1.7v-13.3c0.846-0.338 1.444-1.164 1.444-2.13 0-1.266-1.027-2.293-2.294-2.294z">
+            </path>
+          </g>
+        </svg>
+        <span class="text-xs mt-0.5 truncate w-full text-center">Profile</span>
+      </a>
+
+      <a href="{{ route('profile.security') }}" style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSocialTrading">
+        <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
+          xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <style type="text/css">
+              .st0 {
+                fill: #b5b5b5;
+              }
+            </style>
+            <g>
+              <path class="st0"
+                d="M256,215.41c44.322,0,80.26-35.938,80.26-80.264c0-44.318-35.938-80.256-80.26-80.256 s-80.255,35.937-80.255,80.256C175.744,179.472,211.677,215.41,256,215.41z">
+              </path>
+              <path class="st0"
+                d="M432.905,251.47c33.044,0,59.836-26.793,59.836-59.845c0-33.044-26.792-59.836-59.836-59.836 c-33.045,0-59.845,26.792-59.845,59.836C373.06,224.677,399.86,251.47,432.905,251.47z">
+              </path>
+              <path class="st0"
+                d="M433.584,265.224c-23.007,0-40.602,7.161-53.326,16.717c2.694,5.893,4.603,11.587,5.725,16.816l0.55,2.572 v130.352h56.433c38.128,0,69.035-30.907,69.035-69.035v-45.151C507.878,298.247,483.108,265.224,433.584,265.224z">
+              </path>
+              <path class="st0"
+                d="M79.096,131.788c-33.048,0-59.837,26.792-59.837,59.836c0,33.052,26.789,59.845,59.837,59.845 s59.841-26.793,59.841-59.845C138.937,158.581,112.144,131.788,79.096,131.788z">
+              </path>
+              <path class="st0"
+                d="M0,317.497v45.151c0,38.128,30.907,69.035,69.035,69.035h56.432V301.33l0.55-2.572 c1.122-5.229,3.034-10.924,5.726-16.816c-12.729-9.556-30.323-16.717-53.326-16.717C28.892,265.224,4.126,298.247,0,317.497z">
+              </path>
+              <path class="st0"
+                d="M256,233.86c-66.42,0-99.629,44.28-105.167,70.111v115.483c0,20.792,16.862,37.655,37.655,37.655h135.024 c20.793,0,37.655-16.862,37.655-37.655V303.971C355.633,278.14,322.421,233.86,256,233.86z">
+              </path>
+            </g>
+          </g>
+        </svg>
+        <span class="text-xs mt-0.5 truncate w-full text-center">Security</span>
+      </a>
+
+      <a href="{{ route('trade.index') }}" style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
+        <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <path fill="#8ea5c0"
+              d="M255.225 46.588c-26.494 0-47.772 21.275-47.772 47.77 0 26.495 21.278 47.775 47.772 47.775 26.493 0 47.77-21.28 47.77-47.774 0-26.497-21.276-47.772-47.77-47.772zm-69.67 5.285c-32.036 21.7-53.203 57.98-53.203 99.02 0 66.417 54.854 120.078 122.668 120.078 67.813 0 123.035-53.66 123.035-120.077 0-41.04-21.17-77.32-53.205-99.02 17.492 17.676 28.082 41.888 28.082 68.72 0 54.042-43.87 97.915-97.91 97.915-54.042 0-97.913-43.873-97.913-97.916 0-26.83 10.958-51.043 28.45-68.72h-.005zm-63.36 4.666C61.015 97.982 20.59 167.265 20.59 245.64c0 126.838 104.755 229.32 234.26 229.32 129.504 0 234.964-102.482 234.964-229.32 0-78.374-40.426-147.657-101.605-189.1 33.403 33.756 53.624 79.993 53.624 131.237 0 103.206-83.78 186.987-186.984 186.987-103.204 0-186.987-83.78-186.987-186.987 0-51.244 20.928-97.48 54.332-131.238z">
+            </path>
+          </g>
+        </svg>
+        <span class="text-xs mt-0.5 truncate w-full text-center">Trading Hi...</span>
+      </a>
+
+      <a href="{{ route('express.index') }}" style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
+        <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
+          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+          <g id="SVGRepo_iconCarrier">
+            <path fill="#8ea5c0"
+              d="M255.225 46.588c-26.494 0-47.772 21.275-47.772 47.77 0 26.495 21.278 47.775 47.772 47.775 26.493 0 47.77-21.28 47.77-47.774 0-26.497-21.276-47.772-47.77-47.772zm-69.67 5.285c-32.036 21.7-53.203 57.98-53.203 99.02 0 66.417 54.854 120.078 122.668 120.078 67.813 0 123.035-53.66 123.035-120.077 0-41.04-21.17-77.32-53.205-99.02 17.492 17.676 28.082 41.888 28.082 68.72 0 54.042-43.87 97.915-97.91 97.915-54.042 0-97.913-43.873-97.913-97.916 0-26.83 10.958-51.043 28.45-68.72h-.005zm-63.36 4.666C61.015 97.982 20.59 167.265 20.59 245.64c0 126.838 104.755 229.32 234.26 229.32 129.504 0 234.964-102.482 234.964-229.32 0-78.374-40.426-147.657-101.605-189.1 33.403 33.756 53.624 79.993 53.624 131.237 0 103.206-83.78 186.987-186.984 186.987-103.204 0-186.987-83.78-186.987-186.987 0-51.244 20.928-97.48 54.332-131.238z">
+            </path>
+          </g>
+        </svg>
+        <span class="text-xs mt-0.5 truncate w-full text-center">Express</span>
+      </a>
+
+    </div>
+  </div>
+</section>
+@elseif (strtolower($label) === 'trading')
+<section class="block">
+  <div style="background: #202434" class="absolute bottom-0 left-0 right-0 backdrop-blur-sm border-t border-gray-700 z-50">
+    <div class="flex justify-between px-0.5 py-0.5 gap-1 max-w-[390px] mx-auto">
+      
+      <a style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightTrades">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#8ea5c0"
           transform="rotate(90)matrix(1, 0, 0, -1, 0, 0)">
@@ -32,11 +273,10 @@
           </g>
         </svg>
         <span class="text-xs mt-0.5 truncate w-full text-center">Trades</span>
-      </button>
+      </a>
 
-      <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex rounded-md flex-col items-center p-1 text-gray-400 flex-1" data-target="signals"
-        onclick="handleNavigation(this)">
+      <a style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSignals">
         <svg fill="#8ea5c0" class="w4 h-4" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -48,11 +288,10 @@
           </g>
         </svg>
         <span class="text-xs mt-0.5 truncate w-full text-center">Signals</span>
-      </button>
+      </a>
 
-      <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex rounded-md flex-col items-center p-1 text-gray-400 flex-1" data-target="social"
-        onclick="handleNavigation(this)">
+      <a style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSocialTrading">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -86,11 +325,10 @@
           </g>
         </svg>
         <span class="text-xs mt-0.5 truncate w-full text-center">Social</span>
-      </button>
+      </a>
 
-      <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex rounded-md flex-col items-center p-1 text-gray-400 flex-1" data-target="express"
-        onclick="handleNavigation(this)">
+      <a style="background: #293145; color: #8ea5c0"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
         <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -101,45 +339,7 @@
           </g>
         </svg>
         <span class="text-xs mt-0.5 truncate w-full text-center">Express</span>
-      </button>
-
-      <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex rounded-md flex-col items-center p-1 text-gray-400 flex-1" data-target="tournament"
-        onclick="handleNavigation(this)">
-        <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-          <g id="SVGRepo_iconCarrier">
-            <path fill-rule="evenodd" clip-rule="evenodd"
-              d="M4 0H12V2H16V4C16 6.45641 14.2286 8.49909 11.8936 8.92038C11.5537 10.3637 10.432 11.5054 9 11.874V14H12V16H4V14H7V11.874C5.56796 11.5054 4.44628 10.3637 4.1064 8.92038C1.77136 8.49909 0 6.45641 0 4V2H4V0ZM12 6.82929V4H14C14 5.30622 13.1652 6.41746 12 6.82929ZM4 4H2C2 5.30622 2.83481 6.41746 4 6.82929V4Z"
-              fill="#8ea5c0"></path>
-          </g>
-        </svg>
-        <span class="text-xs mt-0.5 truncate w-full text-center">Tourn...</span>
-      </button>
-
-      <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col rounded-md items-center p-1 text-gray-400 flex-1" data-target="pending"
-        onclick="handleNavigation(this)">
-        <svg class="w-4 h-4" fill="#8ea5c0" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-          xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 612 612" xml:space="preserve" stroke="#8ea5c0">
-          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-          <g id="SVGRepo_iconCarrier">
-            <g>
-              <g>
-                <path
-                  d="M468.562,229.5v-153h42.232L540.281,0H71.719l29.486,76.5h42.233v153c0,5.828,2.654,11.279,7.172,14.941L271.422,306 l-120.812,61.559c-4.518,3.624-7.172,9.113-7.172,14.941v153h-42.233L71.719,612h468.562l-29.486-76.5h-42.232v-153 c0-5.828-2.615-11.317-7.172-14.941L346.641,306l114.75-61.559C465.947,240.779,468.562,235.328,468.562,229.5z M430.312,391.689 v61.73h-9.409l-114.506-58.168L191.159,453.42h-9.472v-61.73l127.21-68.037L430.312,391.689z M430.312,220.311l-121.415,68.037 l-127.21-68.037V76.5h248.625V220.311z">
-                </path>
-                <polygon
-                  points="306.397,223.126 382.896,176.906 382.896,130.686 229.5,130.686 229.5,176.906 229.897,176.906 ">
-                </polygon>
-              </g>
-            </g>
-          </g>
-        </svg>
-        <span class="text-xs mt-0.5 truncate w-full text-center">Pending</span>
-      </button>
+      </a>
     </div>
   </div>
 </section>
@@ -147,9 +347,11 @@
 <section class="block">
   <div style="background: #202434" class="absolute bottom-0 left-0 right-0 backdrop-blur-sm border-t border-gray-700 z-50">
     <div class="flex justify-between px-0.5 py-0.5 gap-1 max-w-[390px] mx-auto">
+      
+    
+    
       <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex rounded-md flex-col items-center p-1 text-gray-400 flex-1" data-target="trades"
-        onclick="handleNavigation(this)">
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightTrades">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#8ea5c0"
           transform="rotate(90)matrix(1, 0, 0, -1, 0, 0)">
@@ -175,8 +377,7 @@
       </button>
 
       <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex rounded-md flex-col items-center p-1 text-gray-400 flex-1" data-target="signals"
-        onclick="handleNavigation(this)">
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSignals">
         <svg fill="#8ea5c0" class="w4 h-4" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -187,12 +388,11 @@
             </path>
           </g>
         </svg>
-        <span class="text-xs mt-0.5 truncate w-full text-center">Signals</span>
+        <span class="text-xs mt-0.5 truncate w-full text-center">profile</span>
       </button>
 
       <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex rounded-md flex-col items-center p-1 text-gray-400 flex-1" data-target="social"
-        onclick="handleNavigation(this)">
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSocialTrading">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -229,8 +429,7 @@
       </button>
 
       <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex rounded-md flex-col items-center p-1 text-gray-400 flex-1" data-target="express"
-        onclick="handleNavigation(this)">
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
         <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -243,43 +442,6 @@
         <span class="text-xs mt-0.5 truncate w-full text-center">Express</span>
       </button>
 
-      <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex rounded-md flex-col items-center p-1 text-gray-400 flex-1" data-target="tournament"
-        onclick="handleNavigation(this)">
-        <svg class="w-4 h-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-          <g id="SVGRepo_iconCarrier">
-            <path fill-rule="evenodd" clip-rule="evenodd"
-              d="M4 0H12V2H16V4C16 6.45641 14.2286 8.49909 11.8936 8.92038C11.5537 10.3637 10.432 11.5054 9 11.874V14H12V16H4V14H7V11.874C5.56796 11.5054 4.44628 10.3637 4.1064 8.92038C1.77136 8.49909 0 6.45641 0 4V2H4V0ZM12 6.82929V4H14C14 5.30622 13.1652 6.41746 12 6.82929ZM4 4H2C2 5.30622 2.83481 6.41746 4 6.82929V4Z"
-              fill="#8ea5c0"></path>
-          </g>
-        </svg>
-        <span class="text-xs mt-0.5 truncate w-full text-center">Tourn...</span>
-      </button>
-
-      <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col rounded-md items-center p-1 text-gray-400 flex-1" data-target="pending"
-        onclick="handleNavigation(this)">
-        <svg class="w-4 h-4" fill="#8ea5c0" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg"
-          xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 612 612" xml:space="preserve" stroke="#8ea5c0">
-          <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-          <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-          <g id="SVGRepo_iconCarrier">
-            <g>
-              <g>
-                <path
-                  d="M468.562,229.5v-153h42.232L540.281,0H71.719l29.486,76.5h42.233v153c0,5.828,2.654,11.279,7.172,14.941L271.422,306 l-120.812,61.559c-4.518,3.624-7.172,9.113-7.172,14.941v153h-42.233L71.719,612h468.562l-29.486-76.5h-42.232v-153 c0-5.828-2.615-11.317-7.172-14.941L346.641,306l114.75-61.559C465.947,240.779,468.562,235.328,468.562,229.5z M430.312,391.689 v61.73h-9.409l-114.506-58.168L191.159,453.42h-9.472v-61.73l127.21-68.037L430.312,391.689z M430.312,220.311l-121.415,68.037 l-127.21-68.037V76.5h248.625V220.311z">
-                </path>
-                <polygon
-                  points="306.397,223.126 382.896,176.906 382.896,130.686 229.5,130.686 229.5,176.906 229.897,176.906 ">
-                </polygon>
-              </g>
-            </g>
-          </g>
-        </svg>
-        <span class="text-xs mt-0.5 truncate w-full text-center">Pending</span>
-      </button>
     </div>
   </div>
 </section>
