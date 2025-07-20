@@ -11,7 +11,26 @@
 	<div class="min-h-full" id="main-content">
 		<div id="mainContent" class="hidden w-full min-h-screen bg-[#1a1c2c] text-white p-4"></div>
 		<!-- Full screen chart -->
+
+		@if($isOutOfTradingHours == true)
+		<div class="max-w-md mx-auto mt-16 p-4 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 rounded-md shadow-md">
+			<div class="flex items-center">
+				<svg class="w-6 h-6 mr-3 text-yellow-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m0-4h.01M12 6v6m0 6h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
+				</svg>
+				<div>
+				<p class="font-semibold mb-1">Market Unavailable</p>
+				<p class="text-sm leading-relaxed">
+					Trading for the selected asset is currently unavailable as the market is closed. 
+					Please select a different asset to continue trading.
+				</p>
+				</div>
+			</div>
+		</div>
+		@else
 		<div id="chart-container" class="relative"></div>
+		@endif
+
 
 		<!-- Updated Slider Structure -->
 		<div class="flex justify-between items-center gap-10 absolute top-20 z-10">
