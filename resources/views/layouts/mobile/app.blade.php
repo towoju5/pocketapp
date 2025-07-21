@@ -10,7 +10,7 @@
   <style>
     body {
       max-width: 640px;
-      height: 100dvh;
+      /* height: 100dvh; */
       /* Add dynamic viewport height */
       margin: 0 auto;
       position: relative;
@@ -652,7 +652,6 @@
   <script src="{{ asset('mobile/js/account-dropdown.js') }}"></script>
   <script src="{{ asset('mobile/js/wallet-modal.js') }}"></script>
   <script src="{{ asset('mobile/js/tabs.js') }}"></script>
-  <script src="{{ asset('mobile/js/custom.js') }}"></script>
   <link rel="stylesheet" href="//cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
   <script src="//cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
   <script>
