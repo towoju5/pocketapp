@@ -27,7 +27,7 @@
     }
 
     #main-content {
-      height: calc(100% - 130px);
+      /* height: calc(100% - 130px); */
       /* Adjust calculation for nav heights */
       overflow: hidden;
       z-index: -5;
