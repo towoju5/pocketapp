@@ -10,8 +10,7 @@
   <style>
     body {
       max-width: 640px;
-      max-height: 100%;
-      flex: 1;
+      max-height: 100vh;
       /* Add dynamic viewport height */
       margin: 0 auto;
       position: relative;
@@ -20,10 +19,10 @@
 
     .mobile-container {
       width: 100%;
-      height: 100%;
+      /* height: 100%; */
       /* Change from 90% to 100% */
       overflow: hidden;
-      position: relative;
+      position: static;
     }
 
     #main-content {
