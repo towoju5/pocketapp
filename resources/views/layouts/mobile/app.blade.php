@@ -201,7 +201,7 @@
 </head>
 
 <body>
-  <div class="mobile-container bg-gray-900 text-white p-2">
+  <div class="mobile-container bg-gray-900 text-white p-2" style="max-height: 100vh">
     <!-- Add the left navbar markup -->
     <div class="navbar-overlay"></div>
     <div class="left-navbar">
