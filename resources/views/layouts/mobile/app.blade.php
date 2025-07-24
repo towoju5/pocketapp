@@ -10,7 +10,8 @@
   <style>
     body {
       max-width: 640px;
-      height: 100vh;
+      max-height: 100%;
+      flex: 1;
       /* Add dynamic viewport height */
       margin: 0 auto;
       position: relative;
