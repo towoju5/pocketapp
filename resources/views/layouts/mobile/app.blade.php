@@ -535,7 +535,8 @@
     <div class="h-full overflow-scroll" style="overflow-y: auto;padding-bottom: 7rem">
       @yield('content')
     </div>
-    <div class="bottom-nav">
+
+    <div class="bottom-nav" id="bottom-nav">
         @include('layouts.mobile.components.bottom-nav')
     </div>
   </div>
