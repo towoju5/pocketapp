@@ -10,7 +10,7 @@
   <style>
     body {
       max-width: 640px;
-      max-height: 100vh;
+      /* height: 100dvh; */
       /* Add dynamic viewport height */
       margin: 0 auto;
       position: relative;
@@ -19,14 +19,14 @@
 
     .mobile-container {
       width: 100%;
-      /* height: 100%; */
+      height: 100%;
       /* Change from 90% to 100% */
       overflow: hidden;
-      position: static;
+      position: relative;
     }
 
     #main-content {
-      /* height: calc(100% - 130px); */
+      height: calc(100% - 130px);
       /* Adjust calculation for nav heights */
       overflow: hidden;
       z-index: -5;
@@ -200,7 +200,7 @@
 </head>
 
 <body>
-  <div class="mobile-container bg-gray-900 text-white p-2" style="max-height: 100vh">
+  <div class="mobile-container bg-gray-900 text-white p-2">
     <!-- Add the left navbar markup -->
     <div class="navbar-overlay"></div>
     <div class="left-navbar">
@@ -532,10 +532,11 @@
         @include('layouts.mobile.components.top-nav')
     </div>
     <!-- Restore original single container -->
-    <div class="flex-1 overflow-scroll" style="overflow-y: auto;padding-bottom: 7rem">
+    <div class="h-full overflow-scroll" style="overflow-y: auto;padding-bottom: 7rem">
       @yield('content')
     </div>
-    <div class="bottom-nav">
+
+    <div class="bottom-nav" id="bottom-nav">
         @include('layouts.mobile.components.bottom-nav')
     </div>
   </div>
@@ -652,7 +653,6 @@
   <script src="{{ asset('mobile/js/account-dropdown.js') }}"></script>
   <script src="{{ asset('mobile/js/wallet-modal.js') }}"></script>
   <script src="{{ asset('mobile/js/tabs.js') }}"></script>
-  <script src="{{ asset('mobile/js/custom.js') }}"></script>
   <link rel="stylesheet" href="//cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
   <script src="//cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
   <script>
