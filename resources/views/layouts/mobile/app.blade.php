@@ -8,166 +8,187 @@
   <title>Trades Interface</title>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <style>
-      body {
-        max-width: 640px;
-        height: 100dvh; /* Add dynamic viewport height */
-        margin: 0 auto;
-        position: relative;
-        overflow: hidden;
-      }
-      .mobile-container {
-        width: 100%;
-        height: 100%; /* Change from 90% to 100% */
-        overflow: hidden;
-        position: relative;
-      }
-      #main-content {
-        height: calc(100% - 130px); /* Adjust calculation for nav heights */
-        overflow: hidden;
-        position: relative;
-      }
-      .chart-container {
-        width: 100%;
-        height: 100%;
-        position: relative;
-      }
-      #chart {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-      }
-      .trading-actions {
-        position: absolute;
-        left: 50%;
-        bottom: 20px; /* Change from -85px to fixed value */
-        transform: translate(-50%, 0); /* Remove Y translation */
-        width: 85%;
-        z-index: 1;
-        backdrop-filter: blur(10px);
-        background-color: #1f2937; /* Match nav bar color */
-        padding: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-      }
-      #calculatorModal,
-      #timeModal {
-        z-index: 2;
-      }
-      .slider-wrapper {
-        position: absolute;
-        left: 50%;
-        bottom: 180px; /* Adjust position relative to trading actions */
-        transform: translate(-50%, 0);
-        width: 80%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    body {
+      max-width: 640px;
+      max-height: 100vh !important;
+      /* Add dynamic viewport height */
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .mobile-container {
+      width: 100%;
+      height: 100%;
+      /* Change from 90% to 100% */
+      overflow: hidden;
+      position: relative;
+    }
+
+    #main-content {
+      height: calc(100% - 130px);
+      /* Adjust calculation for nav heights */
+      overflow: hidden;
+      z-index: -5;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+
+    #chart {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .trading-actions {
+      position: absolute;
+      left: 50%;
+      bottom: 20px;
+      /* Change from -85px to fixed value */
+      transform: translate(-50%, 0);
+      /* Remove Y translation */
+      width: 85%;
+      z-index: 1;
+      backdrop-filter: blur(10px);
+      background-color: #1f2937;
+      /* Match nav bar color */
+      padding: 1rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #calculatorModal,
+    #timeModal {
+      z-index: 2;
+    }
+
+    .slider-wrapper {
+      position: absolute;
+      left: 50%;
+      bottom: 180px;
+      /* Adjust position relative to trading actions */
+      transform: translate(-50%, 0);
+      width: 80%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slider-container {
+      position: relative;
+      width: 100%;
+      height: 5px;
+      background: #ff5252;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-left,
+    .progress-right {
+      position: relative;
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      z-index: 3;
+      min-width: 45px;
+      text-align: center;
+    }
+
+    .progress-left {
+      margin-right: 10px;
+    }
+
+    .progress-right {
+      margin-left: 10px;
+    }
+
+    .slider-bar {
+      width: 100%;
+      height: 100%;
+      background: #4caf50;
+      animation: progressAnimation 10s linear infinite;
+      transform-origin: left center;
+    }
+
+    @keyframes progressAnimation {
+      0% {
+        transform: scaleX(0);
       }
 
-      .slider-container {
-        position: relative;
-        width: 100%;
-        height: 5px;
-        background: #ff5252;
-        border-radius: 2px;
-        overflow: hidden;
+      100% {
+        transform: scaleX(1);
       }
+    }
 
-      .progress-left,
-      .progress-right {
-        position: relative;
-        color: white;
-        font-size: 14px;
-        font-weight: bold;
-        z-index: 3;
-        min-width: 45px;
-        text-align: center;
-      }
+    .input-container {
+      width: 48%;
+      /* Ensure both containers take up equal width */
+    }
 
-      .progress-left {
-        margin-right: 10px;
-      }
+    .input-container p {
+      margin: 0;
+    }
 
-      .progress-right {
-        margin-left: 10px;
-      }
+    .input-container div {
+      width: 100%;
+      /* padding: 0.5rem; */
+      background-color: #19212c;
+      /* Tailwind's bg-gray-800 */
+      border-radius: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-      .slider-bar {
-        width: 100%;
-        height: 100%;
-        background: #4caf50;
-        animation: progressAnimation 10s linear infinite;
-        transform-origin: left center;
-      }
+    /* Add these new styles */
+    .left-navbar {
+      position: fixed;
+      top: 0;
+      left: -80%;
+      width: 80%;
+      height: 100%;
+      background-color: #151726;
+      transition: left 0.3s ease-in-out;
+      z-index: 1000;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+      overflow-y: auto;
+    }
 
-      @keyframes progressAnimation {
-        0% {
-          transform: scaleX(0);
-        }
-        100% {
-          transform: scaleX(1);
-        }
-      }
-      .input-container {
-        width: 48%; /* Ensure both containers take up equal width */
-      }
-      .input-container p {
-        margin: 0;
-      }
-      .input-container div {
-        width: 100%;
-        padding: 0.5rem;
-        background-color: #19212c; /* Tailwind's bg-gray-800 */
-        border-radius: 0.5rem;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-      }
+    .left-navbar.active {
+      left: 0;
+    }
 
-      /* Add these new styles */
-      .left-navbar {
-        position: fixed;
-        top: 0;
-        left: -80%;
-        width: 80%;
-        height: 100%;
-        background-color: #151726;
-        transition: left 0.3s ease-in-out;
-        z-index: 1000;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
-        overflow-y: auto;
-      }
+    .navbar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      z-index: 999;
+    }
 
-      .left-navbar.active {
-        left: 0;
-      }
+    .navbar-overlay.active {
+      display: block;
+    }
 
-      .navbar-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: none;
-        z-index: 999;
-      }
+    /* 2+2 = 22 */
+    .set_time_plus {
+      background-color: #1f2334;
+      border: 1px solid #2c3245;
+      color: white;
+    }
 
-      .navbar-overlay.active {
-        display: block;
-      }
-
-      /* 2+2 = 22 */
-      .set_time_plus {
-        background-color: #1f2334;
-        border: 1px solid #2c3245;
-        color: white;
-      }
-      .set_time_time {
-        width: 100px;
-        text-align: center;
-      }
+    .set_time_time {
+      width: 100px;
+      text-align: center;
+    }
   </style>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   <!-- Include Flowbite CSS -->
