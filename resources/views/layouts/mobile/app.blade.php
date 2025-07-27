@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -8,36 +7,79 @@
   <title>Trades Interface</title>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <style>
-    body {
-      max-width: 640px;
-      max-height: 100vh !important;
-      /* Add dynamic viewport height */
-      margin: 0 auto;
-      position: relative;
-      overflow: hidden;
+    /* --- MODIFIED/ADDED CSS FOR LAYOUT --- */
+    /* Ensure html and body take full height */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
     }
 
+    /* Make the main container a flex column */
+    .mobile-container {
+        width: 100%;
+        height: 100%; /* Take full height of body */
+        display: flex; /* Enable Flexbox */
+        flex-direction: column; /* Arrange children vertically */
+        overflow: hidden; /* Prevent scrolling on the container itself */
+        position: relative;
+        /* max-width: 640px; max-height: 100vh !important; margin: 0 auto; These were on body, moved max-width here if needed */
+        max-width: 640px;
+        margin: 0 auto;
+    }
+
+    /* Make top and bottom nav fixed height and prevent shrinking */
+    .top-nav, .bottom-nav {
+        flex: 0 0 auto; /* Don't grow, don't shrink, use intrinsic/natural height */
+        /* Or set explicit heights if needed, e.g., height: 50px; */
+        z-index: 20;
+        position: relative; /* Keep if needed for internal positioning */
+        width: 100%; /* Ensure they span the container */
+    }
+
+    /* Make the content area fill available space and be scrollable */
+    .mobile-container > .h-full.overflow-scroll {
+        flex: 1 1 auto; /* Allow it to grow and shrink, taking available space */
+        overflow-y: auto; /* Enable vertical scrolling */
+        overflow-x: hidden; /* Prevent horizontal scroll if not needed */
+        padding-bottom: 7rem; /* Keep existing padding */
+        /* height: calc(100% - 130px); Remove explicit height calc */
+        /* overflow: hidden; Remove hidden overflow */
+        z-index: -5; /* Keep z-index */
+        width: 100%; /* Ensure it spans the container */
+    }
+    /* --- END OF MODIFIED/ADDED CSS --- */
+
+
+    /* Original styles preserved below */
+    body {
+      /* max-width: 640px; Moved to .mobile-container */
+      /* max-height: 100vh !important; Moved to .mobile-container */
+      /* Add dynamic viewport height */
+      /* margin: 0 auto; Moved to .mobile-container */
+      position: relative;
+      overflow: hidden; /* This is now on .mobile-container */
+    }
+    /*
     .mobile-container {
       width: 100%;
       height: 100%;
-      /* Change from 90% to 100% */
+      /* Change from 90% to 100% * /
       overflow: hidden;
       position: relative;
     }
-
+    */
     #main-content {
-      height: calc(100% - 130px);
+      /* height: calc(100% - 130px); Moved to .h-full.overflow-scroll */
       /* Adjust calculation for nav heights */
-      overflow: hidden;
-      z-index: -5;
+      overflow: hidden; /* This is now on .h-full.overflow-scroll */
+      z-index: -5; /* This is now on .h-full.overflow-scroll */
     }
-
     .chart-container {
       width: 100%;
       height: 100%;
       position: relative;
     }
-
     #chart {
       position: absolute;
       top: 0;
@@ -45,7 +87,6 @@
       width: 100%;
       height: 100%;
     }
-
     .trading-actions {
       position: absolute;
       left: 50%;
@@ -61,12 +102,10 @@
       padding: 1rem;
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-
     #calculatorModal,
     #timeModal {
       z-index: 2;
     }
-
     .slider-wrapper {
       position: absolute;
       left: 50%;
@@ -78,7 +117,6 @@
       align-items: center;
       justify-content: center;
     }
-
     .slider-container {
       position: relative;
       width: 100%;
@@ -87,7 +125,6 @@
       border-radius: 2px;
       overflow: hidden;
     }
-
     .progress-left,
     .progress-right {
       position: relative;
@@ -98,15 +135,12 @@
       min-width: 45px;
       text-align: center;
     }
-
     .progress-left {
       margin-right: 10px;
     }
-
     .progress-right {
       margin-left: 10px;
     }
-
     .slider-bar {
       width: 100%;
       height: 100%;
@@ -114,26 +148,21 @@
       animation: progressAnimation 10s linear infinite;
       transform-origin: left center;
     }
-
     @keyframes progressAnimation {
       0% {
         transform: scaleX(0);
       }
-
       100% {
         transform: scaleX(1);
       }
     }
-
     .input-container {
       width: 48%;
       /* Ensure both containers take up equal width */
     }
-
     .input-container p {
       margin: 0;
     }
-
     .input-container div {
       width: 100%;
       /* padding: 0.5rem; */
@@ -144,7 +173,6 @@
       align-items: center;
       justify-content: space-between;
     }
-
     /* Add these new styles */
     .left-navbar {
       position: fixed;
@@ -158,11 +186,9 @@
       box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
       overflow-y: auto;
     }
-
     .left-navbar.active {
       left: 0;
     }
-
     .navbar-overlay {
       position: fixed;
       top: 0;
@@ -173,18 +199,15 @@
       display: none;
       z-index: 999;
     }
-
     .navbar-overlay.active {
       display: block;
     }
-
     /* 2+2 = 22 */
     .set_time_plus {
       background-color: #1f2334;
       border: 1px solid #2c3245;
       color: white;
     }
-
     .set_time_time {
       width: 100px;
       text-align: center;
@@ -198,7 +221,6 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
   <script src="//unpkg.com/lightweight-charts@3.8.0/dist/lightweight-charts.standalone.production.js"></script>
 </head>
-
 <body>
   <div class="mobile-container bg-gray-900 text-white p-2">
     <!-- Add the left navbar markup -->
@@ -213,7 +235,6 @@
                   <span class="top-0 left-7 absolute  w-4 h-4 border-2 border-white dark:border-gray-800 rounded-full" style="background-color: red; right: 0; top: -8px;"></span>
               </div>
             </div>
-
             <div class="w-4/5 flex items-center justify-between">
               <div class="">
                 <h2 class="flex my-2 text-md">{{ $_user->last_name .' '.$_user->first_name ?? null }}</h2>
@@ -234,14 +255,12 @@
                   <span class="sensitive">{{ request()->ip() }}</span>
                 </div>
               </div>
-
               <div class="">
                 <i class="fa-solid fa-eye"></i>
                 <i class="fa-solid fa-eye-slash hidden"></i>
               </div>
             </div>
           </div>
-
           <button style="background: #172832; border: 1px solid #025b44"
             class="mt-3 px-4 py-2 bg-gray-700 rounded-lg hover:bg-green-500 w-full border border-green-500 flex items-center justify-center gap-2 text-sm">
             <svg width="17" height="16" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 465" fill="white">
@@ -252,11 +271,9 @@
               <path
                 d="M216 200c-25-18-29-50-8-72 25-27 73-27 97 0 18 19 18 47-1 66-13 13-29 19-47 19-16 0-29-4-41-13z" />
             </svg>
-
             Deposit
           </button>
         </div>
-
         <nav class="" style="background: #151726">
           <ul class="space-y-2">
             <li onclick="showContent('trading')" style="color: #fff; background: #262b3d"
@@ -365,7 +382,6 @@
                     .duotone_een {
                       fill: #b5b5b5;
                     }
-
                     .duotone_twee {
                       fill: #b5b5b5;
                     }
@@ -458,7 +474,6 @@
               <li>Kiswahili</li>
             </div>
           </ul>
-
           <div class="mt-4 pt-4">
             <ul class="space-y-2">
               <li style="color: #8fa5bf; border-top: 1px solid #8fa5bf"
@@ -523,26 +538,21 @@
           </div>
         </nav>
       </div>
-
       <!-- Main Content -->
       @include('layouts.mobile.components.sidebar')
     </div>
-
     <div class="top-nav z-20" style="position: relative;">
         @include('layouts.mobile.components.top-nav')
     </div>
     <!-- Restore original single container -->
-    <div class="h-full overflow-scroll" style="overflow-y: auto;padding-bottom: 7rem">
+    <div class="h-full overflow-scroll" style="overflow-y: auto;padding-bottom: 7rem"> <!-- This div is now the scrollable content area -->
       @yield('content')
     </div>
-
     <div class="bottom-nav" id="bottom-nav">
         @include('layouts.mobile.components.bottom-nav')
     </div>
   </div>
-
   <!-- Replace welcome template with forex graph template -->
-
   <!-- NEW: Time Input Modal -->
   <div id="timeModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
     <div class="bg-gray-800 p-4 rounded-lg w-80">
@@ -552,7 +562,6 @@
           <button class="w-1/3 rounded-lg set_time_plus">+</button>
           <button class="w-1/3 rounded-lg set_time_plus">+</button>
         </div>
-
         <div class="text-white flex items-center justify-between">
           <div class="set_time_time" id="timeInput">01</div>
           :
@@ -560,21 +569,18 @@
           :
           <div class="set_time_time">33</div>
         </div>
-
         <div class="flex items-center justify-between gap-5">
           <button class="w-1/3 rounded-lg set_time_plus">-</button>
           <button class="w-1/3 rounded-lg set_time_plus">-</button>
           <button class="w-1/3 rounded-lg set_time_plus">-</button>
         </div>
       </div>
-
       <!-- <input
           type="text"
           id="timeInput"
           class="w-full p-2 rounded-lg mb-4"
           placeholder="e.g. 00:01:00"
         /> -->
-
       <div class="flex justify-end space-x-2 mt-3">
         <button id="cancelTime" class="px-4 py-2 bg-gray-600 text-white rounded">
           Cancel
@@ -585,7 +591,6 @@
       </div>
     </div>
   </div>
-
   <!-- NEW: Calculator Modal for Amount (updated with basic operations) -->
   <div id="calculatorModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
     <div class="bg-gray-800 p-4 rounded-lg w-80">
@@ -594,13 +599,11 @@
         <input type="text" id="calcDisplay"
           class="w-3/5 p-3 rounded-lg mb-4 text-right bg-gray-900 text-white border-gray-700 border" readonly
           value="10" />
-
         <div class="w-2/5 flex items-center gap-1">
           <div class="flex flex-col gap-1 mb-2">
             <button class="px-2 bg-gray-900 text-white rounded">*</button>
             <button class="px-2 bg-gray-900 text-white rounded">/</button>
           </div>
-
           <div>
             <input type="text" id="calcDisplay" class="p-3 w-full rounded-lg mb-4 text-right bg-gray-900 text-white"
               readonly value="2" />
@@ -641,8 +644,6 @@
       </div>
     </div>
   </div>
-
-
   <!-- Move scripts to end of body -->
   <script src="//cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
   <script src="//unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
@@ -667,20 +668,16 @@
     document.addEventListener("DOMContentLoaded", function () {
         const mainContent = document.getElementById("mainContent");
         const hiddenSections = document.getElementById("hidden-sections");
-
         let activeTarget = null;
-
         window.handleNavigation = function (button) {
             const targetId = button.dataset.target;
             const content = hiddenSections.querySelector(`#${targetId}`);
-
             if (!content) {
                 mainContent.innerHTML = "<div class='text-white'>Content not found</div>";
                 mainContent.classList.remove("hidden");
                 activeTarget = null;
                 return;
             }
-
             if (activeTarget === targetId) {
                 // Same item tapped again — close
                 mainContent.innerHTML = "";
@@ -689,41 +686,33 @@
                 activeTarget = null;
                 return;
             }
-
             // Show new section
             mainContent.innerHTML = content.innerHTML;
             mainContent.classList.remove("hidden");
-
             // Update button states
             document.querySelectorAll('.nav-item').forEach(btn => {
                 btn.classList.remove("bg-[#23283b]");
             });
             button.classList.add("bg-[#23283b]");
-
             activeTarget = targetId;
         };
     });
   </script>
-
   <script>
       @if ($errors->any())
           @foreach ($errors->all() as $error)
               toastr.error("{!! $error !!}");
           @endforeach
       @endif
-
       @if (session('error'))
           toastr.error("{!! session('error') !!}");
       @endif
-
       @if (session('success'))
           toastr.success("{!! session('success') !!}");
       @endif
-
       @if (session('info'))
           toastr.info("{!! session('info') !!}");
       @endif
-
       @if (session('warning'))
           toastr.warning("{!! session('warning') !!}");
       @endif
@@ -731,5 +720,4 @@
   @stack('js')
   @stack('scripts')
 </body>
-
 </html>
