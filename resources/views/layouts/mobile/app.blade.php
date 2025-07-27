@@ -17,9 +17,9 @@
     }
 
     #main-content {
-      height: calc(100% - 130px);
+      max-height: calc(100vh - 130px);
       /* Adjust calculation for nav heights */
-      overflow: hidden;
+      overflow: auto;
       z-index: -5;
     }
 
