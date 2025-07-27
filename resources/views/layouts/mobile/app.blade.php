@@ -523,7 +523,7 @@
         @include('layouts.mobile.components.top-nav')
     </div>
     <!-- Restore original single container -->
-    <div class="overflow-scroll" id="main-content" style="height: 100%; overflow-y: auto;padding-bottom: 7rem">
+    <div class="" id="main-content" style="padding-bottom: 7rem">
       @yield('content')
     </div>
 
