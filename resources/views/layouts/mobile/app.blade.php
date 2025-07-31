@@ -8,33 +8,9 @@
   <title>Trades Interface</title>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <style>
-    body {
-      max-width: 640px;
-      /* height: 100dvh; */
-      /* Add dynamic viewport height */
-      margin: 0 auto;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .mobile-container {
-      width: 100%;
-      height: 100%;
-      /* Change from 90% to 100% */
-      overflow: hidden;
-      position: relative;
-    }
-
-    #main-content {
-      height: calc(100% - 130px);
-      /* Adjust calculation for nav heights */
-      overflow: hidden;
-      z-index: -5;
-    }
-
     .chart-container {
       width: 100%;
-      height: 100%;
+      height: 90%;
       position: relative;
     }
 
@@ -177,18 +153,6 @@
     .navbar-overlay.active {
       display: block;
     }
-
-    /* 2+2 = 22 */
-    .set_time_plus {
-      background-color: #1f2334;
-      border: 1px solid #2c3245;
-      color: white;
-    }
-
-    .set_time_time {
-      width: 100px;
-      text-align: center;
-    }
   </style>
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   <!-- Include Flowbite CSS -->
@@ -200,7 +164,7 @@
 </head>
 
 <body>
-  <div class="mobile-container bg-gray-900 text-white p-2">
+  <div class="h-dvh mobile-container bg-gray-900 text-white p-2">
     <!-- Add the left navbar markup -->
     <div class="navbar-overlay"></div>
     <div class="left-navbar">
@@ -532,116 +496,14 @@
         @include('layouts.mobile.components.top-nav')
     </div>
     <!-- Restore original single container -->
-    <div class="h-full overflow-scroll" style="overflow-y: auto;padding-bottom: 7rem">
+    <div class="" id="main-content" style="padding-bottom: 7rem">
       @yield('content')
     </div>
 
-    <div class="bottom-nav" id="bottom-nav">
+    <div class="top-nav z-20 bottom-0 flex-1" style="position: static;" id="bottom-nav">
         @include('layouts.mobile.components.bottom-nav')
     </div>
   </div>
-
-  <!-- Replace welcome template with forex graph template -->
-
-  <!-- NEW: Time Input Modal -->
-  <div id="timeModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-gray-800 p-4 rounded-lg w-80">
-      <div>
-        <div class="flex items-center justi text-sm ween gap-5">
-          <button class="w-1/3 rounded-lg set_time_plus">+</button>
-          <button class="w-1/3 rounded-lg set_time_plus">+</button>
-          <button class="w-1/3 rounded-lg set_time_plus">+</button>
-        </div>
-
-        <div class="text-white flex items-center justify-between">
-          <div class="set_time_time" id="timeInput">01</div>
-          :
-          <div class="set_time_time">12</div>
-          :
-          <div class="set_time_time">33</div>
-        </div>
-
-        <div class="flex items-center justify-between gap-5">
-          <button class="w-1/3 rounded-lg set_time_plus">-</button>
-          <button class="w-1/3 rounded-lg set_time_plus">-</button>
-          <button class="w-1/3 rounded-lg set_time_plus">-</button>
-        </div>
-      </div>
-
-      <!-- <input
-          type="text"
-          id="timeInput"
-          class="w-full p-2 rounded-lg mb-4"
-          placeholder="e.g. 00:01:00"
-        /> -->
-
-      <div class="flex justify-end space-x-2 mt-3">
-        <button id="cancelTime" class="px-4 py-2 bg-gray-600 text-white rounded">
-          Cancel
-        </button>
-        <button id="saveTime" class="px-4 py-2 bg-blue-500 text-white rounded">
-          Save
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- NEW: Calculator Modal for Amount (updated with basic operations) -->
-  <div id="calculatorModal" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden">
-    <div class="bg-gray-800 p-4 rounded-lg w-80">
-      <h3 class="text-white text-lg mb-4">Calculator</h3>
-      <div class="flex items-center gap-3">
-        <input type="text" id="calcDisplay"
-          class="w-3/5 p-3 rounded-lg mb-4 text-right bg-gray-900 text-white border-gray-700 border" readonly
-          value="10" />
-
-        <div class="w-2/5 flex items-center gap-1">
-          <div class="flex flex-col gap-1 mb-2">
-            <button class="px-2 bg-gray-900 text-white rounded">*</button>
-            <button class="px-2 bg-gray-900 text-white rounded">/</button>
-          </div>
-
-          <div>
-            <input type="text" id="calcDisplay" class="p-3 w-full rounded-lg mb-4 text-right bg-gray-900 text-white"
-              readonly value="2" />
-          </div>
-        </div>
-      </div>
-      <div id="calcButtons" class="grid grid-cols-4 gap-2 mb-4">
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">7</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">8</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">9</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">/</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">4</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">5</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">6</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">*</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">1</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">2</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">3</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">-</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">0</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">.</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">=</button>
-        <button class="calc-btn bg-gray-900 text-white p-2 rounded">+</button>
-        <!-- <button
-            id="calcClear"
-            class="col-span-4 bg-gray-700 text-white p-2 rounded"
-          >
-            Clear
-          </button> -->
-      </div>
-      <div class="flex justify-end space-x-2">
-        <button id="cancelCalc" class="px-4 py-2 bg-gray-600 text-white rounded">
-          Cancel
-        </button>
-        <button id="confirmCalc" class="px-4 py-2 bg-blue-500 text-white rounded">
-          Confirm
-        </button>
-      </div>
-    </div>
-  </div>
-
 
   <!-- Move scripts to end of body -->
   <script src="//cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
