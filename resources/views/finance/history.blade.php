@@ -24,7 +24,7 @@
                 </div>
                 <div class="flex items-center gap-5 border-b border-[#292d4a] py-2">
                     <span class="text-gray-400">Description:</span>
-                    <span class="font-medium">{{ $item->meta['description'] }}</span>
+                    <span class="font-medium">{{ $item?->meta['description'] ?? null }}</span>
                 </div>
                 <div class="flex items-center gap-5 border-b border-[#292d4a] py-2">
                     <span class="text-gray-400">Type:</span>
