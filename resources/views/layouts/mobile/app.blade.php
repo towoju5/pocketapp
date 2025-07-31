@@ -500,7 +500,7 @@
       @yield('content')
     </div>
 
-    <div class="bottom-nav z-20 bottom-0 flex-1" id="bottom-nav">
+    <div class="bottom-nav z-20 bottom-0 flex-1 w-full" id="bottom-nav">
         @include('layouts.mobile.components.bottom-nav')
     </div>
   </div>
