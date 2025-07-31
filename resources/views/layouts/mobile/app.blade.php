@@ -515,6 +515,7 @@
   <script src="{{ asset('mobile/js/account-dropdown.js') }}"></script>
   <script src="{{ asset('mobile/js/wallet-modal.js') }}"></script>
   <script src="{{ asset('mobile/js/tabs.js') }}"></script>
+  <script src="{{ asset('mobile/js/custom.js') }}"></script>
   <link rel="stylesheet" href="//cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
   <script src="//cdn.bootcss.com/toastr.js/latest/js/toastr.min.js"></script>
   <script>
