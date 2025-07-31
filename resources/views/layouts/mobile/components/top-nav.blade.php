@@ -1,4 +1,4 @@
-<nav class="flex justify-between items-center bg-gray-900/95 backdrop-blur-sm py-2" role="navigation"
+<nav class="flex justify-between items-center bg-gray-900/95 backdrop-blur-sm p-2 w-full" role="navigation"
   aria-label="Main navigation">
   <div class="flex items-center space-x-3">
     <!-- Profile Icon -->
@@ -15,7 +15,7 @@
     </div>
   </div>
 
-  <div class="flex items-center gap-2 relative">
+  <div class="flex items-center gap-2 relative pr-2">
     <!-- Gift Icon -->
     <button class="hidden bg-gray-800 p-2 rounded-md hover:bg-gray-700 transition-colors" aria-label="Gift options">
       <svg class="w-6 h-6 icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="#000">

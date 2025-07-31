@@ -492,11 +492,11 @@
       @include('layouts.mobile.components.sidebar')
     </div>
 
-    <div class="top-nav z-20" style="position: relative;">
+    <div class="top-nav z-20 top-0 w-full" style="position: fixed;">
         @include('layouts.mobile.components.top-nav')
     </div>
     <!-- Restore original single container -->
-    <div class="" id="main-content" style="padding-bottom: 7rem">
+    <div class="" id="main-content" style="padding-bottom: 7rem; margin-top: 5rem">
       @yield('content')
     </div>
 
