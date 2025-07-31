@@ -24,9 +24,10 @@
 body {
     margin: 0;
     height: 100vh;
-    overflow: hidden;
+    /* overflow: hidden; */
     display: flex;
     flex-direction: column;
+    background-color: #111827;
 }
 
 .hidden_text {
@@ -39,6 +40,11 @@ body {
 .r-height {
     height: calc(100vh + 2rem);
 }
+
+.bottom-nav {
+    position: sticky;
+}
+
 
 
 /* 
