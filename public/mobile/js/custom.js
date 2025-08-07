@@ -183,3 +183,4 @@ function toggleDropdown() {
     let dropdown = document.getElementById("languageContent");
     dropdown.classList.toggle("hidden"); // Toggle visibility
 }
+

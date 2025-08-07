@@ -16,13 +16,22 @@ function handleNavigation(navItem) {
 
     // If clicking active item, deactivate it and show welcome template
     if (isCurrentlyActive) {
-        loadWelcomeTemplate();
+        // if currentUrl is set in localStorage retrieve it
+        const currentUrl = localStorage.getItem('currentUrl');
+        if (currentUrl) {
+            // If currentUrl is set, navigate to it
+            window.location.href = currentUrl;
+        } else {
+            loadWelcomeTemplate();
+        }
         return;
     }
 
     // Otherwise, activate clicked item and load content
     navItem.classList.remove('text-gray-400');
     navItem.classList.add('text-blue-500', 'bg-gray-700');
+    // log current url to Storage
+    localStorage.setItem('currentUrl', window.location.href);
     loadPage(targetPage);
 }
 

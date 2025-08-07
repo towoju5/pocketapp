@@ -6,7 +6,7 @@
 <section class="block">
   <div style="background: #202434" class="absolute bottom-0 left-0 right-0 backdrop-blur-sm border-t border-gray-700 z-50">
     <div class="flex justify-between px-0.5 py-0.5 gap-1 max-w-[390px] mx-auto">
-      
+
       <a href="{{ route('deposit.create') }}" style="background: #293145; color: #8ea5c0"
         class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightTrades">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
@@ -134,7 +134,7 @@
 <section class="block">
   <div style="background: #202434" class="absolute bottom-0 left-0 right-0 backdrop-blur-sm border-t border-gray-700 z-50">
     <div class="flex justify-between px-0.5 py-0.5 gap-1 max-w-[390px] mx-auto">
-      
+
       <a href="{{ route('trading.profile') }}" style="background: #293145; color: #8ea5c0"
         class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightTrades">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
@@ -244,11 +244,11 @@
     </div>
   </div>
 </section>
-@elseif (strtolower($label) === 'trading')
+@elseif (strtolower($label) === 'tradings')
 <section class="block">
   <div style="background: #202434" class="absolute bottom-0 left-0 right-0 backdrop-blur-sm border-t border-gray-700 z-50">
     <div class="flex justify-between px-0.5 py-0.5 gap-1 max-w-[390px] mx-auto">
-      
+
       <a style="background: #293145; color: #8ea5c0"
         class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightTrades">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
@@ -347,11 +347,11 @@
 <section class="block">
   <div style="background: #202434" class="absolute bottom-0 left-0 right-0 backdrop-blur-sm border-t border-gray-700 z-50">
     <div class="flex justify-between px-0.5 py-0.5 gap-1 max-w-[390px] mx-auto">
-      
-    
-    
-      <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightTrades">
+
+
+
+      <button style="background: #293145; color: #8ea5c0" onclick="handleNavigation(this)"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="trades">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#8ea5c0"
           transform="rotate(90)matrix(1, 0, 0, -1, 0, 0)">
@@ -376,8 +376,8 @@
         <span class="text-xs mt-0.5 truncate w-full text-center">Trades</span>
       </button>
 
-      <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSignals">
+      <button style="background: #293145; color: #8ea5c0" onclick="handleNavigation(this)"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="signals">
         <svg fill="#8ea5c0" class="w4 h-4" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -388,11 +388,11 @@
             </path>
           </g>
         </svg>
-        <span class="text-xs mt-0.5 truncate w-full text-center">profile</span>
+        <span class="text-xs mt-0.5 truncate w-full text-center">Signals</span>
       </button>
 
-      <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSocialTrading">
+      <button style="background: #293145; color: #8ea5c0" onclick="handleNavigation(this)"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="social">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -428,8 +428,8 @@
         <span class="text-xs mt-0.5 truncate w-full text-center">Social</span>
       </button>
 
-      <button style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
+      <button style="background: #293145; color: #8ea5c0" onclick="handleNavigation(this)"
+        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="express">
         <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -441,7 +441,6 @@
         </svg>
         <span class="text-xs mt-0.5 truncate w-full text-center">Express</span>
       </button>
-
     </div>
   </div>
 </section>

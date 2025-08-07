@@ -4,7 +4,8 @@
 @php $__coin = $data->symbol ?? "USDCAD" @endphp
 <style>
 	.tv-lightweight-charts {
-		height: 90vh!important;
+		height: 70vh!important;
+		box-shadow: inset;
 	}
 </style>
 <div id="welcome-div">
@@ -13,7 +14,7 @@
 		<!-- Full screen chart -->
 
 		@if($isOutOfTradingHours == true)
-		<div class="max-w-md mx-auto mt-16 p-4 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 rounded-md shadow-md">
+		<div class="max-w-md mx-auto mt-[40%] p-4 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 rounded-md shadow-md">
 			<div class="flex items-center">
 				<svg class="w-6 h-6 mr-3 text-yellow-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m0-4h.01M12 6v6m0 6h.01M12 2a10 10 0 100 20 10 10 0 000-20z" />
@@ -133,7 +134,7 @@
 		</div>
 
 		<!-- Trading Actions Overlay -->
-		<form method="POST" action="{{ route('trade.store') }}" class="trading-actions mb-10 z-10" id="tradeForm">
+		<form method="POST" action="{{ route('trade.store') }}" class="trading-actions mb-10 z-10 rounded-lg" id="tradeForm">
             @csrf
 			<div class="flex justify-between items-center">
 				<div id="timeContainer" class="input-container cursor-pointer">
@@ -167,14 +168,14 @@
 					</div>
 				</div>
 			</div>
-			<div class="flex justify-between text-green-400 text-lg font-semibold">
+			<div class="flex justify-between text-green-400 text-md font-semibold">
 				<p id="payout_total_text">Payout<br /><span class="text-white text-sm" id="payout_total">$16.20</span></p>
 				<span id="profit_percentage">+{{ $data->asset_profit_margin }}% </span>
 				<p>Profit<br /><span id="payout">$0.0</span></p>
 			</div>
 			<div class="flex space-x-4">
-				<button type="button" name="action" data-value="up" class="_hover-up cta-button bg-green-600 text-white py-2 flex-1 rounded-lg flex items-center justify-center space-x-2">
-					<svg width="24px" height="24px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<button type="button" name="action" data-value="up" class="_hover-up cta-button bg-green-600 text-white py-1 flex-1 rounded-lg flex items-center justify-center space-x-2">
+					<svg width="15px" height="15px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
 						<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
 						<g id="SVGRepo_iconCarrier">
@@ -186,9 +187,9 @@
 					</svg>
 					<span>BUY</span>
 				</button>
-				<buttontype="button" name="action" data-value="down"
-                        class="_hover-down cta-button bg-red-600 text-white py-2 flex-1 rounded-lg flex items-center justify-center space-x-2">
-					<svg width="24px" height="24px" viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg">
+				<button type="button" name="action" data-value="down"
+                        class="_hover-down cta-button bg-red-600 text-white py-1 flex-1 rounded-lg flex items-center justify-center space-x-2">
+					<svg width="15px" height="15px" viewBox="0 0 24.00 24.00" fill="none" xmlns="http://www.w3.org/2000/svg">
 						<g id="SVGRepo_bgCarrier" stroke-width="0"></g>
 						<g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
 						<g id="SVGRepo_iconCarrier">
