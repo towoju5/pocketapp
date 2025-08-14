@@ -8,7 +8,7 @@
     <div class="flex justify-between px-0.5 py-0.5 gap-1 max-w-[390px] mx-auto">
 
       <a href="{{ route('deposit.create') }}" style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightTrades">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightTrades">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#8ea5c0"
           transform="rotate(90)matrix(1, 0, 0, -1, 0, 0)">
@@ -34,7 +34,7 @@
       </a>
 
       <a href="{{ route('payout.create') }}" style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSignals">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightSignals">
         <svg fill="#8ea5c0" class="w4 h-4" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -49,7 +49,7 @@
       </a>
 
       <a href="{{ route('finance.history') }}" style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSocialTrading">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightSocialTrading">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -86,7 +86,7 @@
       </a>
 
       <a href="{{ route('finance.promo-codes') }}" style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
         <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -100,7 +100,7 @@
       </a>
 
       <a href="{{ route('finance.cashback') }}" style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
         <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -114,7 +114,7 @@
       </a>
 
       <a href="{{ route('finance.my-safe') }}" style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
         <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -136,7 +136,7 @@
     <div class="flex justify-between px-0.5 py-0.5 gap-1 max-w-[390px] mx-auto">
 
       <a href="{{ route('trading.profile') }}" style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightTrades">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightTrades">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#8ea5c0"
           transform="rotate(90)matrix(1, 0, 0, -1, 0, 0)">
@@ -162,7 +162,7 @@
       </a>
 
       <a href="{{ route('profile.edit') }}" style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSignals">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightSignals">
         <svg fill="#8ea5c0" class="w4 h-4" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -177,7 +177,7 @@
       </a>
 
       <a href="{{ route('profile.security') }}" style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSocialTrading">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightSocialTrading">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -214,7 +214,7 @@
       </a>
 
       <a href="{{ route('trade.index') }}" style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
         <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -228,7 +228,7 @@
       </a>
 
       <a href="{{ route('express.index') }}" style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
         <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -250,7 +250,7 @@
     <div class="flex justify-between px-0.5 py-0.5 gap-1 max-w-[390px] mx-auto">
 
       <a style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightTrades">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightTrades">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#8ea5c0"
           transform="rotate(90)matrix(1, 0, 0, -1, 0, 0)">
@@ -276,7 +276,7 @@
       </a>
 
       <a style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSignals">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightSignals">
         <svg fill="#8ea5c0" class="w4 h-4" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -291,7 +291,7 @@
       </a>
 
       <a style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightSocialTrading">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightSocialTrading">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -328,7 +328,7 @@
       </a>
 
       <a style="background: #293145; color: #8ea5c0"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="rightExpressTrades">
         <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -351,7 +351,7 @@
 
 
       <button style="background: #293145; color: #8ea5c0" onclick="handleNavigation(this)"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="trades">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="trades">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#8ea5c0"
           transform="rotate(90)matrix(1, 0, 0, -1, 0, 0)">
@@ -377,7 +377,7 @@
       </button>
 
       <button style="background: #293145; color: #8ea5c0" onclick="handleNavigation(this)"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="signals">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="signals">
         <svg fill="#8ea5c0" class="w4 h-4" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -392,7 +392,7 @@
       </button>
 
       <button style="background: #293145; color: #8ea5c0" onclick="handleNavigation(this)"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="social">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="social">
         <svg class="w-4 h-4" version="1.1" id="_x32_" xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512" xml:space="preserve" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -429,7 +429,7 @@
       </button>
 
       <button style="background: #293145; color: #8ea5c0" onclick="handleNavigation(this)"
-        class="nav-item flex flex-col items-center p-1 rounded-md flex-1 min-w-0" data-target="express">
+        class="nav-item flex flex-col items-center p-1 show-loader rounded-md flex-1 min-w-0" data-target="express">
         <svg class="w-4 h-4" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" fill="#000000">
           <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
           <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>

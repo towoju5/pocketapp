@@ -162,6 +162,7 @@
     </head>
 
     <body>
+        @include('components.preloader')
         @include('layouts.desktop.header')
 
         <section class="flex flex-row w-full @if(!Route::is('dashboard')) @endif border-t border-gray-700">
@@ -525,9 +526,17 @@
         </script>
 
         <script type="text/javascript">
+            // function googleTranslateElementInit() {
+            //     // Initialize Google Translate with page language
+            //     new google.translate.TranslateElement({pageLanguage: '{{ $lang ?? 'en' }}'}, 'google_translate_element');
+            // }
             function googleTranslateElementInit() {
-                // Initialize Google Translate with page language
-                new google.translate.TranslateElement({pageLanguage: '{{ $lang ?? 'en' }}'}, 'google_translate_element');
+                new google.translate.TranslateElement({
+                    pageLanguage: 'en',
+                    includedLanguages: 'en,es,fr', // Customize the languages you want to offer
+                    layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
+                    autoDisplay: false // Optional: set to true if you want it to always display
+                }, 'google_translate_element');
             }
 
             // Load Google Translate script

@@ -7,7 +7,7 @@
         </p>
 
         <div class="mt-5 flex flex-col gap-2">
-            <a href="{{ route('dashboard') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145;opacity: .7;">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145;opacity: .7;">
                 <svg class="svg-icon qt-real" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                 viewBox="0 0 24 24" fill="none">
                 <path fill="#8ea5c0" fill-rule="evenodd"
@@ -24,7 +24,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('dashboard.demo') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145;opacity: .7;">
+            <a href="{{ route('dashboard.demo') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145;opacity: .7;">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 49" width="24" height="24" fill="#8ea5c0"
                 class="svg-icon mt5-real-account">
                 <path
@@ -57,7 +57,7 @@
         </p>
 
         <div class="mt-5 flex flex-col gap-2">
-            <a href="{{ route('deposit.create') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+            <a href="{{ route('deposit.create') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
                 <svg width="24" height="24" fill="#8ea5c0" class="svg-icon deposit-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.11 465.01">
                 <path
@@ -79,7 +79,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('payout.create') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+            <a href="{{ route('payout.create') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
                 <svg width="24" height="24" fill="#8ea5c0" class="svg-icon deposit-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.11 465.01">
                 <path
@@ -100,7 +100,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('finance.history') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+            <a href="{{ route('finance.history') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
                 <svg width="24" height="24" fill="#8ea5c0" class="svg-icon history-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 492.1 489">
                 <path
@@ -115,7 +115,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('finance.cashback') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+            <a href="{{ route('finance.cashback') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
                 <svg width="24" height="24" fill="#8ea5c0" class="svg-icon cashback-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 499.93">
                 <path
@@ -130,7 +130,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('finance.promo-codes') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+            <a href="{{ route('finance.promo-codes') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
                 <svg width="24" height="24" fill="#8ea5c0" class="svg-icon promo-codes-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 354">
                 <path
@@ -145,7 +145,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('finance.my-safe') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+            <a href="{{ route('finance.my-safe') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
                 <svg class="svg-icon my-safe-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                 fill="#8ea5c0" viewBox="0 0 24 24" fill="none">
                 <g clip-path="url(#clip0_1_355321)">
@@ -180,7 +180,7 @@
         </p>
 
         <div class="mt-5 flex flex-col gap-2">
-            <a href="{{ route('trading.profile') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+            <a href="{{ route('trading.profile') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
                 <svg width="24" height="24" fill="#8ea5c0" class="svg-icon trading-profile-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 498.4 511.1">
                 <path
@@ -199,7 +199,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+            <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
                 <svg width="24" height="24" fill="#8ea5c0" class="svg-icon profile-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 497.06 511.14">
                 <path
@@ -214,7 +214,7 @@
                 </div>
             </a>
 
-            <a href="#" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+            <a href="#" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
                 <svg class="svg-icon" width="24" height="24" fill="#8ea5c0" viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -232,7 +232,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('profile.security') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+            <a href="{{ route('profile.security') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
                 <svg width="24" height="24" fill="#8ea5c0" class="svg-icon security-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 374.2">
                 <path
@@ -250,7 +250,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('trade.index') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+            <a href="{{ route('trade.index') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
                 <svg width="24" height="24" fill="#8ea5c0" class="svg-icon live-trading-history-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.11 480.71">
                 <path
@@ -265,7 +265,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('express.index') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+            <a href="{{ route('express.index') }}" class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
                 <svg class="svg-icon pocket-friends-icon" width="24" height="24" fill="#8ea5c0" viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg">
                 <circle cx="16.6647" cy="13.457" r="3.32188" fill="currentColor"></circle>
@@ -288,7 +288,7 @@
         </p>
 
         <div class="mt-5 flex flex-col gap-2">
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg width="24" height="24" fill="#8ea5c0" class="svg-icon market-icon" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 505.54 446.78">
             <path
@@ -301,7 +301,7 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg width="24" height="24" fill="#8ea5c0" class="svg-icon purchases-icon"
             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 499.01 500.02">
             <path
@@ -316,7 +316,7 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg width="24" height="24" fill="#8ea5c0" class="svg-icon gem-lotto-icon"
             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 482.35 491">
             <path
@@ -328,7 +328,7 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg width="24" height="24" fill="#8ea5c0" class="svg-icon mining-icon" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 500.29 500">
             <path
@@ -340,7 +340,7 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg width="24" height="24" fill="#8ea5c0" xmlns="http://www.w3.org/2000/svg"
             class="svg-icon social-trading-reward" viewBox="0 0 37.5 50">
             <path
@@ -362,7 +362,7 @@
         </p>
 
         <div class="mt-5 flex flex-col gap-2">
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg width="24" height="24" fill="#8ea5c0" class="svg-icon achievements-icon"
             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 497.74 456">
             <path
@@ -378,7 +378,7 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg width="24" height="24" fill="#8ea5c0" class="svg-icon achievements-history-icon"
             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
             <g>
@@ -397,7 +397,7 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg width="24" height="24" fill="#8ea5c0" class="svg-icon achievements-rating-icon"
             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 336.22 253.97">
             <g>
@@ -422,7 +422,7 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg width="24" height="24" fill="#8ea5c0" class="svg-icon achievements-help-icon"
             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 572.02 372.99">
             <g>
@@ -471,7 +471,7 @@
         </div>
 
         <div class="mt-3 flex flex-col gap-3">
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg class="svg-icon qt-real" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
             viewBox="0 0 24 24" fill="none">
             <path fill="#8ea5c0" fill-rule="evenodd"
@@ -489,7 +489,7 @@
             </p>
             </div>
         </div>
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg class="svg-icon qt-real" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
             viewBox="0 0 24 24" fill="none">
             <path fill="#8ea5c0" fill-rule="evenodd"
@@ -518,7 +518,7 @@
         </p>
 
         <div class="mt-5 flex flex-col gap-2">
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg class="svg-icon svg-icon-supp" width="24" height="24" fill="#8ea5c0"
             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.31 411">
             <path
@@ -536,7 +536,7 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg width="24" height="24" fill="#8ea5c0" class="svg-icon guide-icon" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 500.04 500">
             <path
@@ -548,7 +548,7 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg width="24" height="24" fill="#8ea5c0" class="svg-icon thumbs-up" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 512 512">
             <path
@@ -560,7 +560,7 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg width="24" height="24" fill="#8ea5c0" class="svg-icon svg-icon-vip-chat-2"
             xmlns="http://www.w3.org/2000/svg" viewBox="0 0 444.53 355.67">
             <path
@@ -574,7 +574,7 @@
             <p>Support chat</p>
             </div>
         </div>
-        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer" style="background: #293145">
+        <div class="flex items-center gap-2 px-5 py-3 rounded-md cursor-pointer show-loader" style="background: #293145">
             <svg width="24" height="24" fill="#8ea5c0" class="svg-icon apps-icon" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 500 510">
             <path

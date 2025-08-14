@@ -22,7 +22,7 @@
         transition: opacity .4s ease-out;
     }
 </style>
-<div class="lg:m-4 lg:py-4" style="margin: 1rem">
+<div class="lg:p-4 lg:py-4 w-full">
 
     @if(!is_mobile())
     @include('partials.profile')

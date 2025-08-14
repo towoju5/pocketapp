@@ -24,7 +24,7 @@
 
 <!-- Trade Containers -->
 <div class="trade-open-content trade_list-page flex justify-center items-center mt-0 trade-tab-content" data-tab="active" style="max-height: 100%;     width: -webkit-fill-available;">
-    <div id="openSignalList" style="width: -webkit-fill-available;">
+    <div id="openSignalList" style="width: -moz-available;">
         @foreach($signals as $signal)
         <div class="flex items-center justify-between px-3 py-1 border-b border-gray-800 signal-item" 
              data-id="{{ $signal['id'] }}" data-duration="{{ $signal['duration'] }}" id="signal-{{ $signal['id'] }}"

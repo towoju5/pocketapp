@@ -25,7 +25,7 @@
 <div class="trade-open-content trade_list-page flex justify-center items-center mt-0 trade-tab-content" data-tab="active">
     <div id="openTradeList">
         @foreach($active_trades as $trade)
-        @include('mini-pages.trade-list')
+            @include('mini-pages.trade-list')
         @endforeach
     </div>
 </div>

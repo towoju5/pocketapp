@@ -7,6 +7,8 @@ let navigationState = {
 function handleNavigation(navItem) {
     const targetPage = navItem.getAttribute('data-target');
     const isCurrentlyActive = navItem.classList.contains('text-blue-500');
+    const loader = document.querySelector(".loading-container.js-loading-container");
+    if (loader) loader.classList.remove("hidden");
 
     // Remove active state from all nav items
     document.querySelectorAll('.nav-item').forEach(item => {
@@ -24,6 +26,7 @@ function handleNavigation(navItem) {
         } else {
             loadWelcomeTemplate();
         }
+        if (loader) loader.classList.add("hidden");
         return;
     }
 
@@ -71,11 +74,11 @@ function loadWelcomeTemplate() {
 //     }
 // }
 
-async function loadPage(pageName) {
-    const mainContent = document.getElementById('main-content');
+async function loadPage(pageName) { 
+    const mainContent = document.getElementById('main-content'); 
 
     try {
-        // Update navigation state
+        // Update navigation state 
         navigationState.wasOnForexPage = navigationState.currentPage === 'forex';
         navigationState.currentPage = pageName;
 
@@ -92,6 +95,7 @@ async function loadPage(pageName) {
 
                 const html = await response.text();
                 mainContent.innerHTML = html;
+                $(".loading-container.js-loading-container").addClass("hidden");
             } catch (error) {
                 console.error('Error loading Laravel page:', error);
                 mainContent.innerHTML = '<div class="p-4 text-center text-gray-400">Page not found</div>';

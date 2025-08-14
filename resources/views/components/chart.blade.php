@@ -385,28 +385,40 @@
 		});
 	});
 
-	// Close Dropdown on Outside Click
-	document.addEventListener("click", function (event) {
-		if (
-			!document.getElementById("assetBtn").contains(event.target) &&
-			!document.getElementById("assetDropDown").contains(event.target)
-		) {
-			document.getElementById("assetDropDown").classList.add("hidden");
-		}
-	});
-
-	// stock dropdown
-	document.getElementById("chartTpyeBtn").addEventListener("click", function () {
-		document.getElementById("chartTpyeDropDown").classList.toggle("hidden");
-    });
+	// Close Dropdown on Outside Click for asset dropdown
     document.addEventListener("click", function (event) {
-		if (
-			!document.getElementById("chartTpyeBtn").contains(event.target) &&
-			!document.getElementById("chartTpyeDropDown").contains(event.target)
-		) {
-			document.getElementById("chartTpyeDropDown").classList.add("hidden");
-		}
-	});
+        const assetBtn = document.getElementById("assetBtn");
+        const assetDropDown = document.getElementById("assetDropDown");
+
+        if (assetBtn && assetDropDown) {
+            if (
+                !assetBtn.contains(event.target) &&
+                !assetDropDown.contains(event.target)
+            ) {
+                assetDropDown.classList.add("hidden");
+            }
+        }
+    });
+
+    // stock dropdown toggle
+    const chartTypeBtn = document.getElementById("chartTpyeBtn");
+    const chartTypeDropDown = document.getElementById("chartTpyeDropDown");
+
+    if (chartTypeBtn && chartTypeDropDown) {
+        chartTypeBtn.addEventListener("click", function () {
+            chartTypeDropDown.classList.toggle("hidden");
+        });
+
+        document.addEventListener("click", function (event) {
+            if (
+                !chartTypeBtn.contains(event.target) &&
+                !chartTypeDropDown.contains(event.target)
+            ) {
+                chartTypeDropDown.classList.add("hidden");
+            }
+        });
+    }
+
 </script>
 @endpush
 

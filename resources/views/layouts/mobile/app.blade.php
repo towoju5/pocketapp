@@ -153,7 +153,98 @@
     .navbar-overlay.active {
       display: block;
     }
-  </style>
+  
+  
+    .signal-card {
+        padding: 10px;
+        width: 330px;
+    }
+
+    .signal-card:nth-child(even) {
+        background-color: #292d41;
+    }
+
+    .signal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        /* margin-bottom: 10px; */
+    }
+
+    .signal-title {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        color: #A0AEC0;
+        gap: .75rem;
+    }
+
+    .signal-title i {
+        color: #FFA500;
+        margin-right: 5px;
+    }
+
+    .signal-percentage {
+        color: #4CAF50;
+        font-weight: bold;
+    }
+
+    .signal-time {
+        color: white;
+        /* font-size: 10px; */
+    }
+
+    .signal-body {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .signal-price {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .signal-price i {
+        color: #4CAF50;
+        margin-right: 5px;
+    }
+
+    .signal-profit {
+        color: #4CAF50;
+        font-size: 14px;
+        font-weight: bold;
+    }
+
+    .signal-button {
+        background-color: #19222D;
+        border: 1px solid #0F5D42;
+        border-radius: 5px;
+        padding: 4px;
+        text-align: center;
+        cursor: pointer;
+        font-size: 12px;
+        font-weight: bold;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .signal-button i {
+        margin-right: 5px;
+    }
+    .fa-arrow-up {
+        color: rgb(73, 167, 68);
+        margin-right: 2px;
+        transform: rotate(45deg);
+    }
+</style>
+
+
   @vite(['resources/css/app.css', 'resources/js/app.js'])
   <!-- Include Flowbite CSS -->
   <link href="https://cdn.jsdelivr.net/npm/flowbite @2.5.1/dist/flowbite.min.css" rel="stylesheet" />
@@ -164,6 +255,7 @@
 </head>
 
 <body>
+  @include('components.preloader')
   <div class="h-dvh mobile-container bg-gray-900 text-white p-2">
     <!-- Add the left navbar markup -->
     <div class="navbar-overlay"></div>
@@ -549,6 +641,37 @@
       @if (session('warning'))
           toastr.warning("{!! session('warning') !!}");
       @endif
+
+      function toggleTradeMenu(button, tabKey) {
+        const container = button.closest('div').parentElement;
+
+        const tabs = container.querySelectorAll('.trade-open-close');
+        const indicators = container.querySelectorAll('.tab-indicator');
+        const contents = container.querySelectorAll('.trade-tab-content');
+
+        // Reset all tabs
+        tabs.forEach(tab => {
+            tab.classList.remove('text-gray-200', 'bg-[#1e2131]', 'active-tab');
+            tab.classList.add('text-gray-500', 'bg-[#272b3c]');
+        });
+
+        // Hide all indicators
+        indicators.forEach(indicator => indicator.classList.add('hidden'));
+
+        // Hide all content sections
+        contents.forEach(content => content.classList.add('hidden'));
+
+        // Activate the selected tab
+        button.classList.remove('text-gray-500', 'bg-[#272b3c]');
+        button.classList.add('text-gray-200', 'bg-[#1e2131]', 'active-tab');
+
+        const indicator = button.querySelector('.tab-indicator');
+        if (indicator) indicator.classList.remove('hidden');
+
+        // Show selected content
+        const activeContent = container.querySelector(`.trade-tab-content[data-tab="${tabKey}"]`);
+        if (activeContent) activeContent.classList.remove('hidden');
+    }
   </script>
   @stack('js')
   @stack('scripts')
