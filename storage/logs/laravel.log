@@ -12107,3 +12107,11 @@ Polaris Option
 [2025-08-14 14:47:18] local.DEBUG: Evaluating trade: 22  
 [2025-08-14 14:47:18] local.INFO: Trade currency is: EUR/SGD.X  
 [2025-08-14 14:48:18] local.INFO: Current Price {"price":"-2.5524"} 
+[2025-08-14 14:52:36] local.DEBUG: Evaluating trade: 21  
+[2025-08-14 14:52:36] local.INFO: Trade currency is: UNI/USDT.X  
+[2025-08-14 14:52:39] local.DEBUG: Evaluating trade: 22  
+[2025-08-14 14:52:39] local.INFO: Trade currency is: MATIC/USDT.X  
+[2025-08-14 14:52:40] local.ERROR: Invalid price received for asset MATIC/USDT.X: "No data available."  
+[2025-08-14 14:53:19] local.DEBUG: Evaluating trade: 23  
+[2025-08-14 14:53:19] local.INFO: Trade currency is: EUR/SGD.X  
+[2025-08-14 22:55:29] local.ERROR: getAssetData exception: cURL error 6: Could not resolve host: polarisoption.io (see https://curl.haxx.se/libcurl/c/libcurl-errors.html) for http://polarisoption.io:2300/api?key=670ad2b465a88088600ed7be663b0d6d5a22c395&url=https%3A%2F%2Fiqcent.com%2Ftrade-api%2Fapi%2Fticks%3Fsymbol%3Dtrading%26autoparse%3Dtrue  

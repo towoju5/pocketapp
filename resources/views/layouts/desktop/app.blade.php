@@ -101,10 +101,10 @@
                 height: 90%;
             }
 
-            .container {
+            /* .container {
                 margin: 2rem;
                 margin-left: 8rem;
-            }
+            } */
 
             table {
                 border-collapse: collapse;
@@ -167,7 +167,13 @@
 
         <section class="flex flex-row w-full @if(!Route::is('dashboard')) @endif border-t border-gray-700">
             @include('layouts.desktop.sidebar')
-            @yield('content')
+            @if(!Route::is('dashboard') && !Route::is('dash'))
+            <div class="left-margin">
+            @endif
+                @yield('content')
+            @if(!Route::is('dashboard') && !Route::is('dash'))
+            </div>
+            @endif
         </section>
 
         <form method="POST" action="{{ route('logout') }}" class="d-inline" id="UserLogoutForm">

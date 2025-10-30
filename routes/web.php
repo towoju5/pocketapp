@@ -36,6 +36,7 @@ use Illuminate\Support\Facades\Schema;
 
 
 Route::get('/', function () {
+    // return response()->json(get_assets());
     return view('act_welcome');
 });
 

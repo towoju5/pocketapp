@@ -9,4 +9,4 @@
   }
 </style>
 
-@include('partials.dashboard._tradings')
+@include('partials.dashboard._express')

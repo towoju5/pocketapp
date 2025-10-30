@@ -49,7 +49,7 @@
         @endforeach
     </div>
     @else
-    <div class="w-full mx-4">
+    <div class="w-full mx-4 container">
         @include('partials.finance-header')
         <div class="w-full bg-gray-900 text-white">
             <div class="p-6">

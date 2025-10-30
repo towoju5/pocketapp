@@ -1,5 +1,5 @@
 <!-- Left Nav Bar -->
-<aside class="flex flex-col justify-between h-screen w-24 bg-[#1e2131] py-4 px-2 overflow-hidden">
+<aside class="fixed flex flex-col justify-between h-screen bg-[#1e2131] py-4 px-2 overflow-hidden" style="margin-top: 5rem;">
 	<nav class="flex flex-col items-center space-y-4 text-center">
 		<!-- Trading -->
 		<a href="#" data-section="Trading" class="nav-link flex flex-col items-center group">

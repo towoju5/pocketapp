@@ -97,7 +97,7 @@
 
 
 <!-- THIS IS THE CHART DIV + THE BUY AND SELL -->
-<section class="flex flex-grow w-full box-contain overflow-hidden">
+<section class="flex flex-grow w-full box-contain overflow-hidden" style="margin-top: 5rem; margin-left: 6rem;">
     <!-- EVERYTHING CHART IS DONE IN THE SECTION ELEMENT -->
     <!-- MY ATTEMPT AT DOING THE GRAPH MY SELF graph container -->
     <section class="text-gray-400 min-h-screen w-full" style="background-image: url('/assets/images/bg.jpg');">

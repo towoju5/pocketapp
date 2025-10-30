@@ -331,6 +331,8 @@
    ***********************************************************/
     var assets = {!! get_assets() !!};
 
+    console.log("Assets loaded:", assets);
+
 	// Convert assets to the required format
 	const stocks = assets.map(asset => {
 		return {

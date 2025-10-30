@@ -24,10 +24,9 @@
 body {
     margin: 0;
     height: 100vh;
-    /* overflow: hidden; */
+    overflow: hidden;
     display: flex;
     flex-direction: column;
-    background-color: #111827;
 }
 
 .hidden_text {
@@ -41,15 +40,16 @@ body {
     height: calc(100vh + 2rem);
 }
 
-.bottom-nav {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    
+.left-margin {
+    margin-left: 6rem;
+    margin-top: 6rem;
+    width: 100%;
 }
 
-
+.container {
+    margin: 1rem;
+    max-width: 98% !important;
+}
 
 /* 
 .flex {

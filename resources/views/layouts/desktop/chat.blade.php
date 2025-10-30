@@ -1,4 +1,4 @@
-<div class="bg-[#222636] min-h-screen w-[25rem] mr-auto" id="content-area">
+<div class="bg-[#222636] min-h-screen w-[25rem] mr-auto" id="content-area" style="display: block; margin-top: 5rem;margin-left: 6rem;margin-right: -5rem;">
 	<div class="bg-[#222636] min-h-screen w-full">
 		<!-- Search Bar -->
 		<div class="bg-[#1e2232] w-full p-2 pb-2">

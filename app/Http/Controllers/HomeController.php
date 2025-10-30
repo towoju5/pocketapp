@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function dashboard(Request $request, $coin = 'EUR--SGD.X')
+    public function dashboard(Request $request, $coin = 'EUR--GBP.X')
     {
         $user = auth()->user();
 
