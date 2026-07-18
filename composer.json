@@ -9,6 +9,7 @@
         "php": "^8.2",
         "bacon/bacon-qr-code": "*",
         "bavix/laravel-wallet": "*",
+        "blade-ui-kit/blade-heroicons": "^2.7",
         "dipeshsukhia/laravel-country-state-city-data": "*",
         "google/protobuf": "^4.29",
         "laravel/breeze": "^2.3",

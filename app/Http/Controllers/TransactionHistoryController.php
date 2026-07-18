@@ -15,20 +15,18 @@ class TransactionHistoryController extends Controller
         $transactions = $current_user->transactions()->newQuery();
 
         // Handle date range filtering
-        if ($request->filled('date-range')) {
-            $dates = explode('-', $request->input('date-range'));
-
-            if (count($dates) === 2) {
-                try {
-                    $dateFrom = Carbon::createFromFormat('Y-m-d', trim($dates[0]))->startOfDay();
-                    $dateTo = Carbon::createFromFormat('Y-m-d', trim($dates[1]))->endOfDay();
-
-                    $transactions->whereBetween('created_at', [$dateFrom, $dateTo]);
-                } catch (\Exception $e) {
-                    return back()->withErrors(['date-range' => 'Invalid date range format.']);
-                }
-            } else {
-                return back()->withErrors(['date-range' => 'Invalid date range input.']);
+        if ($request->filled('date_from')) {
+            try {
+                $transactions->where('created_at', '>=', Carbon::parse($request->input('date_from'))->startOfDay());
+            } catch (\Exception $e) {
+                return back()->withErrors(['date_from' => 'Invalid date.']);
+            }
+        }
+        if ($request->filled('date_to')) {
+            try {
+                $transactions->where('created_at', '<=', Carbon::parse($request->input('date_to'))->endOfDay());
+            } catch (\Exception $e) {
+                return back()->withErrors(['date_to' => 'Invalid date.']);
             }
         }
 
@@ -38,7 +36,8 @@ class TransactionHistoryController extends Controller
         }
 
         // Paginate results and return the view
-        return $transactions = $transactions->latest()->paginate(10)->appends($request->query());
+        $transactions = $transactions->latest()->paginate(10)->appends($request->query());
+
         return view('finance.history', compact('transactions'));
     }
 }

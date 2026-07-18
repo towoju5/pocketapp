@@ -26,13 +26,101 @@ class ProfileController extends Controller
     }
 
     /**
-     * Display the user's profile form.
+     * Display the consolidated profile page (Account / Verification / Security /
+     * Preferences / Trading Stats / Loyalty tabs).
      */
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user = $request->user();
+
+        $sessions = $this->getActiveSessions($user->id);
+        $logins = $user->authentications;
+
+        $secret = $user->google2fa_secret;
+        if (!$secret) {
+            $secret = $this->google2fa->generateSecretKey();
+            $user->google2fa_secret = $secret;
+            $user->save();
+        }
+        $google2fa_url = $this->google2fa->getQRCodeUrl(config('app.name'), $user->email, $secret);
+
+        $tradingStats = $this->buildTradingStats($user);
+        $loyalty = $this->buildLoyaltyTier($user);
+
+        return view('profile.index', [
+            'user' => $user,
+            'sessions' => $sessions,
+            'logins' => $logins,
+            'google2fa_url' => $google2fa_url,
+            'tab' => $request->query('tab', 'account'),
+        ] + $tradingStats + ['loyalty' => $loyalty]);
+    }
+
+    private function buildTradingStats(User $user): array
+    {
+        $trades = Trade::whereUserId($user->id)->get();
+
+        $totalTrades = $trades->count();
+        $profitableTrades = $trades->where('trade_status', 'win')->count();
+        $profitableTradesPercentage = $totalTrades > 0 ? ($profitableTrades / $totalTrades) * 100 : 0;
+        $tradingTurnover = $trades->sum('trade_amount');
+        $tradingProfit = $trades->sum('trade_profit');
+        $maxTrade = $trades->max('trade_amount') ?? 0;
+        $minTrade = $trades->min('trade_amount') ?? 0;
+        $maxProfit = $trades->max('trade_profit') ?? 0;
+
+        $profitabilityData = $trades->groupBy(function ($trade) {
+            return \Carbon\Carbon::parse($trade->trade_close_time)->format('Y-m-d H:00:00');
+        })->map(fn($group) => $group->sum('trade_profit'));
+
+        $tradeAmountsByAssets = $trades->groupBy('trade_currency')->map(fn($group) => $group->sum('trade_amount'));
+        $tradesDistributionByAssets = $trades->groupBy('trade_currency')->map(fn($group) => $group->count());
+
+        return compact(
+            'totalTrades',
+            'profitableTradesPercentage',
+            'tradingTurnover',
+            'tradingProfit',
+            'maxTrade',
+            'minTrade',
+            'maxProfit',
+            'profitabilityData',
+            'tradeAmountsByAssets',
+            'tradesDistributionByAssets'
+        );
+    }
+
+    private function buildLoyaltyTier(User $user): array
+    {
+        $totalDeposited = (float) $user->user_deposit()->where('deposit_status', 'completed')->sum('deposit_amount');
+
+        $tiers = [
+            ['name' => 'Bronze', 'min' => 0],
+            ['name' => 'Silver', 'min' => 500],
+            ['name' => 'Gold', 'min' => 2000],
+            ['name' => 'Platinum', 'min' => 10000],
+        ];
+
+        $current = $tiers[0];
+        $next = null;
+        foreach ($tiers as $i => $tier) {
+            if ($totalDeposited >= $tier['min']) {
+                $current = $tier;
+                $next = $tiers[$i + 1] ?? null;
+            }
+        }
+
+        $progress = $next
+            ? min(100, round((($totalDeposited - $current['min']) / ($next['min'] - $current['min'])) * 100))
+            : 100;
+
+        return [
+            'tier' => $current['name'],
+            'nextTier' => $next['name'] ?? null,
+            'totalDeposited' => $totalDeposited,
+            'nextTierThreshold' => $next['min'] ?? null,
+            'progressToNextTier' => $progress,
+        ];
     }
 
     /**
@@ -53,8 +141,17 @@ class ProfileController extends Controller
 
     public function changeDefaultWallet($newDefaultWallet)
     {
+        $isAllowed = collect(allowed_wallets())->contains('symbol', $newDefaultWallet);
+        if (!$isAllowed) {
+            return back()->with('error', 'Invalid wallet selected.');
+        }
+
         $user = auth()->user();
         $user->active_wallet_slug = $newDefaultWallet;
+        // trade_wallet is what TradeController/SignalCopyController actually debit
+        // from when placing a trade — keep it in lockstep with the displayed wallet
+        // so switching wallets here genuinely changes which funds are at risk.
+        $user->trade_wallet = $newDefaultWallet;
         if($user->save()) {
             return back()->with('success', 'Default wallet updated successfully.');
         }
@@ -83,54 +180,13 @@ class ProfileController extends Controller
         return Redirect::to('/');
     }
 
+    /**
+     * Deep-links into the consolidated profile page's Trading Stats tab.
+     */
     public function tradingProfile()
     {
-        $trades = Trade::whereUserId(auth()->id())->get();
-        $user = auth()->user();
-
-        // Calculate trading statistics
-        $totalTrades = $trades->count();
-        $profitableTrades = $trades->where('trade_profit', '>', 0)->count(); // Assuming 'trade_profit' field exists
-        $profitableTradesPercentage = $totalTrades > 0 ? ($profitableTrades / $totalTrades) * 100 : 0;
-        $tradingTurnover = $trades->sum('amount'); // Assuming 'amount' field exists
-        $tradingProfit = $trades->sum('trade_profit'); // Assuming 'trade_profit' field exists
-        $maxTrade = $trades->max('amount');
-        $minTrade = $trades->min('amount');
-        $maxProfit = $trades->max('trade_profit');
-
-        // Chart Data: Profitability over time
-        $profitabilityData = $trades->groupBy(function ($trade) {
-            return \Carbon\Carbon::parse($trade->trade_close_time)->format('Y-m-d H:00:00'); // Group by hour
-        })->map(function ($group) {
-            return $group->sum('trade_profit'); // Sum profits per group
-        });
-
-        // Data: Trade amounts by assets
-        $tradeAmountsByAssets = $trades->groupBy('trade_currency')->map(function ($group) {
-            return $group->sum('trade_amount'); // Sum amounts per currency
-        });
-
-        // Data: Trades distribution by assets
-        $tradesDistributionByAssets = $trades->groupBy('trade_currency')->map(function ($group) {
-            return $group->count(); // Count trades per currency
-        });
-
-
-        return view('profile.trading-profile', compact(
-            'user',
-            'totalTrades',
-            'profitableTradesPercentage',
-            'tradingTurnover',
-            'tradingProfit',
-            'maxTrade',
-            'minTrade',
-            'maxProfit',
-            'profitabilityData',
-            'tradeAmountsByAssets',
-            'tradesDistributionByAssets'
-        ));
+        return redirect()->route('profile.edit', ['tab' => 'trading']);
     }
-
 
     public function updateProfile(Request $request)
     {
@@ -142,11 +198,13 @@ class ProfileController extends Controller
         $user = auth()->user();
         $user = User::findOrFail($user->id);
 
-        if (array_key_exists($request->name, $user->config)) {
-            $user->config[$request->name] = $$request->value;
+        if (array_key_exists($request->name, $user->config ?? [])) {
+            $config = $user->config;
+            $config[$request->name] = $request->value;
+            $user->config = $config;
             $user->save();
 
-            return response()->json(['status' => 200, 'message' => 'Language updated successfully']);
+            return response()->json(['status' => 200, 'message' => 'Preference updated successfully']);
         }
 
         $column = $request->name;
@@ -157,30 +215,12 @@ class ProfileController extends Controller
         }
     }
 
+    /**
+     * Deep-links into the consolidated profile page's Security tab.
+     */
     public function security()
     {
-        $userId = auth()->id();
-        $logins = User::find($userId)->authentications;
-        $sessions = $this->getActiveSessions($userId);
-        
-        $user = Auth::user();
-        $secret = $user->google2fa_secret;
-
-        if (!$secret) {
-            // If the user hasn't set up 2FA, generate a new secret and QR code
-            $secret = $this->google2fa->generateSecretKey();
-            $user->google2fa_secret = $secret;
-            $user->save();
-        }
-
-        // Generate the QR code URL for Google Authenticator
-        $google2fa_url = $this->google2fa->getQRCodeUrl(
-            config('app.name'),
-            $user->email,
-            $secret
-        );
-
-        return view('profile.security', compact('sessions', 'logins', 'google2fa_url', 'secret'));
+        return redirect()->route('profile.edit', ['tab' => 'security']);
     }
 
     public function getActiveSessions($userId)
@@ -262,6 +302,15 @@ class ProfileController extends Controller
         $user->google2fa_enabled = false;
         $user->save();
 
-        return redirect()->route('profile')->with('status', 'Two-factor authentication disabled successfully.');
+        return redirect()->route('profile.edit', ['tab' => 'security'])->with('status', 'Two-factor authentication disabled successfully.');
+    }
+
+    /**
+     * Deep-links into the consolidated profile page's Security tab (fixes the
+     * previously-broken profile.twofa route, which had no controller method).
+     */
+    public function show2faForm()
+    {
+        return redirect()->route('profile.edit', ['tab' => 'security']);
     }
 }

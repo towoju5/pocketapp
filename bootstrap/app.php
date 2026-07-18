@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->append(
             \App\Http\Middleware\UserWallets::class
         );
+
+        $middleware->alias([
+            'kyc.verified' => \App\Http\Middleware\EnsureKycVerified::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

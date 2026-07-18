@@ -11,7 +11,7 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class TradeUpdated
+class TradeUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -24,7 +24,7 @@ class TradeUpdated
 
     public function broadcastOn(): Channel
     {
-        return new Channel('trade.updated');
+        return new PrivateChannel('trades.user.' . $this->trade->user_id);
     }
 
     public function broadcastWith()
@@ -39,6 +39,7 @@ class TradeUpdated
             'trade_percentage' => $this->trade->trade_percentage,
             'trade_direction' => $this->trade->trade_direction,
             'start_price' => $this->trade->start_price,
+            'html' => view('mini-pages.trade-list', ['trade' => $this->trade])->render(),
         ];
     }
 }

@@ -74,9 +74,9 @@
   					<!-- Balance dropdown -->
   					<div
   						id="balance-info"
-  						class="absolute left-1/2 -translate-x-1/2 mt-1 w-[330px] bg-[#262c41] text-slate-400 rounded-lg p-4 flex flex-col gap-2 hidden border border-gray-700 z-50">
+  						class="absolute left-1/2 -translate-x-1/2 mt-1 w-[330px] bg-[#131a2c] text-slate-400 rounded-lg p-4 flex flex-col gap-2 hidden border border-gray-700 z-50">
   						<!-- FIRST LIST -->
-  						<div class="bg-[#1f2536] rounded-md text-white flex flex-col w-full text-center">
+  						<div class="bg-[#131a2c] rounded-md text-white flex flex-col w-full text-center">
   							<!-- TOP SECTION -->
   							<div class="flex flex-row p-2 w-full justify-between gap-4 items center justify-center text-center">
   								<!-- SVG Icon -->
@@ -119,7 +119,7 @@
   							</div>
   						</div>
 
-  						<div class="bg-[#1f2536] rounded-md text-white">
+  						<div class="bg-[#131a2c] rounded-md text-white">
   							<div class="flex flex-row p-2 w-full gap-4">
   								<!-- SVG Icon -->
   								<div class="w-[10%] flex justify-center items-center text-[#8ea5c0]">
@@ -135,7 +135,7 @@
   							</div>
   						</div>
 
-  						<div class="bg-[#1f2536] rounded-md text-white">
+  						<div class="bg-[#131a2c] rounded-md text-white">
   							<div class="max-w-md mx-auto">
   								<!-- Main Dropdown Button -->
   								<button id="dropdownBtn" class="w-full flex items-center justify-between p-3 text-white rounded-lg transition-colors">
@@ -203,7 +203,7 @@
   							</style>
   						</div>
 
-  						<div class="bg-[#1f2536] rounded-md text-white">
+  						<div class="bg-[#131a2c] rounded-md text-white">
   							<div class="flex flex-row p-2 w-full gap-4">
   								<!-- SVG Icon -->
   								<div class="w-[10%] flex justify-center items-center text-[#8ea5c0]">
@@ -252,9 +252,9 @@
   					<!-- TOP UP dropdown -->
   					<div
   						id="balance-info2"
-  						class="absolute right-0 mt-1 w-[330px] bg-[#262c41] text-slate-400 rounded-lg p-2 flex flex-col gap-2 hidden border border-gray-700 z-30">
+  						class="absolute right-0 mt-1 w-[330px] bg-[#131a2c] text-slate-400 rounded-lg p-2 flex flex-col gap-2 hidden border border-gray-700 z-30">
 
-  						<div class="bg-[#262c41] p-4 space-y-3 rounded-md">
+  						<div class="bg-[#131a2c] p-4 space-y-3 rounded-md">
   							<!-- Header -->
   							<div class="items-start">
   								<div class="flex justify-between items-center">
@@ -282,39 +282,39 @@
   											</svg>
   										</button>
 
-  										<div id="dropdownMenu" class="hidden absolute w-full p-2 bg-[#262c41] border border-[#202537] rounded-lg overflow-hidden z-10">
+  										<div id="dropdownMenu" class="hidden absolute w-full p-2 bg-[#131a2c] border border-[#202537] rounded-lg overflow-hidden z-10">
   											<div class="space-y-1">
-  												<button data-option="tether-trc20" class="border border-[#393d4a] payment-option w-full p-2 bg-[#293145] flex items-center gap-3 rounded-md hover:bg-[#1e2538] text-gray-300">
+  												<button data-option="tether-trc20" class="border border-[#1e293b] payment-option w-full p-2 bg-[#131a2c] flex items-center gap-3 rounded-md hover:bg-[#0f172a] text-gray-300">
   													<img src="https://pocketoption.com/images/payments/logo2/usdt-trc20.png" alt="USDT" class="w-8 object-cover h-8" />
   													<span class="text-sm">Tether (USDT) TRC-20</span>
   												</button>
 
-  												<button data-option="bank-transfer" class="border border-[#393d4a] payment-option w-full p-2 bg-[#293145] flex items-center gap-3 rounded-md hover:bg-[#1e2538] text-gray-300">
+  												<button data-option="bank-transfer" class="border border-[#1e293b] payment-option w-full p-2 bg-[#131a2c] flex items-center gap-3 rounded-md hover:bg-[#0f172a] text-gray-300">
   													<img src="https://pocketoption.com/images/payments/logo2/banking-ng.png" alt="Bank" class="w-8 object-cover h-8" />
   													<span class="text-sm">Bank Transfer (NGN)</span>
   												</button>
 
-  												<button data-option="qafpay" class="border border-[#393d4a] payment-option w-full p-2 bg-[#293145] flex items-center gap-3 rounded-md hover:bg-[#1e2538] text-gray-300">
+  												<button data-option="qafpay" class="border border-[#1e293b] payment-option w-full p-2 bg-[#131a2c] flex items-center gap-3 rounded-md hover:bg-[#0f172a] text-gray-300">
   													<img src="https://pocketoption.com/images/payments/logo2/qafpay-ng.png" alt="QafPay" class="w-8 object-cover h-8" />
   													<span class="text-sm">QafPay</span>
   												</button>
 
-  												<button data-option="cards" class="border border-[#393d4a] payment-option w-full p-2 bg-[#293145] flex items-center gap-3 rounded-md hover:bg-[#1e2538] text-gray-300">
+  												<button data-option="cards" class="border border-[#1e293b] payment-option w-full p-2 bg-[#131a2c] flex items-center gap-3 rounded-md hover:bg-[#0f172a] text-gray-300">
   													<img src="https://pocketoption.com/images/payments/logo2/monetix-nigeria-cc.png" alt="Cards" class="w-8 object-cover h-8" />
   													<span class="text-sm">Visa, Mastercard, Verve</span>
   												</button>
 
-  												<button data-option="cards" class="border border-[#393d4a] payment-option w-full p-2 bg-[#293145] flex items-center gap-3 rounded-md hover:bg-[#1e2538] text-gray-300">
+  												<button data-option="cards" class="border border-[#1e293b] payment-option w-full p-2 bg-[#131a2c] flex items-center gap-3 rounded-md hover:bg-[#0f172a] text-gray-300">
   													<img src="https://pocketoption.com/images/payments/logo2/usdt-ton.png" alt="Cards" class="w-8 object-cover h-8" />
   													<span class="text-sm">Tether (USDT) TON</span>
   												</button>
 
-  												<button data-option="cards" class="border border-[#393d4a] payment-option w-full p-2 bg-[#293145] flex items-center gap-3 rounded-md hover:bg-[#1e2538] text-gray-300">
+  												<button data-option="cards" class="border border-[#1e293b] payment-option w-full p-2 bg-[#131a2c] flex items-center gap-3 rounded-md hover:bg-[#0f172a] text-gray-300">
   													<img src="https://pocketoption.com/images/payments/logo2/usdt-bep20.png" alt="Cards" class="w-8 object-cover h-8" />
   													<span class="text-sm">Tether (USDT) BEP20</span>
   												</button>
 
-  												<button data-option="choose-another" class="border border-[#393d4a] payment-option w-full p-2 bg-[#293145] flex items-center gap-3 rounded-md hover:bg-[#1e2538] text-gray-300">
+  												<button data-option="choose-another" class="border border-[#1e293b] payment-option w-full p-2 bg-[#131a2c] flex items-center gap-3 rounded-md hover:bg-[#0f172a] text-gray-300">
   													<span class="text-sm">Choose another...</span>
   												</button>
   											</div>
@@ -402,21 +402,21 @@
   					<!-- Dropdown menu -->
   					<div
   						id="profile-avatar-dropdown-menu"
-  						class="flex flex-row absolute right-0 mt-1  bg-[#2a3148] text-slate-400 rounded-lg flex flex-col gap-2 hidden border border-gray-700 z-30"
+  						class="flex flex-row absolute right-0 mt-1  bg-[#131a2c] text-slate-400 rounded-lg flex flex-col gap-2 hidden border border-gray-700 z-30"
   						role="menu"
   						aria-labelledby="profile-avatar-dropdown-trigger">
   						<div class="p-4">
-  							<div class="w-full bg-[#2a3148] flex flex-col gap-2">
+  							<div class="w-full bg-[#131a2c] flex flex-col gap-2">
   								<!-- Profile Header -->
   								<div class="flex items-start gap-4">
   									<!-- Avatar -->
   									<div class="relative">
-  										<div class="p-1 rounded-full bg-[#2a3148] border-4 border-green-500 justify-center items-center text-center overflow-hidden">
+  										<div class="p-1 rounded-full bg-[#131a2c] border-4 border-green-500 justify-center items-center text-center overflow-hidden">
   											<div class="rounded-full h-20 w-20 overflow-hidden">
   												<img src="//pocket-uploads.com/images/cabinet/no_avatar.png?v=1724660313&amp;w=100" alt="User Avatar" class="bg-cover">
   											</div>
   										</div>
-  										<div class="absolute -top-1 -right-0 bg-[#2a3148] rounded-full">
+  										<div class="absolute -top-1 -right-0 bg-[#131a2c] rounded-full">
   											<span class="text-[#32ac41] text-lg rounded-full p-2 py-4">✦</span>
   										</div>
   									</div>
@@ -444,7 +444,7 @@
   								</div>
 
   								<!-- Achievements Section -->
-  								<div class="bg-[#1f2536] rounded-lg p-4">
+  								<div class="bg-[#131a2c] rounded-lg p-4">
   									<div class="flex justify-between items-center mb-4">
   										<h3 class="text-sm text-white font-semibold">Your achievements:</h3>
   										<button class="text-gray-400">
@@ -3262,7 +3262,7 @@
   								</div>
 
   								<!-- Statistics Section -->
-  								<div class="bg-[#1f2536] rounded-lg p-4">
+  								<div class="bg-[#131a2c] rounded-lg p-4">
   									<div class="flex justify-between items-center mb-4">
   										<h3 class="text-sm text-white font-semibold">Real account statistics for today:</h3>
   										<button class="text-gray-400">

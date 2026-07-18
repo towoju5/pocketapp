@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="bg-[#15182a] rounded-lg w-full m-6 max-h-[90%] text-white">
+    <div class="bg-[#0f172a] rounded-lg w-full m-6 max-h-[90%] text-white">
         <!-- Multi-Step Wizard -->
         <div class="max-w-6xl mx-auto py-10 px-4 lg:px-20">
             <div class="shadow-lg p-6 lg:p-10">
@@ -107,7 +107,7 @@
         </div>
 
         <!-- Footer -->
-        {{-- <div class="w-full bg-[#15182a] text-gray-500 text-sm py-4 px-6 mt-10">
+        {{-- <div class="w-full bg-[#0f172a] text-gray-500 text-sm py-4 px-6 mt-10">
             <div class="flex justify-between">
                 <p>© 2025 Pocket Option. All rights reserved.</p>
                 <div class="flex space-x-4">

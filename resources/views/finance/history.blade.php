@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.desktop.trading')
 
 @section('content')
     <div class="w-full mx-4">
@@ -14,11 +14,15 @@
                             <a href="{{ url()->current() }}?type=transfer"><button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">Internal Transfers</button></a>
                             <a href="{{ route('finance.history') }}"><button class="px-4 py-2 bg-[#1d2232] hover:border-blue-600 text-white rounded">All Types</button></a>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <input type="text" id="daterange" name="daterange"
-                                class="px-4 py-2 rounded bg-gray-700 border-b border-[#292d4a] text-white" />
-                            <button class="px-4 py-2 bg-[#292d4a] text-white rounded hover:bg-[#293145]">Apply</button>
-                        </div>
+                        <form method="GET" action="{{ route('finance.history') }}" class="flex items-center gap-2">
+                            <input type="hidden" name="type" value="{{ request('type') }}">
+                            <input type="date" name="date_from" value="{{ request('date_from') }}"
+                                class="px-3 py-2 rounded bg-gray-700 border-b border-[#292d4a] text-white text-sm" />
+                            <span class="text-gray-400 text-sm">to</span>
+                            <input type="date" name="date_to" value="{{ request('date_to') }}"
+                                class="px-3 py-2 rounded bg-gray-700 border-b border-[#292d4a] text-white text-sm" />
+                            <button type="submit" class="px-4 py-2 bg-[#292d4a] text-white rounded hover:bg-[#131a2c]">Apply</button>
+                        </form>
                     </div>
                     <table class="table-auto w-full border-collapse shadow-xl text-sm">
                         <thead>
@@ -26,28 +30,28 @@
                                 <th class="border-b border-[#292d4a] px-4 py-2">ID</th>
                                 <th class="border-b border-[#292d4a] px-4 py-2">Date</th>
                                 <th class="border-b border-[#292d4a] px-4 py-2">Amount</th>
-                                <th class="border-b border-[#292d4a] px-4 py-2">Method</th>
                                 <th class="border-b border-[#292d4a] px-4 py-2">Type</th>
                                 <th class="border-b border-[#292d4a] px-4 py-2">Status</th>
-                                <th class="border-b border-[#292d4a] px-4 py-2">Bonus Amount</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse ($transactions as $item)
                                 <tr class="py-2 text-center">
-                                    <td class="border-b border-gray-800 px-4 py-2">60859570</td>
-                                    <td class="border-b border-gray-800 px-4 py-2">2025-01-08 11:48:33</td>
-                                    <td class="border-b border-gray-800 px-4 py-2">$10</td>
-                                    <td class="border-b border-gray-800 px-4 py-2">QafPay</td>
-                                    <td class="border-b border-gray-800 px-4 py-2">{{ $item->type }}</td>
+                                    <td class="border-b border-gray-800 px-4 py-2">{{ $item->id }}</td>
+                                    <td class="border-b border-gray-800 px-4 py-2">{{ $item->created_at->format('Y-m-d H:i:s') }}</td>
+                                    <td class="border-b border-gray-800 px-4 py-2">${{ number_format($item->amountFloat, 2) }}</td>
+                                    <td class="border-b border-gray-800 px-4 py-2">{{ ucfirst($item->type) }}</td>
                                     <td class="border-b border-gray-800 px-4 py-2">
-                                        <span class="bg-red-500 text-white px-2 py-1 rounded text-xs">Expired</span>
+                                        @if($item->confirmed)
+                                            <span class="bg-green-600 text-white px-2 py-1 rounded text-xs">Confirmed</span>
+                                        @else
+                                            <span class="bg-yellow-600 text-white px-2 py-1 rounded text-xs">Pending</span>
+                                        @endif
                                     </td>
-                                    <td class="border-b border-gray-800 px-4 py-2">$0</td>
                                 </tr>
                             @empty
                                 <tr class="flex items-center">
-                                    <td colspan="6" class="py-2 text-center text-xl lg:text-2xl"> No Record found </td>
+                                    <td colspan="5" class="py-2 text-center text-xl lg:text-2xl"> No Record found </td>
                                 </tr>
                             @endforelse
                         </tbody>
@@ -61,20 +65,3 @@
     </div>
 @endsection
 
-@push('js')
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
-    <script>
-        $(document).ready(function() {
-            $('#daterange').daterangepicker({
-                opens: 'right',
-                startDate: "{{ now()->format('Y-m-d') }}",
-                endDate: "{{ now()->addDays(30)->format('Y-m-d') }}",
-                locale: {
-                    format: 'DD-MM-YYYY'
-                }
-            });
-        });
-    </script>
-@endpush

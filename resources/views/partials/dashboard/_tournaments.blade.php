@@ -2,8 +2,8 @@
     <h1 class="text-gray-200 text-md text-center w-full">Tournaments</h1>
 </div>
 <!-- Tabs -->
-<div class="grid grid-cols-2 border-b border-[#2a3142]">
-    <button onclick="toggleTradeMenu(this, 'new')" class="trade-open-close relative py-2 text-gray-500 bg-[#1e2131] font-thin text-sm active-tab">
+<div class="grid grid-cols-2 border-b border-[#131a2c]">
+    <button onclick="toggleTradeMenu(this, 'new')" class="trade-open-close relative py-2 text-gray-500 bg-[#0b1120] font-thin text-sm active-tab">
         All Tournaments
         <div class="tab-indicator absolute bottom-0 left-0 w-full h-0.5 bg-blue-500"></div>
     </button>
@@ -22,7 +22,7 @@
                 rgba(8, 124, 199, 0.2) 0,
                 transparent 100%
                 ),
-                #1e2131;
+                #0b1120;
             " class="rounded-t-lg px-5 pt-2 flex items-center justify-between">
             <div>
                 <div class="text-xl">Hour play</div>
@@ -54,7 +54,7 @@
     </div>
     <!-- Tournament Card: Day Off -->
     <div class="my-3 text-white">
-        <div style="background: radial-gradient(126.93% 414.63% at 98.83% 2.29%,rgba(136, 51, 203, 0.2) 0,transparent 100%),#1e2131;" class="rounded-t-lg px-5 pt-2 flex items-center justify-between">
+        <div style="background: radial-gradient(126.93% 414.63% at 98.83% 2.29%,rgba(136, 51, 203, 0.2) 0,transparent 100%),#0b1120;" class="rounded-t-lg px-5 pt-2 flex items-center justify-between">
             <div>
                 <div class="text-xl">Day Off</div>
                 <div class="">

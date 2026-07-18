@@ -51,8 +51,28 @@ class EvaluateTrade implements ShouldQueue
             $trade->save();
 
             if ($trade->trade_status == 'win') {
-                credit_user($trade->trade_wallet, $trade->trade_profit + $trade->trade_amount, "Successfully won trade ID {$trade->id}");
+                // credit_user() operates on auth()->user(), which doesn't
+                // exist in a queued job — credit the trade's actual owner
+                // directly via their wallet instead.
+                // trade_profit already IS the total payout (stake + profit,
+                // computed as such in TradeController::placeTrade()) — adding
+                // trade_amount again here would double-refund the stake.
+                $trade->user->getWallet($trade->trade_wallet)->deposit(
+                    $trade->trade_profit,
+                    ['description' => "Successfully won trade ID {$trade->id}"]
+                );
             }
+
+            // Referral commission is volume-based (fires on every closed
+            // trade, win or lose) rather than profit-based, to keep the
+            // rule simple and avoid incentive-gaming complexity.
+            (new \App\Services\ReferralCommissionService())->distribute(
+                $trade->user,
+                'trade',
+                (float) $trade->trade_amount,
+                $trade->trade_wallet,
+                $trade
+            );
 
             event(new \App\Events\TradeUpdated($trade));
         } catch (\Throwable $th) {

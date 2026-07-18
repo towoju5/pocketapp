@@ -7,7 +7,6 @@ use App\Models\BitgoWallets;
 use App\Models\Deposit;
 use App\Models\User;
 // use App\Models\Wallet;
-use Bavix\Wallet\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -110,18 +109,36 @@ class DepositController extends Controller
         }
 
         if ($request->deposit_step == 3) {
-            return view('deposits.partials.step-4', compact('deposit_method'));
+            $request->validate([
+                'deposit_amount' => 'required|numeric|min:1',
+                'wallet_address' => 'required|string',
+                'deposit_method' => 'required',
+            ]);
+
+            $deposit_method = json_decode($request->deposit_method);
+            $deposit_amount = $request->deposit_amount;
+            $wallet_address = $request->wallet_address;
+
+            return view('deposits.partials.step-4', compact('deposit_method', 'deposit_amount', 'wallet_address'));
         }
 
         // Process the deposit after confirmation (step 4)
-        $wallet = Wallet::findOrFail($request->wallet_id);
+        $request->validate([
+            'deposit_amount' => 'required|numeric|min:1',
+            'deposit_method' => 'required',
+        ]);
+
+        $user = Auth::user();
+        create_user_wallet($user->id);
+        $walletSlug = 'qt_real_usd';
+        $walletModel = $user->getWallet($walletSlug);
 
         // Calculate bonus (example: 5% bonus for deposits over 1000)
         $bonus = $request->deposit_amount >= get_option('min_deposit_for_bonus') ? $request->deposit_amount * get_option('deposit_bonus', 0) : 0;
 
         $deposit = new Deposit([
-            'user_id' => Auth::id(),
-            'wallet_id' => $request->wallet_id,
+            'user_id' => $user->id,
+            'wallet_id' => $walletModel->id,
             'deposit_amount' => $request->deposit_amount,
             'deposit_date_time' => Carbon::now(),
             'deposit_status' => 'pending',
@@ -132,22 +149,31 @@ class DepositController extends Controller
 
         $deposit->save();
 
-        // Process the deposit using Bavix Wallet
+        // Process the deposit using the Bavix wallet, same helper used across the rest of the app
         try {
-            $user = Auth::user();
-            $user->deposit($request->deposit_amount, ["description" => "wallet deposit"]);
+            if (!credit_user($walletSlug, $request->deposit_amount, 'Wallet deposit')) {
+                throw new \Exception('Wallet credit failed');
+            }
 
             if ($bonus > 0) {
-                $user->deposit($bonus, ["description" => "Wallet deposit bonus"]);
+                credit_user($walletSlug, $bonus, 'Wallet deposit bonus');
             }
 
             $deposit->update(['deposit_status' => 'completed']);
 
             Flasher::addSuccess('Deposit processed successfully!');
+
+            if ($request->ajax()) {
+                return response()->json(['redirect' => route('deposits.show', $deposit->id)]);
+            }
             return redirect()->route('deposits.show', $deposit->id);
         } catch (\Exception $e) {
             $deposit->update(['deposit_status' => 'failed']);
             Flasher::addError('Deposit processing failed. Please try again.');
+
+            if ($request->ajax()) {
+                return response()->json(['message' => 'Deposit processing failed. Please try again.'], 422);
+            }
             return back()->with('error', "Deposit processing failed. Please try again.");
         }
     }

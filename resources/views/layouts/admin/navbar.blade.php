@@ -1,43 +1,33 @@
-<nav class="navbar navbar-expand-lg navbar-white bg-white">
-    <button type="button" id="sidebarCollapse" class="btn btn-light">
-        <i class="fas fa-bars"></i><span></span>
+<header class="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-glass-border bg-glass-surface px-6 backdrop-blur-xl sm:px-10">
+    <button type="button" @click="sidebarOpen = !sidebarOpen" class="flex h-10 w-10 items-center justify-center rounded-lg text-slate-300 hover:bg-white/5 lg:hidden">
+        <x-heroicon-o-bars-3 class="h-6 w-6" />
     </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <ul class="nav navbar-nav ms-auto">
-            <li class="nav-item dropdown">
-                <div class="nav-dropdown">
-                    <a href="#" id="nav1" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-link"></i> <span>Quick Links</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end nav-link-menu" aria-labelledby="nav1">
-                        <ul class="nav-list">
-                            <li><a href="" class="dropdown-item"><i class="fas fa-list"></i> Access Logs</a></li>
-                            <div class="dropdown-divider"></div>
-                            <li><a href="" class="dropdown-item"><i class="fas fa-database"></i> Back ups</a></li>
-                            <div class="dropdown-divider"></div>
-                            <li><a href="" class="dropdown-item"><i class="fas fa-cloud-download-alt"></i> Updates</a></li>
-                            <div class="dropdown-divider"></div>
-                            <li><a href="" class="dropdown-item"><i class="fas fa-user-shield"></i> Roles</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </li>
-            <li class="nav-item dropdown">
-                <div class="nav-dropdown">
-                    <a href="#" id="nav2" class="nav-item nav-link dropdown-toggle text-secondary" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user"></i> <span>John Doe</span> <i style="font-size: .8em;" class="fas fa-caret-down"></i>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end nav-link-menu">
-                        <ul class="nav-list">
-                            <li><a href="" class="dropdown-item"><i class="fas fa-address-card"></i> Profile</a></li>
-                            <li><a href="" class="dropdown-item"><i class="fas fa-envelope"></i> Messages</a></li>
-                            <li><a href="" class="dropdown-item"><i class="fas fa-cog"></i> Settings</a></li>
-                            <div class="dropdown-divider"></div>
-                            <li><a href="" class="dropdown-item"><i class="fas fa-sign-out-alt"></i> Logout</a></li>
-                        </ul>
-                    </div>
-                </div>
-            </li>
-        </ul>
+
+    <div class="hidden lg:block">
+        <p class="text-sm font-semibold text-slate-400">Welcome back,</p>
+        <p class="text-base font-bold text-white">{{ auth()->user()->first_name ?? 'Admin' }}</p>
     </div>
-</nav>
+
+    <div x-data="{ open: false }" class="relative ml-auto">
+        <button type="button" @click="open = !open" @click.outside="open = false" class="flex items-center gap-3 rounded-full border border-glass-border bg-white/5 py-1.5 pl-1.5 pr-3 text-sm font-semibold text-white hover:bg-white/10">
+            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-amber/20 text-xs font-bold text-brand-amber">
+                {{ strtoupper(substr(auth()->user()->first_name ?? 'A', 0, 1)) }}
+            </span>
+            {{ auth()->user()->first_name ?? 'Admin' }}
+            <x-heroicon-o-chevron-down class="h-3.5 w-3.5 text-slate-400" />
+        </button>
+
+        <div x-show="open" x-transition x-cloak
+             class="absolute right-0 z-40 mt-2 w-56 rounded-xl border border-glass-border bg-brand-navy p-1.5 shadow-2xl">
+            <a href="{{ route('dashboard') }}" class="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-slate-300 hover:bg-white/5 hover:text-white">
+                <x-heroicon-o-arrow-left-circle class="h-4 w-4" /> Back to app
+            </a>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm text-brand-danger hover:bg-brand-danger/10">
+                    <x-heroicon-o-arrow-right-start-on-rectangle class="h-4 w-4" /> Sign out
+                </button>
+            </form>
+        </div>
+    </div>
+</header>

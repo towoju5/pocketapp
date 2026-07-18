@@ -1,5 +1,5 @@
 <!-- Left Nav Bar -->
-<aside class="flex flex-col justify-between h-screen w-24 bg-[#1e2131] py-4 px-2 overflow-hidden">
+<aside class="flex flex-col justify-between h-screen w-24 bg-[#0b1120] py-4 px-2 overflow-hidden">
 	<nav class="flex flex-col items-center space-y-4 text-center">
 		<!-- Trading -->
 		<a href="#" data-section="Trading" class="nav-link flex flex-col items-center group">
@@ -62,25 +62,25 @@
 </aside>
 
 <!-- LEFT NAV BAR Content Area -->
-<div class="bg-[#222636] min-h-screen w-[25rem] mr-auto" id="content-area">
-	<div class="bg-[#222636] min-h-screen w-full">
+<div class="bg-[#0f172a] min-h-screen w-[25rem] mr-auto" id="content-area">
+	<div class="bg-[#0f172a] min-h-screen w-full">
 		<!-- Search Bar -->
-		<div class="bg-[#1e2232] w-full p-2 pb-2">
+		<div class="bg-[#0b1120] w-full p-2 pb-2">
 			<div class="flex items-center gap-2 mb-4 w-[100%] bg-transparent">
-				<button class="p-2 bg-[#293145] rounded-md">
+				<button class="p-2 bg-[#131a2c] rounded-md">
 					<svg class="w-5 h-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
 					</svg>
 				</button>
 
 				<div class="relative flex-1">
-					<input type="search" placeholder="Search..." class="text-left w-full bg-[#1d2130] text-slate-300 rounded-lg border border-slate-400 py-2 px-4">
+					<input type="search" placeholder="Search..." class="text-left w-full bg-[#0b1120] text-slate-300 rounded-lg border border-slate-400 py-2 px-4">
 					<svg class="w-5 h-5 text-slate-400 absolute right-3 top-2.5" xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 					</svg>
 				</div>
 
-				<button class="p-2 bg-[#293145] rounded-md">
+				<button class="p-2 bg-[#131a2c] rounded-md">
 					<svg class="w-5 h-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" stroke="currentColor">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
 					</svg>
@@ -89,11 +89,11 @@
 
 			<!-- Tabs -->
 			<div class="flex gap-2 mb-2">
-				<button class="flex-1 bg-[#314463] border border-[#0c84d3] py-2 text-white text-sm rounded-lg relative">
+				<button class="flex-1 bg-[#1e3a5f] border border-[#3b82f6] py-2 text-white text-sm rounded-lg relative">
 					Chats
 					<span class="absolute -top-1 -right-1 bg-blue-500 text-xs rounded-full h-5 w-5 flex items-center justify-center">1</span>
 				</button>
-				<button class="flex-1 bg-[#1d2130] text-slate-300  border border-[#454a56] rounded-lg relative">
+				<button class="flex-1 bg-[#0b1120] text-slate-300  border border-[#454a56] rounded-lg relative">
 					Notifications
 					<span class="absolute -top-1 -right-1 bg-blue-500 text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
 				</button>
@@ -140,9 +140,9 @@
 
 <div id="hidden-sectionss" class="hidden text-white trading-menus">
 	<!-- Trading menu -->
-	<div id="Trading" class="text-white bg-[#23283b] ">
+	<div id="Trading" class="text-white bg-[#0f172a] ">
 		<div class="p-2 flex flex-col gap-2.5">
-			<a href="{{ route('dashboard') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('dashboard') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -158,7 +158,7 @@
 				<span></span>
 			</a>
 
-			<a href="{{ route('dashboard.demo') }}"  class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('dashboard.demo') }}"  class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -173,7 +173,7 @@
 				<span></span>
 			</a>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -189,7 +189,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -204,7 +204,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -219,7 +219,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -234,7 +234,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -249,7 +249,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -267,9 +267,9 @@
 	</div>
 
 	<!-- // Finance Menu -->
-	<div id="Finance" class="text-white bg-[#23283b]">
+	<div id="Finance" class="text-white bg-[#0f172a]">
 		<div class="p-2 flex flex-col gap-2.5">
-			<a href="{{ route('deposit.create') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('deposit.create') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -287,7 +287,7 @@
 				<span></span>
 			</a>
 
-			<a href="{{ route('payout.create') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('payout.create') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -305,7 +305,82 @@
 				<span></span>
 			</a>
 
-			<a href="{{ route('finance.history') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('tasks.index') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
+				<!-- content -->
+				<div class="text-white flex flex-row w-full gap-2">
+					<!-- ICON -->
+					<span class="text-[#8ea5c0] rounded-md flex items-center gap-4">
+						<svg fill="none" stroke="#fff" stroke-width="2" width="17" height="17" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+					</span>
+					<!-- Text -->
+					<span class="text-sm">Tasks</span>
+				</div>
+				<span></span>
+			</a>
+
+			<a href="{{ route('referrals.index') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
+				<!-- content -->
+				<div class="text-white flex flex-row w-full gap-2">
+					<!-- ICON -->
+					<span class="text-[#8ea5c0] rounded-md flex items-center gap-4">
+						<svg fill="none" stroke="#fff" stroke-width="2" width="17" height="17" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-2.13a4 4 0 10-4-4 4 4 0 004 4zm6 0a4 4 0 10-4-4" />
+						</svg>
+					</span>
+					<!-- Text -->
+					<span class="text-sm">Referrals</span>
+				</div>
+				<span></span>
+			</a>
+
+			<a href="{{ route('support-tickets.index') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
+				<!-- content -->
+				<div class="text-white flex flex-row w-full gap-2">
+					<!-- ICON -->
+					<span class="text-[#8ea5c0] rounded-md flex items-center gap-4">
+						<svg fill="none" stroke="#fff" stroke-width="2" width="17" height="17" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+					</span>
+					<!-- Text -->
+					<span class="text-sm">Support</span>
+				</div>
+				<span></span>
+			</a>
+
+			<a href="{{ route('notifications.index') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
+				<!-- content -->
+				<div class="text-white flex flex-row w-full gap-2">
+					<!-- ICON -->
+					<span class="text-[#8ea5c0] rounded-md flex items-center gap-4">
+						<svg fill="none" stroke="#fff" stroke-width="2" width="17" height="17" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+						</svg>
+					</span>
+					<!-- Text -->
+					<span class="text-sm">Notifications</span>
+				</div>
+				<span></span>
+			</a>
+
+			<a href="{{ route('p2p-offers.index') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
+				<!-- content -->
+				<div class="text-white flex flex-row w-full gap-2">
+					<!-- ICON -->
+					<span class="text-[#8ea5c0] rounded-md flex items-center gap-4">
+						<svg fill="none" stroke="#fff" stroke-width="2" width="17" height="17" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4M16 17H4m0 0l4 4m-4-4l4-4" />
+						</svg>
+					</span>
+					<!-- Text -->
+					<span class="text-sm">P2P Escrow</span>
+				</div>
+				<span></span>
+			</a>
+
+			<a href="{{ route('finance.history') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -321,7 +396,7 @@
 				<span></span>
 			</a>
 
-			<a href="{{ route('finance.cashback') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('finance.cashback') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -337,7 +412,22 @@
 				<span></span>
 			</a>
 
-			<a href="{{ route('finance.promo-codes') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('plans.index') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
+				<!-- content -->
+				<div class="text-white flex flex-row w-full gap-2">
+					<!-- ICON -->
+					<span class="text-[#8ea5c0] rounded-md flex items-center gap-4">
+						<svg fill="none" stroke="#fff" stroke-width="2" width="17" height="17" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .672-3 1.5S10.343 11 12 11s3 .672 3 1.5-1.343 1.5-3 1.5m0-6c1.11 0 2.08.402 2.599 1M12 8V6.5M12 17.5V16m0-8V6.5m0 11V16m0 0c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+						</svg>
+					</span>
+					<!-- Text -->
+					<span class="text-sm">Plans</span>
+				</div>
+				<span></span>
+			</a>
+
+			<a href="{{ route('finance.promo-codes') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -353,7 +443,7 @@
 				<span></span>
 			</a>
 
-			<a href="{{ route('finance.my-safe') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('finance.my-safe') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -380,9 +470,9 @@
 	</div>
 
 	<!-- // Profile Menu -->
-	<div id="Profile" class="text-white bg-[#23283b]">
+	<div id="Profile" class="text-white bg-[#0f172a]">
 		<div class="p-2 flex flex-col gap-2.5">
-			<a href="{{ route('trading.profile') }}"  class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('trading.profile') }}"  class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -399,7 +489,7 @@
 				<span></span>
 			</a>
 
-			<a href="{{ route('profile.edit') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('profile.edit') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -415,7 +505,7 @@
 				<span></span>
 			</a>
 
-			<a href="#" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('profile.edit', ['tab' => 'loyalty']) }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -432,7 +522,7 @@
 				<span></span>
 			</a>
 
-			<a href="{{ route('profile.security') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('profile.security') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -449,7 +539,7 @@
 				<span></span>
 			</a>
 
-			<a href="{{ route('trade.index') }}" class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('trade.index') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -467,9 +557,9 @@
 	</div>
 
 	<!-- // Market -->
-	<div id="Market" class="text-white bg-[#23283b]">
+	<div id="Market" class="text-white bg-[#0f172a]">
 		<div class="p-2 flex flex-col gap-2.5">
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -484,7 +574,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -499,7 +589,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -514,7 +604,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -529,7 +619,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -547,9 +637,9 @@
 	</div>
 
 	<!-- // Achievements -->
-	<div id="Achievements" class="text-white bg-[#23283b]">
+	<div id="Achievements" class="text-white bg-[#0f172a]">
 		<div class="p-2 flex flex-col gap-2.5">
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -565,7 +655,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -585,7 +675,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -609,7 +699,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -632,24 +722,24 @@
 
 	<!-- // Chat -->
 	<div id="Chat">
-		<div class="bg-[#222636] min-h-screen w-full">
+		<div class="bg-[#0f172a] min-h-screen w-full">
 			<!-- Search Bar -->
-			<div class="bg-[#1e2232] w-full p-2 pb-2">
+			<div class="bg-[#0b1120] w-full p-2 pb-2">
 				<div class="flex items-center gap-2 mb-4 w-[100%] bg-transparent">
-					<button class="p-2 bg-[#293145] rounded-md">
+					<button class="p-2 bg-[#131a2c] rounded-md">
 						<svg class="w-5 h-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
 						</svg>
 					</button>
 
 					<div class="relative flex-1">
-						<input type="search" placeholder="Search..." class="text-left w-full bg-[#1d2130] text-slate-300 rounded-lg border border-slate-400 py-2 px-4">
+						<input type="search" placeholder="Search..." class="text-left w-full bg-[#0b1120] text-slate-300 rounded-lg border border-slate-400 py-2 px-4">
 						<svg class="w-5 h-5 text-slate-400 absolute right-3 top-2.5" xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 						</svg>
 					</div>
 
-					<button class="p-2 bg-[#293145] rounded-md">
+					<button class="p-2 bg-[#131a2c] rounded-md">
 						<svg class="w-5 h-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="#ffffff" viewBox="0 0 24 24" stroke="currentColor">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
 						</svg>
@@ -658,11 +748,11 @@
 
 				<!-- Tabs -->
 				<div class="flex gap-2 mb-2">
-					<button class="flex-1 bg-[#314463] border border-[#0c84d3] py-2 text-white text-sm rounded-lg relative">
+					<button class="flex-1 bg-[#1e3a5f] border border-[#3b82f6] py-2 text-white text-sm rounded-lg relative">
 						Chats
 						<span class="absolute -top-1 -right-1 bg-blue-500 text-xs rounded-full h-5 w-5 flex items-center justify-center">1</span>
 					</button>
-					<button class="flex-1 bg-[#1d2130] text-slate-300  border border-[#454a56] rounded-lg relative">
+					<button class="flex-1 bg-[#0b1120] text-slate-300  border border-[#454a56] rounded-lg relative">
 						Notifications
 						<span class="absolute -top-1 -right-1 bg-blue-500 text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
 					</button>
@@ -706,9 +796,9 @@
 	</div>
 
 	<!-- // Help -->
-	<div id="Help" class="text-white bg-[#23283b]">
+	<div id="Help" class="text-white bg-[#0f172a]">
 		<div class="p-2 flex flex-col gap-2.5">
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -721,7 +811,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -734,7 +824,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -747,7 +837,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -760,7 +850,7 @@
 				<span></span>
 			</div>
 
-			<div class="bg-[#293145] hover:bg-slate-700 p-4 rounded-lg">
+			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -778,12 +868,12 @@
 				<!-- Official channels -->
 				<h2 class="text-white text-sm">Official channels:</h2>
 				<div class="grid grid-cols-2 gap-2 w-7/12">
-					<a href="#" class="block p-2 bg-[#293145] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
+					<a href="#" class="block p-2 bg-[#131a2c] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
 						<svg class="w-6 h-6 mx-auto" viewBox="0 0 18 18" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
 							<path fill-rule="evenodd" clip-rule="evenodd" d="M18 9C18 13.9706 13.9706 18 9 18C4.02944 18 0 13.9706 0 9C0 4.02944 4.02944 0 9 0C13.9706 0 18 4.02944 18 9ZM9.32252 6.6442C8.44714 7.0083 6.6976 7.7619 4.07392 8.90499C3.64787 9.07442 3.42469 9.24016 3.40438 9.40223C3.37004 9.67612 3.71303 9.78397 4.1801 9.93084C4.24364 9.95082 4.30947 9.97152 4.37695 9.99346C4.83648 10.1428 5.45462 10.3176 5.77597 10.3245C6.06746 10.3308 6.3928 10.2106 6.75198 9.964C9.20337 8.30925 10.4688 7.47286 10.5482 7.45483C10.6043 7.44211 10.6819 7.42611 10.7346 7.47288C10.7872 7.51966 10.782 7.60824 10.7765 7.632C10.7425 7.77685 9.39609 9.02857 8.69934 9.67633C8.48213 9.87827 8.32806 10.0215 8.29656 10.0542C8.226 10.1275 8.1541 10.1968 8.08499 10.2635C7.65808 10.675 7.33793 10.9836 8.10271 11.4876C8.47023 11.7298 8.76432 11.9301 9.05772 12.1299C9.37813 12.3481 9.69772 12.5657 10.1112 12.8367C10.2166 12.9058 10.3172 12.9775 10.4152 13.0474C10.7881 13.3132 11.1231 13.5521 11.5369 13.514C11.7774 13.4918 12.0258 13.2657 12.152 12.5913C12.4502 10.9974 13.0362 7.54384 13.1717 6.12073C13.1835 5.99605 13.1686 5.83648 13.1566 5.76643C13.1446 5.69638 13.1196 5.59658 13.0285 5.5227C12.9207 5.4352 12.7542 5.41675 12.6798 5.41806C12.3413 5.42403 11.8219 5.60461 9.32252 6.6442Z" fill="currentColor"></path>
 						</svg>
 					</a>
-					<a href="#" class="block p-2 bg-[#293145] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
+					<a href="#" class="block p-2 bg-[#131a2c] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
 						<svg class="w-6 h-6 mx-auto" viewBox="0 0 18 18" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
 							<path d="M15.2378 3.11668C14.0905 2.59027 12.8602 2.20243 11.5739 1.9803C11.5505 1.97601 11.5271 1.98673 11.515 2.00816C11.3568 2.28957 11.1815 2.65669 11.0588 2.94525C9.6753 2.73812 8.29889 2.73812 6.94374 2.94525C6.82099 2.65028 6.63936 2.28957 6.48043 2.00816C6.46836 1.98744 6.44496 1.97673 6.42154 1.9803C5.13593 2.20172 3.90567 2.58956 2.7577 3.11668C2.74776 3.12096 2.73924 3.12811 2.73359 3.13739C0.400044 6.62366 -0.239213 10.0242 0.0743851 13.3827C0.075804 13.3991 0.0850274 13.4148 0.0977985 13.4248C1.63741 14.5555 3.12878 15.2419 4.59246 15.6968C4.61588 15.704 4.6407 15.6954 4.65561 15.6761C5.00184 15.2033 5.31048 14.7048 5.57511 14.1805C5.59072 14.1498 5.57582 14.1133 5.5439 14.1012C5.05435 13.9155 4.5882 13.6891 4.1398 13.4319C4.10433 13.4112 4.10149 13.3605 4.13412 13.3362C4.22848 13.2655 4.32286 13.1919 4.41297 13.1177C4.42927 13.1041 4.45198 13.1012 4.47115 13.1098C7.41696 14.4548 10.6062 14.4548 13.5172 13.1098C13.5364 13.1005 13.5591 13.1034 13.5761 13.1169C13.6662 13.1912 13.7606 13.2655 13.8557 13.3362C13.8883 13.3605 13.8862 13.4112 13.8507 13.4319C13.4023 13.6941 12.9361 13.9155 12.4459 14.1005C12.414 14.1126 12.3998 14.1498 12.4154 14.1805C12.6857 14.704 12.9943 15.2026 13.3342 15.6754C13.3484 15.6954 13.3739 15.704 13.3973 15.6968C14.8681 15.2419 16.3595 14.5555 17.8991 13.4248C17.9126 13.4148 17.9211 13.3998 17.9225 13.3834C18.2978 9.50067 17.2939 6.12798 15.2612 3.1381C15.2562 3.12811 15.2477 3.12096 15.2378 3.11668ZM6.01502 11.3377C5.12812 11.3377 4.39735 10.5235 4.39735 9.52354C4.39735 8.52358 5.11395 7.70934 6.01502 7.70934C6.92315 7.70934 7.64686 8.53073 7.63266 9.52354C7.63266 10.5235 6.91606 11.3377 6.01502 11.3377ZM11.9961 11.3377C11.1092 11.3377 10.3784 10.5235 10.3784 9.52354C10.3784 8.52358 11.095 7.70934 11.9961 7.70934C12.9042 7.70934 13.6279 8.53073 13.6137 9.52354C13.6137 10.5235 12.9042 11.3377 11.9961 11.3377Z" fill="currentColor"></path>
 						</svg>
@@ -792,34 +882,34 @@
 				<!-- SOCIAL MEDIA -->
 				<h2 class="text-white text-sm">Follow us on:</h2>
 				<div class="grid grid-cols-3 gap-2 w-full">
-					<a href="#" class="block p-2 bg-[#293145] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
+					<a href="#" class="block p-2 bg-[#131a2c] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
 						<svg class="w-6 h-6 mx-auto" viewBox="0 0 18 18" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
 							<path d="M9 0C4.02948 0 0 4.02948 0 9C0 13.2206 2.90592 16.7623 6.82596 17.735V11.7504H4.97016V9H6.82596V7.81488C6.82596 4.75164 8.21232 3.3318 11.2198 3.3318C11.79 3.3318 12.7739 3.44376 13.1764 3.55536V6.04836C12.964 6.02604 12.595 6.01488 12.1367 6.01488C10.661 6.01488 10.0908 6.57396 10.0908 8.02728V9H13.0306L12.5255 11.7504H10.0908V17.9341C14.5472 17.3959 18.0004 13.6015 18.0004 9C18 4.02948 13.9705 0 9 0Z" fill="currentColor"></path>
 						</svg>
 					</a>
-					<a href="#" class="block p-2 bg-[#293145] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
+					<a href="#" class="block p-2 bg-[#131a2c] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
 						<svg class="w-6 h-6 mx-auto" viewBox="0 0 18 18" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
 							<path d="M15.2378 3.11668C14.0905 2.59027 12.8602 2.20243 11.5739 1.9803C11.5505 1.97601 11.5271 1.98673 11.515 2.00816C11.3568 2.28957 11.1815 2.65669 11.0588 2.94525C9.6753 2.73812 8.29889 2.73812 6.94374 2.94525C6.82099 2.65028 6.63936 2.28957 6.48043 2.00816C6.46836 1.98744 6.44496 1.97673 6.42154 1.9803C5.13593 2.20172 3.90567 2.58956 2.7577 3.11668C2.74776 3.12096 2.73924 3.12811 2.73359 3.13739C0.400044 6.62366 -0.239213 10.0242 0.0743851 13.3827C0.075804 13.3991 0.0850274 13.4148 0.0977985 13.4248C1.63741 14.5555 3.12878 15.2419 4.59246 15.6968C4.61588 15.704 4.6407 15.6954 4.65561 15.6761C5.00184 15.2033 5.31048 14.7048 5.57511 14.1805C5.59072 14.1498 5.57582 14.1133 5.5439 14.1012C5.05435 13.9155 4.5882 13.6891 4.1398 13.4319C4.10433 13.4112 4.10149 13.3605 4.13412 13.3362C4.22848 13.2655 4.32286 13.1919 4.41297 13.1177C4.42927 13.1041 4.45198 13.1012 4.47115 13.1098C7.41696 14.4548 10.6062 14.4548 13.5172 13.1098C13.5364 13.1005 13.5591 13.1034 13.5761 13.1169C13.6662 13.1912 13.7606 13.2655 13.8557 13.3362C13.8883 13.3605 13.8862 13.4112 13.8507 13.4319C13.4023 13.6941 12.9361 13.9155 12.4459 14.1005C12.414 14.1126 12.3998 14.1498 12.4154 14.1805C12.6857 14.704 12.9943 15.2026 13.3342 15.6754C13.3484 15.6954 13.3739 15.704 13.3973 15.6968C14.8681 15.2419 16.3595 14.5555 17.8991 13.4248C17.9126 13.4148 17.9211 13.3998 17.9225 13.3834C18.2978 9.50067 17.2939 6.12798 15.2612 3.1381C15.2562 3.12811 15.2477 3.12096 15.2378 3.11668ZM6.01502 11.3377C5.12812 11.3377 4.39735 10.5235 4.39735 9.52354C4.39735 8.52358 5.11395 7.70934 6.01502 7.70934C6.92315 7.70934 7.64686 8.53073 7.63266 9.52354C7.63266 10.5235 6.91606 11.3377 6.01502 11.3377ZM11.9961 11.3377C11.1092 11.3377 10.3784 10.5235 10.3784 9.52354C10.3784 8.52358 11.095 7.70934 11.9961 7.70934C12.9042 7.70934 13.6279 8.53073 13.6137 9.52354C13.6137 10.5235 12.9042 11.3377 11.9961 11.3377Z" fill="currentColor"></path>
 						</svg>
 					</a>
-					<a href="#" class="block p-2 bg-[#293145] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
+					<a href="#" class="block p-2 bg-[#131a2c] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
 						<svg class="w-6 h-6 mx-auto" viewBox="0 0 18 18" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
 							<path d="M9 1.6207C11.4047 1.6207 11.6895 1.63125 12.6352 1.67344C13.5141 1.71211 13.9887 1.85977 14.3051 1.98281C14.7234 2.14453 15.0258 2.34141 15.3387 2.6543C15.6551 2.9707 15.8484 3.26953 16.0102 3.68789C16.1332 4.0043 16.2809 4.48242 16.3195 5.35781C16.3617 6.30703 16.3723 6.5918 16.3723 8.99297C16.3723 11.3977 16.3617 11.6824 16.3195 12.6281C16.2809 13.507 16.1332 13.9816 16.0102 14.298C15.8484 14.7164 15.6516 15.0188 15.3387 15.3316C15.0223 15.648 14.7234 15.8414 14.3051 16.0031C13.9887 16.1262 13.5105 16.2738 12.6352 16.3125C11.6859 16.3547 11.4012 16.3652 9 16.3652C6.59531 16.3652 6.31055 16.3547 5.36484 16.3125C4.48594 16.2738 4.01133 16.1262 3.69492 16.0031C3.27656 15.8414 2.97422 15.6445 2.66133 15.3316C2.34492 15.0152 2.15156 14.7164 1.98984 14.298C1.8668 13.9816 1.71914 13.5035 1.68047 12.6281C1.63828 11.6789 1.62773 11.3941 1.62773 8.99297C1.62773 6.58828 1.63828 6.30352 1.68047 5.35781C1.71914 4.47891 1.8668 4.0043 1.98984 3.68789C2.15156 3.26953 2.34844 2.96719 2.66133 2.6543C2.97773 2.33789 3.27656 2.14453 3.69492 1.98281C4.01133 1.85977 4.48945 1.71211 5.36484 1.67344C6.31055 1.63125 6.59531 1.6207 9 1.6207ZM9 0C6.55664 0 6.25078 0.0105469 5.29102 0.0527344C4.33477 0.0949219 3.67734 0.249609 3.10781 0.471094C2.51367 0.703125 2.01094 1.00898 1.51172 1.51172C1.00898 2.01094 0.703125 2.51367 0.471094 3.1043C0.249609 3.67734 0.0949219 4.33125 0.0527344 5.2875C0.0105469 6.25078 0 6.55664 0 9C0 11.4434 0.0105469 11.7492 0.0527344 12.709C0.0949219 13.6652 0.249609 14.3227 0.471094 14.8922C0.703125 15.4863 1.00898 15.9891 1.51172 16.4883C2.01094 16.9875 2.51367 17.2969 3.1043 17.5254C3.67734 17.7469 4.33125 17.9016 5.2875 17.9438C6.24727 17.9859 6.55312 17.9965 8.99648 17.9965C11.4398 17.9965 11.7457 17.9859 12.7055 17.9438C13.6617 17.9016 14.3191 17.7469 14.8887 17.5254C15.4793 17.2969 15.982 16.9875 16.4813 16.4883C16.9805 15.9891 17.2898 15.4863 17.5184 14.8957C17.7398 14.3227 17.8945 13.6688 17.9367 12.7125C17.9789 11.7527 17.9895 11.4469 17.9895 9.00352C17.9895 6.56016 17.9789 6.2543 17.9367 5.29453C17.8945 4.33828 17.7398 3.68086 17.5184 3.11133C17.2969 2.51367 16.991 2.01094 16.4883 1.51172C15.9891 1.0125 15.4863 0.703125 14.8957 0.474609C14.3227 0.253125 13.6688 0.0984375 12.7125 0.05625C11.7492 0.0105469 11.4434 0 9 0Z" fill="currentColor"></path>
 							<path d="M9 4.37695C6.44766 4.37695 4.37695 6.44766 4.37695 9C4.37695 11.5523 6.44766 13.623 9 13.623C11.5523 13.623 13.623 11.5523 13.623 9C13.623 6.44766 11.5523 4.37695 9 4.37695ZM9 11.9988C7.34414 11.9988 6.00117 10.6559 6.00117 9C6.00117 7.34414 7.34414 6.00117 9 6.00117C10.6559 6.00117 11.9988 7.34414 11.9988 9C11.9988 10.6559 10.6559 11.9988 9 11.9988Z" fill="currentColor"></path>
 							<path d="M14.8852 4.19417C14.8852 4.79182 14.4 5.27346 13.8059 5.27346C13.2082 5.27346 12.7266 4.78831 12.7266 4.19417C12.7266 3.59651 13.2117 3.11487 13.8059 3.11487C14.4 3.11487 14.8852 3.60003 14.8852 4.19417Z" fill="currentColor"></path>
 						</svg>
 					</a>
-					<a href="#" class="block p-2 bg-[#293145] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
+					<a href="#" class="block p-2 bg-[#131a2c] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
 						<svg class="w-6 h-6 mx-auto" viewBox="0 0 18 18" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
 							<path fill-rule="evenodd" clip-rule="evenodd" d="M18 9C18 13.9706 13.9706 18 9 18C4.02944 18 0 13.9706 0 9C0 4.02944 4.02944 0 9 0C13.9706 0 18 4.02944 18 9ZM9.32252 6.6442C8.44714 7.0083 6.6976 7.7619 4.07392 8.90499C3.64787 9.07442 3.42469 9.24016 3.40438 9.40223C3.37004 9.67612 3.71303 9.78397 4.1801 9.93084C4.24364 9.95082 4.30947 9.97152 4.37695 9.99346C4.83648 10.1428 5.45462 10.3176 5.77597 10.3245C6.06746 10.3308 6.3928 10.2106 6.75198 9.964C9.20337 8.30925 10.4688 7.47286 10.5482 7.45483C10.6043 7.44211 10.6819 7.42611 10.7346 7.47288C10.7872 7.51966 10.782 7.60824 10.7765 7.632C10.7425 7.77685 9.39609 9.02857 8.69934 9.67633C8.48213 9.87827 8.32806 10.0215 8.29656 10.0542C8.226 10.1275 8.1541 10.1968 8.08499 10.2635C7.65808 10.675 7.33793 10.9836 8.10271 11.4876C8.47023 11.7298 8.76432 11.9301 9.05772 12.1299C9.37813 12.3481 9.69772 12.5657 10.1112 12.8367C10.2166 12.9058 10.3172 12.9775 10.4152 13.0474C10.7881 13.3132 11.1231 13.5521 11.5369 13.514C11.7774 13.4918 12.0258 13.2657 12.152 12.5913C12.4502 10.9974 13.0362 7.54384 13.1717 6.12073C13.1835 5.99605 13.1686 5.83648 13.1566 5.76643C13.1446 5.69638 13.1196 5.59658 13.0285 5.5227C12.9207 5.4352 12.7542 5.41675 12.6798 5.41806C12.3413 5.42403 11.8219 5.60461 9.32252 6.6442Z" fill="currentColor"></path>
 						</svg>
 					</a>
-					<a href="#" class="block p-2 bg-[#293145] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
+					<a href="#" class="block p-2 bg-[#131a2c] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
 						<svg class="w-6 h-6 mx-auto" viewBox="0 0 18 18" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
 							<path d="M15.2378 3.11668C14.0905 2.59027 12.8602 2.20243 11.5739 1.9803C11.5505 1.97601 11.5271 1.98673 11.515 2.00816C11.3568 2.28957 11.1815 2.65669 11.0588 2.94525C9.6753 2.73812 8.29889 2.73812 6.94374 2.94525C6.82099 2.65028 6.63936 2.28957 6.48043 2.00816C6.46836 1.98744 6.44496 1.97673 6.42154 1.9803C5.13593 2.20172 3.90567 2.58956 2.7577 3.11668C2.74776 3.12096 2.73924 3.12811 2.73359 3.13739C0.400044 6.62366 -0.239213 10.0242 0.0743851 13.3827C0.075804 13.3991 0.0850274 13.4148 0.0977985 13.4248C1.63741 14.5555 3.12878 15.2419 4.59246 15.6968C4.61588 15.704 4.6407 15.6954 4.65561 15.6761C5.00184 15.2033 5.31048 14.7048 5.57511 14.1805C5.59072 14.1498 5.57582 14.1133 5.5439 14.1012C5.05435 13.9155 4.5882 13.6891 4.1398 13.4319C4.10433 13.4112 4.10149 13.3605 4.13412 13.3362C4.22848 13.2655 4.32286 13.1919 4.41297 13.1177C4.42927 13.1041 4.45198 13.1012 4.47115 13.1098C7.41696 14.4548 10.6062 14.4548 13.5172 13.1098C13.5364 13.1005 13.5591 13.1034 13.5761 13.1169C13.6662 13.1912 13.7606 13.2655 13.8557 13.3362C13.8883 13.3605 13.8862 13.4112 13.8507 13.4319C13.4023 13.6941 12.9361 13.9155 12.4459 14.1005C12.414 14.1126 12.3998 14.1498 12.4154 14.1805C12.6857 14.704 12.9943 15.2026 13.3342 15.6754C13.3484 15.6954 13.3739 15.704 13.3973 15.6968C14.8681 15.2419 16.3595 14.5555 17.8991 13.4248C17.9126 13.4148 17.9211 13.3998 17.9225 13.3834C18.2978 9.50067 17.2939 6.12798 15.2612 3.1381C15.2562 3.12811 15.2477 3.12096 15.2378 3.11668ZM6.01502 11.3377C5.12812 11.3377 4.39735 10.5235 4.39735 9.52354C4.39735 8.52358 5.11395 7.70934 6.01502 7.70934C6.92315 7.70934 7.64686 8.53073 7.63266 9.52354C7.63266 10.5235 6.91606 11.3377 6.01502 11.3377ZM11.9961 11.3377C11.1092 11.3377 10.3784 10.5235 10.3784 9.52354C10.3784 8.52358 11.095 7.70934 11.9961 7.70934C12.9042 7.70934 13.6279 8.53073 13.6137 9.52354C13.6137 10.5235 12.9042 11.3377 11.9961 11.3377Z" fill="currentColor"></path>
 						</svg>
 					</a>
-					<a href="#" class="block p-2 bg-[#293145] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
+					<a href="#" class="block p-2 bg-[#131a2c] justify-center text-center text-[#8ea5c0] items-center rounded-lg hover:bg-navy-light/80 transition-colors">
 						<svg class="w-6 h-6 mx-auto" viewBox="0 0 18 18" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
 							<path d="M15.2378 3.11668C14.0905 2.59027 12.8602 2.20243 11.5739 1.9803C11.5505 1.97601 11.5271 1.98673 11.515 2.00816C11.3568 2.28957 11.1815 2.65669 11.0588 2.94525C9.6753 2.73812 8.29889 2.73812 6.94374 2.94525C6.82099 2.65028 6.63936 2.28957 6.48043 2.00816C6.46836 1.98744 6.44496 1.97673 6.42154 1.9803C5.13593 2.20172 3.90567 2.58956 2.7577 3.11668C2.74776 3.12096 2.73924 3.12811 2.73359 3.13739C0.400044 6.62366 -0.239213 10.0242 0.0743851 13.3827C0.075804 13.3991 0.0850274 13.4148 0.0977985 13.4248C1.63741 14.5555 3.12878 15.2419 4.59246 15.6968C4.61588 15.704 4.6407 15.6954 4.65561 15.6761C5.00184 15.2033 5.31048 14.7048 5.57511 14.1805C5.59072 14.1498 5.57582 14.1133 5.5439 14.1012C5.05435 13.9155 4.5882 13.6891 4.1398 13.4319C4.10433 13.4112 4.10149 13.3605 4.13412 13.3362C4.22848 13.2655 4.32286 13.1919 4.41297 13.1177C4.42927 13.1041 4.45198 13.1012 4.47115 13.1098C7.41696 14.4548 10.6062 14.4548 13.5172 13.1098C13.5364 13.1005 13.5591 13.1034 13.5761 13.1169C13.6662 13.1912 13.7606 13.2655 13.8557 13.3362C13.8883 13.3605 13.8862 13.4112 13.8507 13.4319C13.4023 13.6941 12.9361 13.9155 12.4459 14.1005C12.414 14.1126 12.3998 14.1498 12.4154 14.1805C12.6857 14.704 12.9943 15.2026 13.3342 15.6754C13.3484 15.6954 13.3739 15.704 13.3973 15.6968C14.8681 15.2419 16.3595 14.5555 17.8991 13.4248C17.9126 13.4148 17.9211 13.3998 17.9225 13.3834C18.2978 9.50067 17.2939 6.12798 15.2612 3.1381C15.2562 3.12811 15.2477 3.12096 15.2378 3.11668ZM6.01502 11.3377C5.12812 11.3377 4.39735 10.5235 4.39735 9.52354C4.39735 8.52358 5.11395 7.70934 6.01502 7.70934C6.92315 7.70934 7.64686 8.53073 7.63266 9.52354C7.63266 10.5235 6.91606 11.3377 6.01502 11.3377ZM11.9961 11.3377C11.1092 11.3377 10.3784 10.5235 10.3784 9.52354C10.3784 8.52358 11.095 7.70934 11.9961 7.70934C12.9042 7.70934 13.6279 8.53073 13.6137 9.52354C13.6137 10.5235 12.9042 11.3377 11.9961 11.3377Z" fill="currentColor"></path>
 						</svg>

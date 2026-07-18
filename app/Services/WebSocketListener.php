@@ -2,56 +2,56 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Log;
 use WebSocket\Client;
-use Illuminate\Support\Facades\Event;
 
+/**
+ * One persistent connection to iqcent's price WebSocket, subscribed to
+ * every symbol handed to subscribeAll(). Used by the prices:sync console
+ * command to keep the whole asset catalog's price cache warm server-side.
+ */
 class WebSocketListener
 {
-    protected $client;
+    protected Client $client;
 
-    public function __construct()
+    public function __construct(string $url = 'wss://iqcent.com/trade-api-ws/api/ws/price')
     {
-        // Connect to the WebSocket server
-        $this->client = new Client("wss://iqcent.com/trade-api-ws/api/ws/price");
+        $this->client = new Client($url, ['timeout' => 60]);
     }
 
-    public function subscribe()
+    public function subscribeAll(array $symbols): void
     {
-        // Send subscription message
-        $message = [
-            [
-                "id" => "GBPUSD_OTC",
-                "param" => "Option",
-                "operation" => "SUBSCRIBE.TICK",
-            ]
-        ];
-
-        $this->client->send(json_encode($message));
-        $this->listenAndBroadcast();
-        echo "Subscribed to GBPUSD_OTC data.\n";
+        foreach ($symbols as $symbol) {
+            $this->client->send(json_encode([
+                'id' => $symbol,
+                'param' => 'Option',
+                'operation' => 'SUBSCRIBE.TICK',
+            ]));
+        }
     }
 
-    public function listenAndBroadcast()
+    /**
+     * Blocks, invoking $onTick($symbol, $price, $epochMs) for each decoded
+     * tick. Returns once the socket errors out or closes — the caller is
+     * responsible for reconnect/retry looping.
+     */
+    public function listen(callable $onTick): void
     {
-        try {
-            // Subscribe on connect
-            $this->subscribe();
+        while (true) {
+            try {
+                $response = $this->client->receive();
+            } catch (\Throwable $e) {
+                Log::warning('WebSocketListener: receive failed', ['error' => $e->getMessage()]);
 
-            // Continuously listen for events from the WebSocket
-            while (true) {
-                $response = $this->client->receive(); // Receive WebSocket messages
-                $data = json_decode($response, true);
-                // return $data;
-
-                // // Dispatch an event with the WebSocket data
-                // Event::dispatch('websocket.message.received', $data);
-
-                // // Log or debug (optional)
-                // echo "Received WebSocket message: " . $response . "\n";
+                return;
             }
-        } catch (\Exception $e) {
-            // Handle connection errors or other exceptions
-            echo "WebSocket error: " . $e->getMessage() . "\n";
+
+            $data = json_decode($response, true);
+            if (! is_array($data) || ! isset($data['id'], $data['p'], $data['t'])) {
+                continue;
+            }
+
+            $onTick($data['id'], (float) $data['p'], (int) $data['t']);
         }
     }
 }

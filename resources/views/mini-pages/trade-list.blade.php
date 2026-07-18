@@ -1,4 +1,4 @@
-<div class="signal-card">
+<div class="signal-card" id="trade-card-{{ $trade->id }}">
     <div class="signal-header">
         <div class="signal-title gap-3">
             <i class="fas fa-star text[#ff9706]"></i>

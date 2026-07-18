@@ -26,8 +26,11 @@ class User extends Authenticatable
         'last_name',
         'username',
         'email',
+        'phone',
+        'birthday',
         'password',
         'config',
+        'referred_by',
     ];
 
     /**
@@ -99,6 +102,38 @@ class User extends Authenticatable
         return $this->hasMany(TournamentSubscribers::class, "user_id");
     }
 
+    public function kyc()
+    {
+        return $this->hasOne(KycVerification::class);
+    }
+
+    public function achievements()
+    {
+        return $this->belongsToMany(Achievement::class, 'user_achievements')
+            ->withPivot('unlocked_at')
+            ->withTimestamps();
+    }
+
+    public function supportTickets()
+    {
+        return $this->hasMany(SupportTicket::class);
+    }
+
+    public function referrer()
+    {
+        return $this->belongsTo(User::class, 'referred_by');
+    }
+
+    public function referrals()
+    {
+        return $this->hasMany(User::class, 'referred_by');
+    }
+
+    public function referralCommissions()
+    {
+        return $this->hasMany(ReferralCommission::class, 'beneficiary_id');
+    }
+
     public function setActiveWallet($walletSlug)
     {
         $this->wallets()->update(['currently_active' => false]);
@@ -110,6 +145,16 @@ class User extends Authenticatable
 
     protected static function booted()
     {
+        static::creating(function ($user) {
+            if (empty($user->referral_code)) {
+                do {
+                    $code = strtoupper(\Illuminate\Support\Str::random(8));
+                } while (static::where('referral_code', $code)->exists());
+
+                $user->referral_code = $code;
+            }
+        });
+
         static::created(function ($user) {
             createSupportedWalletsForUser($user);
         });

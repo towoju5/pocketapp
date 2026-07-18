@@ -91,6 +91,18 @@ if (! function_exists('create_user_wallet')) {
     }
 }
 
+if (! function_exists('is_demo_wallet')) {
+    /**
+     * Whether a wallet slug is a practice/demo wallet (e.g. qt_demo_usd) as
+     * opposed to a real-money wallet (e.g. qt_real_usd). Demo and real trades
+     * must never be aggregated together in history, dashboards, or leaderboards.
+     */
+    function is_demo_wallet(?string $walletSlug): bool
+    {
+        return str_contains((string) $walletSlug, 'demo');
+    }
+}
+
 if (! function_exists('allowed_wallets')) {
     function allowed_wallets()
     {

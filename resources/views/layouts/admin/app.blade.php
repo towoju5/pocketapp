@@ -1,42 +1,40 @@
 <!doctype html>
-<!-- 
-* Bootstrap Simple Admin Template
-* Version: 2.1
-* Author: Alexis Luna
-* Website: https://github.com/alexis-luna/bootstrap-simple-admin-template
--->
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>@yield('title', env('APP_NAME', 'Trading Panel - Polaris Option'))</title>
-    <link href="{{ asset('base') }}/assets/vendor/fontawesome/css/fontawesome.min.css" rel="stylesheet">
-    <link href="{{ asset('base') }}/assets/vendor/fontawesome/css/solid.min.css" rel="stylesheet">
-    <link href="{{ asset('base') }}/assets/vendor/fontawesome/css/brands.min.css" rel="stylesheet">
-    <link href="{{ asset('base') }}/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ asset('base') }}/assets/css/master.css" rel="stylesheet">
-    <link href="{{ asset('base') }}/assets/vendor/flagiconcss/css/flag-icon.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'Admin') &mdash; {{ config('app.name') }}</title>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body>
-    <div class="wrapper">
+<body class="h-full bg-brand-deep font-sans text-white antialiased">
+    <div x-data="{ sidebarOpen: false }" class="flex min-h-full">
+        <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false"
+             class="fixed inset-0 z-40 bg-black/60 lg:hidden"></div>
+
         @include('layouts.admin.sidebar')
-        <div id="body" class="">
-            <!-- navbar navigation component -->
+
+        <div class="flex min-h-screen flex-1 flex-col lg:pl-[290px]">
             @include('layouts.admin.navbar')
-            <!-- end of navbar navigation -->
-            <div class="content">
+
+            <main class="mx-auto w-full max-w-[1400px] flex-1 px-6 py-8 sm:px-10">
+                @if (session('success'))
+                    <div class="mb-6 rounded-xl border border-brand-emerald/20 bg-brand-emerald/10 px-4 py-3 text-sm text-brand-emerald">
+                        {{ session('success') }}
+                    </div>
+                @endif
+                @if (session('error'))
+                    <div class="mb-6 rounded-xl border border-brand-danger/20 bg-brand-danger/10 px-4 py-3 text-sm text-brand-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
                 @yield('content')
-            </div>
+            </main>
         </div>
     </div>
-    <script src="{{ asset('base') }}/assets/vendor/jquery/jquery.min.js"></script>
-    <script src="{{ asset('base') }}/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ asset('base') }}/assets/vendor/chartsjs/Chart.min.js"></script>
-    <script src="{{ asset('base') }}/assets/js/dashboard-charts.js"></script>
-    <script src="{{ asset('base') }}/assets/js/script.js"></script>
 </body>
 
 </html>

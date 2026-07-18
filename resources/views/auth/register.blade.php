@@ -1,103 +1,51 @@
-@extends('layouts.guest')
+@extends('layouts.auth')
 
-@section('title', __('Register'))
+@section('title', 'Create Account')
+@section('visual-title')The Premier<br>Algorithmic P2P Matrix.@endsection
+@section('visual-subtitle')Create your account to start trading. Access live markets, signals, and secure deposits/withdrawals.@endsection
+@section('nav-cta')
+    <a href="{{ route('login') }}" class="nav-link" style="color:var(--p-blue)">Sign In</a>
+@endsection
+
 @section('content')
-    <!-- Form starts -->
-    <div class="d-flex align-items-center justify-content-center min-vh-100">
-        <form method="POST" action="{{ route('register') }}" class="w-100" style="max-width: 400px;">
-            @csrf
+    <h2 style="font-size: 32px; font-weight: 950; color: var(--p-dark); letter-spacing: -1.5px; margin-bottom: 30px;">Create Account</h2>
 
-            <!-- Logo starts -->
-            <a href="{{ url('/') }}" class="auth-logo mt-5 mb-3 d-flex justify-content-center">
-                <img src="{{ asset('assets/images/logo.svg') }}" alt="Bootstrap Gallery" />
-            </a>
-            <!-- Logo ends -->
+    @if ($errors->any())
+        <div class="alert alert-error">&#9888;&#65039; {{ $errors->first() }}</div>
+    @endif
 
-            <!-- Authbox starts -->
-            <div class="auth-box">
+    <form method="POST" action="{{ route('register') }}">
+        @csrf
 
-                <h4 class="mb-4">Create an Account</h4>
-                <!-- Session Status -->
-                <x-auth-session-status class="mb-4" :status="session('status')" />
+        <div class="form-group">
+            <label for="name" class="field-label">Entity Designation (Full Name)</label>
+            <input type="text" id="name" name="name" class="input-box" placeholder="Maria Vance" value="{{ old('name') }}" autocomplete="name" autofocus required>
+        </div>
 
-                <div class="mb-3">
-                    <label class="form-label" for="name">Name <span class="text-danger">*</span></label>
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="bi bi-person"></i>
-                        </span>
-                        <input type="text" id="name" name="name"
-                            class="form-control @error('name') is-invalid @enderror" placeholder="Enter your name"
-                            value="{{ old('name') }}" required autocomplete="name" autofocus>
-                        @error('name')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                </div>
+        <div class="form-group">
+            <label for="email" class="field-label">Email Address</label>
+            <input type="email" id="email" name="email" class="input-box" placeholder="name@email.com" value="{{ old('email') }}" autocomplete="username" required>
+        </div>
 
-                <div class="mb-3">
-                    <label class="form-label" for="email">Email <span class="text-danger">*</span></label>
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="bi bi-envelope"></i>
-                        </span>
-                        <input type="email" id="email" name="email"
-                            class="form-control @error('email') is-invalid @enderror" placeholder="Enter your email"
-                            value="{{ old('email') }}" required autocomplete="email">
-                        @error('email')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                </div>
+        <div class="form-group">
+            <label for="password" class="field-label">Neurological Password</label>
+            <input type="password" id="password" name="password" class="input-box" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="new-password" required>
+        </div>
 
-                <div class="mb-3">
-                    <label class="form-label" for="password">Password <span class="text-danger">*</span></label>
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="bi bi-lock"></i>
-                        </span>
-                        <input type="password" id="password" name="password"
-                            class="form-control @error('password') is-invalid @enderror" placeholder="Enter password"
-                            required autocomplete="new-password">
-                        <button class="btn btn-outline-secondary" type="button">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                        @error('password')
-                            <span class="invalid-feedback" role="alert">
-                                <strong>{{ $message }}</strong>
-                            </span>
-                        @enderror
-                    </div>
-                </div>
+        <div class="form-group">
+            <label for="password_confirmation" class="field-label">Confirm Password</label>
+            <input type="password" id="password_confirmation" name="password_confirmation" class="input-box" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="new-password" required>
+        </div>
 
-                <div class="mb-3">
-                    <label class="form-label" for="password-confirm">Confirm Password <span
-                            class="text-danger">*</span></label>
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="bi bi-lock"></i>
-                        </span>
-                        <input type="password" id="password-confirm" name="password_confirmation" class="form-control"
-                            placeholder="Confirm password" required autocomplete="new-password">
-                        <button class="btn btn-outline-secondary" type="button">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                    </div>
-                </div>
+        <div class="form-group">
+            <label for="referrer_info" class="field-label">Referrer Email or ID (Optional)</label>
+            <input type="text" id="referrer_info" name="referrer_info" class="input-box" placeholder="Optional" value="{{ old('referrer_info', request('ref')) }}">
+        </div>
 
-                <div class="d-grid gap-2">
-                    <button type="submit" class="btn btn-primary">Register</button>
-                    <a href="{{ route('login') }}" class="btn btn-outline-secondary">Already registered? Login</a>
-                </div>
+        <button type="submit" class="btn-go">Create Account</button>
+    </form>
 
-            </div>
-            <!-- Authbox ends -->
-
-        </form>
-    </div>
-    <!-- Form ends -->
+    <p style="margin-top: 30px; text-align: center; color: #64748b; font-size: 14px;">
+        Already have a signature? <a href="{{ route('login') }}" style="color: var(--p-blue); font-weight: 800; text-decoration: none;">Authenticate</a>
+    </p>
 @endsection

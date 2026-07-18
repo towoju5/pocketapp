@@ -406,8 +406,8 @@
         }
 
         .profile__languages .active a {
-            background-color: #314463;
-            border: 1px solid #009af9;
+            background-color: rgba(59, 130, 246, 0.15);
+            border: 1px solid #3b82f6;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -420,35 +420,36 @@
         }
 
         .panel {
-            border-radius: 10px;
-            border: none;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            overflow: hidden;
         }
 
         .panel-body {
-            background-color: #131628;
-            border-radius: 10px;
+            background-color: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(25px);
             padding: 15px;
         }
 
         .panel-heading+.panel-body {
             border-top: none;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
         }
 
         .panel-heading {
-            background-color: #20273f;
-            color: #7e91a7;
+            background-color: #0f172a;
+            color: #64748b;
             display: -webkit-box;
             display: flex;
             -webkit-box-align: center;
             align-items: center;
             -webkit-box-pack: justify;
-            border-top-left-radius: 10px;
-            border-top-right-radius: 10px;
             justify-content: space-between;
-            padding: 10px 15px;
-            border-bottom: 1px solid transparent;
+            padding: 14px 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
         }
 
         /* Style the form container */

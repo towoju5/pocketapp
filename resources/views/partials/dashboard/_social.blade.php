@@ -6,14 +6,14 @@
     <div class="h-full flex flex-col">
         <div class="flex-1 overflow-y-auto pb-20">
             <div class="relative py-3 px-4">
-                <select onchange="changeTraderSection(this.value)" class="w-full py-2.5 rounded-md text-xs px-4 bg-[#1d2130] border border-[#454a56] text-white">
+                <select onchange="changeTraderSection(this.value)" class="w-full py-2.5 rounded-md text-xs px-4 bg-[#0b1120] border border-[#454a56] text-white">
                     <option value="24h">Top ranked traders for 24h</option>
                     <option value="7d">Top ranked traders</option>
                     <option value="30d">Top 100 traders</option>
                 </select>
             </div>
 
-            <div class="text-xs text-center text-gray-400 py-3 bg-[#1e2131]">REAL TRADING</div>
+            <div class="text-xs text-center text-gray-400 py-3 bg-[#0b1120]">REAL TRADING</div>
 
             {{-- 24 HOURS --}}
             <div class="trader-section" data-period="24h">
@@ -117,6 +117,7 @@
         </div>
     </div>
 </div>
+<a href="{{ route('social-trading.index') }}" class="block text-center text-xs text-[#4f8ef7] py-3 border-t border-[#1c243c]">Explore social trading →</a>
 
 
 @push('css')

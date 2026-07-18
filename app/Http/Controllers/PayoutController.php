@@ -16,7 +16,9 @@ class PayoutController extends Controller
 
     public function create()
     {
-        return view('payout.create');
+        $kycVerified = auth()->user()->kyc?->status === 'verified';
+
+        return view('payout.create', compact('kycVerified'));
     }
 
     public function store(Request $request)

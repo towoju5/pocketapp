@@ -1,44 +1,25 @@
-@extends('layouts.guest')
+@extends('layouts.auth')
 
-@section('title', __('Confirm Password'))
+@section('title', 'Confirm Identity')
+@section('visual-title')Just confirming<br>it's you.@endsection
+@section('visual-subtitle')This is a secure area of the network — re-enter your access key to continue.@endsection
+
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-body">
-                    <p class="text-muted mb-4">
-                        {{ __('This is a secure area of the application. Please confirm your password before continuing.') }}
-                    </p>
+    <h2 style="font-size: 32px; font-weight: 950; color: var(--p-dark); letter-spacing: -1.5px; margin-bottom: 20px;">Confirm Access Key</h2>
+    <p style="color: #64748b; font-size: 14px; line-height: 1.6; margin-bottom: 25px;">
+        This is a secure area of the network. Please confirm your access key before continuing.
+    </p>
 
-                    <form method="POST" action="{{ route('password.confirm') }}">
-                        @csrf
+    @if ($errors->any())
+        <div class="alert alert-error">&#9888;&#65039; {{ $errors->first() }}</div>
+    @endif
 
-                        <!-- Password -->
-                        <div class="mb-3">
-                            <label for="password" class="form-label">{{ __('Password') }}</label>
+    <form method="POST" action="{{ route('password.confirm') }}">
+        @csrf
 
-                            <input id="password" type="password" 
-                                   class="form-control @error('password') is-invalid @enderror" 
-                                   name="password" 
-                                   required autocomplete="current-password">
+        <label for="password" class="field-label">Access Key</label>
+        <input type="password" id="password" name="password" class="input-box" autocomplete="current-password" autofocus required>
 
-                            @error('password')
-                                <div class="invalid-feedback">
-                                    {{ $message }}
-                                </div>
-                            @enderror
-                        </div>
-
-                        <div class="d-flex justify-content-end mt-4">
-                            <button type="submit" class="btn btn-primary">
-                                {{ __('Confirm') }}
-                            </button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+        <button type="submit" class="btn-go">Confirm</button>
+    </form>
 @endsection

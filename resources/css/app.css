@@ -1,6 +1,61 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@400;600;700;800&family=JetBrains+Mono:wght@500&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+[x-cloak] {
+    display: none !important;
+}
+
+@layer components {
+    /* Dark glass "bento" card used across the app interior (dashboard,
+       trades, finance, KYC, plans, P2P, tasks, referrals) and admin —
+       matches public_html's .cyber-card/.identity-card tokens exactly:
+       rgba(15,23,42,.85) + blur(25px) + rgba(255,255,255,.08) border. */
+    .glass-panel {
+        @apply relative rounded-[28px] border border-glass-border bg-[rgba(15,23,42,0.85)] backdrop-blur-[25px] transition duration-300;
+    }
+    .glass-panel:hover {
+        @apply -translate-y-1 border-brand-blue;
+    }
+
+    .brand-btn {
+        @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-50;
+    }
+
+    .brand-btn-primary {
+        @apply brand-btn bg-brand-blue text-white shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-hover;
+    }
+
+    .brand-btn-outline {
+        @apply brand-btn border border-glass-border bg-white/5 text-white hover:bg-white/10;
+    }
+
+    .brand-input {
+        @apply w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 transition focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-blue/10;
+    }
+
+    .brand-input-dark {
+        @apply w-full rounded-xl border border-glass-border bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-slate-400 transition focus:border-brand-blue focus:outline-none focus:ring-4 focus:ring-brand-blue/20;
+    }
+
+    /* Paired with <x-data-table> for consistent table styling app-wide. */
+    .glass-panel table thead th,
+    div > table thead th {
+        @apply bg-white/[0.03] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400;
+    }
+
+    .glass-panel table tbody td,
+    div > table tbody td {
+        @apply border-t border-glass-border px-4 py-3 text-slate-200;
+    }
+
+    .glass-panel table tbody tr:hover,
+    div > table tbody tr:hover {
+        @apply bg-white/[0.02];
+    }
+}
 
 
 .newbie-guide-todo-list-btn {
@@ -24,7 +79,7 @@
 body {
     margin: 0;
     height: 100vh;
-    overflow: hidden;
+    /* overflow: hidden; */
     display: flex;
     flex-direction: column;
 }

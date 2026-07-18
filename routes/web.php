@@ -5,6 +5,7 @@ use App\Http\Controllers\ChartController;
 use App\Http\Controllers\DepositController;
 use App\Http\Controllers\ExpressTradeController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MarketingController;
 use App\Http\Controllers\PayoutController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionHistoryController;
@@ -18,20 +19,18 @@ use App\Http\Controllers\MySafeController;
 use App\Http\Controllers\PromoCodeController;
 use App\Http\Controllers\TradeController;
 use App\Models\Trade;
-use App\Services\ExternalTradeWebSocketService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Schema;
 
 
-Route::get('/', function () {
-    return view('act_welcome');
-});
+Route::get('/', [MarketingController::class, 'home'])->name('marketing.home');
 
 
 
-Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('dashboard/demo/{coin?}', [HomeController::class, 'demo'])->middleware(['auth', 'verified'])->name('dashboard.demo');
+Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('assets/status', [HomeController::class, 'assetStatus'])->middleware(['auth', 'verified'])->name('assets.status');
 
 Route::get('dashboard-2', function () {
     return view('dash');
@@ -49,9 +48,19 @@ Route::middleware(['auth'])->group(function () {
 
 
     Route::post('submit-express-trade', [ExpressTradeController::class, 'bulk'])->name('submit.express.trade');
+    Route::get('express-trades', [ExpressTradeController::class, 'index'])->name('express-trades.index');
+
+    Route::get('wallet', [\App\Http\Controllers\WalletController::class, 'index'])->name('wallet.index');
+
+    Route::get('achievements', [\App\Http\Controllers\AchievementController::class, 'index'])->name('achievements.index');
+
+    Route::get('tournaments', [\App\Http\Controllers\TournamentController::class, 'index'])->name('tournaments.index');
+    Route::post('tournaments/{tournament}/join', [\App\Http\Controllers\TournamentController::class, 'join'])->name('tournaments.join');
+
+    Route::get('social-trading', [\App\Http\Controllers\SocialTradingController::class, 'index'])->name('social-trading.index');
 
 
-    Route::post('payout/create', [PayoutController::class, 'store'])->name('payout.create');
+    Route::post('payout/create', [PayoutController::class, 'store'])->middleware('kyc.verified')->name('payout.create');
     // });
 
     Route::get("finance-history", [TransactionHistoryController::class, 'history'])->name('finance.history');
@@ -118,6 +127,13 @@ require __DIR__ . '/temp.php';
 require __DIR__ . '/chat.php';
 require __DIR__ . '/trade.php';
 require __DIR__ . '/admin.php';
+require __DIR__ . '/marketing.php';
+require __DIR__ . '/kyc.php';
+require __DIR__ . '/plans.php';
+require __DIR__ . '/p2p.php';
+require __DIR__ . '/tasks.php';
+require __DIR__ . '/referrals.php';
+require __DIR__ . '/support.php';
 
 
 Route::fallback(function () {

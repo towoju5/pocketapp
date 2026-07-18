@@ -1,49 +1,41 @@
 @extends('layouts.admin.app')
 
+@section('title', 'Cashback Rules')
+
 @section('content')
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-body">
-            <h2>Cashback Rules</h2>
-            <a href="{{ route('admin.cashbacks.create') }}" class="btn btn-primary mb-3">Add Cashback Rule</a>
+    <x-page-header title="Cashback Rules" subtitle="Loss/volume/promo-based cashback configuration.">
+        <x-slot:actions>
+            <a href="{{ route('admin.cashbacks.create') }}" class="brand-btn-primary">Add Cashback Rule</a>
+        </x-slot:actions>
+    </x-page-header>
 
-            @if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-            @endif
-
-            <table class="table table-bordered">
-                <thead>
+    <x-glass-card>
+        <x-data-table>
+            <thead>
+                <tr><th>Type</th><th>Percentage</th><th>Volume Threshold</th><th>Promo Code</th><th>Status</th><th></th></tr>
+            </thead>
+            <tbody>
+                @forelse ($rules as $rule)
                     <tr>
-                        <th>Type</th>
-                        <th>Percentage</th>
-                        <th>Volume Threshold</th>
-                        <th>Promo Code</th>
-                        <th>Active</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($rules as $rule)
-                    <tr>
-                        <td>{{ ucfirst($rule->type) }}</td>
+                        <td class="capitalize text-white">{{ $rule->type }}</td>
                         <td>{{ $rule->percentage }}%</td>
                         <td>{{ $rule->volume_threshold ?? '—' }}</td>
                         <td>{{ $rule->promo_code ?? '—' }}</td>
-                        <td>{{ $rule->active ? 'Yes' : 'No' }}</td>
-                        <td>
-                            <a href="{{ route('admin.cashbacks.edit', $rule) }}" class="btn btn-sm btn-warning">Edit</a>
-                            <form method="POST" action="{{ route('admin.cashbacks.destroy', $rule) }}" style="display:inline-block;">
+                        <td><x-badge :status="$rule->active ? 'active' : 'cancelled'">{{ $rule->active ? 'Active' : 'Inactive' }}</x-badge></td>
+                        <td class="text-right space-x-3">
+                            <a href="{{ route('admin.cashbacks.edit', $rule) }}" class="text-brand-blue hover:underline">Edit</a>
+                            <form method="POST" action="{{ route('admin.cashbacks.destroy', $rule) }}" class="inline" onsubmit="return confirm('Delete this cashback rule?')">
                                 @csrf @method('DELETE')
-                                <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this cashback rule?')">Delete</button>
+                                <button type="submit" class="text-brand-danger hover:underline">Delete</button>
                             </form>
                         </td>
                     </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                @empty
+                    <tr><td colspan="6" class="text-center py-10 text-slate-400">No cashback rules yet.</td></tr>
+                @endforelse
+            </tbody>
+        </x-data-table>
 
-            {{ $rules->links() }}
-        </div>
-    </div>
-</div>
+        <div class="mt-6">{{ $rules->links() }}</div>
+    </x-glass-card>
 @endsection

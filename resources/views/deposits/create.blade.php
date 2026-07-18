@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.desktop.trading')
 
 @section('title', 'Make new Deposit')
 @section('content')
     <div class="container -mt-4">
-        <div class="bg-[#15182a] rounded-lg text-white">
+        <div class="rounded-[28px] border border-glass-border bg-[rgba(15,23,42,0.85)] backdrop-blur-[25px] text-white">
             <div class="px-4 py-2">
                 @include('partials.finance-header')
             </div>
@@ -11,24 +11,24 @@
             <div class="shadow-lg p-6 lg:p-10">
                 <!-- Step Progress -->
                 <div class="flex items-center justify-between mb-8">
-                    <div class="text-teal-500 flex items-center">
+                    <div class="text-brand-blue flex items-center">
                         <span
-                            class="w-8 h-8 bg-teal-500 text-white rounded-full flex items-center justify-center font-bold">1</span>
+                            class="w-8 h-8 bg-brand-blue text-white rounded-full flex items-center justify-center font-bold">1</span>
                         <span class="ml-2">Deposit method</span>
                     </div>
                     <div class="text-white flex items-center">
                         <span
-                            class="w-8 h-8 bg-gray-700 text-white rounded-full flex items-center justify-center font-bold">2</span>
+                            class="w-8 h-8 bg-white/10 text-white rounded-full flex items-center justify-center font-bold">2</span>
                         <span class="ml-2">Payment details</span>
                     </div>
-                    <div class="text-gray-500 flex items-center">
+                    <div class="text-slate-500 flex items-center">
                         <span
-                            class="w-8 h-8 bg-gray-700 text-white rounded-full flex items-center justify-center font-bold">3</span>
+                            class="w-8 h-8 bg-white/10 text-white rounded-full flex items-center justify-center font-bold">3</span>
                         <span class="ml-2">Payment process</span>
                     </div>
-                    <div class="text-gray-500 flex items-center">
+                    <div class="text-slate-500 flex items-center">
                         <span
-                            class="w-8 h-8 bg-gray-700 text-white rounded-full flex items-center justify-center font-bold">4</span>
+                            class="w-8 h-8 bg-white/10 text-white rounded-full flex items-center justify-center font-bold">4</span>
                         <span class="ml-2">Payment execution</span>
                     </div>
                 </div>
@@ -61,8 +61,12 @@
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     },
-                    success: function (html) {
-                        $('#contentArea').html(html); // Update the content area with the response
+                    success: function (response) {
+                        if (response && typeof response === 'object' && response.redirect) {
+                            window.location.href = response.redirect;
+                            return;
+                        }
+                        $('#contentArea').html(response); // Update the content area with the response
                     },
                     error: function (error) {
                         toastr.error(error.responseJSON?.message || 'An error occurred.');
@@ -71,8 +75,9 @@
                 });
             });
 
-            // Trigger form submission when clicking Submit button
-            $('#submitBtn').on('click', function () {
+            // Trigger form submission when clicking Submit button (delegated — #submitBtn
+            // gets replaced with each AJAX step swap, so this must not be a direct binding)
+            $(document).on('click', '#submitBtn', function () {
                 $('.payinForm').trigger('submit');
             });
         });

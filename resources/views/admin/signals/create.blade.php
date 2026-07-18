@@ -1,59 +1,59 @@
 @extends('layouts.admin.app')
 
+@section('title', 'Create Signal')
+
 @section('content')
-<div class="container mt-4">
-    <div class="card">
-        <div class="card-body">
-            <h2 class="mb-4">Create Signal</h2>
-            <form method="POST" action="{{ route('admin.signals.store') }}">
-                @csrf
+    <x-page-header title="Create Signal" />
 
-                <div class="mb-3">
-                    <label for="asset" class="form-label">Asset</label>
-                    <select name="asset" id="asset" class="form-control" required>
-                        @foreach($assets as $asset)
+    <x-glass-card>
+        <form method="POST" action="{{ route('admin.signals.store') }}" class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+            @csrf
+
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Asset</label>
+                <select name="asset" class="brand-input-dark" required>
+                    @foreach ($assets as $asset)
                         <option value="{{ $asset->symbol }}">{{ $asset->name }}</option>
-                        @endforeach
-                    </select>
-                    <!-- <input type="text" class="form-control" id="asset" name="asset" required> -->
-                </div>
+                    @endforeach
+                </select>
+            </div>
 
-                <div class="mb-3">
-                    <label for="amount" class="form-label">Amount</label>
-                    <input type="number" step="0.01" class="form-control" id="amount" name="amount" required>
-                </div>
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Amount</label>
+                <input type="number" step="0.01" name="amount" class="brand-input-dark" required>
+            </div>
 
-                <div class="mb-3">
-                    <label for="direction" class="form-label">Direction</label>
-                    <select class="form-select" id="direction" name="direction" required>
-                        <option value="up">Up</option>
-                        <option value="down">Down</option>
-                    </select>
-                </div>
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Direction</label>
+                <select name="direction" class="brand-input-dark" required>
+                    <option value="up">Up</option>
+                    <option value="down">Down</option>
+                </select>
+            </div>
 
-                <div class="mb-3">
-                    <label for="duration" class="form-label">Duration (in seconds)</label>
-                    <input type="number" class="form-control" id="duration" name="duration" required>
-                </div>
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Duration (seconds)</label>
+                <input type="number" name="duration" class="brand-input-dark" required>
+            </div>
 
-                <div class="mb-3">
-                    <label for="expected_profit" class="form-label">Expected Profit (optional)</label>
-                    <input type="number" step="0.01" class="form-control" id="expected_profit" name="expected_profit">
-                </div>
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Expected Profit (optional)</label>
+                <input type="number" step="0.01" name="expected_profit" class="brand-input-dark">
+            </div>
 
-                <div class="mb-3">
-                    <label for="start_price" class="form-label">Start Price (optional)</label>
-                    <input type="number" step="0.000001" class="form-control" id="start_price" name="start_price">
-                </div>
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Start Price (optional)</label>
+                <input type="number" step="0.000001" name="start_price" class="brand-input-dark">
+            </div>
 
-                <div class="mb-3">
-                    <label for="notes" class="form-label">Notes</label>
-                    <textarea class="form-control" id="notes" name="notes" rows="3"></textarea>
-                </div>
+            <div class="sm:col-span-2">
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Notes</label>
+                <textarea name="notes" rows="3" class="brand-input-dark"></textarea>
+            </div>
 
-                <button type="submit" class="btn btn-primary">Create Signal</button>
-            </form>
-        </div>
-    </div>
-</div>
+            <div class="sm:col-span-2">
+                <button type="submit" class="brand-btn-primary">Create Signal</button>
+            </div>
+        </form>
+    </x-glass-card>
 @endsection

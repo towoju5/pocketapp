@@ -7,7 +7,7 @@
 <section>
   <div style="background: #202434" class="absolute bottom-0 left-0 right-0 backdrop-blur-sm border-t border-gray-700">
     <div class="flex justify-between px-0.5 py-0.5 gap-1 max-w-[390px] mx-auto">
-      <button style="background: #293145; color: #8ea5c0"
+      <button style="background: #131a2c; color: #8ea5c0"
         class="nav-item flex rounded-md flex-col items-center p-1 text-gray-400 flex-1" data-target="trades"
         onclick="handleNavigation(this)">
         <!-- Trades SVG -->
@@ -18,7 +18,7 @@
         <span class="text-xs mt-0.5 truncate w-full text-center">Trades</span>
       </button>
 
-      <button style="background: #293145; color: #8ea5c0"
+      <button style="background: #131a2c; color: #8ea5c0"
         class="nav-item flex flex-col rounded-md items-center p-1 text-gray-400 flex-1" data-target="pending"
         onclick="handleNavigation(this)">
         <!-- Pending SVG -->
@@ -37,7 +37,7 @@
 <section>
   <div class="absolute bottom-0 left-0 right-0 bg-[#202434] backdrop-blur-sm border-t border-gray-700">
     <div class="flex justify-between px-0.5 py-0.5 gap-1 max-w-[390px] mx-auto">
-      <button style="background: #293145; color: #8ea5c0"
+      <button style="background: #131a2c; color: #8ea5c0"
         class="nav-item flex rounded-md flex-col items-center p-1 text-gray-400 flex-1" data-target="signals"
         onclick="handleNavigation(this)">
         <!-- Signals SVG -->

@@ -194,7 +194,7 @@
 
                     // Reset all tabs
                     tabs.forEach(tab => {
-                        tab.classList.remove('text-gray-200', 'bg-[#1e2131]', 'active-tab');
+                        tab.classList.remove('text-gray-200', 'bg-[#0b1120]', 'active-tab');
                         tab.classList.add('text-gray-500', 'bg-[#272b3c]');
                     });
 
@@ -206,7 +206,7 @@
 
                     // Activate the selected tab
                     button.classList.remove('text-gray-500', 'bg-[#272b3c]');
-                    button.classList.add('text-gray-200', 'bg-[#1e2131]', 'active-tab');
+                    button.classList.add('text-gray-200', 'bg-[#0b1120]', 'active-tab');
 
                     const indicator = button.querySelector('.tab-indicator');
                     if (indicator) indicator.classList.remove('hidden');
@@ -381,7 +381,7 @@
                             // If the same section is clicked again, hide content
                             contentArea.style.display = "none";
                             activeSection = null;
-                            this.classList.remove("bg-[#23283b]", "w-[200%]", "py-2");
+                            this.classList.remove("bg-[#0f172a]", "w-[200%]", "py-2");
                         } else {
                             // Show content
                             contentArea.style.display = "block";
@@ -389,9 +389,9 @@
                             activeSection = sectionId;
 
                             // Remove active styles from all links
-                            navLinks.forEach(l => l.classList.remove("bg-[#23283b]", "w-[200%]", "py-2"));
+                            navLinks.forEach(l => l.classList.remove("bg-[#0f172a]", "w-[200%]", "py-2"));
                             // Add active styles to the clicked link
-                            this.classList.add("bg-[#23283b]", "w-[200%]", "py-2");
+                            this.classList.add("bg-[#0f172a]", "w-[200%]", "py-2");
                         }
                     });
                 });
@@ -419,7 +419,7 @@
                             // If the same section is clicked again, hide content
                             mainContent.style.display = "none";
                             activeSection = null;
-                            this.classList.remove("bg-[#23283b]", "w-[200%]", "py-2");
+                            this.classList.remove("bg-[#0f172a]", "w-[200%]", "py-2");
                         } else {
                             // Show content
                             mainContent.style.display = "block";
@@ -427,9 +427,9 @@
                             activeSection = sectionId;
 
                             // Remove active styles from all links
-                            rightNavLinks.forEach(l => l.classList.remove("bg-[#23283b]", "w-[200%]", "py-2"));
+                            rightNavLinks.forEach(l => l.classList.remove("bg-[#0f172a]", "w-[200%]", "py-2"));
                             // Add active styles to the clicked link
-                            this.classList.add("bg-[#23283b]", "w-[200%]", "py-2");
+                            this.classList.add("bg-[#0f172a]", "w-[200%]", "py-2");
                         }
                     });
                 });

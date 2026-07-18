@@ -234,10 +234,10 @@
       <!-- QT real Modal 2+2-->
       <div id="dropModal" class="hidden fixed inset-0 z-50 right-0">
         <div
-          style="background: #262c41; border: 1px solid #343e52"
+          style="background: #131a2c; border: 1px solid #343e52"
           class="fixed p-3 right-2 top-7 mt-10 transform w-80 rounded-lg shadow-xl z-50"
         >
-          <div class="p-2 rounded-lg w-full" style="background: #1f2536">
+          <div class="p-2 rounded-lg w-full" style="background: #131a2c">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <div>
@@ -344,7 +344,7 @@
             </div>
           </div>
 
-          <div class="p-2 rounded-lg mt-2" style="background: #1f2536">
+          <div class="p-2 rounded-lg mt-2" style="background: #131a2c">
             <div>
               <div class="flex items-center gap-2">
                 <svg
@@ -372,7 +372,7 @@
 
           <div class="relative mt-2">
             <select
-              style="background: #1f2536"
+              style="background: #131a2c"
               class="w-full rounded-md p-2 focus:ring focus:ring-green-500 text-white"
             >
               <option>Forex</option>
@@ -385,7 +385,7 @@
             </select>
           </div>
 
-          <div class="p-2 rounded-lg mt-2" style="background: #1f2536">
+          <div class="p-2 rounded-lg mt-2" style="background: #131a2c">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <svg
@@ -426,7 +426,7 @@
           <button
             class="w-full p-2 rounded-lg mt-2 text-xs"
             style="
-              background: #1d2130;
+              background: #0b1120;
               border: 1px solid #343e52;
               color: #8ea5c0;
             "
@@ -441,7 +441,7 @@
         <div
           class="fixed p-3 right-2 top-7 mt-10 transform w-80 bg-red-800 rounded-lg shadow-xl z-50"
         >
-          <div class="p-2 rounded-lg w-full" style="background: #1f2536">
+          <div class="p-2 rounded-lg w-full" style="background: #131a2c">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
                 <div>
@@ -548,7 +548,7 @@
             </div>
           </div>
 
-          <div class="p-2 rounded-lg mt-3" style="background: #1f2536">
+          <div class="p-2 rounded-lg mt-3" style="background: #131a2c">
             <div>
               <div>
                 <svg
@@ -570,7 +570,7 @@
               </div>
             </div>
           </div>
-          <div class="p-2 rounded-lg mt-3" style="background: #1f2536">
+          <div class="p-2 rounded-lg mt-3" style="background: #131a2c">
             <div>
               <div>
                 <svg
@@ -592,7 +592,7 @@
               </div>
             </div>
           </div>
-          <div class="p-2 rounded-lg mt-3" style="background: #1f2536">
+          <div class="p-2 rounded-lg mt-3" style="background: #131a2c">
             <div>
               <div>
                 <svg

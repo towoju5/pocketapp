@@ -133,7 +133,7 @@
         left: -80%;
         width: 80%;
         height: 100%;
-        background-color: #151726;
+        background-color: #020617;
         transition: left 0.3s ease-in-out;
         z-index: 1000;
         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
@@ -162,7 +162,7 @@
       /* 2+2 = 22 */
       .set_time_plus {
         background-color: #1f2334;
-        border: 1px solid #2c3245;
+        border: 1px solid #131a2c;
         color: white;
       }
       .set_time_time {
@@ -246,9 +246,9 @@
           </button>
         </div>
 
-        <nav class="" style="background: #151726">
+        <nav class="" style="background: #020617">
           <ul class="space-y-2">
-            <li onclick="showContent('trading')" style="color: #fff; background: #262b3d"
+            <li onclick="showContent('trading')" style="color: #fff; background: #0f172a"
               class="flex items-center gap-3 text-sm px-3 py-2 px-5 hover:bg-gray-700 cursor-pointer">
               <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -328,7 +328,7 @@
               </svg>
               <span>Market</span>
             </li>
-            <li onclick="showContent('achievements')" style="color: #fff; background: #262b3d"
+            <li onclick="showContent('achievements')" style="color: #fff; background: #0f172a"
               class="flex items-center gap-3 text-sm px-3 py-2 px-5 hover:bg-gray-700 cursor-pointer">
               <svg fill="#b5b5b5" class="w-4 h-4" viewBox="0 0 32 32" version="1.1" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -518,12 +518,12 @@
         <!-- Tradding sub left nav -->
         <div id="tradingContent" class="hidden">
           <p class="flex items-center gap-2" onclick="goBack()">
-            <span style="background: #262b3d; color: #8ea5c0"
+            <span style="background: #0f172a; color: #8ea5c0"
               class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
           </p>
 
           <div class="mt-5 flex flex-col gap-2">
-            <a href="./index.html" class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <a href="./index.html" class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg class="svg-icon qt-real" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                 viewBox="0 0 24 24" fill="none">
                 <path fill="#8ea5c0" fill-rule="evenodd"
@@ -540,7 +540,7 @@
               </div>
             </a>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 49" width="24" height="24" fill="#8ea5c0"
                 class="svg-icon mt5-real-account">
                 <path
@@ -563,7 +563,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 49" width="24" height="24" fill="#8ea5c0"
                 class="svg-icon mt5-real-account">
                 <path
@@ -585,7 +585,7 @@
                 <p>Demo Account</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg version="1.1" class="svg-icon mt4-real-account" xmlns="http://www.w3.org/2000/svg" x="0" y="0"
                 width="24" height="24" fill="#8ea5c0" viewBox="0 0 40 41" xml:space="preserve">
                 <g clip-path="url(#mt4r9310)">
@@ -607,7 +607,7 @@
                 <p>Real Account</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg version="1.1" class="svg-icon mt4-real-account" xmlns="http://www.w3.org/2000/svg" x="0" y="0"
                 width="24" height="24" fill="#8ea5c0" viewBox="0 0 40 41" xml:space="preserve">
                 <g clip-path="url(#mt4r9310)">
@@ -629,7 +629,7 @@
                 <p>Demo Account</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg version="1.1" class="svg-icon mt4-real-account" xmlns="http://www.w3.org/2000/svg" x="0" y="0"
                 width="24" height="24" fill="#8ea5c0" viewBox="0 0 40 41" xml:space="preserve">
                 <g clip-path="url(#mt4r9310)">
@@ -651,7 +651,7 @@
                 <p>Real Account</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg version="1.1" class="svg-icon mt4-real-account" xmlns="http://www.w3.org/2000/svg" x="0" y="0"
                 width="24" height="24" fill="#8ea5c0" viewBox="0 0 40 41" xml:space="preserve">
                 <g clip-path="url(#mt4r9310)">
@@ -679,12 +679,12 @@
         <!-- Finance sub left nav -->
         <div id="financeContent" class="hidden">
           <p class="flex items-center gap-2" onclick="goBack()">
-            <span style="background: #262b3d; color: #8ea5c0"
+            <span style="background: #0f172a; color: #8ea5c0"
               class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
           </p>
 
           <div class="mt-5 flex flex-col gap-2">
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon deposit-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.11 465.01">
                 <path
@@ -706,7 +706,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon deposit-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.11 465.01">
                 <path
@@ -727,7 +727,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon history-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 492.1 489">
                 <path
@@ -742,7 +742,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon cashback-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 499.93">
                 <path
@@ -757,7 +757,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon promo-codes-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 354">
                 <path
@@ -772,7 +772,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg class="svg-icon my-safe-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                 fill="#8ea5c0" viewBox="0 0 24 24" fill="none">
                 <g clip-path="url(#clip0_1_355321)">
@@ -802,12 +802,12 @@
         <!-- Profile sub left nav -->
         <div id="profileContent" class="hidden">
           <p class="flex items-center gap-2" onclick="goBack()">
-            <span style="background: #262b3d; color: #8ea5c0"
+            <span style="background: #0f172a; color: #8ea5c0"
               class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
           </p>
 
           <div class="mt-5 flex flex-col gap-2">
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon trading-profile-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 498.4 511.1">
                 <path
@@ -826,7 +826,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon profile-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 497.06 511.14">
                 <path
@@ -841,7 +841,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg class="svg-icon" width="24" height="24" fill="#8ea5c0" viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -859,7 +859,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon security-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 375 374.2">
                 <path
@@ -877,7 +877,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon live-trading-history-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500.11 480.71">
                 <path
@@ -892,7 +892,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg class="svg-icon pocket-friends-icon" width="24" height="24" fill="#8ea5c0" viewBox="0 0 24 24"
                 xmlns="http://www.w3.org/2000/svg">
                 <circle cx="16.6647" cy="13.457" r="3.32188" fill="currentColor"></circle>
@@ -910,12 +910,12 @@
         <!-- Market sub left nav -->
         <div id="marketContent" class="hidden">
           <p class="flex items-center gap-2" onclick="goBack()">
-            <span style="background: #262b3d; color: #8ea5c0"
+            <span style="background: #0f172a; color: #8ea5c0"
               class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
           </p>
 
           <div class="mt-5 flex flex-col gap-2">
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon market-icon" xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 505.54 446.78">
                 <path
@@ -928,7 +928,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon purchases-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 499.01 500.02">
                 <path
@@ -943,7 +943,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon gem-lotto-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 482.35 491">
                 <path
@@ -955,7 +955,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon mining-icon" xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 500.29 500">
                 <path
@@ -967,7 +967,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" xmlns="http://www.w3.org/2000/svg"
                 class="svg-icon social-trading-reward" viewBox="0 0 37.5 50">
                 <path
@@ -984,12 +984,12 @@
         <!-- Acheivemeent sub left nav -->
         <div id="achievementsContent" class="hidden">
           <p class="flex items-center gap-2" onclick="goBack()">
-            <span style="background: #262b3d; color: #8ea5c0"
+            <span style="background: #0f172a; color: #8ea5c0"
               class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
           </p>
 
           <div class="mt-5 flex flex-col gap-2">
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon achievements-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 497.74 456">
                 <path
@@ -1005,7 +1005,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon achievements-history-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
                 <g>
@@ -1024,7 +1024,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon achievements-rating-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 336.22 253.97">
                 <g>
@@ -1049,7 +1049,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon achievements-help-icon"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 572.02 372.99">
                 <g>
@@ -1070,35 +1070,35 @@
         <!-- chat sub left nav -->
         <div id="chatContent" class="hidden">
           <p class="flex items-center gap-2" onclick="goBack()">
-            <span style="background: #262b3d; color: #8ea5c0"
+            <span style="background: #0f172a; color: #8ea5c0"
               class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
           </p>
 
           <div class="flex items-center gap-2 my-3">
-            <div class="w-10 p-2 flex items-center justify-center" style="background: #293145">
+            <div class="w-10 p-2 flex items-center justify-center" style="background: #131a2c">
               <i class="fa-regular fa-square-check" style="color: #8ea5c0"></i>
             </div>
             <div class="flex items-center justify-between w-full px-2 py-1"
-              style="border: 1px solid #44506a; background: #1d2130">
+              style="border: 1px solid #1e293b; background: #0b1120">
               <input type="text" class="bg-transparent w-full" placeholder="Search..." />
               <i class="fa-solid fa-magnifying-glass" style="color: #8ea5c0"></i>
             </div>
-            <div class="w-10 flex items-center justify-center p-2" style="background: #293145">
+            <div class="w-10 flex items-center justify-center p-2" style="background: #131a2c">
               <i class="fa-regular fa-pen-to-square" style="color: #8ea5c0"></i>
             </div>
           </div>
 
           <div class="flex items-center gap-3">
-            <button style="background: #314463; border: 1px solid #009af9" class="w-full py-2 rounded-md text-xs">
+            <button style="background: #1e3a5f; border: 1px solid #009af9" class="w-full py-2 rounded-md text-xs">
               Chats
             </button>
-            <button style="background: #1d2130; border: 1px solid #454a56" class="w-full py-2 rounded-md text-xs">
+            <button style="background: #0b1120; border: 1px solid #454a56" class="w-full py-2 rounded-md text-xs">
               Notifications
             </button>
           </div>
 
           <div class="mt-3 flex flex-col gap-3">
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg class="svg-icon qt-real" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                 viewBox="0 0 24 24" fill="none">
                 <path fill="#8ea5c0" fill-rule="evenodd"
@@ -1116,7 +1116,7 @@
                 </p>
               </div>
             </div>
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg class="svg-icon qt-real" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                 viewBox="0 0 24 24" fill="none">
                 <path fill="#8ea5c0" fill-rule="evenodd"
@@ -1140,12 +1140,12 @@
         <!-- help sub left nav -->
         <div id="helpContent" class="hidden">
           <p class="flex items-center gap-2" onclick="goBack()">
-            <span style="background: #262b3d; color: #8ea5c0"
+            <span style="background: #0f172a; color: #8ea5c0"
               class="back-btn w-10 h-10 flex items-center justify-center rounded-md">← </span>Back
           </p>
 
           <div class="mt-5 flex flex-col gap-2">
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg class="svg-icon svg-icon-supp" width="24" height="24" fill="#8ea5c0"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.31 411">
                 <path
@@ -1163,7 +1163,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon guide-icon" xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 500.04 500">
                 <path
@@ -1175,7 +1175,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon thumbs-up" xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 512 512">
                 <path
@@ -1187,7 +1187,7 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon svg-icon-vip-chat-2"
                 xmlns="http://www.w3.org/2000/svg" viewBox="0 0 444.53 355.67">
                 <path
@@ -1201,7 +1201,7 @@
                 <p>Support chat</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #293145">
+            <div class="flex items-center gap-2 px-5 py-3 rounded-md" style="background: #131a2c">
               <svg width="24" height="24" fill="#8ea5c0" class="svg-icon apps-icon" xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 500 510">
                 <path
@@ -1226,7 +1226,7 @@
           <div class="my-5">
             Follow us
             <div class="grid grid-cols-3 gap-2 mt-2">
-              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #293145">
+              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #131a2c">
                 <svg class="svg-icon" width="24" height="24" fill="#8ea5c0" viewBox="0 0 18 18"
                   xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd"
@@ -1234,7 +1234,7 @@
                     fill="#8ea5c0"></path>
                 </svg>
               </div>
-              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #293145">
+              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #131a2c">
                 <svg class="svg-icon" width="24" height="24" fill="#8ea5c0" viewBox="0 0 18 18"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -1248,7 +1248,7 @@
           <div>
             Official chanels:
             <div class="grid grid-cols-3 gap-2 mt-2">
-              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #293145">
+              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #131a2c">
                 <svg class="svg-icon" width="24" height="24" fill="#8ea5c0" viewBox="0 0 18 18"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -1256,7 +1256,7 @@
                     fill="#8ea5c0"></path>
                 </svg>
               </div>
-              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #293145">
+              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #131a2c">
                 <svg class="svg-icon" width="24" height="24" fill="#8ea5c0" viewBox="0 0 18 18"
                   xmlns="http://www.w3.org/2000/svg">
                   <path fill-rule="evenodd" clip-rule="evenodd"
@@ -1264,7 +1264,7 @@
                     fill="#8ea5c0"></path>
                 </svg>
               </div>
-              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #293145">
+              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #131a2c">
                 <svg class="svg-icon" width="24" height="24" fill="#8ea5c0" viewBox="0 0 18 18"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -1278,7 +1278,7 @@
                     fill="currentColor"></path>
                 </svg>
               </div>
-              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #293145">
+              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #131a2c">
                 <svg class="svg-icon" width="24" height="24" fill="#8ea5c0" viewBox="0 0 18 18"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -1286,7 +1286,7 @@
                     fill="#8ea5c0"></path>
                 </svg>
               </div>
-              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #293145">
+              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #131a2c">
                 <svg class="svg-icon" width="24" height="24" fill="#8ea5c0" viewBox="0 0 18 18"
                   xmlns="http://www.w3.org/2000/svg">
                   <path
@@ -1294,7 +1294,7 @@
                     fill="#8ea5c0"></path>
                 </svg>
               </div>
-              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #293145">
+              <div class="flex items-center justify-center rounded-md py-2.5" style="background: #131a2c">
                 <svg class="svg-icon" width="24" height="24" fill="#8ea5c0" viewBox="0 0 18 18"
                   xmlns="http://www.w3.org/2000/svg">
                   <path

@@ -8,7 +8,7 @@
     <div class="grid lg:grid-cols-2 gap-4">
         <!-- Change Password Section -->
         <div class="panel box-border personal-info-panel mb-3">
-            <div class="panel-heading bg-gray-100 dark:bg-gray-700 py-2 px-4 rounded-t-xl">
+            <div class="panel-heading bg-white/5 border border-glass-border py-2 px-4 rounded-t-xl">
                 <div class="panel-title text-lg font-semibold text-gray-800">Change Password</div>
             </div>
             <div class="panel-body">
@@ -65,7 +65,7 @@
 
         {{-- Two-factor authentication (2FA) --}}
         <div class="panel box-border personal-info-panel mb-3">
-            <div class="panel-heading bg-gray-100 dark:bg-gray-700 py-2 px-4 rounded-t-xl">
+            <div class="panel-heading bg-white/5 border border-glass-border py-2 px-4 rounded-t-xl">
                 <div class="panel-title text-lg font-semibold text-gray-800">Two-factor Authentication (2FA)</div>
             </div>
             <div class="panel-body">
@@ -121,7 +121,7 @@
                 <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="min-w-full table-auto text-sm text-gray-900 dark:text-gray-100">
-                            <thead class="bg-gray-100 dark:bg-gray-700">
+                            <thead class="bg-white/5 border border-glass-border">
                                 <tr>
                                     <th class="px-4 py-2 text-left whitespace-nowrap">IP Address</th>
                                     <th class="px-4 py-2 text-left whitespace-nowrap">User Agent</th>
@@ -155,7 +155,7 @@
                 <div class="bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="min-w-full table-auto text-sm text-gray-900 dark:text-gray-100">
-                            <thead class="bg-gray-100 dark:bg-gray-700">
+                            <thead class="bg-white/5 border border-glass-border">
                                 <tr>
                                     <th class="px-4 py-2 text-left">Session ID</th>
                                     <th class="px-4 py-2 text-left">IP Address</th>

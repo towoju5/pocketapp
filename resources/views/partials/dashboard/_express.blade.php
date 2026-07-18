@@ -50,11 +50,11 @@
         color: #fff !important;
     }
 
-    \#trade-confirm {
+    #trade-confirm {
         margin-top: 16px;
     }
 
-    \#trade-confirm input {
+    #trade-confirm input {
         width: 100%;
         padding: 8px;
         border-radius: 4px;
@@ -62,7 +62,7 @@
         margin-bottom: 8px;
     }
 
-    \#trade-confirm button {
+    #trade-confirm button {
         width: 100%;
         padding: 8px;
         border-radius: 4px;
@@ -72,10 +72,9 @@
         cursor: pointer;
     }
 
-    /* …keep everything you already had … */
     .filter-btn {
         @apply flex-1 py-2 rounded-lg text-xs text-white;
-        background: #1d2130;
+        background: #0b1120;
         border: 1px solid #454a56
     }
 
@@ -105,8 +104,8 @@
     <h1 class="text-gray-200 text-md text-center w-full">Express Trading</h1>
 </div>
 <!-- Tabs -->
-<div class="grid grid-cols-3 border-b border-[#2a3142]">
-    <button onclick="toggleTradeMenu(this, 'new')" id="openExpressTradeBtn" class="trade-open-close relative py-2 text-gray-500 bg-[#1e2131] font-thin text-sm active-tab">
+<div class="grid grid-cols-3 border-b border-[#131a2c]">
+    <button onclick="toggleTradeMenu(this, 'new')" id="openExpressTradeBtn" class="trade-open-close relative py-2 text-gray-500 bg-[#0b1120] font-thin text-sm active-tab">
         New
         <div class="tab-indicator absolute bottom-0 left-0 w-full h-0.5 bg-blue-500"></div>
     </button>
@@ -124,7 +123,6 @@
     <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800 trade-tab-content" data-tab="new">
         <div class="text-white">
             <div class="h-full overflow-hidden">
-                {{-- Express Trades header + tabs stay exactly as before --}}
                 <div id="express-new" class="content active">
 
                     {{-- ########################################
@@ -142,9 +140,6 @@
                             Place Trades
                         </button>
                     </div>
-
-
-                    {{-- ⚠ level notice + “Acquire level” button - unchanged  --}}
 
                     {{-- ############  TYPE FILTER ############ --}}
                     <div class="mt-4 grid grid-cols-4" id="asset-filters">
@@ -165,9 +160,9 @@
                     {{-- ###########  ASSET LIST ############ --}}
                     <div id="asset-list" class="mt-4 space-y-3">
                         @foreach($assets as $asset)
-                        <div class="asset-item-{{ $asset->id }} flex items-center justify-between gap-3" data-type="{{ $asset->asset_group }}">
+                        <div class="asset-row-item asset-item-{{ $asset->id }} flex items-center justify-between gap-3" data-type="{{ $asset->asset_group }}">
                             {{-- up --}}
-                            <button class="trade-btn up asset_{{ $asset->id }}" data-assetId="{{ $asset->id }}" data-percentage="{{ $asset->asset_profit_margin * 100 }}" data-asset="{{ $asset->symbol }}" data-direction="up" data-close-time="30" onclick="selectTrade(this)">
+                            <button class="trade-btn up asset_{{ $asset->id }}" data-assetid="{{ $asset->id }}" data-percentage="{{ number_format($asset->asset_profit_margin * 100, 0) }}" data-asset="{{ $asset->symbol }}" data-direction="up" onclick="selectTrade(this)">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" class="trade-btn-up-svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img">
                                     <path d="M10 0C8.02219 0 6.08879 0.58649 4.4443 1.6853C2.79981 2.78412 1.51809 4.3459 0.761209 6.17317C0.00433284 8.00043 -0.193701 10.0111 0.192152 11.9509C0.578004 13.8907 1.53041 15.6725 2.92894 17.0711C4.32746 18.4696 6.10929 19.422 8.0491 19.8079C9.98891 20.1937 11.9996 19.9957 13.8268 19.2388C15.6541 18.4819 17.2159 17.2002 18.3147 15.5557C19.4135 13.9112 20 11.9778 20 10C19.9971 7.34874 18.9425 4.80691 17.0678 2.93219C15.1931 1.05746 12.6513 0.00294858 10 0Z" fill="#248F32"></path>
                                     <path d="M13.8319 12.832L13.8288 7.17244C13.8278 6.90725 13.722 6.65311 13.5343 6.46549C13.3467 6.27786 13.0926 6.172 12.8274 6.17101L7.16786 6.16792C6.90411 6.17016 6.65203 6.27647 6.46647 6.46372C6.28091 6.65097 6.17688 6.90401 6.17703 7.16777C6.17717 7.43154 6.28148 7.68469 6.46725 7.87214C6.65301 8.0596 6.90521 8.16619 7.16897 8.16873L10.4135 8.17057L6.46366 12.1204C6.27612 12.308 6.17085 12.5624 6.17099 12.8278C6.17114 13.0931 6.2767 13.3477 6.46444 13.5354C6.65218 13.7232 6.90674 13.8287 7.1721 13.8289C7.43746 13.829 7.6919 13.7237 7.87944 13.5362L11.8293 9.58635L11.8311 12.8309C11.8329 13.0952 11.9392 13.3481 12.1267 13.5344C12.3143 13.7208 12.5678 13.8255 12.8321 13.8256C13.0963 13.8258 13.3498 13.7214 13.5371 13.5352C13.7244 13.349 13.8304 13.0962 13.8319 12.832Z" fill="white"></path>
@@ -179,12 +174,12 @@
                                 <div class="custom-dropdown relative inline-block w-full">
                                     <p class="text-xs">
                                         {{ $asset->symbol }}
-                                        <span class="text-green-400">+{{ $asset->payout }}%</span>
+                                        <span class="text-green-400">+{{ number_format($asset->asset_profit_margin * 100, 0) }}%</span>
                                     </p>
 
                                     <!-- Countdown Trigger -->
-                                    <p class="countdown cursor-pointer selected-time" data-duration="{{ $asset->duration }}">
-                                        M {{ $asset->duration }} 01:00
+                                    <p class="countdown cursor-pointer selected-time" data-duration-seconds="60">
+                                        01:00
                                     </p>
 
                                     <!-- Dropdown -->
@@ -197,7 +192,7 @@
                             </div>
 
                             {{-- down --}}
-                            <button class="trade-btn down asset_{{ $asset->id }}" data-assetId="{{ $asset->id }}" data-percentage="{{ $asset->asset_profit_margin * 100 }}" data-asset="{{ $asset->symbol }}" data-direction="down" data-close-time="30" onclick="selectTrade(this)">
+                            <button class="trade-btn down asset_{{ $asset->id }}" data-assetid="{{ $asset->id }}" data-percentage="{{ number_format($asset->asset_profit_margin * 100, 0) }}" data-asset="{{ $asset->symbol }}" data-direction="down" onclick="selectTrade(this)">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" fill="none" class="trade-btn-down-svg" xmlns:xlink="http://www.w3.org/1999/xlink" role="img">
                                     <path d="M10 20C11.9778 20 13.9112 19.4135 15.5557 18.3147C17.2002 17.2159 18.4819 15.6541 19.2388 13.8268C19.9957 11.9996 20.1937 9.98891 19.8079 8.0491C19.422 6.10929 18.4696 4.32746 17.0711 2.92894C15.6725 1.53041 13.8907 0.578004 11.9509 0.192152C10.0111 -0.193701 8.00043 0.00433284 6.17317 0.761209C4.3459 1.51809 2.78412 2.79981 1.6853 4.4443C0.58649 6.08879 0 8.02219 0 10C0.00294858 12.6513 1.05746 15.1931 2.93219 17.0678C4.80691 18.9425 7.34874 19.9971 10 20Z" fill="#D1281F"></path>
                                     <path d="M7.16786 13.8324L12.828 13.8287C13.0932 13.8277 13.3474 13.7218 13.535 13.5341C13.7227 13.3465 13.8286 13.0923 13.8296 12.8271L13.8333 7.16702C13.831 6.90324 13.7247 6.65115 13.5375 6.46559C13.3502 6.28003 13.0972 6.17602 12.8334 6.17619C12.5696 6.17636 12.3164 6.2807 12.1289 6.4665C11.9414 6.65231 11.8348 6.90454 11.8322 7.16832L11.8301 10.4132L7.88023 6.46333C7.6927 6.27579 7.43825 6.17053 7.17286 6.17071C6.90747 6.17088 6.65288 6.27647 6.4651 6.46425C6.27732 6.65203 6.17173 6.90662 6.17155 7.17201C6.17138 7.4374 6.27664 7.69185 6.46418 7.87939L10.414 11.8292L7.16917 11.8314C6.90539 11.834 6.65315 11.9406 6.46735 12.1281C6.28155 12.3156 6.17721 12.5688 6.17704 12.8325C6.17686 13.0963 6.28087 13.3494 6.46643 13.5366C6.65199 13.7239 6.90409 13.8302 7.16786 13.8324Z" fill="white"></path>
@@ -207,40 +202,59 @@
                         @endforeach
                     </div>
 
-                    {{-- Submit Button --}}
-                    <div class="mt-4 text-center">
-                        <button id="submit-trades" class="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50" disabled>
-                            Submit Trades
-                        </button>
-                    </div>
-
                 </div>
-                {{-- express-opened / express-closed blocks unchanged --}}
             </div>
         </div>
-
     </div>
-    <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800 trade-tab-content hidden" data-tab="opened">
+    <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800 trade-tab-content hidden space-y-2" data-tab="opened">
         @forelse($openedTrades as $trade)
-        <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-gray-300"></div>
+        <div class="flex items-center justify-between gap-3 bg-[#1c243c] border border-[#2a3350] rounded-lg p-3">
+            <div>
+                <p class="text-sm font-semibold text-white">
+                    <i class="fa fa-arrow-{{ $trade->trade_direction === 'up' ? 'up text-[#16c087]' : 'down text-[#f4534a]' }}"></i>
+                    {{ $trade->trade_currency ?? $trade->asset?->symbol }}
+                </p>
+                <p class="text-xs text-[#7c86a3]">${{ number_format((float) $trade->trade_amount, 2) }} &middot; +{{ number_format($trade->trade_percentage * 100, 0) }}%</p>
             </div>
+            <div class="countdown express-countdown text-xs text-[#7c86a3] px-2 py-1 rounded" data-close-time="{{ \Illuminate\Support\Carbon::parse($trade->trade_close_time)->toIso8601String() }}" data-trade-id="{{ $trade->id }}">--:--</div>
         </div>
         @empty
         <a class="bg-[#172832] text-white border border-[#025b44] py-2 rounded-md flex justify-center hover:cursor-pointer" onclick="$('#openExpressTradeBtn').click()">Create new express</a>
         @endforelse
     </div>
-    <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800 trade-tab-content hidden" data-tab="closed">
-        <p class="text-sm text-gray-500 dark:text-gray-400">This is some placeholder content the <strong class="font-medium text-gray-800 dark:text-white">closed tab's associated content</strong>. Clicking another tab will toggle the visibility of this one for the next. The tab JavaScript swaps classes to control the content visibility and styling.</p>
+    <div class="p-4 rounded-lg bg-gray-50 dark:bg-gray-800 trade-tab-content hidden space-y-2" data-tab="closed">
+        @forelse($closedTrades as $trade)
+        @php($pl = $trade->trade_status === 'win' ? ($trade->trade_profit - $trade->trade_amount) : -$trade->trade_amount)
+        <div class="flex items-center justify-between gap-3 bg-[#1c243c] border border-[#2a3350] rounded-lg p-3">
+            <div>
+                <p class="text-sm font-semibold text-white">{{ $trade->trade_currency ?? $trade->asset?->symbol }}</p>
+                <p class="text-xs text-[#7c86a3]">${{ number_format((float) $trade->trade_amount, 2) }}</p>
+            </div>
+            <span class="text-xs font-semibold {{ $trade->trade_status === 'win' ? 'text-[#16c087]' : 'text-[#f4534a]' }}">
+                {{ $pl >= 0 ? '+' : '' }}${{ number_format($pl, 2) }}
+            </span>
+        </div>
+        @empty
+        <p class="text-sm text-[#7c86a3] text-center py-4">No closed express trades yet.</p>
+        @endforelse
     </div>
 </div>
+<a href="{{ route('express-trades.index') }}" class="block text-center text-xs text-[#4f8ef7] py-3 border-t border-[#1c243c]">View full express trade history →</a>
 
 
 
 @push('js')
 <script>
     let selectedTrades = [];
+
+    function parseDurationSeconds(text) {
+        const parts = String(text).split(':').map((n) => parseInt(n, 10) || 0);
+        let sec = 0;
+        if (parts.length === 3) sec = parts[0] * 3600 + parts[1] * 60 + parts[2];
+        else if (parts.length === 2) sec = parts[0] * 60 + parts[1];
+        else sec = parts[0] || 60;
+        return Math.max(5, sec);
+    }
 
     function renderSelectedTrades() {
         const container = document.getElementById('selected-trade-list');
@@ -281,7 +295,7 @@
             container.appendChild(div);
         });
     }
-        
+
     function updateTradeButtonStyles(assetId) {
         const assetItems = document.getElementsByClassName(`asset-item-${assetId}`);
 
@@ -296,24 +310,22 @@
         });
     }
 
-
-
     function removeTrade(index) {
-        const removedTrade = selectedTrades[index]; // get the removed trade before removal
+        const removedTrade = selectedTrades[index];
         selectedTrades.splice(index, 1);
         renderSelectedTrades();
         if (removedTrade) {
-            updateTradeButtonStyles(removedTrade.asset_id); // update styles for removed asset
+            updateTradeButtonStyles(removedTrade.asset_id);
         }
     }
-
 
     function selectTrade(t) {
         const asset = $(t).data('asset');
         const assetId = $(t).data('assetid');
         const direction = $(t).data('direction');
-        const closeTime = $(t).data('close-time');
         const percentage = $(t).data('percentage');
+        const row = $(t).closest('.asset-row-item');
+        const closeTime = row.find('.selected-time').data('duration-seconds') || 60;
 
         const tradeKey = `${assetId}-${direction}-${closeTime}`;
 
@@ -346,7 +358,11 @@
         const amount = parseFloat($('#trade-amount').val() || 10);
 
         const payload = {
-            trades: selectedTrades,
+            trades: selectedTrades.map((t) => ({
+                asset_id: t.asset_id,
+                direction: t.direction,
+                close_time: t.close_time,
+            })),
             amount: amount
         };
 
@@ -359,51 +375,70 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             },
             success: function(res) {
-                // alert('Trades submitted successfully!');
                 toastr.success(res.message);
                 selectedTrades = [];
                 renderSelectedTrades();
                 $('#trade-amount').val('');
             },
             error: function(xhr) {
-                alert('Error: ' + xhr.responseText);
+                toastr.error(xhr.responseJSON?.message || 'Error placing express trades.');
             }
         });
     }
 
+    function startExpressCountdowns() {
+        document.querySelectorAll('.express-countdown').forEach((el) => {
+            if (el.dataset.countdownActive === '1') return;
+            const closeTime = new Date(el.dataset.closeTime);
+            if (Number.isNaN(closeTime.getTime())) return;
+            el.dataset.countdownActive = '1';
+
+            const tick = () => {
+                const remaining = Math.max(0, Math.floor((closeTime.getTime() - Date.now()) / 1000));
+                const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+                const s = String(remaining % 60).padStart(2, '0');
+                el.textContent = `${m}:${s}`;
+                if (remaining <= 0) clearInterval(interval);
+            };
+            const interval = setInterval(tick, 1000);
+            tick();
+        });
+    }
 
     $(document).ready(function() {
         const options = [
-            '00:30', '00:60', '01:00', '01:30', '02:00', '02:30',
-            '03:00', '03:30', '04:00', '04:30', '05:00', '01:05:30'
+            '00:30', '01:00', '01:30', '02:00', '02:30',
+            '03:00', '03:30', '04:00', '04:30', '05:00'
         ];
 
-        const $dropdown = $('.custom-dropdown');
-        const $menu = $dropdown.find('.dropdown-menu');
-        const $trigger = $dropdown.find('.selected-time');
+        $('.custom-dropdown').each(function() {
+            const $dropdown = $(this);
+            const $menu = $dropdown.find('.dropdown-menu');
+            const $trigger = $dropdown.find('.selected-time');
 
-        // Populate options
-        options.forEach(option => {
-            const $opt = $(`<div class="px-2 py-1 hover:bg-gray-200 bg-[#293145] cursor-pointer rounded">${option}</div>`);
-            $opt.on('click', function() {
-                $trigger.text(option);
-                $menu.hide();
+            options.forEach(option => {
+                const $opt = $(`<div class="px-2 py-1 hover:bg-gray-200 bg-[#131a2c] cursor-pointer rounded">${option}</div>`);
+                $opt.on('click', function() {
+                    $trigger.text(option);
+                    $trigger.data('duration-seconds', parseDurationSeconds(option));
+                    $menu.hide();
+                });
+                $menu.append($opt);
             });
-            $menu.append($opt);
+
+            $trigger.on('click', function(e) {
+                e.stopPropagation();
+                $menu.toggle();
+            });
         });
 
-        // Toggle dropdown on trigger click
-        $trigger.on('click', function(e) {
-            e.stopPropagation();
-            $menu.toggle();
-        });
-
-        // Close dropdown on outside click
         $(document).on('click', function(e) {
             if (!$(e.target).closest('.custom-dropdown').length) {
-                $menu.hide();
+                $('.dropdown-menu').hide();
             }
         });
+
+        startExpressCountdowns();
     });
 </script>
 @endpush

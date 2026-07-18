@@ -1,28 +1,28 @@
-@extends('layouts.guest')
+@extends('layouts.auth')
 
-@section('title', __('Forgot Password'))
+@section('title', 'Recover Access')
+@section('visual-title')Lost Signature?<br>No problem.@endsection
+@section('visual-subtitle')Enter your email address and we'll send you a link to reset your password.@endsection
+@section('nav-cta')
+    <a href="{{ route('login') }}" class="nav-link" style="color:var(--p-blue)">Sign In</a>
+@endsection
+
 @section('content')
-    <div class="mb-3 text-muted">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-    </div>
+    <h2 style="font-size: 32px; font-weight: 950; color: var(--p-dark); letter-spacing: -1.5px; margin-bottom: 30px;">Reset Access Key</h2>
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-3 alert alert-info" :status="session('status')" />
+    @if (session('status'))
+        <div class="alert alert-success">&#9989; {{ session('status') }}</div>
+    @endif
+    @if ($errors->any())
+        <div class="alert alert-error">&#9888;&#65039; {{ $errors->first() }}</div>
+    @endif
 
     <form method="POST" action="{{ route('password.email') }}">
         @csrf
 
-        <!-- Email Address -->
-        <div class="mb-3">
-            <x-input-label for="email" :value="__('Email')" class="form-label" />
-            <x-text-input id="email" class="form-control" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="invalid-feedback d-block" />
-        </div>
+        <label for="email" class="field-label">Email Address</label>
+        <input type="email" id="email" name="email" class="input-box" placeholder="mariavance@gmail.com" value="{{ old('email') }}" autofocus required>
 
-        <div class="d-flex justify-content-end mt-3">
-            <x-primary-button class="btn btn-primary">
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="btn-go">Transmit Recovery Link</button>
     </form>
 @endsection

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.desktop.trading')
 
 @section('title', 'Payout History')
 @section('content')

@@ -38,11 +38,20 @@ class RegisteredUserController extends Controller
 
         $name = explode(" ", $request->name);
 
+        $referrerId = null;
+        if ($referrerInfo = trim((string) $request->referrer_info)) {
+            $referrer = User::where('email', $referrerInfo)
+                ->orWhere('referral_code', $referrerInfo)
+                ->first();
+            $referrerId = $referrer?->id;
+        }
+
         $user = User::create([
             'first_name' => $name[0],
             'last_name' => $name[1] ?? $name[0],
             'username' => $name[0] . rand(2201, 9999),
             'email' => $request->email,
+            'referred_by' => $referrerId,
             'config' => [
                 "email_notifications" => "false",
                 "manager_updates" => "false",

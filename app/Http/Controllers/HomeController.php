@@ -7,14 +7,15 @@ use App\Models\ExpressTrade;
 use App\Models\Signal;
 use App\Models\Trade;
 use App\Models\User;
+use App\Services\PriceFeedService;
+use App\Services\TraderLeaderboard;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
-    public function dashboard(Request $request, $coin = null)
+    public function dashboard(Request $request, PriceFeedService $priceFeed, $coin = null)
     {
         $user = auth()->user();
-        $isOutOfTradingHours = false;
         if (isset($coin)) {
             $coin = str_replace('--', '/', $coin);
         }
@@ -25,60 +26,22 @@ class HomeController extends Controller
             $data = Assets::first();
         }
 
-        // $current_rate = getAssetData($coin, true);
-        // if(is_numeric($current_rate)) {
-        //     $isOutOfTradingHours = false;
-        // }
+        $isOutOfTradingHours = !$priceFeed->isOnline($data->symbol);
 
         $assetCategories = Assets::groupBy('asset_group')->get();
         $chart_coin = $data->symbol;
-        $active_trades = Trade::where(["trade_status" => "pending", "user_id" => auth()->id()])->latest()->get();
-        $recent_closed_trades = Trade::whereIn("trade_status", ["pending", "win", "lose"])->whereUserId(auth()->id())->whereBetween('created_at', [now()->subMinutes(10), now()])->latest()->get();
+        // Dashboard scopes to whichever wallet (demo/real) the user currently has
+        // active — demo and real trades must never be shown mixed together.
+        $walletMode = is_demo_wallet($user->trade_wallet ?? 'qt_demo_usd') ? 'demo' : 'real';
+        $active_trades = Trade::where(["trade_status" => "pending", "user_id" => auth()->id()])->where('trade_wallet', 'like', "%{$walletMode}%")->latest()->get();
+        $recent_closed_trades = Trade::whereIn("trade_status", ["pending", "win", "lose"])->whereUserId(auth()->id())->where('trade_wallet', 'like', "%{$walletMode}%")->whereBetween('created_at', [now()->subMinutes(10), now()])->latest()->get();
         $signals = Signal::latest()->where('is_active', true)->get();
-        $traders24hours = Trade::where('trade_status', 'win')->with('user')->orderBy('trade_profit', 'desc')->where('created_at', '>=', now()->subHours(24))->get();
-        $tradersTopRanked = Trade::where('trade_status', 'win')->with('user')->orderBy('trade_profit', 'desc')->get();
-        $tradersTop100 = Trade::where('trade_status', 'win')->with('user')->orderBy('trade_profit', 'desc')->limit(100)->get();
-        // Users with trades in the past 24 hours
-        $traders24hours = User::whereHas('trades', function ($q) {
-            $q->where('created_at', '>=', now()->subHours(24))
-                ->where('trade_status', 'win');
-        })
-            ->with(['trades' => function ($q) {
-                $q->where('created_at', '>=', now()->subHours(24));
-            }])
-            ->get()
-            ->map(function ($user) {
-                $user->total_profit = $user->trades->where('trade_status', 'win')->sum('trade_profit');
-                return $user;
-            })
-            ->sortByDesc('total_profit')
-            ->values();
-
-        // All-time top ranked users
-        $tradersTopRanked = User::whereHas('trades', function ($q) {
-            $q->where('trade_status', 'win');
-        })
-            ->with('trades')
-            ->get()
-            ->map(function ($user) {
-                $user->total_profit = $user->trades->where('trade_status', 'win')->sum('trade_profit');
-                return $user;
-            })
-            ->sortByDesc('total_profit')
-            ->values();
-
-        // Top 100 users by total profit (all time)
-        $tradersTop100 = $tradersTopRanked->take(100);
+        ['traders24hours' => $traders24hours, 'tradersTopRanked' => $tradersTopRanked, 'tradersTop100' => $tradersTop100] = TraderLeaderboard::build();
 
         // Get assets
         $assets = Assets::where('is_otc', true)->get();
-        $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->get();
-
-        // return [
-        //     $traders24hours,
-        //     $tradersTopRanked,
-        //     $tradersTop100,
-        // ];
+        $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->where('trade_status', 'open')->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->get();
+        $closedExpressTrades = ExpressTrade::where('user_id', $user->id)->whereIn('trade_status', ['win', 'lose'])->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->take(20)->get();
 
         return view('__dash', compact([
             'data',
@@ -92,14 +55,14 @@ class HomeController extends Controller
             'tradersTop100',
             'assets',
             'recent_closed_trades',
-            'openedExpressTrades'
+            'openedExpressTrades',
+            'closedExpressTrades'
         ]));
     }
 
-    public function demo(Request $request, $coin = null)
+    public function demo(Request $request, PriceFeedService $priceFeed, $coin = null)
     {
         $user = auth()->user();
-        $isOutOfTradingHours = false;
         if (isset($coin)) {
             $coin = str_replace('--', '/', $coin);
         }
@@ -110,13 +73,54 @@ class HomeController extends Controller
             $data = Assets::first();
         }
 
+        $isOutOfTradingHours = !$priceFeed->isOnline($data->symbol);
+
+        // /dashboard/demo always trades on the demo wallet, regardless of
+        // whatever the user last had active elsewhere — visiting this URL is
+        // an explicit switch to practice mode so trades placed here can never
+        // land on the real wallet.
+        if (!is_demo_wallet($user->trade_wallet)) {
+            $user->trade_wallet = 'qt_demo_usd';
+            $user->active_wallet_slug = 'qt_demo_usd';
+            $user->save();
+        }
+
         $assetCategories = Assets::groupBy('asset_group')->get();
         $chart_coin = $data->symbol;
-        $active_trades = Trade::where(["trade_status" => "pending", "user_id" => auth()->id()])->get();
+        $active_trades = Trade::where(["trade_status" => "pending", "user_id" => auth()->id()])->where('trade_wallet', 'like', '%demo%')->latest()->get();
+        $recent_closed_trades = Trade::whereIn("trade_status", ["pending", "win", "lose"])->whereUserId(auth()->id())->where('trade_wallet', 'like', '%demo%')->whereBetween('created_at', [now()->subMinutes(10), now()])->latest()->get();
+        $signals = Signal::latest()->where('is_active', true)->get();
+        ['traders24hours' => $traders24hours, 'tradersTopRanked' => $tradersTopRanked, 'tradersTop100' => $tradersTop100] = TraderLeaderboard::build();
+
+        $assets = Assets::where('is_otc', true)->get();
+        $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->where('trade_status', 'open')->where('trade_wallet', 'like', '%demo%')->with('asset')->latest()->get();
+        $closedExpressTrades = ExpressTrade::where('user_id', $user->id)->whereIn('trade_status', ['win', 'lose'])->where('trade_wallet', 'like', '%demo%')->with('asset')->latest()->take(20)->get();
 
         $wallet_balance = $user->getWallet($user->active_wallet_slug ?? 'qt_demo_usd') ?? ["balance" => 0];
 
-        return view('__dash', compact('data', 'assetCategories', 'isOutOfTradingHours', 'active_trades', 'chart_coin', 'wallet_balance'));
+        return view('__dash', compact([
+            'data',
+            'assetCategories',
+            'isOutOfTradingHours',
+            'active_trades',
+            'chart_coin',
+            'wallet_balance',
+            'signals',
+            'traders24hours',
+            'tradersTopRanked',
+            'tradersTop100',
+            'assets',
+            'recent_closed_trades',
+            'openedExpressTrades',
+            'closedExpressTrades'
+        ]));
+    }
+
+    public function assetStatus(PriceFeedService $priceFeed)
+    {
+        $status = Assets::pluck('symbol')->mapWithKeys(fn ($symbol) => [$symbol => $priceFeed->isOnline($symbol)]);
+
+        return response()->json($status);
     }
 
     public function get_asset_history($ticker, $isOTC = true)

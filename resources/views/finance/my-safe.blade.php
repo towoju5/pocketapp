@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.desktop.trading')
 
 @section('content')
     <div class="w-full m-8">

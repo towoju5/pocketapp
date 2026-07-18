@@ -7,8 +7,8 @@ use App\Events\TradeUpdated;
 use App\Models\Assets;
 use App\Models\Trade;
 use App\Jobs\EvaluateTrade;
-use App\Models\Signal;
 use App\Models\User;
+use App\Services\PriceFeedService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -30,20 +30,36 @@ class TradeController extends Controller
     
     public function index(Request $request)
     {
-        // return response()->json(Trade::all());
-        $trades = Trade::whereUserId(auth()->id())->latest()->paginate(10);
-        $signals = Signal::latest()->where('is_active', true)->get();
-        return view('trades.index', compact('trades','signals'));
+        $currentMode = is_demo_wallet(auth()->user()->trade_wallet ?? 'qt_demo_usd') ? 'demo' : 'real';
+        $mode = in_array($request->input('mode'), ['demo', 'real']) ? $request->input('mode') : $currentMode;
+
+        $query = Trade::whereUserId(auth()->id())->where('trade_wallet', 'like', "%{$mode}%");
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date('date_from'));
+        }
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date('date_to'));
+        }
+        if ($request->filled('asset')) {
+            $query->where('trade_currency', $request->input('asset'));
+        }
+        if ($request->filled('result') && $request->input('result') !== 'all') {
+            $query->where('trade_status', $request->input('result'));
+        }
+
+        $trades = $query->latest()->paginate(20)->withQueryString();
+        $assets = Trade::whereUserId(auth()->id())->where('trade_wallet', 'like', "%{$mode}%")->select('trade_currency')->distinct()->orderBy('trade_currency')->pluck('trade_currency');
+
+        return view('trades.index', compact('trades', 'assets', 'mode'));
     }
 
-    public function placeTrade(Request $request)
+    public function placeTrade(Request $request, PriceFeedService $priceFeed)
     {
         $validated = Validator::make($request->all(), [
             'asset' => 'required|string',
             'amount' => 'required|numeric|min:1',
             'direction' => 'required|in:up,down',
-            'order_token' => 'required|string',
-            'order_time' => 'required',
             'duration' => 'required|string' // assuming HH:MM:SS
         ]);
 
@@ -54,12 +70,6 @@ class TradeController extends Controller
         $validated = $validated->validated();
         $user = auth()->user();
 
-        create_user_wallet($user->id);
-
-        if(!debit_user($user->trade_wallet ?? 'qt_demo_usd', $validated['amount'], "Binary Trade Order")) {
-            return response()->json(['errors' => "Insufficient wallet balance"], 402);
-        }
-
         $symbol = str_replace('--', '/', $validated['asset']);
         $validated['asset'] = $symbol;
 
@@ -68,18 +78,31 @@ class TradeController extends Controller
             return response()->json(['errors' => "Asset not found"], 404);
         }
 
+        if (!$priceFeed->isOnline($symbol)) {
+            return response()->json(['status' => false, 'message' => 'This asset is currently unavailable for trading.'], 422);
+        }
+
+        $currentPrice = $priceFeed->getPrice($symbol);
+        if (null === $currentPrice) {
+            return response()->json(['status' => false, 'message' => 'Unable to fetch the current price for this asset. Please try again.'], 422);
+        }
+
         $timeParts = explode(':', $validated['duration']);
         $validated['duration'] = ($timeParts[0] * 3600) + ($timeParts[1] * 60) + $timeParts[2];
 
-        // return response()->json($validated);
-        $currentPrice = base64_decode($request->order_token);
-        Log::info('Current Price', ['price' => $currentPrice]);
-        if (is_array($currentPrice) || null == $currentPrice || empty($currentPrice)) {
-            return response()->json(['status' => false, 'message' => 'Error getting asset price']); exit;
+        create_user_wallet($user->id);
+
+        $walletSlug = $user->trade_wallet ?? 'qt_demo_usd';
+
+        if(!debit_user($walletSlug, $validated['amount'], "Binary Trade Order")) {
+            return response()->json(['errors' => "Insufficient wallet balance"], 402);
         }
 
+        // asset_profit_margin is stored as a fraction (e.g. 0.92 == 92%), not a
+        // 0-100 percentage — dividing by 100 here would shrink every payout
+        // to roughly 1% of what it should be.
         $percentage_profit = $asset->asset_profit_margin;
-        $profit_amount = ($percentage_profit / 100) * $validated['amount'];
+        $profit_amount = $percentage_profit * $validated['amount'];
         $calculated_profit = $validated['amount'] + $profit_amount;
 
         try {
@@ -93,12 +116,13 @@ class TradeController extends Controller
                 "trade_status" => "pending",
                 "trade_copied_count" => 0,
                 'user_id' => $user->id,
-                'trade_wallet' => $user->wallet_mode ?? 'qt_demo_usd',
+                'trade_wallet' => $walletSlug,
                 'trade_profit' => $calculated_profit,
                 'trade_percentage' => $percentage_profit,
             ]);
         } catch (\Exception $e) {
             Log::error("Trade creation failed", ['error' => $e->getMessage()]);
+            credit_user($walletSlug, $validated['amount'], "Refund: trade creation failed");
             return response()->json(['status' => false, 'message' => 'Trade creation failed']);
         }
 

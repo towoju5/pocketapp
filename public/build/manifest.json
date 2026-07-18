@@ -1,13 +1,25 @@
 {
   "resources/css/app.css": {
-    "file": "assets/app-D07Yvv-w.css",
+    "file": "assets/app-BKwEMcIf.css",
     "src": "resources/css/app.css",
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-Cu8Lkn8C.js",
+    "file": "assets/app-BbTgsPJY.js",
     "name": "app",
     "src": "resources/js/app.js",
+    "isEntry": true
+  },
+  "resources/js/trading-dashboard.js": {
+    "file": "assets/trading-dashboard-XoBbM7DA.js",
+    "name": "trading-dashboard",
+    "src": "resources/js/trading-dashboard.js",
+    "isEntry": true
+  },
+  "resources/js/trading-shell.js": {
+    "file": "assets/trading-shell-BHXGvvw4.js",
+    "name": "trading-shell",
+    "src": "resources/js/trading-shell.js",
     "isEntry": true
   }
 }

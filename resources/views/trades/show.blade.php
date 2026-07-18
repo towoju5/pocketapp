@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.desktop.trading')
 
 @section('title', 'Trade Details')
 @section('content')

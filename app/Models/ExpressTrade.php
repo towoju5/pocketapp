@@ -17,6 +17,7 @@ class ExpressTrade extends Model
         'trade_type',
         'trade_amount',
         'trade_close_time',
+        'trade_currency',
         'end_price',
         'trade_wallet',
         'start_price',
@@ -30,4 +31,14 @@ class ExpressTrade extends Model
     protected $casts = [
         'trade_extra_info' => 'array',
     ];
+
+    public function asset()
+    {
+        return $this->belongsTo(Assets::class, 'asset_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

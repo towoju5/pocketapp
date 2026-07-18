@@ -1,60 +1,30 @@
 @extends('layouts.admin.app')
 
-@section('title', 'View Asset')
+@section('title', 'Asset: ' . $asset->symbol)
+
 @section('content')
-    <div class="row gx-3">
-        <div class="col-xxl-12">
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h4 class="mb-4">Asset Details</h4>
+    <x-page-header :title="$asset->symbol" subtitle="{{ $asset->name }}">
+        <x-slot:actions>
+            <a href="{{ route('admin.assets.edit', $asset) }}" class="brand-btn-outline">Edit</a>
+        </x-slot:actions>
+    </x-page-header>
 
-                    <table class="table table-striped">
-                        <tr>
-                            <th>ID</th>
-                            <td>{{ $asset->id }}</td>
-                        </tr>
-                        <tr>
-                            <th>Symbol</th>
-                            <td>{{ $asset->symbol }}</td>
-                        </tr>
-                        <tr>
-                            <th>Name</th>
-                            <td>{{ $asset->name }}</td>
-                        </tr>
-                        <tr>
-                            <th>Asset Group</th>
-                            <td>{{ $asset->asset_group }}</td>
-                        </tr>
-                        <tr>
-                            <th>Exchange Float Type</th>
-                            <td>{{ ucfirst($asset->exchange_float_type) }}</td>
-                        </tr>
-                        <tr>
-                            <th>Exchange Float</th>
-                            <td>{{ $asset->exchange_float }}</td>
-                        </tr>
-                        <tr>
-                            <th>Created At</th>
-                            <td>{{ $asset->created_at->format('d-m-Y H:i:s') }}</td>
-                        </tr>
-                        <tr>
-                            <th>Updated At</th>
-                            <td>{{ $asset->updated_at->format('d-m-Y H:i:s') }}</td>
-                        </tr>
-                    </table>
+    <x-glass-card>
+        <dl class="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
+            <div><dt class="text-slate-400">ID</dt><dd class="font-semibold text-white">{{ $asset->id }}</dd></div>
+            <div><dt class="text-slate-400">Asset Group</dt><dd class="font-semibold text-white">{{ $asset->asset_group }}</dd></div>
+            <div><dt class="text-slate-400">Exchange Float</dt><dd class="font-semibold text-white">{{ $asset->exchange_float }}</dd></div>
+            <div><dt class="text-slate-400">Profit Margin</dt><dd class="font-semibold text-white">{{ $asset->asset_profit_margin }}</dd></div>
+            <div><dt class="text-slate-400">Created</dt><dd class="font-semibold text-white">{{ $asset->created_at->format('d M, Y H:i') }}</dd></div>
+            <div><dt class="text-slate-400">Updated</dt><dd class="font-semibold text-white">{{ $asset->updated_at->format('d M, Y H:i') }}</dd></div>
+        </dl>
 
-                    <div class="d-flex justify-content-end mt-3">
-                        <a href="{{ route('admin.assets.edit', $asset) }}" class="btn btn-warning me-2">Edit</a>
-                        <form action="{{ route('admin.assets.destroy', $asset) }}" method="POST">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger"
-                                onclick="return confirm('Are you sure?')">Delete</button>
-                        </form>
-                        <a href="{{ route('admin.assets.index') }}" class="btn btn-secondary ms-2">Back</a>
-                    </div>
-                </div>
-            </div>
+        <div class="mt-8 flex justify-end gap-3">
+            <a href="{{ route('admin.assets.index') }}" class="brand-btn-outline">Back</a>
+            <form action="{{ route('admin.assets.destroy', $asset) }}" method="POST" onsubmit="return confirm('Are you sure?')">
+                @csrf @method('DELETE')
+                <button type="submit" class="brand-btn bg-brand-danger text-white hover:bg-red-600">Delete</button>
+            </form>
         </div>
-    </div>
+    </x-glass-card>
 @endsection
