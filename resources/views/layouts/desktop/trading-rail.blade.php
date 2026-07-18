@@ -1,8 +1,6 @@
 <div class="relative flex-shrink-0">
     <div class="w-[84px] h-full bg-[#171e33] border-r border-[#2a3350] flex flex-col items-center py-3 overflow-y-auto box-border">
-        <a href="{{ route('dashboard') }}" class="w-9 h-9 rounded-[10px] flex items-center justify-center font-bold text-white text-xs mb-2 flex-shrink-0" style="background:linear-gradient(135deg,#4f8ef7,#a855f7);">TX</a>
-
-        <div class="flex flex-col items-center gap-1 w-full mt-2">
+        <div class="flex flex-col items-center gap-1 w-full">
             <a href="{{ route('dashboard') }}" class="rail-nav-btn rail-nav-btn--active" data-nav="trading" style="background:#1c243c;border:1px solid #4f8ef7;border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:#4f8ef7;text-decoration:none;margin-bottom:4px;">
                 <i class="fa fa-chart-line" style="font-size:16px;"></i>Trading
             </a>

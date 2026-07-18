@@ -1,5 +1,8 @@
-<div class="h-16 border-b border-[#2a3350] flex items-center justify-end gap-3.5 px-5 flex-shrink-0 relative box-border">
+<div class="h-16 border-b border-[#2a3350] flex items-center justify-between gap-3.5 px-5 flex-shrink-0 relative box-border w-full">
 
+    <a href="{{ route('dashboard') }}" class="w-9 h-9 rounded-[10px] flex items-center justify-center font-bold text-white text-xs flex-shrink-0" style="background:linear-gradient(135deg,#4f8ef7,#a855f7);">TX</a>
+
+    <div class="flex items-center gap-3.5 ml-auto">
     <div class="relative">
         <button type="button" id="balanceMenuBtn" class="bg-transparent border-0 cursor-pointer text-right px-2 py-1 rounded-lg flex items-center gap-2 text-[#d7dcea]">
             <span>
@@ -36,5 +39,6 @@
             <hr class="border-[#2a3350] my-1.5">
             <a href="#" onclick="event.preventDefault(); document.getElementById('UserLogoutForm').submit();" class="block px-3 py-2.5 rounded-lg text-sm" style="color:#f4534a;">Log Out</a>
         </div>
+    </div>
     </div>
 </div>

@@ -32,7 +32,23 @@ class SyncAssetPrices extends Command
                 $listener->subscribeAll($symbols);
                 $this->info('Subscribed to ' . count($symbols) . ' assets.');
 
-                $listener->listen(function (string $symbol, float $price, int $epochMs) use ($prices) {
+                $knownSymbols = array_flip($symbols);
+                $unmatched = [];
+
+                $listener->listen(function (string $symbol, float $price, int $epochMs) use ($prices, $knownSymbols, &$unmatched) {
+                    if (!isset($knownSymbols[$symbol]) && !isset($unmatched[$symbol])) {
+                        $unmatched[$symbol] = true;
+                        // A tick id that never matches any Assets.symbol means
+                        // iqcent is echoing back a different format than what
+                        // we subscribed with — prices get cached under a key
+                        // isOnline()/getPrice() will never look up, so every
+                        // asset looks perpetually offline despite real ticks
+                        // flowing. Compare this against `assets.symbol` values.
+                        Log::warning('SyncAssetPrices: received tick for unrecognized symbol', [
+                            'received_id' => $symbol,
+                            'sample_known_symbol' => $symbols[0] ?? null,
+                        ]);
+                    }
                     $prices->updatePrice($symbol, $price);
                 });
             } catch (\Throwable $e) {

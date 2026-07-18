@@ -3,55 +3,46 @@
 @section('title', 'Submit Identity Documents')
 
 @section('content')
-<style>
-    .omni-profile-shell { width: 100%; max-width: 700px; margin: 0 auto; padding: 40px 24px; display: flex; flex-direction: column; gap: 30px; }
-    .identity-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 35px; padding: 40px; }
-    .input-group { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-bottom: 20px; }
-    .input-group label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; letter-spacing: 1.5px; }
-    .vault-input { width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); padding: 16px; border-radius: 15px; color: #fff; font-size: 15px; outline: none; }
-    .vault-input:focus { border-color: #3b82f6; }
-    .btn-sync { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; border: none; padding: 18px 35px; border-radius: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; width: 100%; }
-    @media (max-width: 768px) { .omni-profile-shell { padding: 20px; } .identity-card { padding: 30px 20px; border-radius: 25px; } }
-</style>
+<div class="flex-1 overflow-y-auto p-6">
+    <div class="max-w-2xl mx-auto">
+        @if ($errors->any())
+            <div class="bg-[#f4534a]/10 border-l-4 border-[#f4534a] text-[#f4534a] p-4 rounded-lg mb-6">{{ $errors->first() }}</div>
+        @endif
 
-<div class="omni-profile-shell">
-    @if ($errors->any())
-        <div style="background:rgba(239,68,68,0.1); border-left:5px solid #ef4444; color:#f87171; padding:20px; border-radius:15px;">&#9888;&#65039; {{ $errors->first() }}</div>
-    @endif
+        <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6">
+            <h2 class="text-xl font-bold text-white mb-1">Submit Identity Documents</h2>
+            <p class="text-sm text-[#7c86a3] mb-6">Upload a government-issued document to unlock withdrawals.</p>
 
-    <div class="identity-card">
-        <h2 style="margin: 0 0 10px 0; font-weight: 950; font-size: 26px; color: #fff; letter-spacing: -1px;">Submit Identity Documents</h2>
-        <p style="color:#64748b; font-size:14px; margin-bottom:30px;">Upload a government-issued document to unlock withdrawals.</p>
+            <form method="POST" action="{{ route('kyc.store') }}" enctype="multipart/form-data" class="space-y-4">
+                @csrf
 
-        <form method="POST" action="{{ route('kyc.store') }}" enctype="multipart/form-data">
-            @csrf
+                <div>
+                    <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Document Type</label>
+                    <select name="document_type" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" required>
+                        <option value="passport">Passport</option>
+                        <option value="national_id">National ID</option>
+                        <option value="drivers_license">Driver's License</option>
+                    </select>
+                </div>
 
-            <div class="input-group">
-                <label>Document Type</label>
-                <select name="document_type" class="vault-input" required>
-                    <option value="passport">Passport</option>
-                    <option value="national_id">National ID</option>
-                    <option value="drivers_license">Driver's License</option>
-                </select>
-            </div>
+                <div>
+                    <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Document (Front)</label>
+                    <input type="file" name="document_front" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" accept="image/*,.pdf" required>
+                </div>
 
-            <div class="input-group">
-                <label>Document (Front)</label>
-                <input type="file" name="document_front" class="vault-input" accept="image/*,.pdf" required>
-            </div>
+                <div>
+                    <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Document (Back) &mdash; Optional</label>
+                    <input type="file" name="document_back" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" accept="image/*,.pdf">
+                </div>
 
-            <div class="input-group">
-                <label>Document (Back) &mdash; Optional</label>
-                <input type="file" name="document_back" class="vault-input" accept="image/*,.pdf">
-            </div>
+                <div>
+                    <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Selfie Holding Document &mdash; Optional</label>
+                    <input type="file" name="selfie" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" accept="image/*">
+                </div>
 
-            <div class="input-group">
-                <label>Selfie Holding Document &mdash; Optional</label>
-                <input type="file" name="selfie" class="vault-input" accept="image/*">
-            </div>
-
-            <button type="submit" class="btn-sync">Submit for Review</button>
-        </form>
+                <button type="submit" class="w-full bg-[#4f8ef7] hover:bg-[#3f7de6] text-white font-semibold text-sm py-3 rounded-lg">Submit for Review</button>
+            </form>
+        </div>
     </div>
 </div>
 @endsection

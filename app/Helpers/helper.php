@@ -106,38 +106,18 @@ if (! function_exists('is_demo_wallet')) {
 if (! function_exists('allowed_wallets')) {
     function allowed_wallets()
     {
+        // Just the two USD accounts every customer gets — real money and a
+        // risk-free practice balance. (Slugs stay qt_real_usd/qt_demo_usd
+        // since that's what TradeController/ExpressTradeController/etc.
+        // already key off of everywhere.)
         return [
             [
-                "name"   => "QT Real USD",
+                "name"   => "Real Account (USD)",
                 "symbol" => "qt_real_usd",
             ],
             [
-                "name"   => "QT Demo USD",
+                "name"   => "Demo Account (USD)",
                 "symbol" => "qt_demo_usd",
-            ],
-            [
-                "name"   => "MT4 Demo USD",
-                "symbol" => "mt4_demo_usd",
-            ],
-            [
-                "name"   => "MT4 Real USD",
-                "symbol" => "mt4_real_usd",
-            ],
-            [
-                "name"   => "MT5 Demo USD",
-                "symbol" => "mt5_demo_usd",
-            ],
-            [
-                "name"   => "MT5 Real USD",
-                "symbol" => "mt5_real_usd",
-            ],
-            [
-                "name"   => "Shares Real USD",
-                "symbol" => "sh_real_usd",
-            ],
-            [
-                "name"   => "Shares Demo USD",
-                "symbol" => "sh_demo_usd",
             ],
         ];
     }
@@ -175,6 +155,25 @@ if (! function_exists('checkMultipleTables')) {
     }
 }
 
+if (! function_exists('iqcent_proxy_url')) {
+    /**
+     * Wraps an iqcent URL through the ZenRows bypass proxy when an API key is
+     * configured (iqcent sits behind Cloudflare's bot challenge, which blocks
+     * most datacenter/server IPs even with browser-like headers); otherwise
+     * hits iqcent directly, e.g. when running somewhere Cloudflare doesn't
+     * challenge.
+     */
+    function iqcent_proxy_url(string $innerUrl): string
+    {
+        $zenrowsKey = env('ZENROWS_API_KEY');
+        if (! $zenrowsKey) {
+            return $innerUrl;
+        }
+
+        return "https://api.zenrows.com/v1/?apikey={$zenrowsKey}&url=" . urlencode($innerUrl);
+    }
+}
+
 if (! function_exists("getAssetData")) {
     function getAssetData($asset, $rateOnly = false)
     {
@@ -186,14 +185,11 @@ if (! function_exists("getAssetData")) {
                 // 'to' => $currentUnixTimestamp
             ]);
 
-            $innerUrl   = "https://iqcent.com/trade-api/api/ticks?{$query}&autoparse=true";
-            $encodedUrl = urlencode($innerUrl);
-            $zenrowsKey = env('ZENROWS_API_KEY');
-            $zenrowsUrl = "https://api.zenrows.com/v1/?apikey={$zenrowsKey}&url={$encodedUrl}";
-            Log::info('getAssetData: ', [$zenrowsUrl]);
+            $innerUrl = "https://iqcent.com/trade-api/api/ticks?{$query}&autoparse=true";
+            $requestUrl = iqcent_proxy_url($innerUrl);
 
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $innerUrl ?? $zenrowsUrl);
+            curl_setopt($ch, CURLOPT_URL, $requestUrl);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
 

@@ -4,7 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Tournament;
 use App\Models\User;
-use BinaryTrading\ExpressTrade\Models\Trade;
+use App\Services\PriceFeedService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -23,18 +23,19 @@ class EvaluateTrade implements ShouldQueue
         $this->trade = $trade;
     }
 
-    public function handle()
+    public function handle(PriceFeedService $priceFeed)
     {
         try {
             Log::debug("Evaluating trade: " . $this->trade->id);
             $trade = $this->trade;
-            // $user = User::where('user_id', $trade->user_id)->first();
-            Log::info("TRade currency is: {$trade->trade_currency}");
-            $currentPrice = getAssetData($trade->trade_currency, true);
+            // Server-cached price (kept warm by prices:sync) is authoritative —
+            // falls back to the ad-hoc REST scrape only if the cache has
+            // nothing for this symbol.
+            $currentPrice = $priceFeed->getPrice($trade->trade_currency) ?? getAssetData($trade->trade_currency, true);
             if (is_array($currentPrice)) {
                 Log::info("checking rate as an array: ". json_encode($currentPrice));
             }
-            $finalPrice = $currentPrice ?? 0;
+            $finalPrice = is_numeric($currentPrice) ? (float) $currentPrice : 0;
 
             // Evaluate trade
             if ($trade->trade_direction == 'up' && $finalPrice > 0 && $finalPrice > $trade->start_price) {

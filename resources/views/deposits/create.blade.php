@@ -2,42 +2,44 @@
 
 @section('title', 'Make new Deposit')
 @section('content')
-    <div class="container -mt-4">
-        <div class="rounded-[28px] border border-glass-border bg-[rgba(15,23,42,0.85)] backdrop-blur-[25px] text-white">
-            <div class="px-4 py-2">
-                @include('partials.finance-header')
-            </div>
-            <!-- Multi-Step Wizard -->
-            <div class="shadow-lg p-6 lg:p-10">
-                <!-- Step Progress -->
-                <div class="flex items-center justify-between mb-8">
-                    <div class="text-brand-blue flex items-center">
-                        <span
-                            class="w-8 h-8 bg-brand-blue text-white rounded-full flex items-center justify-center font-bold">1</span>
-                        <span class="ml-2">Deposit method</span>
-                    </div>
-                    <div class="text-white flex items-center">
-                        <span
-                            class="w-8 h-8 bg-white/10 text-white rounded-full flex items-center justify-center font-bold">2</span>
-                        <span class="ml-2">Payment details</span>
-                    </div>
-                    <div class="text-slate-500 flex items-center">
-                        <span
-                            class="w-8 h-8 bg-white/10 text-white rounded-full flex items-center justify-center font-bold">3</span>
-                        <span class="ml-2">Payment process</span>
-                    </div>
-                    <div class="text-slate-500 flex items-center">
-                        <span
-                            class="w-8 h-8 bg-white/10 text-white rounded-full flex items-center justify-center font-bold">4</span>
-                        <span class="ml-2">Payment execution</span>
-                    </div>
+    <div class="flex-1 overflow-y-auto p-6">
+        <div class="max-w-4xl mx-auto">
+            <div class="bg-[#171e33] border border-[#2a3350] rounded-xl text-white">
+                <div class="px-4 py-2">
+                    @include('partials.finance-header')
                 </div>
+                <!-- Multi-Step Wizard -->
+                <div class="p-6 lg:p-10">
+                    <!-- Step Progress -->
+                    <div class="flex items-center justify-between mb-8">
+                        <div class="text-[#4f8ef7] flex items-center">
+                            <span
+                                class="w-8 h-8 bg-[#4f8ef7] text-white rounded-full flex items-center justify-center font-bold">1</span>
+                            <span class="ml-2">Deposit method</span>
+                        </div>
+                        <div class="text-white flex items-center">
+                            <span
+                                class="w-8 h-8 bg-[#1c243c] border border-[#2a3350] text-white rounded-full flex items-center justify-center font-bold">2</span>
+                            <span class="ml-2">Payment details</span>
+                        </div>
+                        <div class="text-[#7c86a3] flex items-center">
+                            <span
+                                class="w-8 h-8 bg-[#1c243c] border border-[#2a3350] text-white rounded-full flex items-center justify-center font-bold">3</span>
+                            <span class="ml-2">Payment process</span>
+                        </div>
+                        <div class="text-[#7c86a3] flex items-center">
+                            <span
+                                class="w-8 h-8 bg-[#1c243c] border border-[#2a3350] text-white rounded-full flex items-center justify-center font-bold">4</span>
+                            <span class="ml-2">Payment execution</span>
+                        </div>
+                    </div>
 
-                <!-- Deposit Form -->
-                <div class="grid grid-cols-1 gap-6" id="contentArea">
-                    @include('deposits.partials.step-1')
+                    <!-- Deposit Form -->
+                    <div class="grid grid-cols-1 gap-6" id="contentArea">
+                        @include('deposits.partials.step-1')
+                    </div>
+
                 </div>
-
             </div>
         </div>
     </div>

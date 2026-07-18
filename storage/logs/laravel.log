@@ -5503,3 +5503,344 @@
 [2026-07-18 07:12:03] local.DEBUG: Evaluating trade: 10  
 [2026-07-18 07:12:03] local.INFO: TRade currency is: FB.US/USD  
 [2026-07-18 07:12:03] local.INFO: getAssetData:  ["https://api.zenrows.com/v1/?apikey=&url=https%3A%2F%2Fiqcent.com%2Ftrade-api%2Fapi%2Fticks%3Fsymbol%3DFB.US%252FUSD%26from%3D1784358723000%26autoparse%3Dtrue"] 
+[2026-07-18 14:43:03] local.ERROR: SyncAssetPrices: connection error {"error":"Connection to 'wss://iqcent.com/trade-api-ws/api/ws/price' failed: Server sent invalid upgrade response: HTTP/1.1 403 Forbidden
+
+Date: Sat, 18 Jul 2026 14:43:03 GMT
+
+Content-Type: text/html; charset=UTF-8
+
+Content-Length: 7711
+
+Connection: close
+
+accept-ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+
+cf-mitigated: challenge
+
+critical-ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+
+cross-origin-embedder-policy: require-corp
+
+cross-origin-opener-policy: same-origin
+
+cross-origin-resource-policy: same-origin
+
+origin-agent-cluster: ?1
+
+permissions-policy: accelerometer=(),browsing-topics=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),interest-cohort=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=(self)
+
+referrer-policy: same-origin
+
+server-timing: chlray;desc=\"a1d241ad3efae9b4\"
+
+x-content-type-options: nosniff
+
+x-frame-options: SAMEORIGIN
+
+content-security-policy: default-src 'none'; script-src 'nonce-oBMN8lz3lcbDJ6A5CyJozt' 'unsafe-eval' https://challenges.cloudflare.com; script-src-attr 'none'; style-src 'unsafe-inline'; img-src 'self' https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com blob:; child-src 'self' https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri 'self'
+
+Cache-Control: private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+
+Expires: Thu, 01 Jan 1970 00:00:01 GMT
+
+Server: cloudflare
+
+CF-RAY: a1d241ad3efae9b4-SCL
+
+
+
+"} 
+[2026-07-18 14:43:08] local.ERROR: SyncAssetPrices: connection error {"error":"Connection to 'wss://iqcent.com/trade-api-ws/api/ws/price' failed: Server sent invalid upgrade response: HTTP/1.1 403 Forbidden
+
+Date: Sat, 18 Jul 2026 14:43:08 GMT
+
+Content-Type: text/html; charset=UTF-8
+
+Content-Length: 7754
+
+Connection: close
+
+accept-ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+
+cf-mitigated: challenge
+
+critical-ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+
+cross-origin-embedder-policy: require-corp
+
+cross-origin-opener-policy: same-origin
+
+cross-origin-resource-policy: same-origin
+
+origin-agent-cluster: ?1
+
+permissions-policy: accelerometer=(),browsing-topics=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),interest-cohort=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=(self)
+
+referrer-policy: same-origin
+
+server-timing: chlray;desc=\"a1d241ccdc2fe9aa\"
+
+x-content-type-options: nosniff
+
+x-frame-options: SAMEORIGIN
+
+content-security-policy: default-src 'none'; script-src 'nonce-QElbbMwCO0uI9ZuC8FkTQJ' 'unsafe-eval' https://challenges.cloudflare.com; script-src-attr 'none'; style-src 'unsafe-inline'; img-src 'self' https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com blob:; child-src 'self' https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri 'self'
+
+Cache-Control: private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+
+Expires: Thu, 01 Jan 1970 00:00:01 GMT
+
+Server: cloudflare
+
+CF-RAY: a1d241ccdc2fe9aa-SCL
+
+
+
+"} 
+[2026-07-18 14:43:13] local.ERROR: SyncAssetPrices: connection error {"error":"Connection to 'wss://iqcent.com/trade-api-ws/api/ws/price' failed: Server sent invalid upgrade response: HTTP/1.1 403 Forbidden
+
+Date: Sat, 18 Jul 2026 14:43:14 GMT
+
+Content-Type: text/html; charset=UTF-8
+
+Content-Length: 7754
+
+Connection: close
+
+accept-ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+
+cf-mitigated: challenge
+
+critical-ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+
+cross-origin-embedder-policy: require-corp
+
+cross-origin-opener-policy: same-origin
+
+cross-origin-resource-policy: same-origin
+
+origin-agent-cluster: ?1
+
+permissions-policy: accelerometer=(),browsing-topics=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),interest-cohort=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=(self)
+
+referrer-policy: same-origin
+
+server-timing: chlray;desc=\"a1d241ec8c962f8c\"
+
+x-content-type-options: nosniff
+
+x-frame-options: SAMEORIGIN
+
+content-security-policy: default-src 'none'; script-src 'nonce-SC9SOLm8G3XKPYa8cH8xtT' 'unsafe-eval' https://challenges.cloudflare.com; script-src-attr 'none'; style-src 'unsafe-inline'; img-src 'self' https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com blob:; child-src 'self' https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri 'self'
+
+Cache-Control: private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+
+Expires: Thu, 01 Jan 1970 00:00:01 GMT
+
+Server: cloudflare
+
+CF-RAY: a1d241ec8c962f8c-SCL
+
+
+
+"} 
+[2026-07-18 14:43:18] local.ERROR: SyncAssetPrices: connection error {"error":"Connection to 'wss://iqcent.com/trade-api-ws/api/ws/price' failed: Server sent invalid upgrade response: HTTP/1.1 403 Forbidden
+
+Date: Sat, 18 Jul 2026 14:43:19 GMT
+
+Content-Type: text/html; charset=UTF-8
+
+Content-Length: 7711
+
+Connection: close
+
+accept-ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+
+cf-mitigated: challenge
+
+critical-ch: Sec-CH-UA-Bitness, Sec-CH-UA-Arch, Sec-CH-UA-Full-Version, Sec-CH-UA-Mobile, Sec-CH-UA-Model, Sec-CH-UA-Platform-Version, Sec-CH-UA-Full-Version-List, Sec-CH-UA-Platform, Sec-CH-UA, UA-Bitness, UA-Arch, UA-Full-Version, UA-Mobile, UA-Model, UA-Platform-Version, UA-Platform, UA
+
+cross-origin-embedder-policy: require-corp
+
+cross-origin-opener-policy: same-origin
+
+cross-origin-resource-policy: same-origin
+
+origin-agent-cluster: ?1
+
+permissions-policy: accelerometer=(),browsing-topics=(),camera=(),clipboard-read=(),clipboard-write=(),geolocation=(),gyroscope=(),hid=(),interest-cohort=(),magnetometer=(),microphone=(),payment=(),publickey-credentials-get=(),screen-wake-lock=(),serial=(),sync-xhr=(),usb=(),xr-spatial-tracking=(self)
+
+referrer-policy: same-origin
+
+server-timing: chlray;desc=\"a1d2420c2d08b51a\"
+
+x-content-type-options: nosniff
+
+x-frame-options: SAMEORIGIN
+
+content-security-policy: default-src 'none'; script-src 'nonce-pvrrCKF0nwK4j6pJBhzOfC' 'unsafe-eval' https://challenges.cloudflare.com; script-src-attr 'none'; style-src 'unsafe-inline'; img-src 'self' https://challenges.cloudflare.com; connect-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com blob:; child-src 'self' https://challenges.cloudflare.com blob:; worker-src blob:; form-action http: https:; base-uri 'self'
+
+Cache-Control: private, max-age=0, no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+
+Expires: Thu, 01 Jan 1970 00:00:01 GMT
+
+Server: cloudflare
+
+CF-RAY: a1d2420c2d08b51a-SCL
+
+
+
+"} 
+[2026-07-18 14:57:17] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "TRX\/USDT.X",
+    "trade_direction": "up",
+    "trade_amount": 20,
+    "trade_close_time": "2026-07-18T14:57:22.838345Z",
+    "trade_extra_info": {
+        "asset": "TRX\/USDT.X",
+        "amount": 20,
+        "direction": "up",
+        "duration": 5,
+        "currentPrice": 500
+    },
+    "start_price": 500,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 38.400000000000006,
+    "trade_percentage": "0.92",
+    "updated_at": "2026-07-18T14:57:17.000000Z",
+    "created_at": "2026-07-18T14:57:17.000000Z",
+    "id": 11,
+    "trade_duration": 5,
+    "socket": null
+}  
+[2026-07-18 14:57:17] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "TRX\/USDT.X",
+    "trade_direction": "up",
+    "trade_amount": 15,
+    "trade_close_time": "2026-07-18T14:57:22.838345Z",
+    "trade_extra_info": {
+        "copied_from_trader": 1,
+        "source_trade_id": 11
+    },
+    "start_price": 500,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 2,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 28.8,
+    "trade_percentage": 0.92,
+    "updated_at": "2026-07-18T14:57:17.000000Z",
+    "created_at": "2026-07-18T14:57:17.000000Z",
+    "id": 12,
+    "trade_duration": 5,
+    "socket": null
+}  
+[2026-07-18 14:58:12] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "NZD\/USD.X",
+    "trade_direction": "down",
+    "trade_amount": 20,
+    "trade_close_time": "2026-07-18T14:58:17.283065Z",
+    "trade_extra_info": {
+        "asset": "NZD\/USD.X",
+        "amount": 20,
+        "direction": "down",
+        "duration": 5,
+        "currentPrice": 700
+    },
+    "start_price": 700,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 38.400000000000006,
+    "trade_percentage": "0.92",
+    "updated_at": "2026-07-18T14:58:12.000000Z",
+    "created_at": "2026-07-18T14:58:12.000000Z",
+    "id": 13,
+    "trade_duration": 5,
+    "socket": null
+}  
+[2026-07-18 14:58:12] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "NZD\/USD.X",
+    "trade_direction": "down",
+    "trade_amount": 15,
+    "trade_close_time": "2026-07-18T14:58:17.283065Z",
+    "trade_extra_info": {
+        "copied_from_trader": 1,
+        "source_trade_id": 13
+    },
+    "start_price": 700,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 2,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 28.8,
+    "trade_percentage": 0.92,
+    "updated_at": "2026-07-18T14:58:12.000000Z",
+    "created_at": "2026-07-18T14:58:12.000000Z",
+    "id": 14,
+    "trade_duration": 5,
+    "socket": null
+}  
+[2026-07-18 14:58:21] local.DEBUG: Evaluating trade: 14  
+[2026-07-18 14:58:21] local.INFO: TRade currency is: NZD/USD.X  
+[2026-07-18 14:59:12] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "BIDU.US\/USD",
+    "trade_direction": "down",
+    "trade_amount": 20,
+    "trade_close_time": "2026-07-18T14:59:17.099847Z",
+    "trade_extra_info": {
+        "asset": "BIDU.US\/USD",
+        "amount": 20,
+        "direction": "down",
+        "duration": 5,
+        "currentPrice": 700
+    },
+    "start_price": 700,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 34,
+    "trade_percentage": "0.7",
+    "updated_at": "2026-07-18T14:59:12.000000Z",
+    "created_at": "2026-07-18T14:59:12.000000Z",
+    "id": 15,
+    "trade_duration": 5,
+    "socket": null
+}  
+[2026-07-18 14:59:12] local.DEBUG: Evaluating trade: 15  
+[2026-07-18 15:30:31] local.INFO: Broadcasting [trade-created] on channels [trade-created] with payload:
+{
+    "trade_currency": "USD\/CHF.X",
+    "trade_direction": "up",
+    "trade_amount": 20,
+    "trade_close_time": "2026-07-18T15:30:33.358688Z",
+    "trade_extra_info": {
+        "asset": "USD\/CHF.X",
+        "amount": 20,
+        "direction": "up",
+        "duration": 2,
+        "currentPrice": 300
+    },
+    "start_price": 300,
+    "trade_status": "pending",
+    "trade_copied_count": 0,
+    "user_id": 1,
+    "trade_wallet": "qt_demo_usd",
+    "trade_profit": 38.400000000000006,
+    "trade_percentage": "0.92",
+    "updated_at": "2026-07-18T15:30:31.000000Z",
+    "created_at": "2026-07-18T15:30:31.000000Z",
+    "id": 16,
+    "trade_duration": 2,
+    "socket": null
+}  

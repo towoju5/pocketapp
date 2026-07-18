@@ -1,63 +1,22 @@
 @extends('layouts.desktop.trading')
 
+@section('title', 'My Safe')
+
 @section('content')
-    <div class="w-full m-8">
+<div class="flex-1 overflow-y-auto p-6">
+    <div class="max-w-3xl mx-auto">
         @include('partials.finance-header')
-        <div class="grid lg:grid-cols-3 gap-5 mt-10">
-            <div class="bg-gray-900 text-white p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
-                <div class="text-center">
-                    <h2 class="text-xl font-semibold">Your cashback</h2>
-                    <p class="text-4xl font-bold text-blue-400">0%</p>
-                </div>
 
-                <div class="grid grid-cols-3 gap-4 mt-6 text-center">
-                    <div class="border border-gray-700 p-4 rounded-lg">Last payout<br>-</div>
-                    <div class="border border-gray-700 p-4 rounded-lg">Total cashback<br>-</div>
-                    <div class="border border-gray-700 p-4 rounded-lg">Max. payout<br>-</div>
-                    <div class="border border-gray-700 p-4 rounded-lg">Next payout<br>-</div>
-                    <div class="border border-gray-700 p-4 rounded-lg">Date of activation<br>-</div>
-                    <div class="border border-gray-700 p-4 rounded-lg">Valid until<br>-</div>
-                </div>
-
-                <div class="mt-6 text-sm text-gray-400">
-                    <h3 class="font-semibold">Terms and Conditions</h3>
-                    <ul class="list-decimal list-inside space-y-2 mt-2">
-                        <li>Cashback will expire automatically in 1 year after activation.</li>
-                        <li>You can prolong your cashback at any moment if you have purchased cashback with the same payout percentage.</li>
-                        <li>You can increase cashback percentage (maximum 10%) at any moment if you have purchased cashback with a higher payout percentage.</li>
-                        <li>Cashback is calculated if the total amount of losses is greater than the gains for the previous month.</li>
-                        <li>You can withdraw your refunded cashback at any moment if you have enough funds on your Real account’s balance.</li>
-                        <li>The Company has the right to amend the bonus terms or terminate this promotion at any time without notice.</li>
-                        <li>Cashback activation time and validity period is displayed in accordance with the server time (UTC+2).</li>
-                    </ul>
-                </div>
+        <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-8 text-center mt-6">
+            <div class="w-14 h-14 rounded-full bg-[#1c243c] border border-[#2a3350] flex items-center justify-center mx-auto mb-4">
+                <i class="fa fa-vault text-[#4f8ef7] text-xl"></i>
             </div>
-            <div class="bg-gray-900 text-white p-6 rounded-lg shadow-lg w-full max-w-4xl mx-auto">
-                <div class="mt-6 p-4 bg-gray-800 rounded-lg">
-                    <p class="text-sm text-gray-400">In case of losses the Cashback returns a part of lost funds every month. You can return up to 10% of your losses.</p>
-                    <div class="mt-4 p-3 bg-red-500 text-white rounded-lg text-center">
-                        You don’t have active Cashback at the moment.
-                    </div>
-                    <div class="mt-4 text-center">
-                        <button class="bg-green-600 hover:bg-green-500 text-white py-2 px-4 rounded">Buy it now</button>
-                    </div>
-                </div>
-
-                <div class="mt-6">
-                    <h3 class="text-lg font-semibold">Cashback payouts</h3>
-                    <div class="border border-gray-700 p-4 rounded-lg mt-2 text-center">No data</div>
-                </div>
-
-                <div class="mt-6">
-                    <h3 class="text-lg font-semibold">Activation history</h3>
-                    <div class="border border-gray-700 p-4 rounded-lg mt-2 text-center">No data</div>
-                </div>
-
-            </div>
+            <h2 class="text-white font-bold text-lg mb-2">My Safe</h2>
+            <p class="text-[#7c86a3] text-sm max-w-md mx-auto leading-relaxed">
+                A dedicated savings vault for setting aside profits away from your active trading balance is on the way.
+            </p>
+            <span class="inline-block mt-4 text-[11px] font-bold uppercase tracking-wide text-[#7c86a3] bg-[#1c243c] border border-[#2a3350] rounded-full px-3 py-1">Coming soon</span>
         </div>
     </div>
+</div>
 @endsection
-
-
-@push('js')
-@endpush

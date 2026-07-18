@@ -1,4 +1,4 @@
-import { ChartManager, periodSecondsToKlinePeriod } from './chart.js';
+import { ChartManager, periodSecondsToKlinePeriod, COLOR_SCHEMES } from './chart.js';
 
 const TF_OPTIONS = [
     [5, 'S5'], [15, 'S15'], [30, 'S30'],
@@ -7,6 +7,23 @@ const TF_OPTIONS = [
 const CHART_TYPES = ['line', 'candles', 'bars', 'heikin'];
 const MAX_TABS = 6;
 const TABS_STORAGE_KEY = 'pocketapp:dashboard:tabs';
+const CHART_PREFS_KEY = 'pocketapp:dashboard:chartPrefs';
+const VALID_PERIOD_SECONDS = TF_OPTIONS.map(([sec]) => sec);
+const INDICATORS_STORAGE_KEY = 'pocketapp:dashboard:indicators';
+const DRAWINGS_STORAGE_KEY = 'pocketapp:dashboard:drawings';
+
+const INDICATOR_OPTIONS = [
+    ['MA', 'Moving Average'], ['EMA', 'EMA'], ['BOLL', 'Bollinger Bands'],
+    ['MACD', 'MACD'], ['RSI', 'RSI'], ['KDJ', 'KDJ'], ['VOL', 'Volume'],
+];
+
+const DRAWING_TOOL_OPTIONS = [
+    ['straightLine', 'Trend Line', 'fa-slash'],
+    ['horizontalStraightLine', 'Horizontal Line', 'fa-minus'],
+    ['rayLine', 'Ray Line', 'fa-arrow-right'],
+    ['fibonacciLine', 'Fibonacci', 'fa-layer-group'],
+    ['rect', 'Rectangle', 'fa-square'],
+];
 
 function fmtDuration(sec) {
     const h = Math.floor(sec / 3600);
@@ -30,23 +47,28 @@ export default class TradingDashboard {
         this.assetsBySymbol = new Map((options.assets || []).map((a) => [a.symbol, a]));
 
         const restoredTabs = this._restoreTabs();
+        const restoredChartPrefs = this._restoreChartPrefs();
 
         this.state = {
             assetPopoverOpen: false,
             currentCat: options.initialAssetGroup || null,
             assetSearch: '',
             chartTypePopoverOpen: false,
-            currentChartType: 'candles',
-            showArea: true,
+            indicatorsPopoverOpen: false,
+            drawingToolsPopoverOpen: false,
+            currentChartType: restoredChartPrefs.chartType,
+            showArea: restoredChartPrefs.showArea,
             autoScroll: true,
             tfMenuOpen: false,
-            periodSeconds: 60,
-            tfLabel: 'M1',
+            periodSeconds: restoredChartPrefs.periodSeconds,
+            tfLabel: restoredChartPrefs.tfLabel,
+            colorScheme: restoredChartPrefs.colorScheme,
+            showGrid: restoredChartPrefs.showGrid,
             activeAssetSymbol: restoredTabs.activeAssetSymbol,
             openTabs: restoredTabs.openTabs,
             activePanel: null,
             tradeDurationSec: 60,
-            tradeAmount: 1,
+            tradeAmount: 10,
             tradeSubmitting: false,
         };
 
@@ -81,6 +103,17 @@ export default class TradingDashboard {
             chartTypeOptions: document.getElementById('chartTypeOptions'),
             toggleAreaBtn: document.getElementById('toggleAreaBtn'),
             toggleAutoscrollBtn: document.getElementById('toggleAutoscrollBtn'),
+            toggleGridBtn: document.getElementById('toggleGridBtn'),
+            colorSchemeOptions: document.getElementById('colorSchemeOptions'),
+
+            indicatorsBtn: document.getElementById('indicatorsBtn'),
+            indicatorsPopover: document.getElementById('indicatorsPopover'),
+            indicatorOptions: document.getElementById('indicatorOptions'),
+
+            drawingToolsBtn: document.getElementById('drawingToolsBtn'),
+            drawingToolsPopover: document.getElementById('drawingToolsPopover'),
+            drawingToolOptions: document.getElementById('drawingToolOptions'),
+            clearDrawingsBtn: document.getElementById('clearDrawingsBtn'),
 
             assetTabs: document.getElementById('assetTabs'),
             addTabBtn: document.getElementById('addTabBtn'),
@@ -100,8 +133,14 @@ export default class TradingDashboard {
 
             tradeForm: document.getElementById('tradeForm'),
             durationInput: document.getElementById('hs-trailing-icon'),
+            durationStepDown: document.getElementById('durationStepDown'),
+            durationStepUp: document.getElementById('durationStepUp'),
+            durationPresetButtons: document.querySelectorAll('.duration-preset'),
             assetTicker: document.getElementById('assetTicker'),
             amountInput: document.getElementById('input_amount_field'),
+            amountStepDown: document.getElementById('amountStepDown'),
+            amountStepUp: document.getElementById('amountStepUp'),
+            amountPresetButtons: document.querySelectorAll('.amount-preset'),
             directionInput: document.getElementById('direction'),
             profitPercentage: document.getElementById('profit_percentage'),
             payout: document.getElementById('payout'),
@@ -126,11 +165,27 @@ export default class TradingDashboard {
         this.el.chartTypeBtn?.addEventListener('click', () => this._toggleChartTypePopover());
         this.el.toggleAreaBtn?.addEventListener('click', () => this._toggleArea());
         this.el.toggleAutoscrollBtn?.addEventListener('click', () => this._toggleAutoscroll());
+        this.el.toggleGridBtn?.addEventListener('click', () => this._toggleGrid());
+
+        this.el.indicatorsBtn?.addEventListener('click', () => this._toggleIndicatorsPopover());
+        this.el.drawingToolsBtn?.addEventListener('click', () => this._toggleDrawingToolsPopover());
+        this.el.clearDrawingsBtn?.addEventListener('click', () => this._clearDrawings());
 
         this.el.tfBtn?.addEventListener('click', () => this._toggleTfMenu());
 
         this.el.durationInput?.addEventListener('change', (e) => this._onDurationInput(e.target.value));
+        this.el.durationStepDown?.addEventListener('click', () => this._stepDuration(-30));
+        this.el.durationStepUp?.addEventListener('click', () => this._stepDuration(30));
+        this.el.durationPresetButtons.forEach((btn) => {
+            btn.addEventListener('click', () => this._setDuration(parseInt(btn.dataset.seconds, 10)));
+        });
+
         this.el.amountInput?.addEventListener('input', (e) => this._onAmountInput(e.target.value));
+        this.el.amountStepDown?.addEventListener('click', () => this._stepAmount(-5));
+        this.el.amountStepUp?.addEventListener('click', () => this._stepAmount(5));
+        this.el.amountPresetButtons.forEach((btn) => {
+            btn.addEventListener('click', () => this._setAmount(parseFloat(btn.dataset.amount)));
+        });
 
         this.el.ctaButtons.forEach((btn) => {
             btn.addEventListener('click', () => this._submitTrade(btn.dataset.value));
@@ -251,6 +306,40 @@ export default class TradingDashboard {
         }
     }
 
+    _restoreChartPrefs() {
+        const defaults = { chartType: 'candles', showArea: true, periodSeconds: 60, tfLabel: 'M1', colorScheme: 'classic', showGrid: true };
+        try {
+            const saved = JSON.parse(localStorage.getItem(CHART_PREFS_KEY) || 'null');
+            if (!saved) return defaults;
+
+            return {
+                chartType: CHART_TYPES.includes(saved.chartType) ? saved.chartType : defaults.chartType,
+                showArea: typeof saved.showArea === 'boolean' ? saved.showArea : defaults.showArea,
+                periodSeconds: VALID_PERIOD_SECONDS.includes(saved.periodSeconds) ? saved.periodSeconds : defaults.periodSeconds,
+                tfLabel: typeof saved.tfLabel === 'string' ? saved.tfLabel : defaults.tfLabel,
+                colorScheme: COLOR_SCHEMES[saved.colorScheme] ? saved.colorScheme : defaults.colorScheme,
+                showGrid: typeof saved.showGrid === 'boolean' ? saved.showGrid : defaults.showGrid,
+            };
+        } catch (e) {
+            return defaults;
+        }
+    }
+
+    _persistChartPrefs() {
+        try {
+            localStorage.setItem(CHART_PREFS_KEY, JSON.stringify({
+                chartType: this.state.currentChartType,
+                showArea: this.state.showArea,
+                periodSeconds: this.state.periodSeconds,
+                tfLabel: this.state.tfLabel,
+                colorScheme: this.state.colorScheme,
+                showGrid: this.state.showGrid,
+            }));
+        } catch (e) {
+            // Storage unavailable — chart prefs just won't persist.
+        }
+    }
+
     _renderTabs() {
         this._persistTabs();
         if (!this.el.assetTabs) return;
@@ -319,17 +408,153 @@ export default class TradingDashboard {
         this.state.currentChartType = type;
         this.chart.setChartType(type);
         this._renderChartTypeOptions();
+        this._persistChartPrefs();
     }
 
     _toggleArea() {
         this.state.showArea = !this.state.showArea;
         this.chart.toggleArea(this.state.showArea);
         this.el.toggleAreaBtn?.classList.toggle('toggle--on', this.state.showArea);
+        this._persistChartPrefs();
     }
 
     _toggleAutoscroll() {
         this.state.autoScroll = !this.state.autoScroll;
         this.el.toggleAutoscrollBtn?.classList.toggle('toggle--on', this.state.autoScroll);
+    }
+
+    _toggleGrid() {
+        this.state.showGrid = !this.state.showGrid;
+        this.chart.setShowGrid(this.state.showGrid);
+        this.el.toggleGridBtn?.classList.toggle('toggle--on', this.state.showGrid);
+        this._persistChartPrefs();
+    }
+
+    _renderColorSchemeOptions() {
+        if (!this.el.colorSchemeOptions) return;
+        this.el.colorSchemeOptions.innerHTML = '';
+        Object.entries(COLOR_SCHEMES).forEach(([key, scheme]) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.title = scheme.name;
+            btn.className = 'h-8 rounded-lg border' + (key === this.state.colorScheme ? ' border-[#4f8ef7]' : ' border-[#2a3350]');
+            btn.style.background = `linear-gradient(90deg, ${scheme.up} 50%, ${scheme.down} 50%)`;
+            btn.addEventListener('click', () => this._setColorScheme(key));
+            this.el.colorSchemeOptions.appendChild(btn);
+        });
+    }
+
+    _setColorScheme(key) {
+        this.state.colorScheme = key;
+        this.chart.setColorScheme(key);
+        this._renderColorSchemeOptions();
+        this._persistChartPrefs();
+    }
+
+    // ---- indicators ----
+
+    _toggleIndicatorsPopover() {
+        this.state.indicatorsPopoverOpen = !this.state.indicatorsPopoverOpen;
+        this.state.drawingToolsPopoverOpen = false;
+        this.el.indicatorsPopover?.classList.toggle('hidden', !this.state.indicatorsPopoverOpen);
+        this.el.drawingToolsPopover?.classList.add('hidden');
+    }
+
+    _renderIndicatorOptions() {
+        if (!this.el.indicatorOptions) return;
+        this.el.indicatorOptions.innerHTML = '';
+        INDICATOR_OPTIONS.forEach(([name, label]) => {
+            const row = document.createElement('label');
+            row.className = 'flex items-center justify-between py-1.5 text-[13px] cursor-pointer';
+            const active = this.chart?.isIndicatorActive(name) ?? false;
+            row.innerHTML = `<span>${label}</span>`;
+            const toggle = document.createElement('button');
+            toggle.type = 'button';
+            toggle.className = 'toggle' + (active ? ' toggle--on' : '');
+            toggle.addEventListener('click', () => this._toggleIndicator(name, toggle));
+            row.appendChild(toggle);
+            this.el.indicatorOptions.appendChild(row);
+        });
+    }
+
+    _toggleIndicator(name, toggleEl) {
+        if (this.chart?.isIndicatorActive(name)) {
+            this.chart.removeIndicator(name);
+        } else {
+            this.chart?.addIndicator(name);
+        }
+        toggleEl?.classList.toggle('toggle--on', this.chart?.isIndicatorActive(name) ?? false);
+        this._persistIndicators();
+    }
+
+    _persistIndicators() {
+        try {
+            localStorage.setItem(INDICATORS_STORAGE_KEY, JSON.stringify(this.chart?.getActiveIndicatorNames() ?? []));
+        } catch (e) {
+            // Storage unavailable — indicators just won't persist.
+        }
+    }
+
+    _restoreIndicators() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(INDICATORS_STORAGE_KEY) || '[]');
+            if (Array.isArray(saved)) {
+                saved.forEach((name) => {
+                    if (INDICATOR_OPTIONS.some(([n]) => n === name)) this.chart?.addIndicator(name);
+                });
+            }
+        } catch (e) {
+            // Ignore malformed storage — start with no indicators.
+        }
+    }
+
+    // ---- drawing tools ----
+
+    _toggleDrawingToolsPopover() {
+        this.state.drawingToolsPopoverOpen = !this.state.drawingToolsPopoverOpen;
+        this.state.indicatorsPopoverOpen = false;
+        this.el.drawingToolsPopover?.classList.toggle('hidden', !this.state.drawingToolsPopoverOpen);
+        this.el.indicatorsPopover?.classList.add('hidden');
+    }
+
+    _renderDrawingToolOptions() {
+        if (!this.el.drawingToolOptions) return;
+        this.el.drawingToolOptions.innerHTML = '';
+        DRAWING_TOOL_OPTIONS.forEach(([overlayName, label, icon]) => {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'w-full text-left px-2 py-1.5 rounded-lg text-[13px] text-[#d7dcea] hover:bg-[#1c243c] flex items-center gap-2';
+            btn.innerHTML = `<i class="fa ${icon}" style="font-size:11px;width:14px;"></i> ${label}`;
+            btn.addEventListener('click', () => this._startDrawing(overlayName));
+            this.el.drawingToolOptions.appendChild(btn);
+        });
+    }
+
+    _startDrawing(overlayName) {
+        this.chart?.startDrawing(overlayName);
+        this.state.drawingToolsPopoverOpen = false;
+        this.el.drawingToolsPopover?.classList.add('hidden');
+    }
+
+    _clearDrawings() {
+        this.chart?.clearDrawings();
+    }
+
+    _persistDrawings() {
+        try {
+            localStorage.setItem(DRAWINGS_STORAGE_KEY, JSON.stringify(this.chart?.serializeDrawings() ?? []));
+        } catch (e) {
+            // Storage unavailable — drawings just won't persist.
+        }
+    }
+
+    _restoreDrawings() {
+        try {
+            const saved = JSON.parse(localStorage.getItem(DRAWINGS_STORAGE_KEY) || '[]');
+            if (Array.isArray(saved) && saved.length) this.chart?.restoreDrawings(saved);
+        } catch (e) {
+            // Ignore malformed storage — start with no drawings.
+        }
     }
 
     // ---- timeframe menu ----
@@ -360,6 +585,7 @@ export default class TradingDashboard {
         if (this.el.tfLabel) this.el.tfLabel.textContent = label;
         this.chart.setPeriod(sec, periodSecondsToKlinePeriod(sec));
         this._renderTfOptions();
+        this._persistChartPrefs();
     }
 
     // ---- trade panel ----
@@ -369,18 +595,41 @@ export default class TradingDashboard {
         if (this.el.durationInput) this.el.durationInput.value = fmtDuration(this.state.tradeDurationSec);
     }
 
+    _stepDuration(deltaSec) {
+        this.state.tradeDurationSec = Math.max(5, this.state.tradeDurationSec + deltaSec);
+        if (this.el.durationInput) this.el.durationInput.value = fmtDuration(this.state.tradeDurationSec);
+    }
+
+    _setDuration(seconds) {
+        this.state.tradeDurationSec = Math.max(5, seconds);
+        if (this.el.durationInput) this.el.durationInput.value = fmtDuration(this.state.tradeDurationSec);
+    }
+
     _onAmountInput(value) {
         const v = parseFloat(value);
         this.state.tradeAmount = Number.isNaN(v) || v < 1 ? 1 : v;
         this._updatePayoutDisplay();
     }
 
+    _stepAmount(delta) {
+        this.state.tradeAmount = Math.max(1, Math.round((this.state.tradeAmount + delta) * 100) / 100);
+        if (this.el.amountInput) this.el.amountInput.value = this.state.tradeAmount;
+        this._updatePayoutDisplay();
+    }
+
+    _setAmount(amount) {
+        this.state.tradeAmount = Math.max(1, amount);
+        if (this.el.amountInput) this.el.amountInput.value = this.state.tradeAmount;
+        this._updatePayoutDisplay();
+    }
+
     _updatePayoutDisplay(marginOverride) {
         const asset = this.assetsBySymbol.get(this.state.activeAssetSymbol);
-        const margin = marginOverride ?? asset?.asset_profit_margin ?? this.options.initialProfitMargin ?? 0;
-        if (this.el.profitPercentage) this.el.profitPercentage.textContent = `+${margin}%`;
+        // asset_profit_margin is a fraction (0.92 == 92%), not a 0-100 percentage.
+        const margin = parseFloat(marginOverride ?? asset?.asset_profit_margin ?? this.options.initialProfitMargin ?? 0);
+        if (this.el.profitPercentage) this.el.profitPercentage.textContent = `+${(margin * 100).toFixed(0)}%`;
         if (this.el.payout) {
-            const profit = (parseFloat(margin) / 100) * this.state.tradeAmount;
+            const profit = margin * this.state.tradeAmount;
             this.el.payout.textContent = `$${profit.toFixed(2)}`;
         }
     }
@@ -439,7 +688,13 @@ export default class TradingDashboard {
         this.state.activePanel = isSame ? null : sectionId;
 
         if (!this.el.mainContent || !this.el.hiddenSections) return;
-        if (this.state.activePanel) {
+
+        this._stopMarketWatchTicker();
+        if (this.state.activePanel === 'rightMarketWatch') {
+            this.el.mainContent.style.display = 'block';
+            this._renderMarketWatch();
+            this._startMarketWatchTicker();
+        } else if (this.state.activePanel) {
             const source = this.el.hiddenSections.querySelector(`#${this.state.activePanel}`);
             this.el.mainContent.style.display = 'block';
             this.el.mainContent.innerHTML = source ? source.innerHTML : '';
@@ -450,6 +705,77 @@ export default class TradingDashboard {
         this.el.railButtons.forEach((btn) => {
             btn.classList.toggle('right-nav-link--active', btn.dataset.section === this.state.activePanel);
         });
+    }
+
+    // ---- market watch ----
+
+    _renderMarketWatch() {
+        if (!this.el.mainContent) return;
+        const assets = Array.from(this.assetsBySymbol.values());
+        const rows = assets.map((asset) => `
+            <div class="market-watch-row" data-symbol="${asset.symbol}" data-search="${(asset.symbol + ' ' + (asset.name || '')).toLowerCase()}"
+                style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-top:1px solid #1c243c;cursor:pointer;">
+                <div>
+                    <div style="font-size:13px;font-weight:600;color:#d7dcea;">${asset.symbol}</div>
+                    <div style="font-size:11px;color:#7c86a3;">${asset.name || ''}</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="mw-price" style="font-size:13px;font-weight:600;color:#d7dcea;">&mdash;</div>
+                    <div class="mw-status" style="font-size:10px;color:#7c86a3;">&mdash;</div>
+                </div>
+            </div>`).join('');
+
+        this.el.mainContent.innerHTML = `
+            <div style="padding:14px 14px 8px;">
+                <input type="text" id="marketWatchSearch" placeholder="Search assets"
+                    style="width:100%;background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:8px 10px;font-size:12px;color:#d7dcea;outline:none;box-sizing:border-box;">
+            </div>
+            <div id="marketWatchList">${rows}</div>
+        `;
+
+        this.el.mainContent.querySelectorAll('.market-watch-row').forEach((row) => {
+            row.addEventListener('click', () => this._selectAsset(row.dataset.symbol));
+        });
+
+        this.el.mainContent.querySelector('#marketWatchSearch')?.addEventListener('input', (e) => {
+            const needle = e.target.value.trim().toLowerCase();
+            this.el.mainContent.querySelectorAll('.market-watch-row').forEach((row) => {
+                row.style.display = !needle || row.dataset.search.includes(needle) ? 'flex' : 'none';
+            });
+        });
+
+        this._refreshMarketWatchPrices();
+    }
+
+    _refreshMarketWatchPrices() {
+        if (!this.el.mainContent) return;
+        this.el.mainContent.querySelectorAll('.market-watch-row').forEach((row) => {
+            const symbol = row.dataset.symbol;
+            const asset = this.assetsBySymbol.get(symbol);
+            const feed = this.chart?.feeds.get(symbol);
+            const online = asset?.online !== false;
+            const priceEl = row.querySelector('.mw-price');
+            const statusEl = row.querySelector('.mw-status');
+            if (priceEl) priceEl.textContent = feed?.lastPrice != null ? feed.lastPrice : '—';
+            if (statusEl) {
+                statusEl.textContent = online ? 'Online' : 'Offline';
+                statusEl.style.color = online ? '#16c087' : '#7c86a3';
+            }
+        });
+    }
+
+    _startMarketWatchTicker() {
+        this._stopMarketWatchTicker();
+        this._marketWatchTimer = setInterval(() => {
+            if (this.state.activePanel === 'rightMarketWatch') this._refreshMarketWatchPrices();
+        }, 2000);
+    }
+
+    _stopMarketWatchTicker() {
+        if (this._marketWatchTimer) {
+            clearInterval(this._marketWatchTimer);
+            this._marketWatchTimer = null;
+        }
     }
 
     _toggleTradeMenu(button, tabKey) {
@@ -490,6 +816,14 @@ export default class TradingDashboard {
             this.state.tfMenuOpen = false;
             this.el.tfMenu.classList.add('hidden');
         }
+        if (this.state.indicatorsPopoverOpen && this.el.indicatorsPopover && !this.el.indicatorsPopover.contains(e.target) && !this.el.indicatorsBtn?.contains(e.target)) {
+            this.state.indicatorsPopoverOpen = false;
+            this.el.indicatorsPopover.classList.add('hidden');
+        }
+        if (this.state.drawingToolsPopoverOpen && this.el.drawingToolsPopover && !this.el.drawingToolsPopover.contains(e.target) && !this.el.drawingToolsBtn?.contains(e.target)) {
+            this.state.drawingToolsPopoverOpen = false;
+            this.el.drawingToolsPopover.classList.add('hidden');
+        }
     }
 
     // ---- chart ----
@@ -499,8 +833,22 @@ export default class TradingDashboard {
         this.chart = new ChartManager(this.el.klineChart, {
             onOrderTick: (price, epochMs) => this._onOrderTick(price, epochMs),
             onAvailabilityChange: (symbol, available) => this._onAssetAvailabilityChange(symbol, available),
+            onDrawingsChanged: () => this._persistDrawings(),
             pricePrecision: this.options.initialPricePrecision || 5,
+            chartType: this.state.currentChartType,
+            showArea: this.state.showArea,
+            periodSeconds: this.state.periodSeconds,
+            colorScheme: this.state.colorScheme,
+            showGrid: this.state.showGrid,
         });
+        this.el.toggleAreaBtn?.classList.toggle('toggle--on', this.state.showArea);
+        this.el.toggleGridBtn?.classList.toggle('toggle--on', this.state.showGrid);
+        if (this.el.tfLabel) this.el.tfLabel.textContent = this.state.tfLabel;
+        this._renderColorSchemeOptions();
+        this._restoreIndicators();
+        this._renderIndicatorOptions();
+        this._restoreDrawings();
+        this._renderDrawingToolOptions();
         // Activation itself happens in _activateAsset() right after this call,
         // so the label/ticker/payout UI stays in sync with the chart.
     }

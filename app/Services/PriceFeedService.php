@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 class PriceFeedService
 {
     /** Seconds since the last received tick after which a symbol is considered offline. */
-    private const ONLINE_THRESHOLD_SECONDS = 20;
+    private const ONLINE_THRESHOLD_SECONDS = 45;
 
     /** How long a cached price survives with no fresh tick before it expires outright. */
     private const CACHE_TTL_SECONDS = 300;

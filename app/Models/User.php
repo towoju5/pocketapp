@@ -119,6 +119,18 @@ class User extends Authenticatable
         return $this->hasMany(SupportTicket::class);
     }
 
+    /** Traders this user is copying. */
+    public function following()
+    {
+        return $this->hasMany(TraderFollow::class, 'follower_id');
+    }
+
+    /** Users copying this trader. */
+    public function copiers()
+    {
+        return $this->hasMany(TraderFollow::class, 'trader_id');
+    }
+
     public function referrer()
     {
         return $this->belongsTo(User::class, 'referred_by');

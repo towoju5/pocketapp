@@ -189,25 +189,38 @@ const CANDLE_TYPE_MAP = {
     heikin: 'candle_solid',
 };
 
+export const COLOR_SCHEMES = {
+    classic: { name: 'Classic', up: '#16c087', down: '#f4534a', line: '#4f8ef7' },
+    ocean: { name: 'Ocean', up: '#4f8ef7', down: '#f2a93b', line: '#4f8ef7' },
+    mono: { name: 'Mono', up: '#d7dcea', down: '#7c86a3', line: '#d7dcea' },
+};
+
 /**
  * Wraps a single klinecharts instance + a registry of per-symbol AssetFeed
  * "tabs". Exactly one feed is ever "active" (attached to the chart via
  * klinecharts' DataLoader subscribeBar hook) at a time.
  */
 export class ChartManager {
-    constructor(container, { onOrderTick, onAvailabilityChange, pricePrecision = 5 } = {}) {
+    constructor(container, {
+        onOrderTick, onAvailabilityChange, onDrawingsChanged, pricePrecision = 5,
+        chartType = 'candles', showArea = true, periodSeconds = 60,
+        colorScheme = 'classic', showGrid = true,
+    } = {}) {
         this.chart = init(container);
         this._resizeObserver = new ResizeObserver(() => this.chart.resize());
         this._resizeObserver.observe(container);
         this.feeds = new Map();
         this.activeSymbol = null;
-        this.periodSeconds = 60;
-        this.periodObj = { type: 'minute', span: 1 };
-        this.chartType = 'candles';
-        this.showArea = true;
+        this.periodSeconds = periodSeconds;
+        this.periodObj = periodSecondsToKlinePeriod(periodSeconds);
+        this.chartType = chartType;
+        this.showArea = showArea;
+        this.colorScheme = COLOR_SCHEMES[colorScheme] ? colorScheme : 'classic';
+        this.showGrid = showGrid;
         this.pricePrecision = pricePrecision;
         this.onOrderTick = onOrderTick;
         this.onAvailabilityChange = onAvailabilityChange || (() => {});
+        this.onDrawingsChanged = onDrawingsChanged || (() => {});
         this._availabilityTimer = null;
 
         // Pending-trade expiry markers: tradeId -> { symbol, expiryMs }, plus
@@ -215,6 +228,14 @@ export class ChartManager {
         // belonging to the active symbol) -> tradeId -> overlay id.
         this._expiryLines = new Map();
         this._renderedExpiryOverlays = new Map();
+
+        // Active indicators (name -> klinecharts indicator id) and user-drawn
+        // overlays/drawing-tools (drawingId -> klinecharts overlay id) — both
+        // apply globally to the chart, independent of which symbol tab is
+        // active, since klinecharts recomputes/repositions them against
+        // whatever data is currently loaded.
+        this._indicatorIds = new Map();
+        this._drawingIds = new Map();
 
         this._applyStyles();
         this.chart.setDataLoader({
@@ -246,29 +267,42 @@ export class ChartManager {
 
     _applyStyles() {
         const candleType = CANDLE_TYPE_MAP[this.chartType] || 'candle_solid';
+        const scheme = COLOR_SCHEMES[this.colorScheme] || COLOR_SCHEMES.classic;
+        const gridColor = this.showGrid ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0)';
         this.chart.setStyles({
-            grid: { horizontal: { color: 'rgba(255,255,255,0.05)' }, vertical: { color: 'rgba(255,255,255,0.05)' } },
+            grid: { horizontal: { color: gridColor }, vertical: { color: gridColor } },
             candle: {
                 type: candleType,
                 bar: {
-                    upColor: '#16c087', downColor: '#f4534a', noChangeColor: '#888888',
-                    upBorderColor: '#16c087', downBorderColor: '#f4534a',
-                    upWickColor: '#16c087', downWickColor: '#f4534a',
+                    upColor: scheme.up, downColor: scheme.down, noChangeColor: '#888888',
+                    upBorderColor: scheme.up, downBorderColor: scheme.down,
+                    upWickColor: scheme.up, downWickColor: scheme.down,
                 },
                 area: {
                     lineSize: 2,
-                    lineColor: '#4f8ef7',
+                    lineColor: scheme.line,
                     value: 'close',
                     backgroundColor: this.showArea
                         ? [{ offset: 0, color: 'rgba(79,142,247,0.35)' }, { offset: 1, color: 'rgba(79,142,247,0.02)' }]
                         : 'rgba(0,0,0,0)',
                 },
-                priceMark: { last: { upColor: '#16c087', downColor: '#f4534a', text: { color: '#ffffff' } } },
+                priceMark: { last: { upColor: scheme.up, downColor: scheme.down, text: { color: '#ffffff' } } },
             },
             xAxis: { axisLine: { color: '#2a3350' }, tickText: { color: '#7c86a3' } },
             yAxis: { axisLine: { color: '#2a3350' }, tickText: { color: '#7c86a3' } },
             crosshair: { horizontal: { line: { color: '#4f8ef7' } }, vertical: { line: { color: '#4f8ef7' } } },
         });
+    }
+
+    setColorScheme(scheme) {
+        if (!COLOR_SCHEMES[scheme]) return;
+        this.colorScheme = scheme;
+        this._applyStyles();
+    }
+
+    setShowGrid(showGrid) {
+        this.showGrid = showGrid;
+        this._applyStyles();
     }
 
     /** Ensure a feed exists for `symbol`, opening its WS connection if new. */
@@ -360,6 +394,87 @@ export class ChartManager {
             const available = !!(feed && (feed.hasReceivedData || feed.candles.length > 0));
             this.onAvailabilityChange(symbol, available);
         }, 8000);
+    }
+
+    // ---- indicators ----
+
+    isIndicatorActive(name) {
+        return this._indicatorIds.has(name);
+    }
+
+    getActiveIndicatorNames() {
+        return Array.from(this._indicatorIds.keys());
+    }
+
+    addIndicator(name, calcParams) {
+        if (this._indicatorIds.has(name)) return;
+        const id = this.chart.createIndicator(calcParams ? { name, calcParams } : name, false);
+        if (id) this._indicatorIds.set(name, id);
+    }
+
+    removeIndicator(name) {
+        const id = this._indicatorIds.get(name);
+        if (!id) return;
+        this.chart.removeIndicator({ id });
+        this._indicatorIds.delete(name);
+    }
+
+    // ---- drawing tools (user-created overlays: trendlines, fib, etc.) ----
+
+    /** Starts an interactive draw — the user clicks the chart to place points. */
+    startDrawing(overlayName) {
+        const drawingId = `drawing_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+        const overlayId = this.chart.createOverlay({
+            name: overlayName,
+            styles: { line: { color: '#4f8ef7', size: 1.5 } },
+            onDrawEnd: () => {
+                this.onDrawingsChanged();
+                return true;
+            },
+        });
+        if (overlayId) this._drawingIds.set(drawingId, overlayId);
+        return drawingId;
+    }
+
+    clearDrawings() {
+        this._drawingIds.forEach((overlayId) => this.chart.removeOverlay({ id: overlayId }));
+        this._drawingIds.clear();
+        this.onDrawingsChanged();
+    }
+
+    hasDrawings() {
+        return this._drawingIds.size > 0;
+    }
+
+    /** Plain-data snapshot of every user-drawn overlay, safe to JSON.stringify. */
+    serializeDrawings() {
+        const ourIds = new Set(this._drawingIds.values());
+        const overlays = this.chart.getOverlays() || [];
+        return overlays
+            .filter((o) => ourIds.has(o.id))
+            .map((o) => ({
+                name: o.name,
+                points: (o.points || []).map((p) => ({ timestamp: p.timestamp, value: p.value })),
+                styles: o.styles || undefined,
+            }))
+            .filter((o) => o.points.length > 0);
+    }
+
+    /** Recreates previously-serialized drawings (call once after the chart is ready). */
+    restoreDrawings(saved) {
+        (saved || []).forEach(({ name, points, styles }) => {
+            if (!name || !Array.isArray(points) || points.length === 0) return;
+            const overlayId = this.chart.createOverlay({
+                name,
+                points,
+                styles,
+                onDrawEnd: () => {
+                    this.onDrawingsChanged();
+                    return true;
+                },
+            });
+            if (overlayId) this._drawingIds.set(`drawing_restored_${overlayId}`, overlayId);
+        });
     }
 
     setPeriod(periodSeconds, periodObj) {

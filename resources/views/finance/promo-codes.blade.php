@@ -5,20 +5,20 @@
         @include('partials.finance-header')
         <div class="flex gap-5 m-4">
             <!-- Promo Code Input Section -->
-            <div class="flex flex-col bg-gray-900 p-4 rounded-lg col-span-1 lg:min-w-xl _min_300">
-                <div class="text-lg font-semibold mb-2">Do you have a promo code?</div>
-                <input class="bg-gray-700 text-white border border-gray-600 rounded-md px-4 py-2 w-full" id="promoCodeInput" placeholder="Enter promo code">
-                <a class="promoCodeBtn hidden mt-3 bg-orange-600 text-white font-medium px-4 py-2 rounded-md hover:bg-orange-700 transition duration-300 text-center" href="#">
+            <div class="flex flex-col bg-[#171e33] border border-[#2a3350] p-4 rounded-xl col-span-1 lg:min-w-xl _min_300">
+                <div class="text-lg font-semibold mb-2 text-white">Do you have a promo code?</div>
+                <input class="bg-[#1c243c] text-white border border-[#2a3350] rounded-md px-4 py-2 w-full" id="promoCodeInput" placeholder="Enter promo code">
+                <a class="promoCodeBtn hidden mt-3 bg-[#4f8ef7] text-white font-medium px-4 py-2 rounded-md hover:bg-[#3d7de0] transition duration-300 text-center" href="#">
                     Check
                 </a>
-                <div class="mt-2 text-orange-400 text-sm hidden">Invalid promo code</div>
+                <div class="mt-2 text-[#f4534a] text-sm hidden">Invalid promo code</div>
             </div>
 
             <!-- Available Promo Codes Table -->
-            <div class="bg-gray-900 p-4 w-full rounded-xl text-white">
+            <div class="bg-[#171e33] border border-[#2a3350] p-4 w-full rounded-xl text-white">
                 <div class="text-lg font-semibold mb-[14px] text-xl">Available promo codes</div>
                 <table class="w-full border-collapse text-left text-sm">
-                    <thead class="border-b  text-white">
+                    <thead class="border-b border-[#2a3350] text-white">
                         <tr>
                             <th class="px-4 py-2">Promo code</th>
                             <th class="px-4 py-2">Percent</th>
@@ -30,7 +30,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="border-b border-gray-600">
+                        <tr class="border-b border-[#2a3350]">
                             <td class="px-4 py-2">50START</td>
                             <td class="px-4 py-2">50%</td>
                             <td class="px-4 py-2">$50</td>
@@ -38,7 +38,7 @@
                             <td class="px-4 py-2"></td>
                             <td class="px-4 py-2"></td>
                             <td class="px-4 py-2">
-                                <a class="bg-orange-600 text-white font-medium px-3 py-1 rounded-md hover:bg-orange-700 transition duration-300 text-sm"
+                                <a class="bg-[#4f8ef7] text-white font-medium px-3 py-1 rounded-md hover:bg-[#3d7de0] transition duration-300 text-sm"
                                 href="https://pocketoption.com/en/">
                                     Check
                                 </a>
@@ -54,38 +54,12 @@
     <style>
         ._min_300 {
             min-width: 25rem ;
-            color: #7f838c;
+            color: #7c86a3;
         }
         .promo .rw>.l .promocode-block__check-button {
             margin-top: 10px;
             text-align: center;
             width: 100%;
-        }
-
-        .btn-warn {
-            background-color: var(--po-ui-kit-btn-warn-background-color-base);
-            border-color: var(--po-ui-kit-btn-warn-border-color-base);
-            color: var(--po-ui-kit-btn-warn-color-base);
-        }
-
-        .btn {
-            border: 1px solid transparent;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 400;
-            line-height: 1.4285;
-            padding: 7px 16px;
-            text-align: center;
-            text-decoration: none;
-            -webkit-transition: color .3s, background-color .3s, border-color .3s;
-            transition: color .3s, background-color .3s, border-color .3s;
-            -webkit-transition: background-color .3s, border-color .3s, color .3s;
-            transition: background-color .3s, border-color .3s, color .3s;
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            user-select: none;
-            white-space: normal;
         }
     </style>
 @endsection

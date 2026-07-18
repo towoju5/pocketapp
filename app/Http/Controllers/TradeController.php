@@ -134,6 +134,12 @@ class TradeController extends Controller
         event(new TradeUpdated($trade));
         EvaluateTrade::dispatch($trade)->delay(now()->addSeconds($validated['duration']));
 
+        try {
+            (new \App\Services\TradeCopyService())->mirror($trade);
+        } catch (\Throwable $e) {
+            Log::error('Copy-trade mirroring failed', ['trade_id' => $trade->id, 'error' => $e->getMessage()]);
+        }
+
         return response()->json([
             'status' => true, 
             'message' => 'Trade placed successfully!', 

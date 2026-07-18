@@ -4,46 +4,47 @@
 
 @section('content')
 <style>
-    .help-shell { width: 100%; max-width: 900px; margin: 0 auto; padding: 40px 24px; }
-    .cyber-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 30px; padding: 28px; }
-    .btn-go { background: linear-gradient(135deg, #2563eb, #3b82f6); color: #fff; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; text-decoration:none; display:inline-block; font-size:13px; }
-    .status-badge { padding: 6px 12px; border-radius: 10px; font-size: 10px; font-weight: 900; text-transform: uppercase; }
-    .status-open { background: rgba(59,130,246,0.1); color: #3b82f6; }
+    .btn-go { background: #4f8ef7; color: #fff; border: none; padding: 12px 20px; border-radius: 8px; font-weight: 700; cursor: pointer; text-decoration:none; display:inline-block; font-size:13px; }
+    .btn-go:hover { background: #3d7de0; }
+    .status-badge { padding: 4px 10px; border-radius: 6px; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+    .status-open { background: rgba(79,142,247,0.1); color: #4f8ef7; }
     .status-pending { background: rgba(245,158,11,0.1); color: #fbbf24; }
-    .status-closed { background: rgba(148,163,184,0.1); color: #94a3b8; }
+    .status-closed { background: rgba(124,134,163,0.1); color: #7c86a3; }
 </style>
 
-<div class="help-shell">
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; margin-bottom:30px;">
-        <h1 style="font-size: 30px; font-weight: 950; margin: 0; color:#fff;">Help Desk</h1>
-        <a href="{{ route('support-tickets.create') }}" class="btn-go">New Ticket</a>
-    </div>
-
-    <div class="cyber-card">
-        <div style="overflow-x:auto;">
-            <table style="width:100%; border-collapse: separate; border-spacing: 0 10px; color:#fff;">
-                <thead>
-                    <tr style="text-align:left; font-size:11px; color:#64748b; text-transform:uppercase;">
-                        <th style="padding:0 16px;">Subject</th><th style="padding:0 16px;">Priority</th><th style="padding:0 16px;">Status</th><th style="padding:0 16px;"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($tickets as $ticket)
-                        <tr style="background:rgba(255,255,255,0.02);">
-                            <td style="padding:14px 16px; border-radius:14px 0 0 14px;">{{ $ticket->subject }}</td>
-                            <td style="padding:14px 16px; text-transform:capitalize; font-size:13px; color:#94a3b8;">{{ $ticket->priority }}</td>
-                            <td style="padding:14px 16px;"><span class="status-badge status-{{ $ticket->status }}">{{ $ticket->status }}</span></td>
-                            <td style="padding:14px 16px; border-radius:0 14px 14px 0; text-align:right;">
-                                <a href="{{ route('support-tickets.show', $ticket) }}" style="color:#3b82f6; font-weight:700; font-size:13px; text-decoration:none;">View &rarr;</a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="4" style="text-align:center; padding:50px; color:#475569; font-weight:800;">No tickets yet.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
+<div class="flex-1 overflow-y-auto p-6">
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-end flex-wrap gap-4 mb-6">
+            <h1 class="text-xl font-bold text-white m-0">Help Desk</h1>
+            <a href="{{ route('support-tickets.create') }}" class="btn-go">New Ticket</a>
         </div>
-        <div style="margin-top:20px;">{{ $tickets->links() }}</div>
+
+        <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-sm text-[#d7dcea]">
+                    <thead>
+                        <tr class="text-[#7c86a3] text-xs uppercase">
+                            <th class="py-2 px-4">Subject</th><th class="py-2 px-4">Priority</th><th class="py-2 px-4">Status</th><th class="py-2 px-4"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($tickets as $ticket)
+                            <tr class="border-t border-[#2a3350]">
+                                <td class="py-3.5 px-4 text-white">{{ $ticket->subject }}</td>
+                                <td class="py-3.5 px-4 capitalize text-xs text-[#7c86a3]">{{ $ticket->priority }}</td>
+                                <td class="py-3.5 px-4"><span class="status-badge status-{{ $ticket->status }}">{{ $ticket->status }}</span></td>
+                                <td class="py-3.5 px-4 text-right">
+                                    <a href="{{ route('support-tickets.show', $ticket) }}" class="text-[#4f8ef7] font-semibold text-xs no-underline">View &rarr;</a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="4" class="text-center py-12 text-[#7c86a3] font-semibold">No tickets yet.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-5">{{ $tickets->links() }}</div>
+        </div>
     </div>
 </div>
 @endsection

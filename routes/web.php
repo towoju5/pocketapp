@@ -58,6 +58,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('tournaments/{tournament}/join', [\App\Http\Controllers\TournamentController::class, 'join'])->name('tournaments.join');
 
     Route::get('social-trading', [\App\Http\Controllers\SocialTradingController::class, 'index'])->name('social-trading.index');
+    Route::post('social-trading/{trader}/follow', [\App\Http\Controllers\SocialTradingController::class, 'follow'])->name('social-trading.follow');
+    Route::post('social-trading/{trader}/unfollow', [\App\Http\Controllers\SocialTradingController::class, 'unfollow'])->name('social-trading.unfollow');
 
 
     Route::post('payout/create', [PayoutController::class, 'store'])->middleware('kyc.verified')->name('payout.create');

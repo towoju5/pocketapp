@@ -34,6 +34,14 @@
                 <i class="fa fa-chart-simple"></i>
             </button>
 
+            <button type="button" id="indicatorsBtn" class="w-[34px] h-[34px] rounded-lg bg-transparent border-0 text-[#7c86a3] cursor-pointer" title="Indicators">
+                <i class="fa fa-wave-square"></i>
+            </button>
+
+            <button type="button" id="drawingToolsBtn" class="w-[34px] h-[34px] rounded-lg bg-transparent border-0 text-[#7c86a3] cursor-pointer" title="Drawing tools">
+                <i class="fa fa-pencil"></i>
+            </button>
+
             {{-- Asset popover --}}
             <div id="assetPopover" class="hidden absolute top-14 left-4 z-30 w-[650px] bg-[#171e33] border border-[#2a3350] rounded-2xl flex overflow-hidden" style="box-shadow:0 30px 80px rgba(0,0,0,0.5);">
                 <div class="w-[190px] p-3 border-r border-[#2a3350] flex flex-col gap-1 box-border">
@@ -80,6 +88,29 @@
                     <span class="text-[13px]">Enable autoscroll</span>
                     <button type="button" id="toggleAutoscrollBtn" class="toggle toggle--on"></button>
                 </div>
+                <div class="flex justify-between items-center py-1.5">
+                    <span class="text-[13px]">Grid lines</span>
+                    <button type="button" id="toggleGridBtn" class="toggle toggle--on"></button>
+                </div>
+                <hr class="border-[#2a3350] my-3.5">
+                <p class="text-xs text-[#7c86a3] font-medium mb-2">Color scheme</p>
+                <div id="colorSchemeOptions" class="grid grid-cols-3 gap-2"></div>
+            </div>
+
+            {{-- Indicators popover --}}
+            <div id="indicatorsPopover" class="hidden absolute top-14 z-30 w-[220px] bg-[#171e33] border border-[#2a3350] rounded-2xl p-4 box-border" style="left:324px;box-shadow:0 30px 80px rgba(0,0,0,0.5);">
+                <p class="text-xs text-[#7c86a3] font-medium mb-2.5">Indicators</p>
+                <div id="indicatorOptions" class="flex flex-col gap-1"></div>
+            </div>
+
+            {{-- Drawing tools popover --}}
+            <div id="drawingToolsPopover" class="hidden absolute top-14 z-30 w-[190px] bg-[#171e33] border border-[#2a3350] rounded-2xl p-2 box-border" style="left:360px;box-shadow:0 30px 80px rgba(0,0,0,0.5);">
+                <p class="text-xs text-[#7c86a3] font-medium mb-2 px-1.5 pt-1">Drawing tools</p>
+                <div id="drawingToolOptions" class="flex flex-col gap-0.5"></div>
+                <hr class="border-[#2a3350] my-2">
+                <button type="button" id="clearDrawingsBtn" class="w-full text-left px-2 py-1.5 rounded-lg text-xs text-[#f4534a] hover:bg-[#1c243c]">
+                    <i class="fa fa-trash" style="font-size:11px;"></i> Clear all drawings
+                </button>
             </div>
         </div>
 
@@ -123,25 +154,46 @@
         <div class="w-[260px] p-5 border-r border-[#2a3350] box-border">
             <form method="POST" action="{{ route('trade.store') }}" id="tradeForm">
                 @csrf
-                <div class="text-xs text-[#7c86a3] mb-2">Time</div>
-                <div class="bg-[#1c243c] border border-[#2a3350] rounded-lg px-3 py-2.5 flex items-center justify-between font-semibold mb-4">
+                <input type="hidden" name="asset" id="assetTicker" value="{{ $__coin }}">
+                <input type="hidden" name="direction" id="direction" value="">
+
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-[#7c86a3]">Time</span>
+                    <i class="fa fa-clock text-[#7c86a3]" style="font-size:11px;"></i>
+                </div>
+                <div class="flex items-stretch gap-1.5 mb-2">
+                    <button type="button" id="durationStepDown" class="w-9 flex-shrink-0 rounded-lg bg-[#1c243c] border border-[#2a3350] text-[#7c86a3] font-bold hover:text-white hover:border-[#4f8ef7]">&minus;</button>
                     <input type="text" id="hs-trailing-icon" name="duration" maxlength="8" placeholder="00:01:00" value="00:01:00"
-                        class="bg-transparent border-0 outline-none text-[#d7dcea] font-semibold text-sm w-[70px]">
-                    <input type="hidden" name="asset" id="assetTicker" value="{{ $__coin }}">
-                    <i class="fa fa-clock text-[#7c86a3]"></i>
+                        class="flex-1 min-w-0 bg-[#1c243c] border border-[#2a3350] rounded-lg text-center outline-none text-[#d7dcea] font-semibold text-sm">
+                    <button type="button" id="durationStepUp" class="w-9 flex-shrink-0 rounded-lg bg-[#1c243c] border border-[#2a3350] text-[#7c86a3] font-bold hover:text-white hover:border-[#4f8ef7]">+</button>
+                </div>
+                <div id="durationPresets" class="grid grid-cols-4 gap-1.5 mb-4">
+                    <button type="button" data-seconds="30" class="duration-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#1c243c] border border-[#2a3350] text-[#7c86a3] hover:border-[#4f8ef7] hover:text-white">30s</button>
+                    <button type="button" data-seconds="60" class="duration-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#1c243c] border border-[#2a3350] text-[#7c86a3] hover:border-[#4f8ef7] hover:text-white">1m</button>
+                    <button type="button" data-seconds="300" class="duration-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#1c243c] border border-[#2a3350] text-[#7c86a3] hover:border-[#4f8ef7] hover:text-white">5m</button>
+                    <button type="button" data-seconds="900" class="duration-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#1c243c] border border-[#2a3350] text-[#7c86a3] hover:border-[#4f8ef7] hover:text-white">15m</button>
                 </div>
 
-                <div class="text-xs text-[#7c86a3] mb-2">Amount</div>
-                <div class="bg-[#1c243c] border border-[#2a3350] rounded-lg px-3 py-2.5 flex items-center justify-between font-semibold mb-4">
-                    <input type="text" pattern="^\d*\.?\d*$" step="any" id="input_amount_field" name="amount" autocomplete="off" placeholder="1000"
-                        class="bg-transparent border-0 outline-none text-[#d7dcea] font-semibold text-sm w-[70px]">
-                    <input type="hidden" name="direction" id="direction" value="">
-                    <i class="fa fa-dollar-sign text-[#7c86a3]"></i>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs text-[#7c86a3]">Amount</span>
+                    <i class="fa fa-dollar-sign text-[#7c86a3]" style="font-size:11px;"></i>
+                </div>
+                <div class="flex items-stretch gap-1.5 mb-2">
+                    <button type="button" id="amountStepDown" class="w-9 flex-shrink-0 rounded-lg bg-[#1c243c] border border-[#2a3350] text-[#7c86a3] font-bold hover:text-white hover:border-[#4f8ef7]">&minus;</button>
+                    <input type="text" inputmode="decimal" pattern="^\d*\.?\d*$" id="input_amount_field" name="amount" autocomplete="off" placeholder="10" value="10"
+                        class="flex-1 min-w-0 bg-[#1c243c] border border-[#2a3350] rounded-lg text-center outline-none text-[#d7dcea] font-semibold text-sm">
+                    <button type="button" id="amountStepUp" class="w-9 flex-shrink-0 rounded-lg bg-[#1c243c] border border-[#2a3350] text-[#7c86a3] font-bold hover:text-white hover:border-[#4f8ef7]">+</button>
+                </div>
+                <div id="amountPresets" class="grid grid-cols-4 gap-1.5 mb-4">
+                    <button type="button" data-amount="10" class="amount-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#1c243c] border border-[#2a3350] text-[#7c86a3] hover:border-[#4f8ef7] hover:text-white">$10</button>
+                    <button type="button" data-amount="25" class="amount-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#1c243c] border border-[#2a3350] text-[#7c86a3] hover:border-[#4f8ef7] hover:text-white">$25</button>
+                    <button type="button" data-amount="50" class="amount-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#1c243c] border border-[#2a3350] text-[#7c86a3] hover:border-[#4f8ef7] hover:text-white">$50</button>
+                    <button type="button" data-amount="100" class="amount-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#1c243c] border border-[#2a3350] text-[#7c86a3] hover:border-[#4f8ef7] hover:text-white">$100</button>
                 </div>
 
                 <div class="text-xs text-[#7c86a3] mb-1.5">Payout</div>
                 <div class="bg-[#1c243c] rounded-lg p-3 text-center mb-4">
-                    <div id="profit_percentage" class="text-[#16c087] font-bold text-base">+{{ $data->asset_profit_margin }}%</div>
+                    <div id="profit_percentage" class="text-[#16c087] font-bold text-base">+{{ number_format($data->asset_profit_margin * 100, 0) }}%</div>
                     <div id="payout" class="text-[#16c087] text-xs mt-0.5">$0.00</div>
                 </div>
 
@@ -164,6 +216,7 @@
         <div id="mainContent" class="w-[300px] flex-col border-r border-[#2a3350] overflow-y-auto" style="display:none;"></div>
 
         <div id="hidden-sections" class="hidden">
+            <div id="rightMarketWatch"></div>
             <div id="rightTrades">@include('partials.dashboard._tradings')</div>
             <div id="rightSignals">@include('partials.dashboard._signal')</div>
             <div id="rightSocialTrading" class="bg-[#151726]">@include('partials.dashboard._social')</div>
@@ -184,6 +237,9 @@
         </div>
 
         <div class="w-[78px] flex flex-col items-center p-3.5 px-2 gap-1 box-border">
+            <a href="#" class="right-nav-link" data-section="rightMarketWatch" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:10px 6px;width:58px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#7c86a3;text-decoration:none;margin-bottom:4px;">
+                <i class="fa fa-list" style="font-size:18px;"></i>Watch
+            </a>
             <a href="#" class="right-nav-link right-nav-link--active" data-section="rightTrades" style="background:#1c243c;border:1px solid #4f8ef7;border-radius:8px;padding:10px 6px;width:58px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#4f8ef7;text-decoration:none;margin-bottom:4px;">
                 <i class="fa fa-clock-rotate-left" style="font-size:18px;"></i>Trades
             </a>

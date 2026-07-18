@@ -3,53 +3,55 @@
 @section('title', 'My P2P Trades')
 
 @section('content')
-<style>
-    .p2p-shell { width: 100%; max-width: 1000px; margin: 0 auto; padding: 40px 24px; }
-    .cyber-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(25px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 30px; padding: 28px; }
-    .status-badge { padding: 6px 12px; border-radius: 10px; font-size: 10px; font-weight: 900; text-transform: uppercase; }
-    .status-pending_payment { background: rgba(245,158,11,0.1); color: #fbbf24; }
-    .status-paid { background: rgba(59,130,246,0.1); color: #3b82f6; }
-    .status-released { background: rgba(16,185,129,0.1); color: #10b981; }
-    .status-disputed { background: rgba(239,68,68,0.1); color: #f87171; }
-    .status-cancelled { background: rgba(148,163,184,0.1); color: #94a3b8; }
-</style>
-
-<div class="p2p-shell">
-    <div style="display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:16px; margin-bottom:30px;">
-        <h1 style="font-size: 30px; font-weight: 950; margin: 0; color:#fff;">My P2P Trades</h1>
-        <a href="{{ route('p2p-offers.index') }}" style="color:#3b82f6; font-weight:700; font-size:14px; text-decoration:none;">&larr; Browse Offers</a>
-    </div>
-
-    <div class="cyber-card">
-        <div style="overflow-x:auto;">
-            <table style="width:100%; border-collapse: separate; border-spacing: 0 10px; color:#fff;">
-                <thead>
-                    <tr style="text-align:left; font-size:11px; color:#64748b; text-transform:uppercase;">
-                        <th style="padding:0 16px;">Trade</th>
-                        <th style="padding:0 16px;">Role</th>
-                        <th style="padding:0 16px;">Amount</th>
-                        <th style="padding:0 16px;">Status</th>
-                        <th style="padding:0 16px;"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($trades as $trade)
-                        <tr style="background:rgba(255,255,255,0.02);">
-                            <td style="padding:14px 16px; border-radius:14px 0 0 14px;">#{{ $trade->id }}</td>
-                            <td style="padding:14px 16px; font-size:13px; color:#94a3b8;">{{ $trade->seller_id === auth()->id() ? 'Seller' : 'Buyer' }}</td>
-                            <td style="padding:14px 16px;">{{ formatPrice($trade->amount) }}</td>
-                            <td style="padding:14px 16px;"><span class="status-badge status-{{ $trade->status }}">{{ str_replace('_', ' ', $trade->status) }}</span></td>
-                            <td style="padding:14px 16px; border-radius:0 14px 14px 0; text-align:right;">
-                                <a href="{{ route('p2p-trades.show', $trade) }}" style="color:#3b82f6; font-weight:700; font-size:13px; text-decoration:none;">View &rarr;</a>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr><td colspan="5" style="text-align:center; padding:50px; color:#475569; font-weight:800;">No trades yet.</td></tr>
-                    @endforelse
-                </tbody>
-            </table>
+<div class="flex-1 overflow-y-auto p-6">
+    <div class="max-w-5xl mx-auto">
+        <div class="flex justify-between items-end flex-wrap gap-4 mb-6">
+            <h1 class="text-xl font-bold text-white">My P2P Trades</h1>
+            <a href="{{ route('p2p-offers.index') }}" class="text-[#4f8ef7] font-semibold text-sm">&larr; Browse Offers</a>
         </div>
-        <div style="margin-top:20px;">{{ $trades->links() }}</div>
+
+        <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-[#7c86a3] text-xs uppercase">
+                        <tr>
+                            <th class="py-2 px-3">Trade</th>
+                            <th class="py-2 px-3">Role</th>
+                            <th class="py-2 px-3">Amount</th>
+                            <th class="py-2 px-3">Status</th>
+                            <th class="py-2 px-3"></th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-[#d7dcea]">
+                        @forelse ($trades as $trade)
+                            <tr class="border-t border-[#1c243c]">
+                                <td class="py-3 px-3 font-semibold text-white">#{{ $trade->id }}</td>
+                                <td class="py-3 px-3 text-xs text-[#7c86a3]">{{ $trade->seller_id === auth()->id() ? 'Seller' : 'Buyer' }}</td>
+                                <td class="py-3 px-3">{{ formatPrice($trade->amount) }}</td>
+                                <td class="py-3 px-3">
+                                    @php
+                                        $statusColors = [
+                                            'pending_payment' => 'bg-[#f7b84f]/10 text-[#f7b84f]',
+                                            'paid' => 'bg-[#4f8ef7]/10 text-[#4f8ef7]',
+                                            'released' => 'bg-[#16c087]/10 text-[#16c087]',
+                                            'disputed' => 'bg-[#f4534a]/10 text-[#f4534a]',
+                                            'cancelled' => 'bg-[#7c86a3]/10 text-[#7c86a3]',
+                                        ];
+                                    @endphp
+                                    <span class="px-2.5 py-1 rounded text-[10px] font-bold uppercase {{ $statusColors[$trade->status] ?? 'bg-[#7c86a3]/10 text-[#7c86a3]' }}">{{ str_replace('_', ' ', $trade->status) }}</span>
+                                </td>
+                                <td class="py-3 px-3 text-right">
+                                    <a href="{{ route('p2p-trades.show', $trade) }}" class="text-[#4f8ef7] font-semibold text-sm">View &rarr;</a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="5" class="text-center py-12 text-[#7c86a3] font-semibold">No trades yet.</td></tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-5">{{ $trades->links() }}</div>
+        </div>
     </div>
 </div>
 @endsection

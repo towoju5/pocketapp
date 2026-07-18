@@ -22,13 +22,15 @@
 </head>
 
 <body class="text-[#d7dcea]" style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;">
-    <div class="flex h-screen w-screen overflow-hidden" style="background:#12182a;font-size:13px;">
-        @include('layouts.desktop.trading-rail')
+    <div class="flex flex-col h-screen w-screen overflow-hidden" style="background:#12182a;font-size:13px;">
+        @include('layouts.desktop.trading-topbar')
 
-        <div class="flex-1 flex flex-col min-w-0">
-            @include('layouts.desktop.trading-topbar')
+        <div class="flex flex-1 min-h-0">
+            @include('layouts.desktop.trading-rail')
 
-            @yield('content')
+            <div class="flex-1 flex flex-col min-w-0">
+                @yield('content')
+            </div>
         </div>
     </div>
 
