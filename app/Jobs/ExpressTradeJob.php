@@ -45,6 +45,8 @@ class ExpressTradeJob implements ShouldQueue
                     $trade->trade_profit,
                     ['description' => "Successfully won express trade ID {$trade->id}"]
                 );
+            } else {
+                (new \App\Services\CashbackService())->applyLossCashback($trade->user, $trade);
             }
 
             (new \App\Services\ReferralCommissionService())->distribute(

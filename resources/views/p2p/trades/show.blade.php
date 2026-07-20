@@ -10,7 +10,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-xl mx-auto space-y-4">
+    <div class="w-4/5 mx-auto space-y-4">
         @if (session('success'))
             <div class="bg-[#16c087]/10 border-l-4 border-[#16c087] text-[#16c087] p-4 rounded-lg">{{ session('success') }}</div>
         @endif
@@ -27,7 +27,7 @@
                 <span class="px-3 py-1.5 rounded-full text-xs font-bold uppercase bg-[#4f8ef7]/10 text-[#4f8ef7]">{{ str_replace('_', ' ', $trade->status) }}</span>
             </div>
 
-            <dl class="grid grid-cols-2 gap-4 text-sm">
+            <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div><dt class="text-[#7c86a3]">Amount</dt><dd class="text-white font-bold text-lg">{{ formatPrice($trade->amount) }}</dd></div>
                 <div><dt class="text-[#7c86a3]">Fiat Value</dt><dd class="text-white font-bold text-lg">{{ number_format($trade->fiat_amount, 2) }}</dd></div>
                 <div><dt class="text-[#7c86a3]">Counterparty</dt><dd class="text-white font-semibold">{{ $counterparty->first_name ?? 'Trader' }} {{ $counterparty->last_name ?? '' }}</dd></div>

@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\{
     AssetController,
     UserController,
     CashbackRuleController,
+    PromoCodeController,
     SignalController,
     WalletController,
     KycController,
@@ -17,6 +18,11 @@ use App\Http\Controllers\Admin\{
     ReferralController,
     ReferralCommissionRateController,
     SupportTicketController,
+    SettingsController,
+    PayoutController,
+    DepositController,
+    TradeController,
+    ExpressTradeController,
 };
 
 Route::prefix('admin')->middleware(['auth', 'verified'])->as('admin.')->group(function () {
@@ -26,6 +32,7 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->as('admin.')->group(fu
         'assets' => AssetController::class,
         'users' => UserController::class,
         'cashbacks' => CashbackRuleController::class,
+        'promo-codes' => PromoCodeController::class,
         'signals' => SignalController::class,
         'plans' => PlanController::class,
         'tasks' => TaskController::class,
@@ -63,4 +70,16 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->as('admin.')->group(fu
         Route::post('/{kyc}/approve', [KycController::class, 'approve'])->name('approve');
         Route::post('/{kyc}/reject', [KycController::class, 'reject'])->name('reject');
     });
+
+    Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
+
+    Route::resource('payouts', PayoutController::class)->only(['index', 'show']);
+    Route::post('payouts/{payout}/approve', [PayoutController::class, 'approve'])->name('payouts.approve');
+    Route::post('payouts/{payout}/reject', [PayoutController::class, 'reject'])->name('payouts.reject');
+
+    Route::resource('deposits', DepositController::class)->only(['index', 'show']);
+
+    Route::resource('trades', TradeController::class)->only(['index', 'show']);
+    Route::resource('express-trades', ExpressTradeController::class)->only(['index', 'show']);
 });

@@ -12,4 +12,9 @@ class Payout extends Model
     protected $guarded = [];
 
     protected $casts = ["payout_extra_info" => "array"];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

@@ -11,8 +11,16 @@ class TransactionHistoryController extends Controller
     {
         $current_user = auth()->user();
 
-        // Get transactions as a query builder instance
-        $transactions = $current_user->transactions()->newQuery();
+        $mode = in_array($request->input('mode'), ['demo', 'real'])
+            ? $request->input('mode')
+            : (is_demo_wallet($current_user->trade_wallet ?? 'qt_demo_usd') ? 'demo' : 'real');
+
+        // Get transactions as a query builder instance, scoped to the wallet
+        // mode currently in view — demo and real activity must never mix.
+        $transactions = $current_user->transactions()->newQuery()
+            ->whereHas('wallet', function ($q) use ($mode) {
+                $q->where('slug', 'like', "%{$mode}%");
+            });
 
         // Handle date range filtering
         if ($request->filled('date_from')) {
@@ -35,9 +43,26 @@ class TransactionHistoryController extends Controller
             $transactions->where('type', $request->type);
         }
 
+        // Live search — matches the transaction's UUID, type, or amount.
+        if ($request->filled('q')) {
+            $needle = trim($request->input('q'));
+            $transactions->where(function ($q) use ($needle) {
+                $q->where('uuid', 'like', "%{$needle}%")
+                    ->orWhere('type', 'like', "%{$needle}%")
+                    ->orWhere('amount', 'like', "%{$needle}%");
+            });
+        }
+
         // Paginate results and return the view
         $transactions = $transactions->latest()->paginate(10)->appends($request->query());
 
-        return view('finance.history', compact('transactions'));
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'rows' => view('finance.partials.history-rows', compact('transactions'))->render(),
+                'pagination' => $transactions->links('pagination::tailwind')->toHtml(),
+            ]);
+        }
+
+        return view('finance.history', compact('transactions', 'mode'));
     }
 }

@@ -3,7 +3,7 @@
 @section('title', 'Payout Details')
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-xl mx-auto">
+    <div class="w-4/5 mx-auto">
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-xl font-bold text-white">Payout #{{ $payout->id }}</h1>
             <a href="{{ route('payout.index') }}" class="text-[#4f8ef7] text-sm hover:underline">&larr; Back to history</a>

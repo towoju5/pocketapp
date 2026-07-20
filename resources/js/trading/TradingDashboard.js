@@ -307,7 +307,11 @@ export default class TradingDashboard {
     }
 
     _restoreChartPrefs() {
-        const defaults = { chartType: 'candles', showArea: true, periodSeconds: 60, tfLabel: 'M1', colorScheme: 'classic', showGrid: true };
+        // Default to a short, tick-level timeframe (5s) rather than M1 — binary
+        // trades commonly expire in 5-60s, and a 1-minute default candle span
+        // shows ~90 minutes of history at default zoom, which flattens exactly
+        // the kind of second-to-second movement that matters for short expiries.
+        const defaults = { chartType: 'line', showArea: true, periodSeconds: 5, tfLabel: 'S5', colorScheme: 'purple', showGrid: true };
         try {
             const saved = JSON.parse(localStorage.getItem(CHART_PREFS_KEY) || 'null');
             if (!saved) return defaults;
@@ -363,6 +367,24 @@ export default class TradingDashboard {
         });
     }
 
+    /**
+     * How many decimal places this symbol's price should be quoted/scaled to.
+     * Standard FX convention: JPY-quote pairs move in units ~100x larger than
+     * other majors (100 JPY ≈ 1 USD), so they're conventionally shown with 2
+     * fewer decimals (3 vs 5) for the SAME pip-level granularity — this isn't
+     * "less precise", it's the correct scale for that pair. Crypto/indices
+     * trade at much larger nominal prices, so 2 decimals is standard there.
+     * This also sets klinecharts' y-axis minimum-span floor (10^-precision),
+     * so getting this right per-asset (instead of one flat value for every
+     * instrument) is what lets the chart zoom in tightly on small moves.
+     */
+    _inferPricePrecision(symbol) {
+        const upper = symbol.toUpperCase();
+        if (/(BTC|ETH|XRP|LTC|BNB|SOL|DOGE)/.test(upper)) return 2;
+        if (/JPY/.test(upper)) return 3;
+        return 5;
+    }
+
     _activateAsset(symbol) {
         const asset = this.assetsBySymbol.get(symbol);
         if (!asset) return;
@@ -371,7 +393,7 @@ export default class TradingDashboard {
         // Seed from the backend's last-known online status; the client-side
         // tick-based check (chart.js) refines this once ticks start arriving.
         this._onAssetAvailabilityChange(symbol, asset.online !== false);
-        this.chart?.activate(symbol);
+        this.chart?.activate(symbol, this._inferPricePrecision(symbol));
 
         if (this.el.assetTicker) this.el.assetTicker.value = symbol.replace(/\//g, '--');
         if (this.el.activeAssetLabel) this.el.activeAssetLabel.textContent = symbol;
@@ -627,11 +649,14 @@ export default class TradingDashboard {
         const asset = this.assetsBySymbol.get(this.state.activeAssetSymbol);
         // asset_profit_margin is a fraction (0.92 == 92%), not a 0-100 percentage.
         const margin = parseFloat(marginOverride ?? asset?.asset_profit_margin ?? this.options.initialProfitMargin ?? 0);
-        if (this.el.profitPercentage) this.el.profitPercentage.textContent = `+${(margin * 100).toFixed(0)}%`;
+        const pct = (margin * 100).toFixed(0);
+        if (this.el.profitPercentage) this.el.profitPercentage.textContent = `+${pct}%`;
         if (this.el.payout) {
             const profit = margin * this.state.tradeAmount;
             this.el.payout.textContent = `$${profit.toFixed(2)}`;
         }
+        document.getElementById('ctaPercentUp')?.replaceChildren(document.createTextNode(`${pct}%`));
+        document.getElementById('ctaPercentDown')?.replaceChildren(document.createTextNode(`${pct}%`));
     }
 
     async _submitTrade(direction) {
@@ -663,8 +688,9 @@ export default class TradingDashboard {
                 }
                 if (data.trade?.trade_close_time && data.trade?.trade_currency) {
                     const expiryMs = new Date(String(data.trade.trade_close_time).replace(' ', 'T')).getTime();
+                    const entryPrice = data.trade.start_price != null ? parseFloat(data.trade.start_price) : undefined;
                     if (!Number.isNaN(expiryMs)) {
-                        this.chart?.setExpiryLine(data.trade.id, data.trade.trade_currency, expiryMs);
+                        this.chart?.setExpiryLine(data.trade.id, data.trade.trade_currency, expiryMs, entryPrice);
                     }
                 }
             } else {

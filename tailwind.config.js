@@ -19,22 +19,23 @@ export default {
                 'lightHouse': '#20273f',
                 'lightHouse-text': '#8ea5c0',
 
-                // Consolidated brand tokens (replaces the reference app's
-                // three competing palettes: auth split-screen, dark "glass"
-                // app interior, and admin's amber accent).
+                // Consolidated brand tokens — matches the flat-navy palette
+                // used across the customer-facing trading app exactly, so
+                // admin shares the same design language instead of its own
+                // separate glassmorphism theme.
                 brand: {
-                    blue: '#2563eb',
-                    'blue-hover': '#1d4ed8',
-                    navy: '#0f172a',
-                    deep: '#020617',
-                    emerald: '#10b981',
-                    amber: '#f59e0b',
-                    danger: '#ef4444',
+                    blue: '#4f8ef7',
+                    'blue-hover': '#3f7de6',
+                    navy: '#171e33',
+                    deep: '#12182a',
+                    emerald: '#16c087',
+                    amber: '#d97706',
+                    danger: '#f4534a',
                 },
                 glass: {
-                    surface: 'rgba(15, 23, 42, 0.7)',
-                    'surface-light': 'rgba(255, 255, 255, 0.03)',
-                    border: 'rgba(255, 255, 255, 0.08)',
+                    surface: '#171e33',
+                    'surface-light': '#1c243c',
+                    border: '#2a3350',
                 },
             },
             fontFamily: {

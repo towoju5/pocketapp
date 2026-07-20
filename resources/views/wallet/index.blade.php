@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-4xl mx-auto">
+    <div class="w-4/5 mx-auto">
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-xl font-bold text-white">Wallet</h1>
             <div class="text-right">
@@ -27,7 +27,7 @@
 
             <div class="mt-4">
                 <p class="text-xs text-[#7c86a3] mb-2">Other payment methods (coming soon)</p>
-                <div class="grid grid-cols-4 gap-2">
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                     @foreach(['Card', 'Bank Transfer', 'UPI', 'PIX'] as $comingSoon)
                         <div class="bg-[#171e33] border border-[#2a3350] rounded-lg p-3 text-center text-xs text-[#7c86a3] opacity-50 cursor-not-allowed">
                             {{ $comingSoon }}
@@ -61,7 +61,7 @@
                     @endif
 
                     <div class="text-xs font-semibold text-[#7c86a3] uppercase tracking-wide mb-2">Crypto</div>
-                    <div class="grid grid-cols-2 gap-2.5 mb-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-4">
                         <button type="button" class="withdraw-method-card withdraw-method-card--active" data-method="USDT" data-address-label="USDT (TRC20) address">
                             <div class="flex items-center gap-2.5">
                                 <div class="withdraw-method-card__avatar" style="background:rgba(247,184,79,0.15);color:#f7b84f;">$</div>
@@ -74,7 +74,7 @@
                     </div>
 
                     <div class="text-xs font-semibold text-[#7c86a3] uppercase tracking-wide mb-2">Bank</div>
-                    <div class="grid grid-cols-2 gap-2.5 mb-4">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-4">
                         <button type="button" class="withdraw-method-card" data-method="Bank" data-address-label="Bank account / IBAN">
                             <div class="flex items-center gap-2.5">
                                 <div class="withdraw-method-card__avatar" style="background:rgba(124,134,163,0.15);color:#7c86a3;">B</div>

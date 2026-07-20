@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-4xl mx-auto">
+    <div class="w-4/5 mx-auto">
         <h1 class="text-xl font-bold text-white mb-6">Tournaments</h1>
 
         <div class="flex gap-2 mb-6">
@@ -14,7 +14,7 @@
         </div>
 
         <div class="tourney-tab-panel" data-panel="active">
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 @forelse($active as $tournament)
                     <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-5">
                         <div class="text-white font-semibold mb-1">{{ $tournament->tournament_title }}</div>

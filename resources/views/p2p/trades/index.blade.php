@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-5xl mx-auto">
+    <div class="w-4/5 mx-auto">
         <div class="flex justify-between items-end flex-wrap gap-4 mb-6">
             <h1 class="text-xl font-bold text-white">My P2P Trades</h1>
             <a href="{{ route('p2p-offers.index') }}" class="text-[#4f8ef7] font-semibold text-sm">&larr; Browse Offers</a>

@@ -100,7 +100,10 @@ Route::middleware(['auth'])->group(function () {
     Route::group(['as' => 'finance.', 'prefix' => 'finance'], function () {
         Route::get('cashback', [ChartController::class, 'cashback'])->name('cashback');
         Route::get('promo-codes', [PromoCodeController::class, 'index'])->name('promo-codes');
+        Route::post('promo-codes/redeem', [PromoCodeController::class, 'redeem'])->name('promo-codes.redeem');
         Route::get('my-safe', [MySafeController::class, 'index'])->name('my-safe');
+        Route::post('my-safe/deposit', [MySafeController::class, 'deposit'])->name('my-safe.deposit');
+        Route::post('my-safe/withdraw', [MySafeController::class, 'withdraw'])->name('my-safe.withdraw');
     });
 });
 

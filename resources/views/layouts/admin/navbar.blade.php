@@ -1,4 +1,4 @@
-<header class="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-glass-border bg-glass-surface px-6 backdrop-blur-xl sm:px-10">
+<header class="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-glass-border bg-glass-surface px-6 sm:px-10">
     <button type="button" @click="sidebarOpen = !sidebarOpen" class="flex h-10 w-10 items-center justify-center rounded-lg text-slate-300 hover:bg-white/5 lg:hidden">
         <x-heroicon-o-bars-3 class="h-6 w-6" />
     </button>

@@ -3,7 +3,7 @@
 @section('title', 'Make new Deposit')
 @section('content')
     <div class="flex-1 overflow-y-auto p-6">
-        <div class="max-w-4xl mx-auto">
+        <div class="w-4/5 mx-auto">
             <div class="bg-[#171e33] border border-[#2a3350] rounded-xl text-white">
                 <div class="px-4 py-2">
                     @include('partials.finance-header')

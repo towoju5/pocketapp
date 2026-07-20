@@ -11,7 +11,7 @@
 </style>
 
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-4xl mx-auto">
+    <div class="w-4/5 mx-auto">
         <div class="flex justify-between items-end flex-wrap gap-4 mb-6">
             <h1 class="text-xl font-bold text-white m-0">Task Registry</h1>
             <a href="{{ route('tasks.index') }}" class="text-[#4f8ef7] font-semibold text-sm no-underline">&larr; Duty Registry</a>

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-xl mx-auto">
+    <div class="w-4/5 mx-auto">
         @if ($errors->any())
             <div class="bg-[#f4534a]/10 border-l-4 border-[#f4534a] text-[#f4534a] p-4 rounded-lg mb-6">{{ $errors->first() }}</div>
         @endif
@@ -21,7 +21,7 @@
                     <input type="number" step="0.01" name="price_per_unit" value="{{ old('price_per_unit', $offer->price_per_unit) }}" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" required>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Min Limit</label>
                         <input type="number" step="0.01" name="min_limit" value="{{ old('min_limit', $offer->min_limit) }}" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" required>

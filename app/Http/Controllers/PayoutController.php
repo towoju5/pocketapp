@@ -44,13 +44,13 @@ class PayoutController extends Controller
         $payout->user_id           = auth()->id();
         $payout->payout_amount     = $request->amount;
         $payout->payout_date_time  = now();
-        $payout->payout_status     = "completed";
+        $payout->payout_status     = "pending";
         $payout->payout_method     = $request->payment_method;
         $payout->payout_bonus      = $request->address;
         $payout->payout_extra_info = $request->all();
 
         if ($payout->save()) {
-            return back()->with('success', 'Payout request submitted successfully.');
+            return back()->with('success', 'Payout request submitted and pending admin review.');
         }
     }
 

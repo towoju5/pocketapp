@@ -8,9 +8,14 @@
         'Financial' => [
             ['admin.assets.index', 'Assets', 'heroicon-o-chart-bar'],
             ['admin.wallets.index', 'Wallets', 'heroicon-o-wallet'],
+            ['admin.deposits.index', 'Deposits', 'heroicon-o-arrow-down-circle'],
+            ['admin.payouts.index', 'Withdrawals', 'heroicon-o-arrow-up-circle'],
             ['admin.cashbacks.index', 'Cashback Rules', 'heroicon-o-receipt-percent'],
+            ['admin.promo-codes.index', 'Promo Codes', 'heroicon-o-gift'],
         ],
         'Trading & Yield' => [
+            ['admin.trades.index', 'Trades', 'heroicon-o-presentation-chart-line'],
+            ['admin.express-trades.index', 'Express Trades', 'heroicon-o-bolt'],
             ['admin.signals.index', 'Signals', 'heroicon-o-signal'],
             ['admin.plans.index', 'Plans', 'heroicon-o-banknotes'],
             ['admin.plan-subscriptions.index', 'Plan Subscriptions', 'heroicon-o-arrow-path'],
@@ -29,6 +34,9 @@
         ],
         'Support' => [
             ['admin.support-tickets.index', 'Support Tickets', 'heroicon-o-lifebuoy'],
+        ],
+        'Platform' => [
+            ['admin.settings.index', 'Settings', 'heroicon-o-cog-6-tooth'],
         ],
     ];
 
@@ -50,7 +58,7 @@
 <aside
     x-data="{ openGroup: '{{ $activeGroup }}' }"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'"
-    class="fixed inset-y-0 left-0 z-50 flex w-[290px] flex-col border-r border-glass-border bg-glass-surface backdrop-blur-xl transition-transform duration-200 lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-50 flex w-[290px] flex-col border-r border-glass-border bg-glass-surface transition-transform duration-200 lg:translate-x-0"
 >
     <div class="flex h-20 items-center gap-2 px-6">
         <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-amber/10 text-lg">🌌</span>

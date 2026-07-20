@@ -1,64 +1,88 @@
 @extends('layouts.desktop.trading')
 
+@section('title', 'Cashback')
+
 @section('content')
-    <div class="w-full" style="margin: 1rem">
+<div class="flex-1 overflow-y-auto p-6">
+    <div class="w-4/5 mx-auto">
         @include('partials.finance-header')
-        <div class="grid lg:grid-cols-3 gap-5 mt-5">
-            <div class="bg-[#171e33] border border-[#2a3350] text-[#d7dcea] p-6 rounded-xl w-full max-w-4xl mx-auto">
+
+        <div class="grid lg:grid-cols-3 gap-5 mt-6">
+            <div class="bg-[#171e33] border border-[#2a3350] text-[#d7dcea] p-6 rounded-xl lg:col-span-2">
                 <div class="text-center">
-                    <h2 class="text-xl font-semibold text-white">Your cashback</h2>
-                    <p class="text-4xl font-bold text-[#4f8ef7]">0%</p>
+                    <h2 class="text-xl font-semibold text-white">Your Cashback Rate</h2>
+                    <p class="text-4xl font-bold text-[#4f8ef7]">{{ $rule ? number_format($rule->percentage, 2) : '0' }}%</p>
+                    <p class="text-xs text-[#7c86a3] mt-1">
+                        @if($rule)
+                            Automatically applied to every losing trade
+                        @else
+                            No cashback program is currently active
+                        @endif
+                    </p>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4 mt-6 text-center">
-                    <div class="border border-[#2a3350] p-4 rounded-lg">Last payout<br>-</div>
-                    <div class="border border-[#2a3350] p-4 rounded-lg">Total cashback<br>-</div>
-                    <div class="border border-[#2a3350] p-4 rounded-lg">Max. payout<br>-</div>
-                    <div class="border border-[#2a3350] p-4 rounded-lg">Next payout<br>-</div>
-                    <div class="border border-[#2a3350] p-4 rounded-lg">Date of activation<br>-</div>
-                    <div class="border border-[#2a3350] p-4 rounded-lg">Valid until<br>-</div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6 text-center">
+                    <div class="border border-[#2a3350] p-4 rounded-lg">
+                        <div class="text-xs text-[#7c86a3] mb-1">Last payout</div>
+                        <div class="font-semibold text-white">{{ $lastPayout ? '$' . number_format($lastPayout->amountFloat, 2) : '—' }}</div>
+                    </div>
+                    <div class="border border-[#2a3350] p-4 rounded-lg">
+                        <div class="text-xs text-[#7c86a3] mb-1">Total cashback earned</div>
+                        <div class="font-semibold text-[#16c087]">${{ number_format($totalCashback, 2) }}</div>
+                    </div>
+                    <div class="border border-[#2a3350] p-4 rounded-lg">
+                        <div class="text-xs text-[#7c86a3] mb-1">Current rate</div>
+                        <div class="font-semibold text-white">{{ $rule ? number_format($rule->percentage, 2) . '%' : '—' }}</div>
+                    </div>
+                    <div class="border border-[#2a3350] p-4 rounded-lg">
+                        <div class="text-xs text-[#7c86a3] mb-1">Last payout date</div>
+                        <div class="font-semibold text-white">{{ $lastPayout ? $lastPayout->created_at->format('Y-m-d') : '—' }}</div>
+                    </div>
                 </div>
 
                 <div class="mt-6 text-sm text-[#7c86a3]">
-                    <h3 class="font-semibold text-[#d7dcea]">Terms and Conditions</h3>
+                    <h3 class="font-semibold text-[#d7dcea]">How it works</h3>
                     <ul class="list-decimal list-inside space-y-2 mt-2">
-                        <li>Cashback will expire automatically in 1 year after activation.</li>
-                        <li>You can prolong your cashback at any moment if you have purchased cashback with the same payout percentage.</li>
-                        <li>You can increase cashback percentage (maximum 10%) at any moment if you have purchased cashback with a higher payout percentage.</li>
-                        <li>Cashback is calculated if the total amount of losses is greater than the gains for the previous month.</li>
-                        <li>You can withdraw your refunded cashback at any moment if you have enough funds on your Real account’s balance.</li>
-                        <li>The Company has the right to amend the bonus terms or terminate this promotion at any time without notice.</li>
-                        <li>Cashback activation time and validity period is displayed in accordance with the server time (UTC+2).</li>
+                        <li>Cashback is a percentage of your stake automatically credited back to your wallet whenever a trade settles as a loss.</li>
+                        <li>The rate is set by the platform and can change — the amount shown above always reflects the currently active rate.</li>
+                        <li>Cashback is credited to the same wallet (demo or real) the original trade was placed from.</li>
+                        <li>There's nothing to activate or purchase — if a cashback rate is active, it applies automatically to every qualifying trade.</li>
                     </ul>
                 </div>
             </div>
-            <div class="bg-[#171e33] border border-[#2a3350] text-[#d7dcea] p-6 rounded-xl w-full max-w-4xl mx-auto">
-                <div class="mt-6 p-4 bg-[#1c243c] border border-dashed border-[#4f8ef7] rounded-lg">
-                    <p class="text-sm text-[#7c86a3]">In case of losses the Cashback returns a part of lost funds every month. You can return up to 10% of your losses.</p>
-                </div>
-                <div class="mt-4 p-3 bg-[#1c243c] border border-dashed border-[#f4534a] text-[#d7dcea] rounded-lg text-left gap-3 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="#f4534a" width="30" height="30"><!--!Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2025 Fonticons, Inc.--><path d="M256 32c14.2 0 27.3 7.5 34.5 19.8l216 368c7.3 12.4 7.3 27.7 .2 40.1S486.3 480 472 480L40 480c-14.3 0-27.6-7.7-34.7-20.1s-7-27.8 .2-40.1l216-368C228.7 39.5 241.8 32 256 32zm0 128c-13.3 0-24 10.7-24 24l0 112c0 13.3 10.7 24 24 24s24-10.7 24-24l0-112c0-13.3-10.7-24-24-24zm32 224a32 32 0 1 0 -64 0 32 32 0 1 0 64 0z"/></svg>
-                    You don't have active Cashback at the moment.
-                </div>
-                <div class="mt-4 text-center">
-                    <button class="bg-[#1c243c] border border-[#2a3350] hover:bg-[#16c087] text-white py-2 px-4 rounded-lg">Buy it now</button>
-                </div>
+
+            <div class="bg-[#171e33] border border-[#2a3350] text-[#d7dcea] p-6 rounded-xl">
+                @if($rule)
+                    <div class="p-4 bg-[#1c243c] border border-dashed border-[#16c087] rounded-lg">
+                        <p class="text-sm text-[#7c86a3]">You're currently earning <span class="text-[#16c087] font-semibold">{{ number_format($rule->percentage, 2) }}%</span> back on every losing trade — no action needed.</p>
+                    </div>
+                @else
+                    <div class="p-4 bg-[#1c243c] border border-dashed border-[#f4534a] rounded-lg">
+                        <p class="text-sm text-[#7c86a3]">There's no active cashback program right now. Check back later.</p>
+                    </div>
+                @endif
 
                 <div class="mt-6">
-                    <h3 class="text-lg font-semibold text-white">Cashback payouts</h3>
-                    <div class="border border-[#2a3350] p-4 rounded-lg mt-2 text-center text-[#7c86a3]">No data</div>
+                    <h3 class="text-sm font-bold text-white mb-3">Recent Cashback Payouts</h3>
+                    <div class="space-y-2">
+                        @forelse($payouts as $payout)
+                            <div class="flex items-center justify-between border border-[#2a3350] rounded-lg p-3 text-sm">
+                                <div>
+                                    <div class="text-white font-semibold">${{ number_format($payout->amountFloat, 2) }}</div>
+                                    <div class="text-[#7c86a3] text-xs">{{ $payout->created_at->format('Y-m-d H:i') }}</div>
+                                </div>
+                                <span class="bg-[#16c087]/15 text-[#16c087] px-2 py-1 rounded text-xs">Paid</span>
+                            </div>
+                        @empty
+                            <div class="border border-dashed border-[#2a3350] rounded-lg p-4 text-center text-xs text-[#7c86a3]">No cashback payouts yet.</div>
+                        @endforelse
+                    </div>
+                    @if($payouts->hasPages())
+                        <div class="mt-3">{{ $payouts->links('pagination::tailwind') }}</div>
+                    @endif
                 </div>
-
-                <div class="mt-6">
-                    <h3 class="text-lg font-semibold text-white">Activation history</h3>
-                    <div class="border border-[#2a3350] p-4 rounded-lg mt-2 text-center text-[#7c86a3]">No data</div>
-                </div>
-
             </div>
         </div>
     </div>
+</div>
 @endsection
-
-
-@push('js')
-@endpush

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-2xl mx-auto">
+    <div class="w-4/5 mx-auto">
         @if (session('success'))
             <div class="bg-[#16c087]/10 border-l-4 border-[#16c087] text-[#16c087] p-4 rounded-lg mb-6">{{ session('success') }}</div>
         @endif

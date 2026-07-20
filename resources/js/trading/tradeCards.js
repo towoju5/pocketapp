@@ -35,7 +35,8 @@ export function startCountdowns(trades) {
     (trades || []).forEach((trade) => {
         const closeTime = trade.trade_close_time ? new Date(trade.trade_close_time.replace(' ', 'T')) : null;
         if (closeTime && !Number.isNaN(closeTime.getTime()) && trade.trade_currency) {
-            window.tradingDashboard?.chart?.setExpiryLine(trade.id, trade.trade_currency, closeTime.getTime());
+            const entryPrice = trade.start_price != null ? parseFloat(trade.start_price) : undefined;
+            window.tradingDashboard?.chart?.setExpiryLine(trade.id, trade.trade_currency, closeTime.getTime(), entryPrice);
         }
 
         const el = document.getElementById(`countdown-${trade.id}`);

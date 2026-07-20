@@ -125,6 +125,11 @@ class User extends Authenticatable
         return $this->hasMany(TraderFollow::class, 'follower_id');
     }
 
+    public function promoCodeRedemptions()
+    {
+        return $this->hasMany(PromoCodeRedemption::class);
+    }
+
     /** Users copying this trader. */
     public function copiers()
     {

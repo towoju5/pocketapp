@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-6xl mx-auto">
+    <div class="w-4/5 mx-auto">
         <h1 class="text-xl font-bold text-white mb-1">Affiliate Program</h1>
         <p class="text-sm text-[#7c86a3] mb-6">Earn commission across 3 levels of your referral network.</p>
 

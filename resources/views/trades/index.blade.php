@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-5xl mx-auto">
+    <div class="w-4/5 mx-auto">
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-xl font-bold text-white">Trade History</h1>
             <div class="flex items-center gap-3">
@@ -28,7 +28,7 @@
             $volume = $trades->getCollection()->sum('trade_amount');
         @endphp
 
-        <div class="grid grid-cols-4 gap-3 mb-6">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-4">
                 <div class="text-xs text-[#7c86a3] mb-1">Trades (this page)</div>
                 <div class="text-lg font-bold text-white">{{ $count }}</div>

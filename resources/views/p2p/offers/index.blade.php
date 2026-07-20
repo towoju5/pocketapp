@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-6xl mx-auto">
+    <div class="w-4/5 mx-auto">
         <div class="flex justify-between items-end flex-wrap gap-4 mb-6">
             <div>
                 <h1 class="text-xl font-bold text-white">P2P Escrow</h1>

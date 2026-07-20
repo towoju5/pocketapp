@@ -3,7 +3,7 @@
 @section('title', 'Payout History')
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-4xl mx-auto">
+    <div class="w-4/5 mx-auto">
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-xl font-bold text-white">Payout History</h1>
             <a href="{{ route('payout.create') }}" class="bg-[#4f8ef7] text-white text-sm font-semibold px-4 py-2 rounded-lg">Request Withdrawal</a>

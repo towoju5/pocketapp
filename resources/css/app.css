@@ -9,41 +9,38 @@
 }
 
 @layer components {
-    /* Dark glass "bento" card used across the app interior (dashboard,
-       trades, finance, KYC, plans, P2P, tasks, referrals) and admin —
-       matches public_html's .cyber-card/.identity-card tokens exactly:
-       rgba(15,23,42,.85) + blur(25px) + rgba(255,255,255,.08) border. */
+    /* Flat-navy card used across the app interior (dashboard, trades,
+       finance, KYC, plans, P2P, tasks, referrals) and admin — matches the
+       trading dashboard's own card tokens exactly: solid #171e33 fill,
+       #2a3350 border, no blur/translucency. */
     .glass-panel {
-        @apply relative rounded-[28px] border border-glass-border bg-[rgba(15,23,42,0.85)] backdrop-blur-[25px] transition duration-300;
-    }
-    .glass-panel:hover {
-        @apply -translate-y-1 border-brand-blue;
+        @apply relative rounded-xl border border-glass-border bg-brand-navy transition duration-300;
     }
 
     .brand-btn {
-        @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold transition hover:-translate-y-0.5 disabled:pointer-events-none disabled:opacity-50;
+        @apply inline-flex items-center justify-center gap-2 rounded-lg px-5 py-2.5 text-sm font-semibold transition disabled:pointer-events-none disabled:opacity-50;
     }
 
     .brand-btn-primary {
-        @apply brand-btn bg-brand-blue text-white shadow-lg shadow-brand-blue/20 hover:bg-brand-blue-hover;
+        @apply brand-btn bg-brand-blue text-white hover:bg-brand-blue-hover;
     }
 
     .brand-btn-outline {
-        @apply brand-btn border border-glass-border bg-white/5 text-white hover:bg-white/10;
+        @apply brand-btn border border-glass-border bg-glass-surface-light text-white hover:border-brand-blue;
     }
 
     .brand-input {
-        @apply w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 transition focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-blue/10;
+        @apply w-full rounded-lg border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 transition focus:border-brand-blue focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-blue/10;
     }
 
     .brand-input-dark {
-        @apply w-full rounded-xl border border-glass-border bg-white/5 px-4 py-2.5 text-sm text-white placeholder:text-slate-400 transition focus:border-brand-blue focus:outline-none focus:ring-4 focus:ring-brand-blue/20;
+        @apply w-full rounded-lg border border-glass-border bg-glass-surface-light px-4 py-2.5 text-sm text-white placeholder:text-slate-400 transition focus:border-brand-blue focus:outline-none focus:ring-4 focus:ring-brand-blue/20;
     }
 
     /* Paired with <x-data-table> for consistent table styling app-wide. */
     .glass-panel table thead th,
     div > table thead th {
-        @apply bg-white/[0.03] px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400;
+        @apply bg-glass-surface-light px-4 py-3 text-xs font-semibold uppercase tracking-wide text-slate-400;
     }
 
     .glass-panel table tbody td,
@@ -53,7 +50,7 @@
 
     .glass-panel table tbody tr:hover,
     div > table tbody tr:hover {
-        @apply bg-white/[0.02];
+        @apply bg-glass-surface-light;
     }
 }
 

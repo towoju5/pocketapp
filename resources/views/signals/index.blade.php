@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-3xl mx-auto">
+    <div class="w-4/5 mx-auto">
         <div class="flex items-center justify-between mb-6">
             <h1 class="text-xl font-bold text-white">Signals</h1>
             <span class="flex items-center gap-2 text-xs text-[#7c86a3]">

@@ -30,6 +30,23 @@ if (! function_exists('get_option')) {
     }
 }
 
+if (! function_exists('set_option')) {
+    function set_option($key, $value)
+    {
+        return Option::updateOrCreate(
+            ['option_name' => $key],
+            ['option_value' => $value, 'autoload' => 'yes']
+        );
+    }
+}
+
+if (! function_exists('is_safebox_enabled')) {
+    function is_safebox_enabled(): bool
+    {
+        return get_option('safebox_enabled', '1') === '1';
+    }
+}
+
 if (! function_exists('tableExists')) {
     function tableExists($tableName)
     {

@@ -20,7 +20,7 @@
 @endphp
 
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="max-w-4xl mx-auto">
+    <div class="w-4/5 mx-auto">
 
         <div class="flex items-center gap-4 mb-6 bg-[#171e33] border border-[#2a3350] rounded-xl p-5">
             <div class="w-16 h-16 rounded-full bg-[#33406b] flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
@@ -54,7 +54,7 @@
 
             <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6">
                 <h3 class="text-white font-semibold mb-4">Account info</h3>
-                <form method="POST" action="{{ route('profile.update') }}" class="grid grid-cols-2 gap-4">
+                <form method="POST" action="{{ route('profile.update') }}" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     @csrf
                     @method('PATCH')
                     <div>
@@ -111,7 +111,7 @@
 
         {{-- Security --}}
         <div class="profile-tab-panel {{ $activeTab === 'security' ? '' : 'hidden' }}" data-panel="security">
-            <div class="grid grid-cols-2 gap-4 mb-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
                 <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6">
                     <h3 class="text-white font-semibold mb-4">Change password</h3>
                     <form id="change-password-form">
@@ -218,7 +218,7 @@
 
         {{-- Trading Stats --}}
         <div class="profile-tab-panel {{ $activeTab === 'trading' ? '' : 'hidden' }}" data-panel="trading">
-            <div class="grid grid-cols-3 gap-3 mb-4">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
                 <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-4"><div class="text-xs text-[#7c86a3]">Trades</div><div class="text-lg font-bold text-white">{{ $totalTrades }}</div></div>
                 <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-4"><div class="text-xs text-[#7c86a3]">Profitable trades</div><div class="text-lg font-bold text-white">{{ number_format($profitableTradesPercentage, 1) }}%</div></div>
                 <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-4"><div class="text-xs text-[#7c86a3]">Trading turnover</div><div class="text-lg font-bold text-white">${{ number_format($tradingTurnover, 2) }}</div></div>
@@ -230,7 +230,7 @@
                 <h3 class="text-white font-semibold mb-4">Profitability</h3>
                 <canvas id="profitabilityChart"></canvas>
             </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6"><canvas id="tradeAmountsChart"></canvas></div>
                 <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6"><canvas id="tradesDistributionChart"></canvas></div>
             </div>

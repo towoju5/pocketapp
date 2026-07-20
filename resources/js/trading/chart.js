@@ -16,6 +16,11 @@ export class AssetFeed {
         this.periodSeconds = periodSeconds;
         this.candles = [];
         this.haCandles = [];
+        // Independent 1-second-resolution buffer used only for the 'line'/area
+        // display so it keeps moving smoothly every second regardless of the
+        // selected candle period (a customer trading on a 5s expiry shouldn't
+        // see a chart frozen for up to a full M1/M5 bucket).
+        this.linePoints = [];
         this._haPrevOpen = null;
         this._haPrevClose = null;
         this._haCurOpen = null;
@@ -60,6 +65,7 @@ export class AssetFeed {
         const price = parseFloat(message.p.toFixed(6));
         this.lastPrice = price;
         const rawBar = this._pushOrUpdateCandle(price, message.t);
+        this._pushLinePoint(price, message.t);
 
         // Unconditional, first: this must never be skipped or delayed by chart
         // rendering — the trade panel's live price/availability display depends
@@ -71,28 +77,43 @@ export class AssetFeed {
             console.error('[AssetFeed] onTick handler failed', e);
         }
 
-        if (this.chartCallback) {
-            try {
-                const bar = this.chartCallbackType === 'heikin' ? this.haCandles[this.haCandles.length - 1] : rawBar;
-                this.chartCallback(bar);
-            } catch (e) {
-                console.error('[AssetFeed] chart push failed', e);
-            }
-        }
+        this._pushToChart(rawBar);
     }
 
     /** Runs every second regardless of ticks; carries the last known price forward. */
     _advanceClock() {
         if (this._closed || this.lastPrice == null) return;
         const rawBar = this._pushOrUpdateCandle(this.lastPrice, Date.now());
-        if (this.chartCallback) {
-            try {
-                const bar = this.chartCallbackType === 'heikin' ? this.haCandles[this.haCandles.length - 1] : rawBar;
-                this.chartCallback(bar);
-            } catch (e) {
-                console.error('[AssetFeed] chart push failed', e);
-            }
+        this._pushLinePoint(this.lastPrice, Date.now());
+        this._pushToChart(rawBar);
+    }
+
+    _pushToChart(rawBar) {
+        if (!this.chartCallback) return;
+        try {
+            const bar = this.chartCallbackType === 'heikin' ? this.haCandles[this.haCandles.length - 1]
+                : this.chartCallbackType === 'line' ? this.linePoints[this.linePoints.length - 1]
+                : rawBar;
+            this.chartCallback(bar);
+        } catch (e) {
+            console.error('[AssetFeed] chart push failed', e);
         }
+    }
+
+    /** Always-1-second buckets, independent of the candle period, for a smoothly-moving line/area view. */
+    _pushLinePoint(price, epochMs) {
+        const bucketStart = Math.floor(epochMs / 1000) * 1000;
+        let last = this.linePoints[this.linePoints.length - 1];
+        if (!last || bucketStart > last.timestamp) {
+            last = { timestamp: bucketStart, open: price, high: price, low: price, close: price, volume: 0 };
+            this.linePoints.push(last);
+            if (this.linePoints.length > MAX_CANDLES) this.linePoints.shift();
+        } else {
+            last.close = price;
+            last.high = Math.max(last.high, price);
+            last.low = Math.min(last.low, price);
+        }
+        return last;
     }
 
     _pushOrUpdateCandle(price, epochMs) {
@@ -157,6 +178,9 @@ export class AssetFeed {
                     volume: 0,
                 }));
                 this._rebuildHeikinFromScratch();
+                // Seed the line/area buffer from the same history so it has
+                // context to show, not just live points from now onward.
+                this.linePoints = this.candles.map((c) => ({ ...c }));
             }
         } catch (e) {
             console.error('[AssetFeed] history fetch failed', e);
@@ -190,10 +214,24 @@ const CANDLE_TYPE_MAP = {
 };
 
 export const COLOR_SCHEMES = {
+    purple: { name: 'Purple', up: '#f2a93b', down: '#f2a93b', line: '#f2a93b' },
     classic: { name: 'Classic', up: '#16c087', down: '#f4534a', line: '#4f8ef7' },
     ocean: { name: 'Ocean', up: '#4f8ef7', down: '#f2a93b', line: '#4f8ef7' },
     mono: { name: 'Mono', up: '#d7dcea', down: '#7c86a3', line: '#d7dcea' },
+    // Blue/orange (Wong/IBM colorblind-safe palette) — red/green is the one
+    // combination deuteranopia/protanopia can't reliably tell apart, so this
+    // scheme avoids it entirely instead of just tweaking the existing hues.
+    colorblind: { name: 'Colorblind-safe', up: '#0072B2', down: '#E69F00', line: '#0072B2' },
 };
+
+/** '#f2a93b' + 0.35 -> 'rgba(242,169,59,0.35)' — used for the area-chart fill so it always matches the active line color instead of a hardcoded hue. */
+function hexToRgba(hex, alpha) {
+    const clean = hex.replace('#', '');
+    const r = parseInt(clean.substring(0, 2), 16);
+    const g = parseInt(clean.substring(2, 4), 16);
+    const b = parseInt(clean.substring(4, 6), 16);
+    return `rgba(${r},${g},${b},${alpha})`;
+}
 
 /**
  * Wraps a single klinecharts instance + a registry of per-symbol AssetFeed
@@ -206,9 +244,13 @@ export class ChartManager {
         chartType = 'candles', showArea = true, periodSeconds = 60,
         colorScheme = 'classic', showGrid = true,
     } = {}) {
+        this.container = container;
         this.chart = init(container);
         this._resizeObserver = new ResizeObserver(() => this.chart.resize());
         this._resizeObserver.observe(container);
+        if (getComputedStyle(container).position === 'static') {
+            container.style.position = 'relative';
+        }
         this.feeds = new Map();
         this.activeSymbol = null;
         this.periodSeconds = periodSeconds;
@@ -223,11 +265,17 @@ export class ChartManager {
         this.onDrawingsChanged = onDrawingsChanged || (() => {});
         this._availabilityTimer = null;
 
-        // Pending-trade expiry markers: tradeId -> { symbol, expiryMs }, plus
-        // which of those are currently drawn as overlays (only ever the ones
-        // belonging to the active symbol) -> tradeId -> overlay id.
+        // Pending-trade expiry markers: tradeId -> { symbol, expiryMs, entryPrice },
+        // plus which of those are currently drawn as overlays (only ever the
+        // ones belonging to the active symbol) -> tradeId -> { verticalId, priceLineId }.
         this._expiryLines = new Map();
         this._renderedExpiryOverlays = new Map();
+        // DOM-based "Expiration time" text labels (klinecharts overlay text
+        // rendering isn't reliable enough for a rotated custom label, so this
+        // is a plain positioned <div> kept in sync with the chart's own pan/
+        // zoom via convertToPixel) -> tradeId -> { el, expiryMs }.
+        this._expiryLabels = new Map();
+        this._labelSyncTimer = setInterval(() => this._positionExpiryLabels(), 250);
 
         // Active indicators (name -> klinecharts indicator id) and user-drawn
         // overlays/drawing-tools (drawingId -> klinecharts overlay id) — both
@@ -262,7 +310,9 @@ export class ChartManager {
     }
 
     _candlesForType(feed) {
-        return this.chartType === 'heikin' ? feed.haCandles : feed.candles;
+        if (this.chartType === 'heikin') return feed.haCandles;
+        if (this.chartType === 'line') return feed.linePoints.length ? feed.linePoints : feed.candles;
+        return feed.candles;
     }
 
     _applyStyles() {
@@ -283,14 +333,14 @@ export class ChartManager {
                     lineColor: scheme.line,
                     value: 'close',
                     backgroundColor: this.showArea
-                        ? [{ offset: 0, color: 'rgba(79,142,247,0.35)' }, { offset: 1, color: 'rgba(79,142,247,0.02)' }]
+                        ? [{ offset: 0, color: hexToRgba(scheme.line, 0.35) }, { offset: 1, color: hexToRgba(scheme.line, 0.02) }]
                         : 'rgba(0,0,0,0)',
                 },
                 priceMark: { last: { upColor: scheme.up, downColor: scheme.down, text: { color: '#ffffff' } } },
             },
-            xAxis: { axisLine: { color: '#2a3350' }, tickText: { color: '#7c86a3' } },
-            yAxis: { axisLine: { color: '#2a3350' }, tickText: { color: '#7c86a3' } },
-            crosshair: { horizontal: { line: { color: '#4f8ef7' } }, vertical: { line: { color: '#4f8ef7' } } },
+            xAxis: { axisLine: { color: '#4a2f7a' }, tickText: { color: '#b8a4e0' } },
+            yAxis: { axisLine: { color: '#4a2f7a' }, tickText: { color: '#b8a4e0' } },
+            crosshair: { horizontal: { line: { color: scheme.line } }, vertical: { line: { color: scheme.line } } },
         });
     }
 
@@ -341,34 +391,43 @@ export class ChartManager {
 
     /**
      * Mark a pending trade's close time on the chart with a light dashed
-     * vertical line, so the customer can see where/when their trade expires
-     * relative to price action. Only ever rendered while `symbol`'s tab is
-     * the active one; re-applied automatically on tab switch.
+     * vertical line plus an "Expiration time" label, and its entry price with
+     * a horizontal dashed line — so the customer can see both where they
+     * entered and when the trade expires relative to price action. Only ever
+     * rendered while `symbol`'s tab is the active one; re-applied automatically
+     * on tab switch.
      */
-    setExpiryLine(tradeId, symbol, expiryMs) {
+    setExpiryLine(tradeId, symbol, expiryMs, entryPrice) {
         if (!tradeId || !symbol || !expiryMs) return;
-        this._expiryLines.set(tradeId, { symbol, expiryMs });
+        this._expiryLines.set(tradeId, { symbol, expiryMs, entryPrice });
         if (symbol === this.activeSymbol) this._redrawExpiryLines();
     }
 
     /** Remove a trade's expiry marker (call once it settles win/lose). */
     clearExpiryLine(tradeId) {
         this._expiryLines.delete(tradeId);
-        const overlayId = this._renderedExpiryOverlays.get(tradeId);
-        if (overlayId) {
-            this.chart.removeOverlay({ id: overlayId });
+        const overlays = this._renderedExpiryOverlays.get(tradeId);
+        if (overlays) {
+            if (overlays.verticalId) this.chart.removeOverlay({ id: overlays.verticalId });
+            if (overlays.priceLineId) this.chart.removeOverlay({ id: overlays.priceLineId });
             this._renderedExpiryOverlays.delete(tradeId);
         }
+        this._removeExpiryLabel(tradeId);
     }
 
     /** Redraw expiry overlays for whichever trades belong to the active symbol. */
     _redrawExpiryLines() {
-        this._renderedExpiryOverlays.forEach((overlayId) => this.chart.removeOverlay({ id: overlayId }));
+        this._renderedExpiryOverlays.forEach((overlays) => {
+            if (overlays.verticalId) this.chart.removeOverlay({ id: overlays.verticalId });
+            if (overlays.priceLineId) this.chart.removeOverlay({ id: overlays.priceLineId });
+        });
         this._renderedExpiryOverlays.clear();
+        this._expiryLabels.forEach((_, tradeId) => this._removeExpiryLabel(tradeId));
 
-        this._expiryLines.forEach(({ symbol, expiryMs }, tradeId) => {
+        this._expiryLines.forEach(({ symbol, expiryMs, entryPrice }, tradeId) => {
             if (symbol !== this.activeSymbol) return;
-            const overlayId = this.chart.createOverlay({
+
+            const verticalId = this.chart.createOverlay({
                 name: 'verticalStraightLine',
                 lock: true,
                 points: [{ timestamp: expiryMs }],
@@ -376,7 +435,65 @@ export class ChartManager {
                     line: { color: 'rgba(215,220,234,0.4)', size: 1, style: 'dashed' },
                 },
             });
-            if (overlayId) this._renderedExpiryOverlays.set(tradeId, overlayId);
+
+            let priceLineId = null;
+            if (typeof entryPrice === 'number' && Number.isFinite(entryPrice)) {
+                priceLineId = this.chart.createOverlay({
+                    name: 'priceLine',
+                    lock: true,
+                    points: [{ value: entryPrice }],
+                    styles: {
+                        line: { color: '#f2a93b', size: 1, style: 'dashed' },
+                        text: { color: '#ffffff', backgroundColor: '#f2a93b' },
+                    },
+                });
+            }
+
+            if (verticalId) this._renderedExpiryOverlays.set(tradeId, { verticalId, priceLineId });
+            this._createExpiryLabel(tradeId, expiryMs);
+        });
+    }
+
+    _createExpiryLabel(tradeId, expiryMs) {
+        const el = document.createElement('div');
+        el.className = 'chart-expiry-label';
+        el.textContent = 'Expiration time';
+        el.style.cssText = [
+            'position:absolute', 'top:8px', 'font-size:10px', 'font-weight:600',
+            'color:#d7dcea', 'background:rgba(23,30,51,0.9)', 'border:1px solid #2a3350',
+            'padding:3px 5px', 'border-radius:4px', 'white-space:nowrap', 'pointer-events:none',
+            'z-index:15', 'transform:translateX(-50%)', 'writing-mode:vertical-rl',
+            'letter-spacing:0.3px', 'display:none',
+        ].join(';');
+        this.container.appendChild(el);
+        this._expiryLabels.set(tradeId, { el, expiryMs });
+        this._positionExpiryLabels();
+    }
+
+    _removeExpiryLabel(tradeId) {
+        const entry = this._expiryLabels.get(tradeId);
+        if (entry) {
+            entry.el.remove();
+            this._expiryLabels.delete(tradeId);
+        }
+    }
+
+    _positionExpiryLabels() {
+        if (!this._expiryLabels.size) return;
+        this._expiryLabels.forEach(({ el, expiryMs }) => {
+            try {
+                const coord = this.chart.convertToPixel({ timestamp: expiryMs }, { paneId: 'candle_pane' });
+                const point = Array.isArray(coord) ? coord[0] : coord;
+                const x = point?.x;
+                if (typeof x === 'number' && Number.isFinite(x) && x >= 0) {
+                    el.style.left = `${x}px`;
+                    el.style.display = '';
+                } else {
+                    el.style.display = 'none';
+                }
+            } catch (e) {
+                el.style.display = 'none';
+            }
         });
     }
 
@@ -514,6 +631,9 @@ export class ChartManager {
 
     dispose() {
         if (this._availabilityTimer) clearTimeout(this._availabilityTimer);
+        if (this._labelSyncTimer) clearInterval(this._labelSyncTimer);
+        this._expiryLabels.forEach(({ el }) => el.remove());
+        this._expiryLabels.clear();
         this._resizeObserver?.disconnect();
         for (const feed of this.feeds.values()) feed.close();
         this.feeds.clear();

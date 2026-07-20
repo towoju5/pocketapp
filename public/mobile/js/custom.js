@@ -219,9 +219,14 @@ function initChart() {
     });
 
     chart.applyOptions({
+        priceFormat: {
+            type: 'price',
+            precision: 6,
+            minMove: 0.000001,
+        },
         localization: {
             priceFormatter: (price) => {
-                return price.toFixed(5); // Example: Format to 5 decimal places
+                return price.toFixed(10); // Example: Format to 5 decimal places
             }
         }
     });
