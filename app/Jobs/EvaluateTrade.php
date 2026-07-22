@@ -28,9 +28,10 @@ class EvaluateTrade implements ShouldQueue
         try {
             Log::debug("Evaluating trade: " . $this->trade->id);
             $trade = $this->trade;
-            // Server-cached price (kept warm by prices:sync) is authoritative —
-            // falls back to the ad-hoc REST scrape only if the cache has
-            // nothing for this symbol.
+            // Server-cached price (kept warm by the price collector —
+            // collector/index.js — via PriceCollectorController::ingestTick)
+            // is authoritative — falls back to the ad-hoc REST scrape only if
+            // the cache has nothing for this symbol.
             $currentPrice = $priceFeed->getPrice($trade->trade_currency) ?? getAssetData($trade->trade_currency, true);
             if (is_array($currentPrice)) {
                 Log::info("checking rate as an array: ". json_encode($currentPrice));

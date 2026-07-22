@@ -20,7 +20,7 @@
 @endphp
 
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="w-4/5 mx-auto">
+    <div class="mx-auto">
 
         <div class="flex items-center gap-4 mb-6 bg-[#171e33] border border-[#2a3350] rounded-xl p-5">
             <div class="w-16 h-16 rounded-full bg-[#33406b] flex items-center justify-center text-white text-xl font-bold flex-shrink-0">

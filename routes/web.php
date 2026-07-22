@@ -7,6 +7,7 @@ use App\Http\Controllers\ExpressTradeController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MarketingController;
 use App\Http\Controllers\PayoutController;
+use App\Http\Controllers\PriceCollectorController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransactionHistoryController;
 use App\Models\Assets;
@@ -31,6 +32,17 @@ Route::get('/', [MarketingController::class, 'home'])->name('marketing.home');
 Route::get('dashboard/demo/{coin?}', [HomeController::class, 'demo'])->middleware(['auth', 'verified'])->name('dashboard.demo');
 Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('assets/status', [HomeController::class, 'assetStatus'])->middleware(['auth', 'verified'])->name('assets.status');
+Route::get('assets/history', [PriceCollectorController::class, 'history'])->middleware(['auth', 'verified'])->name('assets.history');
+
+// Called by the standalone price collector (collector/index.js), not by
+// end-user browsers — authenticated via shared secret, not the auth guard.
+// Batched: one request per flush interval carrying every tick since the
+// last one, not one request per tick (see PriceCollectorController::ingestTicks).
+Route::post('internal/assets/ticks', [PriceCollectorController::class, 'ingestTicks'])
+    ->middleware('collector.secret')
+    ->name('internal.assets.ticks')
+    ->withoutMiddleware(VerifyCsrfToken::class);
+Route::get('internal/assets/symbols', [PriceCollectorController::class, 'symbols'])->middleware('collector.secret')->name('internal.assets.symbols');
 
 Route::get('dashboard-2', function () {
     return view('dash');

@@ -17,7 +17,7 @@
     $__priceFeed = app(\App\Services\PriceFeedService::class);
 @endphp
 
-<div class="flex-1 flex min-h-0">
+<div class="flex-1 flex flex-col sm:flex-row min-h-0">
 
     {{-- ============ CHART COLUMN (full-screen; trade form/panels float on top) ============ --}}
     <div class="flex-1 flex flex-col min-w-0 relative">
@@ -148,75 +148,173 @@
         </div>
     </div>
 
-        {{-- ============ FLOATING TRADE FORM (overlays the bottom-left of the
-             chart; kept off the right edge so it never covers the Y-axis
-             price labels / current-price tag) ============ --}}
-        <div class="absolute bottom-4 left-4 z-20 w-[280px] max-w-[85vw] rounded-2xl p-4 box-border" style="background:rgba(45,26,92,0.88);backdrop-filter:blur(14px);border:1px solid #4a2f7a;box-shadow:0 20px 60px rgba(0,0,0,0.45);">
+        {{-- ============ TRADE FORM. Mobile: full-width floating sheet docked
+             below the chart (in normal flow). Desktop (sm: and up): classic
+             static right-column, part of the row next to the chart. ============ --}}
+        <div class="w-full flex-shrink-0 rounded-t-2xl bg-[rgba(45,26,92,0.88)] backdrop-blur-[14px] border border-[#4a2f7a] shadow-[0_20px_60px_rgba(0,0,0,0.45)] p-4 sm:static sm:w-[260px] sm:max-w-none sm:flex-shrink-0 sm:rounded-none sm:bg-[#2d1a5c] sm:backdrop-blur-none sm:border-0 sm:border-l sm:border-r sm:border-[#4a2f7a] sm:shadow-none sm:p-5 sm:overflow-y-auto box-border">
             <form method="POST" action="{{ route('trade.store') }}" id="tradeForm">
                 @csrf
                 <input type="hidden" name="asset" id="assetTicker" value="{{ $__coin }}">
                 <input type="hidden" name="direction" id="direction" value="">
 
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs text-[#a190c9]">Time</span>
-                    <i class="fa fa-clock text-[#a190c9]" style="font-size:11px;"></i>
-                </div>
-                <div class="flex items-stretch gap-1.5 mb-2">
-                    <button type="button" id="durationStepDown" class="w-9 flex-shrink-0 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] font-bold hover:text-white hover:border-[#f2a93b]">&minus;</button>
-                    <input type="text" id="hs-trailing-icon" name="duration" maxlength="8" placeholder="00:01:00" value="00:01:00"
-                        class="flex-1 min-w-0 bg-[#3d2570] border border-[#4a2f7a] rounded-lg text-center outline-none text-[#ece5ff] font-semibold text-sm">
-                    <button type="button" id="durationStepUp" class="w-9 flex-shrink-0 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] font-bold hover:text-white hover:border-[#f2a93b]">+</button>
-                </div>
-                <div id="durationPresets" class="grid grid-cols-4 gap-1.5 mb-4">
-                    <button type="button" data-seconds="30" class="duration-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">30s</button>
-                    <button type="button" data-seconds="60" class="duration-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">1m</button>
-                    <button type="button" data-seconds="300" class="duration-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">5m</button>
-                    <button type="button" data-seconds="900" class="duration-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">15m</button>
-                </div>
-
-                <div class="flex items-center justify-between mb-2">
-                    <span class="text-xs text-[#a190c9]">Amount</span>
-                    <i class="fa fa-dollar-sign text-[#a190c9]" style="font-size:11px;"></i>
-                </div>
-                <div class="flex items-stretch gap-1.5 mb-2">
-                    <button type="button" id="amountStepDown" class="w-9 flex-shrink-0 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] font-bold hover:text-white hover:border-[#f2a93b]">&minus;</button>
-                    <input type="text" inputmode="decimal" pattern="^\d*\.?\d*$" id="input_amount_field" name="amount" autocomplete="off" placeholder="10" value="10"
-                        class="flex-1 min-w-0 bg-[#3d2570] border border-[#4a2f7a] rounded-lg text-center outline-none text-[#ece5ff] font-semibold text-sm">
-                    <button type="button" id="amountStepUp" class="w-9 flex-shrink-0 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] font-bold hover:text-white hover:border-[#f2a93b]">+</button>
-                </div>
-                <div id="amountPresets" class="grid grid-cols-4 gap-1.5 mb-4">
-                    <button type="button" data-amount="10" class="amount-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">$10</button>
-                    <button type="button" data-amount="25" class="amount-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">$25</button>
-                    <button type="button" data-amount="50" class="amount-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">$50</button>
-                    <button type="button" data-amount="100" class="amount-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">$100</button>
-                </div>
-
-                <div class="text-xs text-[#a190c9] mb-1.5">Payout</div>
-                <div class="bg-[#3d2570] rounded-lg p-3 text-center mb-4">
-                    <div id="profit_percentage" class="text-[#16c087] font-bold text-base">+{{ number_format($data->asset_profit_margin * 100, 0) }}%</div>
-                    <div id="payout" class="text-[#16c087] text-xs mt-0.5">$0.00</div>
-                </div>
-
-                @if($isOutOfTradingHours == true)
-                    <div class="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-500 text-yellow-800 rounded-md">
-                        <p class="font-semibold mb-1">Market Unavailable</p>
-                        <p class="text-sm leading-relaxed">Trading for the selected asset is currently unavailable as the market is closed. Please select a different asset.</p>
+                {{-- Time + Amount: side-by-side compact row on mobile, stacked full detail on desktop --}}
+                <div class="grid grid-cols-2 gap-3 sm:block">
+                    <div class="relative">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-[#a190c9]">Time</span>
+                            <i class="fa fa-clock text-[#a190c9]" style="font-size:11px;"></i>
+                        </div>
+                        <div class="flex items-stretch gap-1.5 mb-2">
+                            <button type="button" id="durationStepDown" class="max-sm:hidden sm:block w-9 flex-shrink-0 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] font-bold hover:text-white hover:border-[#f2a93b]">&minus;</button>
+                            <input type="text" id="hs-trailing-icon" name="duration" maxlength="8" placeholder="00:01:00" value="00:01:00" readonly
+                                class="max-sm:pointer-events-none flex-1 min-w-0 bg-[#3d2570] border border-[#4a2f7a] rounded-lg text-center outline-none text-[#ece5ff] font-semibold text-sm">
+                            <button type="button" id="durationStepUp" class="max-sm:hidden sm:block w-9 flex-shrink-0 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] font-bold hover:text-white hover:border-[#f2a93b]">+</button>
+                        </div>
+                        <div id="durationPresets" class="max-sm:hidden sm:grid grid-cols-4 gap-1.5 mb-4">
+                            <button type="button" data-seconds="30" class="duration-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">30s</button>
+                            <button type="button" data-seconds="60" class="duration-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">1m</button>
+                            <button type="button" data-seconds="300" class="duration-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">5m</button>
+                            <button type="button" data-seconds="900" class="duration-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">15m</button>
+                        </div>
+                        <button type="button" id="timeFieldTrigger" class="max-sm:absolute max-sm:inset-0 max-sm:z-10 sm:hidden" aria-label="Edit trade duration"></button>
                     </div>
-                @else
-                    <button type="button" name="action" data-value="up" class="cta-button w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-1.5 mb-2.5">
-                        <span id="ctaPercentUp">{{ number_format($data->asset_profit_margin * 100, 0) }}%</span> UP
-                    </button>
-                    <button type="button" name="action" data-value="down" class="cta-button w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-1.5">
-                        <span id="ctaPercentDown">{{ number_format($data->asset_profit_margin * 100, 0) }}%</span> DOWN
-                    </button>
-                @endif
+
+                    <div class="relative">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs text-[#a190c9]">Amount</span>
+                            <i class="fa fa-dollar-sign text-[#a190c9]" style="font-size:11px;"></i>
+                        </div>
+                        <div class="flex items-stretch gap-1.5 mb-2">
+                            <button type="button" id="amountStepDown" class="max-sm:hidden sm:block w-9 flex-shrink-0 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] font-bold hover:text-white hover:border-[#f2a93b]">&minus;</button>
+                            <input type="text" inputmode="decimal" pattern="^\d*\.?\d*$" id="input_amount_field" name="amount" autocomplete="off" placeholder="10" value="10" readonly
+                                class="max-sm:pointer-events-none flex-1 min-w-0 bg-[#3d2570] border border-[#4a2f7a] rounded-lg text-center outline-none text-[#ece5ff] font-semibold text-sm">
+                            <button type="button" id="amountStepUp" class="max-sm:hidden sm:block w-9 flex-shrink-0 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] font-bold hover:text-white hover:border-[#f2a93b]">+</button>
+                        </div>
+                        <div id="amountPresets" class="max-sm:hidden sm:grid grid-cols-4 gap-1.5 mb-4">
+                            <button type="button" data-amount="10" class="amount-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">$10</button>
+                            <button type="button" data-amount="25" class="amount-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">$25</button>
+                            <button type="button" data-amount="50" class="amount-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">$50</button>
+                            <button type="button" data-amount="100" class="amount-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">$100</button>
+                        </div>
+                        <button type="button" id="amountFieldTrigger" class="max-sm:absolute max-sm:inset-0 max-sm:z-10 sm:hidden" aria-label="Edit trade amount"></button>
+                    </div>
+                </div>
+
+                {{-- ============ MOBILE TIME PICKER OVERLAY (HH:MM:SS scrubber + presets) ============ --}}
+                <div id="timePickerPanel" class="hidden sm:!hidden rounded-xl p-4 mb-4" style="background:#3d2570;border:1px solid #4a2f7a;">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs text-[#a190c9] font-semibold uppercase tracking-wide">Trade Duration</span>
+                        <button type="button" id="timePickerClose" class="w-6 h-6 rounded-md flex items-center justify-center text-[#a190c9]"><i class="fa fa-xmark"></i></button>
+                    </div>
+                    <div class="flex items-center justify-center gap-2.5 mb-4">
+                        <div class="flex flex-col items-center gap-1.5">
+                            <button type="button" data-tp-unit="h" data-tp-dir="1" class="tp-step w-9 h-8 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:text-white hover:border-[#f2a93b]"><i class="fa fa-chevron-up" style="font-size:10px;"></i></button>
+                            <div id="tpHH" class="w-12 text-center text-2xl font-bold text-white tabular-nums">00</div>
+                            <button type="button" data-tp-unit="h" data-tp-dir="-1" class="tp-step w-9 h-8 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:text-white hover:border-[#f2a93b]"><i class="fa fa-chevron-down" style="font-size:10px;"></i></button>
+                        </div>
+                        <span class="text-2xl font-bold text-[#a190c9]">:</span>
+                        <div class="flex flex-col items-center gap-1.5">
+                            <button type="button" data-tp-unit="m" data-tp-dir="1" class="tp-step w-9 h-8 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:text-white hover:border-[#f2a93b]"><i class="fa fa-chevron-up" style="font-size:10px;"></i></button>
+                            <div id="tpMM" class="w-12 text-center text-2xl font-bold text-white tabular-nums">01</div>
+                            <button type="button" data-tp-unit="m" data-tp-dir="-1" class="tp-step w-9 h-8 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:text-white hover:border-[#f2a93b]"><i class="fa fa-chevron-down" style="font-size:10px;"></i></button>
+                        </div>
+                        <span class="text-2xl font-bold text-[#a190c9]">:</span>
+                        <div class="flex flex-col items-center gap-1.5">
+                            <button type="button" data-tp-unit="s" data-tp-dir="1" class="tp-step w-9 h-8 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:text-white hover:border-[#f2a93b]"><i class="fa fa-chevron-up" style="font-size:10px;"></i></button>
+                            <div id="tpSS" class="w-12 text-center text-2xl font-bold text-white tabular-nums">00</div>
+                            <button type="button" data-tp-unit="s" data-tp-dir="-1" class="tp-step w-9 h-8 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:text-white hover:border-[#f2a93b]"><i class="fa fa-chevron-down" style="font-size:10px;"></i></button>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5">
+                        <button type="button" data-seconds="3" class="tp-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">S3</button>
+                        <button type="button" data-seconds="15" class="tp-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">S15</button>
+                        <button type="button" data-seconds="30" class="tp-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">S30</button>
+                        <button type="button" data-seconds="60" class="tp-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">M1</button>
+                        <button type="button" data-seconds="180" class="tp-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">M3</button>
+                        <button type="button" data-seconds="300" class="tp-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">M5</button>
+                        <button type="button" data-seconds="1800" class="tp-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">M30</button>
+                        <button type="button" data-seconds="3600" class="tp-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">H1</button>
+                        <button type="button" data-seconds="14400" class="tp-preset text-[11px] font-semibold py-1.5 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#a190c9] hover:border-[#f2a93b] hover:text-white">H4</button>
+                    </div>
+                </div>
+
+                {{-- ============ MOBILE AMOUNT PICKER OVERLAY (value + calculator keypad) ============ --}}
+                <div id="amountPickerPanel" class="hidden sm:!hidden rounded-xl p-4 mb-4" style="background:#3d2570;border:1px solid #4a2f7a;">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="text-xs text-[#a190c9] font-semibold uppercase tracking-wide">Trade Amount</span>
+                        <button type="button" id="amountPickerClose" class="w-6 h-6 rounded-md flex items-center justify-center text-[#a190c9]"><i class="fa fa-xmark"></i></button>
+                    </div>
+                    <div id="apDisplay" class="text-center text-3xl font-bold text-white mb-3 tabular-nums">$10</div>
+                    <div class="text-center text-[10px] text-[#a190c9] font-semibold mb-2 uppercase tracking-wide">Calculator</div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" data-ap-key="7" class="ap-key text-base font-bold py-3 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#ece5ff] hover:border-[#f2a93b]">7</button>
+                        <button type="button" data-ap-key="8" class="ap-key text-base font-bold py-3 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#ece5ff] hover:border-[#f2a93b]">8</button>
+                        <button type="button" data-ap-key="9" class="ap-key text-base font-bold py-3 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#ece5ff] hover:border-[#f2a93b]">9</button>
+                        <button type="button" data-ap-key="4" class="ap-key text-base font-bold py-3 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#ece5ff] hover:border-[#f2a93b]">4</button>
+                        <button type="button" data-ap-key="5" class="ap-key text-base font-bold py-3 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#ece5ff] hover:border-[#f2a93b]">5</button>
+                        <button type="button" data-ap-key="6" class="ap-key text-base font-bold py-3 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#ece5ff] hover:border-[#f2a93b]">6</button>
+                        <button type="button" data-ap-key="1" class="ap-key text-base font-bold py-3 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#ece5ff] hover:border-[#f2a93b]">1</button>
+                        <button type="button" data-ap-key="2" class="ap-key text-base font-bold py-3 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#ece5ff] hover:border-[#f2a93b]">2</button>
+                        <button type="button" data-ap-key="3" class="ap-key text-base font-bold py-3 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#ece5ff] hover:border-[#f2a93b]">3</button>
+                        <button type="button" data-ap-key="." class="ap-key text-base font-bold py-3 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#ece5ff] hover:border-[#f2a93b]">.</button>
+                        <button type="button" data-ap-key="0" class="ap-key text-base font-bold py-3 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#ece5ff] hover:border-[#f2a93b]">0</button>
+                        <button type="button" data-ap-key="back" class="ap-key text-base font-bold py-3 rounded-lg bg-[#2d1a5c] border border-[#4a2f7a] text-[#ece5ff] hover:border-[#f2a93b]"><i class="fa fa-delete-left"></i></button>
+                    </div>
+                </div>
+
+                {{-- Availability is decided client-side by the chart's own
+                     live feed (see ChartManager.onAvailabilityChange in
+                     chart.js): once a symbol is actively streaming ticks it's
+                     tradeable, matching the chart itself rather than a
+                     stale server-computed snapshot from page load. While
+                     offline, this whole block (payout + BUY/SELL) is swapped
+                     out for #assetOfflineNotice below — not just disabled. --}}
+                <div id="tradeControlsWrap">
+                    {{-- Payout/profit summary: compact single row on mobile, existing stacked box on desktop --}}
+                    <div class="hidden max-sm:flex items-center justify-between gap-2 bg-[#3d2570] rounded-lg p-3 mb-4 text-xs">
+                        <div>
+                            <div class="text-[#a190c9]">Payout</div>
+                            <div id="payoutTotalMobile" class="text-white font-bold text-sm">$0.00</div>
+                        </div>
+                        <div id="profitPercentageMobile" class="text-[#16c087] font-bold text-sm">+{{ number_format($data->asset_profit_margin * 100, 0) }}%</div>
+                        <div class="text-right">
+                            <div class="text-[#a190c9]">Profit</div>
+                            <div id="profitMobile" class="text-[#16c087] font-bold text-sm">+$0.00</div>
+                        </div>
+                    </div>
+
+                    <div class="sm:block max-sm:hidden">
+                        <div class="text-xs text-[#a190c9] mb-1.5">Payout</div>
+                        <div class="bg-[#3d2570] rounded-lg p-3 text-center mb-4">
+                            <div id="profit_percentage" class="text-[#16c087] font-bold text-base">+{{ number_format($data->asset_profit_margin * 100, 0) }}%</div>
+                            <div id="payout" class="text-[#16c087] text-xs mt-0.5">$0.00</div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2 sm:block">
+                        <button type="button" data-value="up" class="cta-button w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 sm:mb-2.5">
+                            <i class="fa fa-arrow-up"></i> BUY
+                        </button>
+                        <button type="button" data-value="down" class="cta-button w-full bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2">
+                            <i class="fa fa-arrow-down"></i> SELL
+                        </button>
+                    </div>
+                </div>
+
+                <div id="assetOfflineNotice" class="hidden flex-col items-center text-center gap-2.5 rounded-xl p-5" style="background:linear-gradient(180deg,rgba(217,119,6,0.14),rgba(45,26,92,0.5));border:1px solid rgba(217,119,6,0.35);">
+                    <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style="background:rgba(217,119,6,0.15);border:1px solid #d97706;">
+                        <i class="fa fa-plug-circle-xmark" style="font-size:16px;color:#d97706;"></i>
+                    </div>
+                    <div class="text-sm font-bold text-white">Asset Offline</div>
+                    <div class="text-xs text-[#a190c9] leading-relaxed">This asset isn't streaming right now. Pick another asset above to keep trading.</div>
+                </div>
             </form>
         </div>
 
-        {{-- ============ FLOATING SECONDARY PANEL (Watch/Trades/Signals/etc —
-             opens to the LEFT of the icon strip below, well clear of the
-             right-edge price axis) ============ --}}
-        <div id="mainContent" class="absolute top-16 right-[62px] z-30 w-[300px] max-w-[80vw] max-h-[70vh] flex-col overflow-y-auto rounded-2xl p-1" style="display:none;background:rgba(45,26,92,0.92);backdrop-filter:blur(14px);border:1px solid #4a2f7a;box-shadow:0 20px 60px rgba(0,0,0,0.45);"></div>
+        {{-- ============ SECONDARY PANEL (Watch/Trades/Signals/etc). Mobile:
+             floating overlay to the left of the icon strip. Desktop (sm: and
+             up): classic static column, part of the row. ============ --}}
+        <div id="mainContent" class="max-sm:hidden sm:static sm:w-[300px] sm:flex-shrink-0 sm:h-full sm:overflow-y-auto sm:bg-[#2d1a5c] sm:border-0 sm:border-r sm:border-[#4a2f7a]" style="display:none;"></div>
 
         <div id="hidden-sections" class="hidden">
             <div id="rightMarketWatch"></div>
@@ -239,33 +337,33 @@
             </div>
         </div>
 
-        {{-- ============ FLOATING ICON STRIP (compact, icon-only, top-right
-             below the toolbar — kept out of the bottom-left form's way and
-             narrow enough to sit beside rather than over the price axis) ============ --}}
-        <div class="absolute top-16 right-2 z-20 flex flex-col items-center gap-1.5">
-            <a href="#" class="right-nav-link" data-section="rightMarketWatch" title="Market Watch" style="background:rgba(45,26,92,0.88);backdrop-filter:blur(8px);border:1px solid #4a2f7a;border-radius:8px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#a190c9;text-decoration:none;">
-                <i class="fa fa-list" style="font-size:14px;"></i>
+        {{-- ============ ICON RAIL (desktop only — mobile uses the bottom
+             nav's "More" menu instead). Styled identically to the left
+             sidebar rail (layouts/desktop/trading-rail.blade.php). ============ --}}
+        <div class="max-sm:hidden sm:flex sm:flex-col sm:items-center sm:w-[78px] sm:flex-shrink-0 sm:p-3.5 sm:px-2 sm:gap-1 sm:box-border">
+            <a href="#" class="right-nav-link" data-section="rightMarketWatch" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:10px 6px;width:58px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#7c86a3;text-decoration:none;margin-bottom:4px;">
+                <i class="fa fa-list" style="font-size:18px;"></i>Watch
             </a>
-            <a href="#" class="right-nav-link right-nav-link--active" data-section="rightTrades" title="Trades" style="background:rgba(45,26,92,0.88);backdrop-filter:blur(8px);border:1px solid #f2a93b;border-radius:8px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#f2a93b;text-decoration:none;">
-                <i class="fa fa-clock-rotate-left" style="font-size:14px;"></i>
+            <a href="#" class="right-nav-link right-nav-link--active" data-section="rightTrades" style="background:#1c243c;border:1px solid #4f8ef7;border-radius:8px;padding:10px 6px;width:58px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#4f8ef7;text-decoration:none;margin-bottom:4px;">
+                <i class="fa fa-clock-rotate-left" style="font-size:18px;"></i>Trades
             </a>
-            <a href="#" class="right-nav-link" data-section="rightSignals" title="Signals" style="background:rgba(45,26,92,0.88);backdrop-filter:blur(8px);border:1px solid #4a2f7a;border-radius:8px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#a190c9;text-decoration:none;">
-                <i class="fa fa-tower-broadcast" style="font-size:14px;"></i>
+            <a href="#" class="right-nav-link" data-section="rightSignals" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:10px 6px;width:58px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#7c86a3;text-decoration:none;margin-bottom:4px;">
+                <i class="fa fa-tower-broadcast" style="font-size:18px;"></i>Signals
             </a>
-            <a href="#" class="right-nav-link" data-section="rightSocialTrading" title="Social" style="background:rgba(45,26,92,0.88);backdrop-filter:blur(8px);border:1px solid #4a2f7a;border-radius:8px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#a190c9;text-decoration:none;">
-                <i class="fa fa-users" style="font-size:14px;"></i>
+            <a href="#" class="right-nav-link" data-section="rightSocialTrading" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:10px 6px;width:58px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#7c86a3;text-decoration:none;margin-bottom:4px;">
+                <i class="fa fa-users" style="font-size:18px;"></i>Social
             </a>
-            <a href="#" class="right-nav-link" data-section="rightExpressTrades" title="Express" style="background:rgba(45,26,92,0.88);backdrop-filter:blur(8px);border:1px solid #4a2f7a;border-radius:8px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#a190c9;text-decoration:none;">
-                <i class="fa fa-bullseye" style="font-size:14px;"></i>
+            <a href="#" class="right-nav-link" data-section="rightExpressTrades" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:10px 6px;width:58px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#7c86a3;text-decoration:none;margin-bottom:4px;">
+                <i class="fa fa-bullseye" style="font-size:18px;"></i>Express
             </a>
-            <a href="#" class="right-nav-link" data-section="rightTournaments" title="Tournaments" style="background:rgba(45,26,92,0.88);backdrop-filter:blur(8px);border:1px solid #4a2f7a;border-radius:8px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#a190c9;text-decoration:none;">
-                <i class="fa fa-trophy" style="font-size:14px;"></i>
+            <a href="#" class="right-nav-link" data-section="rightTournaments" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:10px 6px;width:58px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#7c86a3;text-decoration:none;margin-bottom:4px;">
+                <i class="fa fa-trophy" style="font-size:18px;"></i>Tourneys
             </a>
-            <a href="#" class="right-nav-link" data-section="rightPendingTrades" title="Pending" style="background:rgba(45,26,92,0.88);backdrop-filter:blur(8px);border:1px solid #4a2f7a;border-radius:8px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#a190c9;text-decoration:none;">
-                <i class="fa fa-hourglass-half" style="font-size:14px;"></i>
+            <a href="#" class="right-nav-link" data-section="rightPendingTrades" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:10px 6px;width:58px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#7c86a3;text-decoration:none;margin-bottom:4px;">
+                <i class="fa fa-hourglass-half" style="font-size:18px;"></i>Pending
             </a>
-            <a href="#" class="right-nav-link" data-section="rightHotkeys" title="Hotkeys" style="background:rgba(45,26,92,0.88);backdrop-filter:blur(8px);border:1px solid #4a2f7a;border-radius:8px;width:38px;height:38px;display:flex;align-items:center;justify-content:center;color:#a190c9;text-decoration:none;">
-                <i class="fa fa-keyboard" style="font-size:14px;"></i>
+            <a href="#" class="right-nav-link" data-section="rightHotkeys" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:10px 6px;width:58px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:10px;font-weight:700;color:#7c86a3;text-decoration:none;">
+                <i class="fa fa-keyboard" style="font-size:18px;"></i>Hotkeys
             </a>
         </div>
     </div>
@@ -288,7 +386,7 @@
 .tf-option-btn { padding:6px 4px;border-radius:6px;font-size:12px;border:none;cursor:pointer;background:transparent;color:#a190c9; }
 .tf-option-btn--active { background:#f2a93b;color:#fff; }
 .rail-nav-btn--active { border-color:#4f8ef7 !important;color:#4f8ef7 !important; }
-.right-nav-link--active { border-color:#f2a93b !important;color:#f2a93b !important; }
+.right-nav-link--active { border-color:#4f8ef7 !important;color:#4f8ef7 !important; }
 </style>
 
 <script type="application/json" id="trading-dashboard-config">
@@ -306,6 +404,7 @@
     'initialProfitMargin' => $data->asset_profit_margin,
     'userId' => auth()->id(),
     'assetStatusUrl' => route('assets.status'),
+    'historyUrl' => route('assets.history'),
 ]) !!}
 </script>
 

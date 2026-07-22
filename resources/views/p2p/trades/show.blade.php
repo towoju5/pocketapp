@@ -10,7 +10,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="w-4/5 mx-auto space-y-4">
+    <div class="mx-auto space-y-4">
         @if (session('success'))
             <div class="bg-[#16c087]/10 border-l-4 border-[#16c087] text-[#16c087] p-4 rounded-lg">{{ session('success') }}</div>
         @endif

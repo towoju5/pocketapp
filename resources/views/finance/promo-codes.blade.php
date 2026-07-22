@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="w-4/5 mx-auto">
+    <div class="mx-auto">
         @include('partials.finance-header')
 
         <div class="flex gap-5 mt-6 flex-col lg:flex-row">

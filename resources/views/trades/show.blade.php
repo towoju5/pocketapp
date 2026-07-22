@@ -3,7 +3,7 @@
 @section('title', 'Trade Details')
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="w-4/5 mx-auto">
+    <div class="mx-auto">
         <div class="bg-[#171e33] border border-[#2a3350] rounded-xl overflow-hidden">
             <div class="flex justify-between items-center p-4 bg-[#1c243c] border-b border-[#2a3350]">
                 <h5 class="text-lg font-semibold text-white">Trade #{{ $trade->id }}</h5>

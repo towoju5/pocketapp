@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->alias([
             'kyc.verified' => \App\Http\Middleware\EnsureKycVerified::class,
+            'collector.secret' => \App\Http\Middleware\VerifyCollectorSecret::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

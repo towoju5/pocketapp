@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="w-4/5 mx-auto">
+    <div class="mx-auto">
         <h1 class="text-xl font-bold text-white mb-6">Achievements</h1>
 
         <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">

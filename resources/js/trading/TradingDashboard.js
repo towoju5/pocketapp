@@ -124,6 +124,8 @@ export default class TradingDashboard {
             sourceDot: document.getElementById('sourceDot'),
             sourceLabel: document.getElementById('sourceLabel'),
             assetUnavailableBanner: document.getElementById('assetUnavailableBanner'),
+            tradeControlsWrap: document.getElementById('tradeControlsWrap'),
+            assetOfflineNotice: document.getElementById('assetOfflineNotice'),
             ctaButtons: document.querySelectorAll('.cta-button'),
 
             tfBtn: document.getElementById('tfBtn'),
@@ -148,6 +150,21 @@ export default class TradingDashboard {
             railButtons: document.querySelectorAll('.right-nav-link'),
             mainContent: document.getElementById('mainContent'),
             hiddenSections: document.getElementById('hidden-sections'),
+
+            timeFieldTrigger: document.getElementById('timeFieldTrigger'),
+            timePickerPanel: document.getElementById('timePickerPanel'),
+            timePickerClose: document.getElementById('timePickerClose'),
+            tpHH: document.getElementById('tpHH'),
+            tpMM: document.getElementById('tpMM'),
+            tpSS: document.getElementById('tpSS'),
+            tpStepButtons: document.querySelectorAll('.tp-step'),
+            tpPresetButtons: document.querySelectorAll('.tp-preset'),
+
+            amountFieldTrigger: document.getElementById('amountFieldTrigger'),
+            amountPickerPanel: document.getElementById('amountPickerPanel'),
+            amountPickerClose: document.getElementById('amountPickerClose'),
+            apDisplay: document.getElementById('apDisplay'),
+            apKeyButtons: document.querySelectorAll('.ap-key'),
         };
     }
 
@@ -185,6 +202,24 @@ export default class TradingDashboard {
         this.el.amountStepUp?.addEventListener('click', () => this._stepAmount(5));
         this.el.amountPresetButtons.forEach((btn) => {
             btn.addEventListener('click', () => this._setAmount(parseFloat(btn.dataset.amount)));
+        });
+
+        this.el.timeFieldTrigger?.addEventListener('click', () => this._toggleTimePicker());
+        this.el.timePickerClose?.addEventListener('click', () => this._toggleTimePicker(false));
+        this.el.tpStepButtons.forEach((btn) => {
+            btn.addEventListener('click', () => this._stepTimePickerUnit(btn.dataset.tpUnit, parseInt(btn.dataset.tpDir, 10)));
+        });
+        this.el.tpPresetButtons.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                this._setDuration(parseInt(btn.dataset.seconds, 10));
+                this._syncTimePickerDisplay();
+            });
+        });
+
+        this.el.amountFieldTrigger?.addEventListener('click', () => this._toggleAmountPicker());
+        this.el.amountPickerClose?.addEventListener('click', () => this._toggleAmountPicker(false));
+        this.el.apKeyButtons.forEach((btn) => {
+            btn.addEventListener('click', () => this._onApKey(btn.dataset.apKey));
         });
 
         this.el.ctaButtons.forEach((btn) => {
@@ -440,9 +475,12 @@ export default class TradingDashboard {
         this._persistChartPrefs();
     }
 
-    _toggleAutoscroll() {
-        this.state.autoScroll = !this.state.autoScroll;
+    _toggleAutoscroll(force) {
+        this.state.autoScroll = typeof force === 'boolean' ? force : !this.state.autoScroll;
         this.el.toggleAutoscrollBtn?.classList.toggle('toggle--on', this.state.autoScroll);
+        // Re-centering immediately on re-enable means the user doesn't have
+        // to wait for the next price tick to jump back to center.
+        if (this.state.autoScroll) this.chart?.scrollToRealTime();
     }
 
     _toggleGrid() {
@@ -645,18 +683,85 @@ export default class TradingDashboard {
         this._updatePayoutDisplay();
     }
 
+    // ---- mobile time/amount picker overlays ----
+
+    _toggleTimePicker(force) {
+        const next = typeof force === 'boolean' ? force : !!this.el.timePickerPanel?.classList.contains('hidden');
+        if (next) this._toggleAmountPicker(false);
+        this.el.timePickerPanel?.classList.toggle('hidden', !next);
+        if (next) this._syncTimePickerDisplay();
+    }
+
+    _syncTimePickerDisplay() {
+        const sec = this.state.tradeDurationSec;
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
+        if (this.el.tpHH) this.el.tpHH.textContent = String(h).padStart(2, '0');
+        if (this.el.tpMM) this.el.tpMM.textContent = String(m).padStart(2, '0');
+        if (this.el.tpSS) this.el.tpSS.textContent = String(s).padStart(2, '0');
+    }
+
+    _stepTimePickerUnit(unit, dir) {
+        const deltas = { h: 3600, m: 60, s: 1 };
+        const delta = (deltas[unit] || 1) * dir;
+        this.state.tradeDurationSec = Math.max(5, this.state.tradeDurationSec + delta);
+        if (this.el.durationInput) this.el.durationInput.value = fmtDuration(this.state.tradeDurationSec);
+        this._syncTimePickerDisplay();
+    }
+
+    _toggleAmountPicker(force) {
+        const next = typeof force === 'boolean' ? force : !!this.el.amountPickerPanel?.classList.contains('hidden');
+        if (next) this._toggleTimePicker(false);
+        this.el.amountPickerPanel?.classList.toggle('hidden', !next);
+        if (next) {
+            this.state.apBuffer = String(this.state.tradeAmount);
+            this._syncAmountPickerDisplay();
+        }
+    }
+
+    _syncAmountPickerDisplay() {
+        if (this.el.apDisplay) this.el.apDisplay.textContent = `$${this.state.apBuffer || '0'}`;
+    }
+
+    _onApKey(key) {
+        let buf = this.state.apBuffer ?? String(this.state.tradeAmount);
+        if (key === 'back') {
+            buf = buf.length > 1 ? buf.slice(0, -1) : '';
+        } else if (key === '.') {
+            if (!buf.includes('.')) buf += (buf === '' ? '0.' : '.');
+        } else {
+            buf += key;
+        }
+        this.state.apBuffer = buf;
+        this._syncAmountPickerDisplay();
+
+        const v = parseFloat(buf);
+        if (!Number.isNaN(v)) {
+            this.state.tradeAmount = Math.max(1, v);
+            if (this.el.amountInput) this.el.amountInput.value = this.state.tradeAmount;
+            this._updatePayoutDisplay();
+        }
+    }
+
     _updatePayoutDisplay(marginOverride) {
         const asset = this.assetsBySymbol.get(this.state.activeAssetSymbol);
         // asset_profit_margin is a fraction (0.92 == 92%), not a 0-100 percentage.
         const margin = parseFloat(marginOverride ?? asset?.asset_profit_margin ?? this.options.initialProfitMargin ?? 0);
         const pct = (margin * 100).toFixed(0);
+        const profit = margin * this.state.tradeAmount;
         if (this.el.profitPercentage) this.el.profitPercentage.textContent = `+${pct}%`;
         if (this.el.payout) {
-            const profit = margin * this.state.tradeAmount;
             this.el.payout.textContent = `$${profit.toFixed(2)}`;
         }
         document.getElementById('ctaPercentUp')?.replaceChildren(document.createTextNode(`${pct}%`));
         document.getElementById('ctaPercentDown')?.replaceChildren(document.createTextNode(`${pct}%`));
+
+        // Compact mobile summary row (see resources/views/__dash.blade.php) —
+        // purely additive, only present in the mobile layout markup.
+        document.getElementById('profitPercentageMobile')?.replaceChildren(document.createTextNode(`+${pct}%`));
+        document.getElementById('profitMobile')?.replaceChildren(document.createTextNode(`+$${profit.toFixed(2)}`));
+        document.getElementById('payoutTotalMobile')?.replaceChildren(document.createTextNode(`$${(this.state.tradeAmount + profit).toFixed(2)}`));
     }
 
     async _submitTrade(direction) {
@@ -670,7 +775,7 @@ export default class TradingDashboard {
         try {
             const formData = new FormData(this.el.tradeForm);
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-            const res = await fetch(this.el.tradeForm.action, {
+            const res = await fetch(this.el.tradeForm.getAttribute('action'), {
                 method: 'POST',
                 headers: {
                     'Accept': 'application/json',
@@ -860,12 +965,17 @@ export default class TradingDashboard {
             onOrderTick: (price, epochMs) => this._onOrderTick(price, epochMs),
             onAvailabilityChange: (symbol, available) => this._onAssetAvailabilityChange(symbol, available),
             onDrawingsChanged: () => this._persistDrawings(),
+            // Manually panning the chart breaks the center-follow lock, same
+            // as clicking the "Enable autoscroll" toggle off — matches how
+            // real trading platforms stop auto-centering once you've dragged.
+            onUserDrag: () => this._toggleAutoscroll(false),
             pricePrecision: this.options.initialPricePrecision || 5,
             chartType: this.state.currentChartType,
             showArea: this.state.showArea,
             periodSeconds: this.state.periodSeconds,
             colorScheme: this.state.colorScheme,
             showGrid: this.state.showGrid,
+            historyUrl: this.options.historyUrl,
         });
         this.el.toggleAreaBtn?.classList.toggle('toggle--on', this.state.showArea);
         this.el.toggleGridBtn?.classList.toggle('toggle--on', this.state.showGrid);
@@ -890,6 +1000,12 @@ export default class TradingDashboard {
         if (symbol !== this.state.activeAssetSymbol) return;
         this.el.assetUnavailableBanner?.classList.toggle('hidden', available);
         this.el.ctaButtons.forEach((btn) => { btn.disabled = !available; });
+
+        // Offline: swap the whole payout+BUY/SELL block out for a dedicated
+        // notice rather than just disabling the buttons in place.
+        this.el.tradeControlsWrap?.classList.toggle('hidden', !available);
+        this.el.assetOfflineNotice?.classList.toggle('hidden', available);
+        this.el.assetOfflineNotice?.classList.toggle('flex', !available);
     }
 
     // ---- backend asset online/offline status ----

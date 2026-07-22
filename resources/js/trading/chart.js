@@ -1,19 +1,21 @@
 import { init, dispose } from 'klinecharts';
 
-const REST_HISTORY_URL = 'https://iqcent.com/trade-api/history';
-const WS_URL = 'wss://iqcent.com/trade-api-ws/api/ws/price';
 const MAX_CANDLES = 500;
-const HISTORY_WINDOW_SECONDS = 3600 * 24;
 
 /**
- * Owns one iqcent REST+WS feed for a single asset symbol. Kept alive for as
- * long as its tab is open, independent of whether it's the currently active
- * (visible/tradeable) tab — this is what lets switching tabs be instant.
+ * Owns one asset's candle/line buffers, fed by ticks the ChartManager routes
+ * to it from the app's own backend broadcast (see ChartManager._initBroadcast)
+ * instead of each tab opening its own connection to iqcent — every user's
+ * chart is driven by the exact same server-relayed stream this way. Kept
+ * alive for as long as its tab is open, independent of whether it's the
+ * currently active (visible/tradeable) tab — this is what lets switching
+ * tabs be instant.
  */
 export class AssetFeed {
-    constructor(symbol, periodSeconds, onTick) {
+    constructor(symbol, periodSeconds, onTick, historyUrl) {
         this.symbol = symbol;
         this.periodSeconds = periodSeconds;
+        this.historyUrl = historyUrl;
         this.candles = [];
         this.haCandles = [];
         // Independent 1-second-resolution buffer used only for the 'line'/area
@@ -28,51 +30,27 @@ export class AssetFeed {
         this.chartCallback = null;
         this.chartCallbackType = 'candles';
         this._closed = false;
-        this._reconnectTimer = null;
-        this.ws = null;
         this.hasReceivedData = false;
         this.lastPrice = null;
-        this._connect();
         // Keep the current candle/time-axis moving forward every second even
         // between price ticks, so the chart never looks frozen while a trade
         // countdown is running.
         this._clockTimer = setInterval(() => this._advanceClock(), 1000);
     }
 
-    _connect() {
-        this.ws = new WebSocket(WS_URL);
-        this.ws.onopen = () => {
-            this.ws.send(JSON.stringify({ id: this.symbol, param: 'Option', operation: 'SUBSCRIBE.TICK' }));
-        };
-        this.ws.onmessage = (event) => this._handleMessage(event);
-        this.ws.onerror = () => {};
-        this.ws.onclose = () => {
-            if (this._closed) return;
-            this._reconnectTimer = setTimeout(() => this._connect(), 3000);
-        };
-    }
-
-    _handleMessage(event) {
-        let message;
-        try {
-            message = JSON.parse(event.data);
-        } catch (e) {
-            return;
-        }
-        if (!message || typeof message.p !== 'number' || typeof message.t !== 'number') return;
-
+    /** Called by ChartManager whenever a broadcast tick for this symbol arrives. */
+    ingestTick(price, epochMs) {
         this.hasReceivedData = true;
-        const price = parseFloat(message.p.toFixed(6));
         this.lastPrice = price;
-        const rawBar = this._pushOrUpdateCandle(price, message.t);
-        this._pushLinePoint(price, message.t);
+        const rawBar = this._pushOrUpdateCandle(price, epochMs);
+        this._pushLinePoint(price, epochMs);
 
         // Unconditional, first: this must never be skipped or delayed by chart
         // rendering — the trade panel's live price/availability display depends
         // on it firing every tick. Trade entry pricing itself is server-side
         // (PriceFeedService), this feed is purely for chart/UI display now.
         try {
-            this.onTick(this, message, price);
+            this.onTick(this, price, epochMs);
         } catch (e) {
             console.error('[AssetFeed] onTick handler failed', e);
         }
@@ -159,50 +137,47 @@ export class AssetFeed {
     }
 
     async fetchHistory() {
-        const from = Math.floor((Date.now() - HISTORY_WINDOW_SECONDS * 1000) / 1000);
-        const to = Math.floor(Date.now() / 1000);
-        const symbolParam = encodeURIComponent(`${this.symbol}_Strike`);
-        const url = `${REST_HISTORY_URL}?from=${from}&to=${to}&symbol=${symbolParam}&firstDataRequest=true&resolution=1`;
+        if (!this.historyUrl) return this.candles;
+        const params = new URLSearchParams({ symbol: this.symbol });
+        const url = `${this.historyUrl}?${params.toString()}`;
+
+        // History is a nice-to-have backfill, not something the chart's
+        // first paint should ever wait on for long — ticks are already
+        // flowing over the broadcast channel independently of this. Bounded
+        // so a slow/stuck upstream (iqcent via the collector) can't hold the
+        // chart's initial render hostage.
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 1500);
 
         try {
-            const res = await fetch(url);
+            const res = await fetch(url, { signal: controller.signal });
             const data = await res.json();
-            if (data && Array.isArray(data.result) && data.result.length > 0) {
+            // Raw [epochMs, price] ticks from our own rolling cache (see
+            // PriceFeedService::getHistoryTicks) — replayed oldest-first
+            // through the same bucketing the live feed uses, so they come
+            // out correctly shaped for whatever period is currently
+            // selected instead of needing a separate candle format.
+            const ticks = Array.isArray(data?.ticks) ? data.ticks : [];
+            if (ticks.length > 0) {
                 this.hasReceivedData = true;
-                this.candles = data.result.map((c) => ({
-                    timestamp: c.time,
-                    open: c.open,
-                    high: c.high,
-                    low: c.low,
-                    close: c.close,
-                    volume: 0,
-                }));
-                this._rebuildHeikinFromScratch();
-                // Seed the line/area buffer from the same history so it has
-                // context to show, not just live points from now onward.
-                this.linePoints = this.candles.map((c) => ({ ...c }));
+                ticks.sort((a, b) => a[0] - b[0]);
+                for (const [epochMs, price] of ticks) {
+                    this._pushOrUpdateCandle(price, epochMs);
+                    this._pushLinePoint(price, epochMs);
+                    this.lastPrice = price;
+                }
             }
         } catch (e) {
             console.error('[AssetFeed] history fetch failed', e);
+        } finally {
+            clearTimeout(timeout);
         }
         return this.candles;
     }
 
-    _rebuildHeikinFromScratch() {
-        this.haCandles = [];
-        this._haPrevOpen = null;
-        this._haPrevClose = null;
-        this._haCurOpen = null;
-        for (const c of this.candles) {
-            this._pushHeikinCandle(c, true);
-        }
-    }
-
     close() {
         this._closed = true;
-        if (this._reconnectTimer) clearTimeout(this._reconnectTimer);
         if (this._clockTimer) clearInterval(this._clockTimer);
-        if (this.ws) this.ws.close();
     }
 }
 
@@ -240,19 +215,30 @@ function hexToRgba(hex, alpha) {
  */
 export class ChartManager {
     constructor(container, {
-        onOrderTick, onAvailabilityChange, onDrawingsChanged, pricePrecision = 5,
+        onOrderTick, onAvailabilityChange, onDrawingsChanged, onUserDrag, pricePrecision = 5,
         chartType = 'candles', showArea = true, periodSeconds = 60,
-        colorScheme = 'classic', showGrid = true,
+        colorScheme = 'classic', showGrid = true, historyUrl = null,
     } = {}) {
         this.container = container;
+        this.historyUrl = historyUrl;
         this.chart = init(container);
-        this._resizeObserver = new ResizeObserver(() => this.chart.resize());
+        this._resizeObserver = new ResizeObserver(() => {
+            this.chart.resize();
+            this._applyCenterOffset();
+        });
         this._resizeObserver.observe(container);
         if (getComputedStyle(container).position === 'static') {
             container.style.position = 'relative';
         }
         this.feeds = new Map();
         this.activeSymbol = null;
+        this.onUserDrag = onUserDrag || (() => {});
+        // The user physically dragging/panning the chart should break the
+        // center-lock until the caller re-enables auto-follow (see
+        // TradingDashboard's autoScroll toggle) — onPaneDrag only fires for
+        // real pointer-driven pans, not our own programmatic scrolls, so it
+        // won't fight with _applyCenterOffset()/scrollToRealTime() below.
+        this.chart.subscribeAction('onPaneDrag', () => this.onUserDrag());
         this.periodSeconds = periodSeconds;
         this.periodObj = periodSecondsToKlinePeriod(periodSeconds);
         this.chartType = chartType;
@@ -307,6 +293,29 @@ export class ChartManager {
                 if (feed) feed.chartCallback = null;
             },
         });
+        this._applyCenterOffset();
+        this._initBroadcast();
+    }
+
+    /**
+     * One shared subscription to the backend's own price broadcast (see
+     * AssetPriceBatchUpdated/collector/index.js) instead of each AssetFeed
+     * opening its own connection to iqcent — every open tab's ticks arrive
+     * over this single channel and get routed to whichever feed matches the
+     * symbol. Batched: one event can carry many ticks (possibly for many
+     * symbols) from a single collector flush.
+     */
+    _initBroadcast() {
+        if (!window.Echo) return;
+        window.Echo.channel('asset-prices').listen('.prices-updated', (e) => {
+            (e.ticks || []).forEach((tick) => this._onBroadcastTick(tick));
+        });
+    }
+
+    _onBroadcastTick({ symbol, price, t }) {
+        const feed = this.feeds.get(symbol);
+        if (!feed) return;
+        feed.ingestTick(price, t || Date.now());
     }
 
     _candlesForType(feed) {
@@ -358,12 +367,12 @@ export class ChartManager {
     /** Ensure a feed exists for `symbol`, opening its WS connection if new. */
     openTab(symbol) {
         if (this.feeds.has(symbol)) return this.feeds.get(symbol);
-        const feed = new AssetFeed(symbol, this.periodSeconds, (feed, message, price) => {
+        const feed = new AssetFeed(symbol, this.periodSeconds, (feed, price, epochMs) => {
             if (feed.symbol === this.activeSymbol) {
-                this.onOrderTick(price, message.t);
+                this.onOrderTick(price, epochMs);
                 this.onAvailabilityChange(feed.symbol, true);
             }
-        });
+        }, this.historyUrl);
         this.feeds.set(symbol, feed);
         return feed;
     }
@@ -387,6 +396,9 @@ export class ChartManager {
         this.chart.setPeriod(this.periodObj);
         this._scheduleAvailabilityCheck(symbol);
         this._redrawExpiryLines();
+        // Ensure the newly-loaded symbol opens centered (not klinecharts'
+        // default right-anchored real-time position) on first load/tab switch.
+        this.scrollToRealTime();
     }
 
     /**
@@ -625,7 +637,22 @@ export class ChartManager {
         this._applyStyles();
     }
 
+    /**
+     * Keeps the latest/current price bar centered horizontally in the pane
+     * (rather than klinecharts' default right-anchored real-time position),
+     * matching the reference design where the price sits mid-chart with
+     * empty look-ahead space to the right. Recomputed on resize.
+     */
+    _applyCenterOffset() {
+        const width = this.container?.clientWidth || 0;
+        if (!width) return;
+        const half = Math.round(width / 2);
+        this.chart.setMaxOffsetRightDistance(half);
+        this.chart.setOffsetRightDistance(half);
+    }
+
     scrollToRealTime() {
+        this._applyCenterOffset();
         this.chart.scrollToRealTime();
     }
 

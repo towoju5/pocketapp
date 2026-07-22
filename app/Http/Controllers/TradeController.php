@@ -165,9 +165,9 @@ class TradeController extends Controller
         return view('trades.show', compact('trade'));
     }
 
-    public function store(Request $request)
+    public function store(Request $request, PriceFeedService $priceFeed)
     {
-        return $this->placeTrade($request);
+        return $this->placeTrade($request, $priceFeed);
     }
 
     public function socialTrades()

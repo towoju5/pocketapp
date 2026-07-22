@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'price_collector' => [
+        'secret' => env('PRICE_COLLECTOR_SECRET'),
+    ],
+
 ];

@@ -4,7 +4,7 @@
 
 @section('content')
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="w-4/5 mx-auto">
+    <div class="mx-auto">
         <h1 class="text-xl font-bold text-white mb-6">Social Trading</h1>
 
         <div class="flex gap-2 mb-6">

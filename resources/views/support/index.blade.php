@@ -13,7 +13,7 @@
 </style>
 
 <div class="flex-1 overflow-y-auto p-6">
-    <div class="w-4/5 mx-auto">
+    <div class="mx-auto">
         <div class="flex justify-between items-end flex-wrap gap-4 mb-6">
             <h1 class="text-xl font-bold text-white m-0">Help Desk</h1>
             <a href="{{ route('support-tickets.create') }}" class="btn-go">New Ticket</a>

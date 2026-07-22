@@ -72,6 +72,19 @@
                 <a href="{{ route('support-tickets.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Support Tickets</a>
                 <a href="{{ route('notifications.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Notifications</a>
             </div>
+            {{-- Consolidated "More" menu — mobile bottom nav only shows the
+                 major tabs (Trading/Finance/Settings/Profile); everything
+                 else lives behind this one entry. --}}
+            <div class="flyout-section hidden" data-flyout-for="more">
+                <a href="{{ route('achievements.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Achievements / Rewards</a>
+                <a href="{{ route('plans.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Investment Plans</a>
+                <a href="{{ route('tasks.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Tasks</a>
+                <a href="{{ route('tournaments.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Tournaments</a>
+                <a href="{{ route('chat.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Chat</a>
+                <a href="{{ route('referrals.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Referrals</a>
+                <a href="{{ route('support-tickets.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Support Tickets</a>
+                <a href="{{ route('notifications.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Notifications</a>
+            </div>
         </div>
     </div>
 </div>

@@ -123,6 +123,7 @@ class HomeController extends Controller
         return response()->json($status);
     }
 
+
     public function get_asset_history($ticker, $isOTC = true)
     {
         $symbol = $ticker . "_Strike";
