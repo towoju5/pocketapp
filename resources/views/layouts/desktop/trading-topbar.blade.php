@@ -30,10 +30,9 @@
 
     <div class="relative">
         <button type="button" id="avatarMenuBtn" class="w-[34px] h-[34px] rounded-full flex items-center justify-center border-0 cursor-pointer overflow-hidden" style="background:#33406b;">
+            <i class="fa fa-user text-[#9aa4c2]"></i>
             @if($_user->avatar ?? null)
-                <img src="{{ $_user->avatar }}" alt="Avatar" class="w-full h-full object-cover">
-            @else
-                <i class="fa fa-user text-[#9aa4c2]"></i>
+                <img src="{{ $_user->avatar }}" alt="Avatar" class="absolute inset-0 w-full h-full object-cover" onerror="this.remove()">
             @endif
         </button>
         <div id="avatarMenu" class="hidden absolute top-14 right-0 z-40 w-[190px] bg-[#171e33] border border-[#2a3350] rounded-xl p-1.5" style="box-shadow:0 20px 60px rgba(0,0,0,0.4);">

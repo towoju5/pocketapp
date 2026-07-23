@@ -140,6 +140,20 @@ if (! function_exists('allowed_wallets')) {
     }
 }
 
+if (! function_exists('p2p_currencies')) {
+    /**
+     * Currencies a P2P offer's sell/buy sides can be denominated in. Purely
+     * descriptive/matching labels — escrow always settles from the maker's
+     * real USD wallet regardless of which pair is picked (see
+     * P2pOfferController::store()); the platform doesn't hold separate
+     * per-currency balances.
+     */
+    function p2p_currencies(): array
+    {
+        return ['USD', 'USDT', 'USDC', 'BTC', 'ETH', 'NGN'];
+    }
+}
+
 if (! function_exists('createSupportedWalletsForUser')) {
     function createSupportedWalletsForUser(\App\Models\User $user)
     {

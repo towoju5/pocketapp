@@ -66,6 +66,21 @@
         @if (session('success'))
             toastr.success("{!! session('success') !!}");
         @endif
+        {{-- ProfileController redirects flash 'status' (profile-updated,
+             photo-updated, ...) on success — nothing ever displayed it, so a
+             successful profile/avatar save gave zero visible feedback and
+             looked indistinguishable from a silent failure. --}}
+        @if (session('status'))
+            @php
+                $statusMessages = [
+                    'profile-updated' => 'Profile updated successfully.',
+                    'photo-updated' => 'Profile photo updated successfully.',
+                    'password-updated' => 'Password updated successfully.',
+                    'verification-link-sent' => 'Verification link sent.',
+                ];
+            @endphp
+            toastr.success("{!! $statusMessages[session('status')] ?? session('status') !!}");
+        @endif
     </script>
 
     @stack('js')

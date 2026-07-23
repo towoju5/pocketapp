@@ -47,7 +47,7 @@
 
             <div class="overflow-x-auto">
                 <div class="responsive-table">
-                <table class="w-full text-sm text-left">
+                <table class="w-full text-sm text-left p-2">
                     <thead>
                         <tr>
                             <th class="border-b border-[#2a3350] px-4 py-3 text-[#7c86a3] text-xs uppercase">Transaction ID</th>

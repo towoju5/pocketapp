@@ -253,8 +253,23 @@ class ProfileController extends Controller
         $user = auth()->user();
         $user = User::findOrFail($user->id);
 
-        if (array_key_exists($request->name, $user->config ?? [])) {
-            $config = $user->config;
+        // Recognized preference/settings keys always go into the config
+        // JSON blob — NOT just when the key already happens to exist there.
+        // Accounts created before a given key was added to the default
+        // config (e.g. 'default_language' predates some older signups) have
+        // no such key in their stored config, so array_key_exists() alone
+        // used to fail and fall through to `$user->$column = ...`, which
+        // tries to write a plain "default_language" column that doesn't
+        // exist on `users` — save() then 500s, silently, since the
+        // language-select's fetch() call never checked the response status.
+        $knownConfigKeys = [
+            'email_notifications', 'manager_updates', 'company_news', 'company_promotions',
+            'trading_analytics', 'trading_statements', 'education_emails', 'sound_notifications',
+            'default_language',
+        ];
+
+        if (in_array($request->name, $knownConfigKeys, true) || array_key_exists($request->name, $user->config ?? [])) {
+            $config = $user->config ?? [];
             $config[$request->name] = $request->value;
             $user->config = $config;
             $user->save();

@@ -15,24 +15,33 @@
             <form method="POST" action="{{ route('p2p-offers.store') }}" class="space-y-4">
                 @csrf
 
+                <div>
+                    <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Type</label>
+                    <select name="type" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" required>
+                        <option value="sell" {{ old('type', 'sell') === 'sell' ? 'selected' : '' }}>Sell</option>
+                        <option value="buy" {{ old('type') === 'buy' ? 'selected' : '' }}>Buy</option>
+                    </select>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Type</label>
-                        <select name="type" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" required>
-                            <option value="sell">Sell</option>
-                            <option value="buy">Buy</option>
+                        <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Sell Currency</label>
+                        <select name="sell_currency" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" required>
+                            @foreach ($currencies as $currency)
+                                <option value="{{ $currency }}" {{ old('sell_currency', 'USDT') === $currency ? 'selected' : '' }}>{{ $currency }}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div>
-                        <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Currency</label>
-                        <input type="text" name="currency" value="{{ old('currency', 'USD') }}" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" required>
+                        <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Buy Currency</label>
+                        <select name="buy_currency" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" required>
+                            @foreach ($currencies as $currency)
+                                <option value="{{ $currency }}" {{ old('buy_currency', 'USD') === $currency ? 'selected' : '' }}>{{ $currency }}</option>
+                            @endforeach
+                        </select>
                     </div>
                 </div>
-
-                <div>
-                    <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Wallet Slug</label>
-                    <input type="text" name="wallet_slug" value="{{ old('wallet_slug', 'qt_real_usd') }}" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" required>
-                </div>
+                <p class="text-xs text-[#7c86a3] -mt-2">e.g. sell USDT and buy USD — the price per unit below is in {{ old('buy_currency', 'USD') }} for each 1 {{ old('sell_currency', 'USDT') }}.</p>
 
                 <div>
                     <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Price per Unit</label>

@@ -33,13 +33,34 @@
             <div class="bg-[#f4534a]/10 border-l-4 border-[#f4534a] text-[#f4534a] p-4 rounded-lg mb-6">{{ session('error') }}</div>
         @endif
 
-        {{-- Buy/Sell filter — P2pOfferController::index already supports
-             ?type=buy|sell, it just had no UI wired to it. --}}
-        <div class="flex gap-2 mb-6">
+        {{-- Buy/Sell + currency-pair filters — P2pOfferController::index
+             already supported ?type=, it just had no UI wired to it; the
+             currency filters are new (sell_currency/buy_currency replace
+             the old single free-text `currency` field). --}}
+        <div class="flex flex-wrap items-center gap-3 mb-6">
             @php $currentType = request('type'); @endphp
-            <a href="{{ route('p2p-offers.index') }}" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors {{ !$currentType ? 'bg-[#4f8ef7] text-white' : 'bg-[#1c243c] border border-[#2a3350] text-[#7c86a3]' }}">All Offers</a>
-            <a href="{{ route('p2p-offers.index', ['type' => 'buy']) }}" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors {{ $currentType === 'buy' ? 'bg-[#16c087] text-white' : 'bg-[#1c243c] border border-[#2a3350] text-[#7c86a3]' }}">Buy</a>
-            <a href="{{ route('p2p-offers.index', ['type' => 'sell']) }}" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors {{ $currentType === 'sell' ? 'bg-[#f4534a] text-white' : 'bg-[#1c243c] border border-[#2a3350] text-[#7c86a3]' }}">Sell</a>
+            <div class="flex gap-2">
+                <a href="{{ route('p2p-offers.index', request()->except('type')) }}" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors {{ !$currentType ? 'bg-[#4f8ef7] text-white' : 'bg-[#1c243c] border border-[#2a3350] text-[#7c86a3]' }}">All Offers</a>
+                <a href="{{ route('p2p-offers.index', array_merge(request()->all(), ['type' => 'buy'])) }}" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors {{ $currentType === 'buy' ? 'bg-[#16c087] text-white' : 'bg-[#1c243c] border border-[#2a3350] text-[#7c86a3]' }}">Buy</a>
+                <a href="{{ route('p2p-offers.index', array_merge(request()->all(), ['type' => 'sell'])) }}" class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors {{ $currentType === 'sell' ? 'bg-[#f4534a] text-white' : 'bg-[#1c243c] border border-[#2a3350] text-[#7c86a3]' }}">Sell</a>
+            </div>
+            <form method="GET" class="flex items-center gap-2">
+                @if ($currentType)
+                    <input type="hidden" name="type" value="{{ $currentType }}">
+                @endif
+                <select name="sell_currency" onchange="this.form.submit()" class="bg-[#1c243c] border border-[#2a3350] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#4f8ef7]">
+                    <option value="">Sell: Any</option>
+                    @foreach ($currencies as $currency)
+                        <option value="{{ $currency }}" {{ request('sell_currency') === $currency ? 'selected' : '' }}>Sell: {{ $currency }}</option>
+                    @endforeach
+                </select>
+                <select name="buy_currency" onchange="this.form.submit()" class="bg-[#1c243c] border border-[#2a3350] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#4f8ef7]">
+                    <option value="">Buy: Any</option>
+                    @foreach ($currencies as $currency)
+                        <option value="{{ $currency }}" {{ request('buy_currency') === $currency ? 'selected' : '' }}>Buy: {{ $currency }}</option>
+                    @endforeach
+                </select>
+            </form>
         </div>
 
         @if ($myOffers->isNotEmpty())
@@ -50,7 +71,7 @@
                         <div class="flex justify-between items-center gap-3 bg-[#1c243c] border-l-4 {{ $offer->type === 'buy' ? 'border-l-[#16c087]' : 'border-l-[#f4534a]' }} border-y border-r border-[#2a3350] rounded-lg px-4 py-3.5">
                             <div class="min-w-0">
                                 <span class="font-bold uppercase text-xs {{ $offer->type === 'buy' ? 'text-[#16c087]' : 'text-[#f4534a]' }}">{{ $offer->type }}</span>
-                                <div class="text-white text-sm truncate">{{ $offer->currency }} &bull; {{ formatPrice($offer->price_per_unit) }}/unit</div>
+                                <div class="text-white text-sm truncate">{{ $offer->sell_currency }} &rarr; {{ $offer->buy_currency }} &bull; {{ formatPrice($offer->price_per_unit) }}/unit</div>
                                 <div class="text-xs text-[#7c86a3] truncate">{{ formatPrice($offer->available_amount) }} available</div>
                             </div>
                             <div class="flex flex-col gap-2 items-end flex-shrink-0">
@@ -72,7 +93,7 @@
             @forelse ($offers as $offer)
                 <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-5 flex flex-col hover:border-[#4f8ef7]/50 transition-colors">
                     <div class="flex justify-between items-center mb-4">
-                        <span class="px-2.5 py-1 rounded-md text-xs font-bold uppercase {{ $offer->type === 'buy' ? 'bg-[#16c087]/15 text-[#16c087]' : 'bg-[#f4534a]/15 text-[#f4534a]' }}">{{ $offer->type }} {{ $offer->currency }}</span>
+                        <span class="px-2.5 py-1 rounded-md text-xs font-bold uppercase {{ $offer->type === 'buy' ? 'bg-[#16c087]/15 text-[#16c087]' : 'bg-[#f4534a]/15 text-[#f4534a]' }}">{{ $offer->type }} {{ $offer->sell_currency }}</span>
                         <div class="flex items-center gap-1.5 min-w-0">
                             <span class="w-6 h-6 rounded-full bg-[#33406b] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
                                 {{ strtoupper(substr($offer->maker->first_name ?? 'T', 0, 1)) }}
@@ -81,8 +102,9 @@
                         </div>
                     </div>
 
+                    <div class="text-sm font-semibold text-[#7c86a3] mb-2">{{ $offer->sell_currency }} <i class="fa fa-arrow-right text-[10px] mx-1"></i> {{ $offer->buy_currency }}</div>
                     <div class="text-2xl font-bold text-white mb-1">{{ formatPrice($offer->price_per_unit) }}</div>
-                    <div class="text-xs text-[#7c86a3] mb-4">per unit</div>
+                    <div class="text-xs text-[#7c86a3] mb-4">{{ $offer->buy_currency }} per {{ $offer->sell_currency }}</div>
 
                     <div class="flex flex-col gap-1.5 text-sm mb-4 pb-4 border-b border-[#2a3350]">
                         <div class="flex justify-between"><span class="text-[#7c86a3]">Limits</span><span class="text-[#d7dcea]">{{ formatPrice($offer->min_limit) }} &ndash; {{ formatPrice($offer->max_limit) }}</span></div>

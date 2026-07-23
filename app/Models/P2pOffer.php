@@ -14,6 +14,8 @@ class P2pOffer extends Model
         'type',
         'wallet_slug',
         'currency',
+        'sell_currency',
+        'buy_currency',
         'price_per_unit',
         'min_limit',
         'max_limit',

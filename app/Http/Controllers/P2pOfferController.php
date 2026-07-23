@@ -16,28 +16,33 @@ class P2pOfferController extends Controller
             ->where('status', 'active')
             ->where('user_id', '!=', auth()->id())
             ->when($request->type, fn ($q) => $q->where('type', $request->type))
-            ->when($request->currency, fn ($q) => $q->where('currency', $request->currency))
+            ->when($request->sell_currency, fn ($q) => $q->where('sell_currency', $request->sell_currency))
+            ->when($request->buy_currency, fn ($q) => $q->where('buy_currency', $request->buy_currency))
             ->latest()
             ->paginate(15);
 
         $myOffers = P2pOffer::where('user_id', auth()->id())->latest()->get();
+        $currencies = p2p_currencies();
 
-        return view('p2p.offers.index', compact('offers', 'myOffers'));
+        return view('p2p.offers.index', compact('offers', 'myOffers', 'currencies'));
     }
 
     public function create(): View
     {
         $paymentMethods = PaymentMethod::where('is_active', true)->orderBy('name')->get();
+        $currencies = p2p_currencies();
 
-        return view('p2p.offers.create', compact('paymentMethods'));
+        return view('p2p.offers.create', compact('paymentMethods', 'currencies'));
     }
 
     public function store(Request $request): RedirectResponse
     {
+        $currencies = p2p_currencies();
+
         $validated = $request->validate([
             'type' => ['required', 'in:buy,sell'],
-            'wallet_slug' => ['required', 'string'],
-            'currency' => ['required', 'string', 'max:10'],
+            'sell_currency' => ['required', 'string', 'in:' . implode(',', $currencies), 'different:buy_currency'],
+            'buy_currency' => ['required', 'string', 'in:' . implode(',', $currencies)],
             'price_per_unit' => ['required', 'numeric', 'min:0.01'],
             'min_limit' => ['required', 'numeric', 'min:0.01'],
             'max_limit' => ['required', 'numeric', 'gte:min_limit'],
@@ -47,12 +52,20 @@ class P2pOfferController extends Controller
             'terms' => ['nullable', 'string', 'max:2000'],
         ]);
 
-        if (! auth()->user()->getWallet($validated['wallet_slug'])) {
-            return back()->withErrors(['wallet_slug' => 'Invalid wallet.'])->withInput();
-        }
-
+        // Escrow always settles from the maker's real-money wallet — the
+        // currency pair above is a descriptive/matching label only, not a
+        // selection of which of the platform's wallets to debit (the
+        // create-offer form used to show a raw "Wallet Slug" text input for
+        // this, which made no sense to a customer and had no relation to
+        // what currency they actually wanted to trade).
+        $validated['wallet_slug'] = 'qt_real_usd';
+        $validated['currency'] = $validated['buy_currency'];
         $validated['user_id'] = auth()->id();
         $validated['status'] = 'active';
+
+        if (! auth()->user()->getWallet($validated['wallet_slug'])) {
+            return back()->with('error', 'Your real-money wallet could not be found. Contact support.')->withInput();
+        }
 
         P2pOffer::create($validated);
 

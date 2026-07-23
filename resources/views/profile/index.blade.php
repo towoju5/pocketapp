@@ -23,13 +23,21 @@
     <div class="mx-auto min-w-0">
 
         <div class="flex items-center gap-4 mb-6 bg-[#171e33] border border-[#2a3350] rounded-xl p-5">
-            @if($user->avatar)
-                <img src="{{ $user->avatar }}" alt="Avatar" class="w-16 h-16 rounded-full object-cover flex-shrink-0 bg-[#33406b]">
-            @else
-                <div class="w-16 h-16 rounded-full bg-[#33406b] flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
-                    {{ strtoupper(substr($user->first_name ?? $user->username ?? 'U', 0, 1)) }}
-                </div>
-            @endif
+            {{-- The users.avatar column defaults every account to
+                 asset('assets/profile/default.png') at the DB level, but
+                 that file has never actually existed in public/assets — so
+                 $user->avatar is always truthy and a plain @if/@else here
+                 would permanently show a broken image for anyone who never
+                 uploaded a real photo. Rendering the initials as the base
+                 layer and letting a working avatar (real upload OR a fixed
+                 default file, whichever exists) cover it — with onerror
+                 removing the <img> — degrades gracefully either way. --}}
+            <div class="relative w-16 h-16 rounded-full bg-[#33406b] flex items-center justify-center text-white text-xl font-bold flex-shrink-0 overflow-hidden">
+                <span>{{ strtoupper(substr($user->first_name ?? $user->username ?? 'U', 0, 1)) }}</span>
+                @if($user->avatar)
+                    <img src="{{ $user->avatar }}" alt="Avatar" class="absolute inset-0 w-full h-full object-cover" onerror="this.remove()">
+                @endif
+            </div>
             <div class="flex-1 min-w-0">
                 <div class="text-lg font-bold text-white truncate">{{ trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: $user->username }}</div>
                 <div class="text-sm text-[#7c86a3] truncate">{{ $user->email }}</div>
@@ -58,7 +66,7 @@
 
             <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6">
                 <h3 class="text-white font-semibold mb-4">Account info</h3>
-                <form method="POST" action="{{ route('profile.update') }}" class="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
+                <form method="POST" action="{{ route('profile.update') }}" class="grid grid-cols-1 lg:grid-cols-2 gap-4 min-w-0">
                     @csrf
                     @method('PATCH')
                     <div>
@@ -313,7 +321,13 @@
             method: 'POST',
             headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json', 'Accept': 'application/json' },
             body: JSON.stringify({ name: 'default_language', value: this.value }),
-        }).then(() => toastr.success('Language updated.'));
+        })
+            .then((res) => {
+                if (!res.ok) throw new Error('Request failed');
+                return res.json();
+            })
+            .then(() => toastr.success('Language updated.'))
+            .catch(() => toastr.error('Failed to update language.'));
     });
 
     $(document).ready(function () {
