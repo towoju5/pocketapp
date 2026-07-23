@@ -135,12 +135,20 @@ echo "== 7. Collector dependencies (Node + Playwright/Chromium) =="
 echo
 echo "== 8. Installing/updating supervisor programs =="
 if command -v supervisorctl >/dev/null 2>&1; then
+    # The checked-in templates hardcode /var/www/pocketapp as the app path
+    # (directory=/command=/stdout_logfile= lines) — substitute in wherever
+    # this app actually lives so `supervisorctl reread` doesn't reject the
+    # whole batch with CANT_REREAD over a directory that doesn't exist here.
     SECRET_NOW="$(get_env PRICE_COLLECTOR_SECRET)"
-    sed "s/__PRICE_COLLECTOR_SECRET__/$SECRET_NOW/" \
+    sed -e "s/__PRICE_COLLECTOR_SECRET__/$SECRET_NOW/" -e "s|/var/www/pocketapp|$APP_ROOT|g" \
         "$APP_ROOT/deploy/supervisor/pocketapp-price-collector.conf" \
         > /etc/supervisor/conf.d/pocketapp-price-collector.conf
-    cp "$APP_ROOT/deploy/supervisor/pocketapp-reverb.conf" /etc/supervisor/conf.d/pocketapp-reverb.conf
-    cp "$APP_ROOT/deploy/supervisor/pocketapp-queue-worker.conf" /etc/supervisor/conf.d/pocketapp-queue-worker.conf
+    sed -e "s|/var/www/pocketapp|$APP_ROOT|g" \
+        "$APP_ROOT/deploy/supervisor/pocketapp-reverb.conf" \
+        > /etc/supervisor/conf.d/pocketapp-reverb.conf
+    sed -e "s|/var/www/pocketapp|$APP_ROOT|g" \
+        "$APP_ROOT/deploy/supervisor/pocketapp-queue-worker.conf" \
+        > /etc/supervisor/conf.d/pocketapp-queue-worker.conf
 
     supervisorctl reread
     supervisorctl update
