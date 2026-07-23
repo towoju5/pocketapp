@@ -3810,7 +3810,7 @@ class AssetSeeder extends Seeder
         
 
         $assets = (array)$assets;
-        DB::table('assets')->truncate();
+        DB::table('assets')->delete();
         foreach ($assets as $category => $asset) {
             if(str_contains('OTC', $asset['optionType'])) {
                 $isOtc = true;
