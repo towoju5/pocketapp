@@ -46,6 +46,7 @@
             </div>
 
             <div class="overflow-x-auto">
+                <div class="responsive-table">
                 <table class="w-full text-sm text-left">
                     <thead>
                         <tr>
@@ -60,6 +61,7 @@
                         @include('finance.partials.history-rows')
                     </tbody>
                 </table>
+                </div>
             </div>
             <div id="historyPagination" class="p-4">
                 {{ $transactions->links('pagination::tailwind') }}

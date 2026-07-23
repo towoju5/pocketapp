@@ -19,19 +19,23 @@
     $languages = ['en' => 'English', 'ru' => 'Русский', 'pt' => 'Português', 'es' => 'Español', 'fr' => 'Français'];
 @endphp
 
-<div class="flex-1 overflow-y-auto p-6">
-    <div class="mx-auto">
+<div class="flex-1 overflow-y-auto overflow-x-hidden p-4 sm:p-6">
+    <div class="mx-auto min-w-0">
 
         <div class="flex items-center gap-4 mb-6 bg-[#171e33] border border-[#2a3350] rounded-xl p-5">
-            <div class="w-16 h-16 rounded-full bg-[#33406b] flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
-                {{ strtoupper(substr($user->first_name ?? $user->username ?? 'U', 0, 1)) }}
-            </div>
-            <div class="flex-1">
-                <div class="text-lg font-bold text-white">{{ trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: $user->username }}</div>
-                <div class="text-sm text-[#7c86a3]">{{ $user->email }}</div>
+            @if($user->avatar)
+                <img src="{{ $user->avatar }}" alt="Avatar" class="w-16 h-16 rounded-full object-cover flex-shrink-0 bg-[#33406b]">
+            @else
+                <div class="w-16 h-16 rounded-full bg-[#33406b] flex items-center justify-center text-white text-xl font-bold flex-shrink-0">
+                    {{ strtoupper(substr($user->first_name ?? $user->username ?? 'U', 0, 1)) }}
+                </div>
+            @endif
+            <div class="flex-1 min-w-0">
+                <div class="text-lg font-bold text-white truncate">{{ trim(($user->first_name ?? '') . ' ' . ($user->last_name ?? '')) ?: $user->username }}</div>
+                <div class="text-sm text-[#7c86a3] truncate">{{ $user->email }}</div>
                 <div class="text-xs text-[#7c86a3]">Member since {{ $user->created_at->format('M Y') }}</div>
             </div>
-            <span class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f8ef7]/15 text-[#4f8ef7]">{{ $loyalty['tier'] }}</span>
+            <span class="px-3 py-1.5 rounded-lg text-xs font-bold bg-[#4f8ef7]/15 text-[#4f8ef7] flex-shrink-0">{{ $loyalty['tier'] }}</span>
         </div>
 
         <div class="flex flex-wrap gap-2 mb-6">
@@ -44,17 +48,17 @@
         <div class="profile-tab-panel {{ $activeTab === 'account' ? '' : 'hidden' }}" data-panel="account">
             <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6 mb-4">
                 <h3 class="text-white font-semibold mb-4">Avatar</h3>
-                <form action="{{ route('profile.photo.update') }}" method="POST" enctype="multipart/form-data" class="flex items-center gap-3">
+                <form action="{{ route('profile.photo.update') }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row sm:items-center gap-3">
                     @csrf
                     @method('PATCH')
-                    <input type="file" name="avatar" accept="image/*" class="text-sm text-[#d7dcea]">
-                    <button type="submit" class="bg-[#4f8ef7] text-white text-sm font-semibold px-4 py-2 rounded-lg">Upload</button>
+                    <input type="file" name="avatar" accept="image/*" class="w-full sm:w-auto min-w-0 text-sm text-[#d7dcea] file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:bg-[#1c243c] file:text-[#d7dcea] file:text-sm">
+                    <button type="submit" class="bg-[#4f8ef7] text-white text-sm font-semibold px-4 py-2 rounded-lg w-full sm:w-auto flex-shrink-0">Upload</button>
                 </form>
             </div>
 
             <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6">
                 <h3 class="text-white font-semibold mb-4">Account info</h3>
-                <form method="POST" action="{{ route('profile.update') }}" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <form method="POST" action="{{ route('profile.update') }}" class="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
                     @csrf
                     @method('PATCH')
                     <div>
@@ -147,6 +151,7 @@
 
             <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6 mb-4">
                 <h3 class="text-white font-semibold mb-4">Login history <span class="text-xs text-[#7c86a3] font-normal">(last 5)</span></h3>
+                <div class="responsive-table">
                 <table class="w-full text-sm text-left">
                     <thead class="text-[#7c86a3] text-xs uppercase">
                         <tr><th class="py-2">IP address</th><th class="py-2">Device</th><th class="py-2">Login</th><th class="py-2">Logout</th></tr>
@@ -154,18 +159,20 @@
                     <tbody class="text-[#d7dcea]">
                         @foreach($logins->take(5) as $login)
                             <tr class="border-t border-[#1c243c]">
-                                <td class="py-2">{{ $login->ip_address }}</td>
-                                <td class="py-2 truncate max-w-[200px]">{{ $login->user_agent }}</td>
-                                <td class="py-2">{{ optional($login->login_at)->format('Y-m-d H:i') }}</td>
-                                <td class="py-2">{{ $login->logout_at ? $login->logout_at->format('Y-m-d H:i') : '—' }}</td>
+                                <td class="py-2" data-label="IP address">{{ $login->ip_address }}</td>
+                                <td class="py-2 truncate max-w-[200px]" data-label="Device">{{ $login->user_agent }}</td>
+                                <td class="py-2" data-label="Login">{{ optional($login->login_at)->format('Y-m-d H:i') }}</td>
+                                <td class="py-2" data-label="Logout">{{ $login->logout_at ? $login->logout_at->format('Y-m-d H:i') : '—' }}</td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
+                </div>
             </div>
 
             <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6">
                 <h3 class="text-white font-semibold mb-4">Active sessions</h3>
+                <div class="responsive-table">
                 <table class="w-full text-sm text-left">
                     <thead class="text-[#7c86a3] text-xs uppercase">
                         <tr><th class="py-2">IP address</th><th class="py-2">Last activity</th><th class="py-2"></th></tr>
@@ -173,9 +180,9 @@
                     <tbody class="text-[#d7dcea]">
                         @foreach($sessions as $session)
                             <tr class="border-t border-[#1c243c]">
-                                <td class="py-2">{{ $session->ip_address }}</td>
-                                <td class="py-2">{{ \Carbon\Carbon::createFromTimestamp($session->last_activity)->format('Y-m-d H:i') }}</td>
-                                <td class="py-2">
+                                <td class="py-2" data-label="IP address">{{ $session->ip_address }}</td>
+                                <td class="py-2" data-label="Last activity">{{ \Carbon\Carbon::createFromTimestamp($session->last_activity)->format('Y-m-d H:i') }}</td>
+                                <td class="py-2" data-label="Action">
                                     @if($session->id === \Illuminate\Support\Facades\Session::getId())
                                         <span class="text-xs text-[#16c087] font-semibold">Current session</span>
                                     @else
@@ -190,6 +197,7 @@
                         @endforeach
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
 
@@ -261,6 +269,14 @@
 <style>
 .profile-tab-btn { background:#1c243c; border:1px solid #2a3350; color:#7c86a3; font-size:13px; font-weight:600; padding:8px 14px; border-radius:8px; cursor:pointer; }
 .profile-tab-btn--active { background:rgba(79,142,247,0.15); color:#4f8ef7; border-color:#4f8ef7; }
+
+/* .toggle/.toggle--on had no visual styling at all — the click handler
+   worked and persisted the change, but the button rendered as an
+   almost-invisible default browser button, so toggling looked broken. */
+.toggle { position:relative; width:40px; height:22px; flex-shrink:0; border:none; border-radius:999px; background:#2a3350; cursor:pointer; padding:0; transition:background .15s ease; }
+.toggle::after { content:''; position:absolute; top:2px; left:2px; width:18px; height:18px; border-radius:50%; background:#7c86a3; transition:transform .15s ease, background .15s ease; }
+.toggle.toggle--on { background:#4f8ef7; }
+.toggle.toggle--on::after { transform:translateX(18px); background:#fff; }
 </style>
 
 @push('js')

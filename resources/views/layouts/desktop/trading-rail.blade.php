@@ -76,6 +76,8 @@
                  major tabs (Trading/Finance/Settings/Profile); everything
                  else lives behind this one entry. --}}
             <div class="flyout-section hidden" data-flyout-for="more">
+                <a href="{{ route('p2p-offers.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">P2P Marketplace</a>
+                <a href="{{ route('p2p-trades.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">My P2P Trades</a>
                 <a href="{{ route('achievements.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Achievements / Rewards</a>
                 <a href="{{ route('plans.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Investment Plans</a>
                 <a href="{{ route('tasks.index') }}" class="block px-3.5 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Tasks</a>

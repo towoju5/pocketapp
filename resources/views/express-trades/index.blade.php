@@ -46,6 +46,7 @@
 
         <div class="bg-[#171e33] border border-[#2a3350] rounded-xl overflow-hidden">
             <div class="overflow-x-auto">
+                <div class="responsive-table">
                 <table class="w-full text-sm text-left">
                     <thead class="text-[#7c86a3] text-xs uppercase bg-[#1c243c]">
                         <tr>
@@ -65,24 +66,24 @@
                                 $pl = $trade->trade_status === 'win' ? ($trade->trade_profit - $trade->trade_amount) : ($trade->trade_status === 'lose' ? -$trade->trade_amount : 0);
                             @endphp
                             <tr class="border-t border-[#1c243c]">
-                                <td class="px-4 py-3 font-medium">{{ $trade->trade_currency ?? optional($trade->asset)->symbol ?? '—' }}</td>
-                                <td class="px-4 py-3 text-[#7c86a3]">{{ $trade->created_at->format('Y-m-d H:i') }}</td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-3 font-medium" data-label="Asset">{{ $trade->trade_currency ?? optional($trade->asset)->symbol ?? '—' }}</td>
+                                <td class="px-4 py-3 text-[#7c86a3]" data-label="Date/time">{{ $trade->created_at->format('Y-m-d H:i') }}</td>
+                                <td class="px-4 py-3" data-label="Direction">
                                     <span class="{{ $trade->trade_direction === 'up' ? 'text-[#16c087]' : 'text-[#f4534a]' }}">
                                         <i class="fa fa-arrow-{{ $trade->trade_direction === 'up' ? 'up' : 'down' }}"></i>
                                         {{ $trade->trade_direction === 'up' ? 'BUY' : 'SELL' }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3">${{ number_format((float) $trade->trade_amount, 2) }}</td>
-                                <td class="px-4 py-3">{{ number_format((float) $trade->start_price, 6) }}</td>
-                                <td class="px-4 py-3">{{ $trade->end_price ? number_format((float) $trade->end_price, 6) : '—' }}</td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-3" data-label="Amount">${{ number_format((float) $trade->trade_amount, 2) }}</td>
+                                <td class="px-4 py-3" data-label="Entry">{{ number_format((float) $trade->start_price, 6) }}</td>
+                                <td class="px-4 py-3" data-label="Exit">{{ $trade->end_price ? number_format((float) $trade->end_price, 6) : '—' }}</td>
+                                <td class="px-4 py-3" data-label="Result">
                                     <span class="px-2 py-1 rounded text-xs font-medium
                                         {{ $trade->trade_status === 'win' ? 'bg-[#16c087]/15 text-[#16c087]' : ($trade->trade_status === 'lose' ? 'bg-[#f4534a]/15 text-[#f4534a]' : 'bg-[#7c86a3]/15 text-[#7c86a3]') }}">
                                         {{ ucfirst($trade->trade_status) }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 font-semibold {{ $pl >= 0 ? 'text-[#16c087]' : 'text-[#f4534a]' }}">
+                                <td class="px-4 py-3 font-semibold {{ $pl >= 0 ? 'text-[#16c087]' : 'text-[#f4534a]' }}" data-label="P/L">
                                     {{ $pl >= 0 ? '+' : '' }}${{ number_format($pl, 2) }}
                                 </td>
                             </tr>
@@ -93,6 +94,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
             <div class="p-4 border-t border-[#2a3350]">
                 {{ $trades->links('pagination::tailwind') }}

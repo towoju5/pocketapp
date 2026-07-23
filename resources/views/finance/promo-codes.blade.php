@@ -21,6 +21,7 @@
             <div class="bg-[#171e33] border border-[#2a3350] p-5 w-full rounded-xl text-white">
                 <div class="text-lg font-semibold mb-3">Available promo codes</div>
                 <div class="overflow-x-auto">
+                    <div class="responsive-table">
                     <table class="w-full border-collapse text-left text-sm">
                         <thead class="border-b border-[#2a3350] text-[#7c86a3] text-xs uppercase">
                             <tr>
@@ -34,13 +35,13 @@
                         <tbody>
                             @forelse ($promoCodes as $promo)
                                 <tr class="border-b border-[#1c243c]">
-                                    <td class="px-4 py-3 font-mono">{{ $promo->promo_code }}</td>
-                                    <td class="px-4 py-3 text-[#16c087] font-semibold">
+                                    <td class="px-4 py-3 font-mono" data-label="Code">{{ $promo->promo_code }}</td>
+                                    <td class="px-4 py-3 text-[#16c087] font-semibold" data-label="Bonus">
                                         {{ $promo->promo_discount_type === 'percentage' ? $promo->promo_discount . '%' : '$' . number_format($promo->promo_discount, 2) }}
                                     </td>
-                                    <td class="px-4 py-3 text-[#7c86a3]">{{ \Illuminate\Support\Carbon::parse($promo->promo_start_date_time)->format('Y-m-d') }}</td>
-                                    <td class="px-4 py-3 text-[#7c86a3]">{{ \Illuminate\Support\Carbon::parse($promo->promo_ends_date_time)->format('Y-m-d') }}</td>
-                                    <td class="px-4 py-3">
+                                    <td class="px-4 py-3 text-[#7c86a3]" data-label="Valid from">{{ \Illuminate\Support\Carbon::parse($promo->promo_start_date_time)->format('Y-m-d') }}</td>
+                                    <td class="px-4 py-3 text-[#7c86a3]" data-label="Valid until">{{ \Illuminate\Support\Carbon::parse($promo->promo_ends_date_time)->format('Y-m-d') }}</td>
+                                    <td class="px-4 py-3" data-label="Action">
                                         @if($redeemedIds->contains($promo->id))
                                             <span class="bg-[#7c86a3]/15 text-[#7c86a3] px-3 py-1 rounded text-xs">Redeemed</span>
                                         @else
@@ -57,6 +58,7 @@
                             @endforelse
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
         </div>

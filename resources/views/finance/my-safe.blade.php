@@ -61,6 +61,7 @@
                     <h3 class="text-sm font-bold text-white">Safe Activity</h3>
                 </div>
                 <div class="overflow-x-auto">
+                    <div class="responsive-table">
                     <table class="w-full text-sm text-left">
                         <thead>
                             <tr class="text-[#7c86a3] text-xs uppercase">
@@ -72,9 +73,9 @@
                         <tbody class="text-[#d7dcea]">
                             @forelse($history as $item)
                                 <tr class="border-t border-[#1c243c]">
-                                    <td class="px-4 py-3 text-[#7c86a3]">{{ $item->created_at->format('Y-m-d H:i') }}</td>
-                                    <td class="px-4 py-3">{{ ucfirst($item->type) }}</td>
-                                    <td class="px-4 py-3 font-semibold {{ $item->type === 'deposit' ? 'text-[#16c087]' : 'text-[#f4534a]' }}">
+                                    <td class="px-4 py-3 text-[#7c86a3]" data-label="Date">{{ $item->created_at->format('Y-m-d H:i') }}</td>
+                                    <td class="px-4 py-3" data-label="Type">{{ ucfirst($item->type) }}</td>
+                                    <td class="px-4 py-3 font-semibold {{ $item->type === 'deposit' ? 'text-[#16c087]' : 'text-[#f4534a]' }}" data-label="Amount">
                                         {{ $item->type === 'deposit' ? '+' : '-' }}${{ number_format($item->amountFloat, 2) }}
                                     </td>
                                 </tr>
@@ -85,6 +86,7 @@
                             @endforelse
                         </tbody>
                     </table>
+                    </div>
                 </div>
                 @if($history->hasPages())
                     <div class="p-4">{{ $history->links('pagination::tailwind') }}</div>

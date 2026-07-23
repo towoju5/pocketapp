@@ -1,10 +1,10 @@
 @forelse ($transactions as $item)
     <tr class="border-t border-[#1c243c]">
-        <td class="px-4 py-3 font-mono text-xs text-[#7c86a3]">{{ $item->uuid }}</td>
-        <td class="px-4 py-3 text-[#7c86a3]">{{ $item->created_at->format('Y-m-d H:i:s') }}</td>
-        <td class="px-4 py-3">${{ number_format($item->amountFloat, 2) }}</td>
-        <td class="px-4 py-3">{{ ucfirst($item->type) }}</td>
-        <td class="px-4 py-3">
+        <td class="px-4 py-3 font-mono text-xs text-[#7c86a3]" data-label="Transaction ID">{{ $item->uuid }}</td>
+        <td class="px-4 py-3 text-[#7c86a3]" data-label="Date">{{ $item->created_at->format('Y-m-d H:i:s') }}</td>
+        <td class="px-4 py-3" data-label="Amount">${{ number_format($item->amountFloat, 2) }}</td>
+        <td class="px-4 py-3" data-label="Type">{{ ucfirst($item->type) }}</td>
+        <td class="px-4 py-3" data-label="Status">
             @if($item->confirmed)
                 <span class="bg-[#16c087]/15 text-[#16c087] px-2 py-1 rounded text-xs">Confirmed</span>
             @else

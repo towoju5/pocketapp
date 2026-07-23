@@ -22,6 +22,7 @@
 
         <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6">
             <div class="overflow-x-auto">
+                <div class="responsive-table">
                 <table class="w-full text-sm text-left">
                     <thead class="text-[#7c86a3] text-xs uppercase">
                         <tr>
@@ -36,17 +37,17 @@
                     <tbody class="text-[#d7dcea]">
                         @forelse ($subscriptions as $sub)
                             <tr class="border-t border-[#1c243c]">
-                                <td class="py-3 px-3 font-semibold text-white">{{ $sub->plan->name ?? 'Deleted plan' }}</td>
-                                <td class="py-3 px-3">{{ formatPrice($sub->stake_amount) }}</td>
-                                <td class="py-3 px-3 text-[#16c087] font-semibold">{{ formatPrice($sub->expected_payout) }}</td>
-                                <td class="py-3 px-3 text-xs text-[#7c86a3]">
+                                <td class="py-3 px-3 font-semibold text-white" data-label="Plan">{{ $sub->plan->name ?? 'Deleted plan' }}</td>
+                                <td class="py-3 px-3" data-label="Stake">{{ formatPrice($sub->stake_amount) }}</td>
+                                <td class="py-3 px-3 text-[#16c087] font-semibold" data-label="Projected Payout">{{ formatPrice($sub->expected_payout) }}</td>
+                                <td class="py-3 px-3 text-xs text-[#7c86a3]" data-label="Matures">
                                     @if ($sub->status === 'active')
                                         {{ $sub->matures_at->diffForHumans() }}
                                     @else
                                         {{ $sub->matures_at->format('d M, Y') }}
                                     @endif
                                 </td>
-                                <td class="py-3 px-3">
+                                <td class="py-3 px-3" data-label="Status">
                                     @php
                                         $statusColors = [
                                             'active' => 'bg-[#4f8ef7]/10 text-[#4f8ef7]',
@@ -56,7 +57,7 @@
                                     @endphp
                                     <span class="px-2.5 py-1 rounded text-[10px] font-bold uppercase {{ $statusColors[$sub->status] ?? 'bg-[#7c86a3]/10 text-[#7c86a3]' }}">{{ $sub->status }}</span>
                                 </td>
-                                <td class="py-3 px-3 text-right">
+                                <td class="py-3 px-3 text-right" data-label="Action">
                                     @if ($sub->status === 'matured' && $sub->plan && (is_null($sub->plan->max_reinvest_count) || $sub->reinvest_count < $sub->plan->max_reinvest_count))
                                         <form method="POST" action="{{ route('plans.reinvest', $sub) }}">
                                             @csrf
@@ -70,6 +71,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
 
             <div class="mt-5">{{ $subscriptions->links() }}</div>

@@ -145,10 +145,14 @@ if (! function_exists('createSupportedWalletsForUser')) {
     {
         foreach (allowed_wallets() as $walletData) {
             if (! $user->hasWallet($walletData['symbol'])) {
-                $user->createWallet([
+                $wallet = $user->createWallet([
                     'name' => $walletData['name'],
                     'slug' => $walletData['symbol'],
                 ]);
+
+                if (is_demo_wallet($walletData['symbol'])) {
+                    $wallet->deposit(_floatAmount(10000));
+                }
             }
         }
     }

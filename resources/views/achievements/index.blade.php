@@ -22,6 +22,7 @@
 
         <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6">
             <h2 class="text-white font-semibold mb-4">Leaderboard</h2>
+            <div class="responsive-table">
             <table class="w-full text-sm text-left">
                 <thead class="text-[#7c86a3] text-xs uppercase">
                     <tr><th class="py-2">Rank</th><th class="py-2">Trader</th><th class="py-2">Points</th></tr>
@@ -29,15 +30,16 @@
                 <tbody class="text-[#d7dcea]">
                     @forelse($leaderboard as $i => $entry)
                         <tr class="border-t border-[#1c243c]">
-                            <td class="py-2">#{{ $i + 1 }}</td>
-                            <td class="py-2">{{ $entry->user->username ?? $entry->user->first_name }}</td>
-                            <td class="py-2 font-semibold text-[#4f8ef7]">{{ $entry->points }}</td>
+                            <td class="py-2" data-label="Rank">#{{ $i + 1 }}</td>
+                            <td class="py-2" data-label="Trader">{{ $entry->user->username ?? $entry->user->first_name }}</td>
+                            <td class="py-2 font-semibold text-[#4f8ef7]" data-label="Points">{{ $entry->points }}</td>
                         </tr>
                     @empty
                         <tr><td colspan="3" class="py-6 text-center text-[#7c86a3]">No achievements unlocked yet.</td></tr>
                     @endforelse
                 </tbody>
             </table>
+            </div>
         </div>
     </div>
 </div>

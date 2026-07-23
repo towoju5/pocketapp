@@ -19,6 +19,7 @@
 
         <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6">
             <div class="overflow-x-auto">
+                <div class="responsive-table">
                 <table class="w-full text-left text-sm text-[#d7dcea]">
                     <thead>
                         <tr class="text-[#7c86a3] text-xs uppercase">
@@ -32,17 +33,18 @@
                     <tbody>
                         @forelse ($submissions as $sub)
                             <tr class="border-t border-[#2a3350]">
-                                <td class="py-3.5 px-4 text-white">{{ $sub->task->title ?? 'Deleted task' }}</td>
-                                <td class="py-3.5 px-4 text-xs text-[#7c86a3]">{{ $sub->submitted_date->format('d M, Y') }}</td>
-                                <td class="py-3.5 px-4 text-[#16c087] font-semibold">{{ formatPrice($sub->reward_amount) }}</td>
-                                <td class="py-3.5 px-4"><span class="status-badge status-{{ $sub->status }}">{{ $sub->status }}</span></td>
-                                <td class="py-3.5 px-4 text-xs text-[#7c86a3]">{{ $sub->admin_notes }}</td>
+                                <td class="py-3.5 px-4 text-white" data-label="Task">{{ $sub->task->title ?? 'Deleted task' }}</td>
+                                <td class="py-3.5 px-4 text-xs text-[#7c86a3]" data-label="Date">{{ $sub->submitted_date->format('d M, Y') }}</td>
+                                <td class="py-3.5 px-4 text-[#16c087] font-semibold" data-label="Reward">{{ formatPrice($sub->reward_amount) }}</td>
+                                <td class="py-3.5 px-4" data-label="Status"><span class="status-badge status-{{ $sub->status }}">{{ $sub->status }}</span></td>
+                                <td class="py-3.5 px-4 text-xs text-[#7c86a3]" data-label="Notes">{{ $sub->admin_notes }}</td>
                             </tr>
                         @empty
                             <tr><td colspan="5" class="text-center py-12 text-[#7c86a3] font-semibold">No submissions yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
             <div class="mt-5">{{ $submissions->links() }}</div>
         </div>

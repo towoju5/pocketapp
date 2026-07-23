@@ -126,3 +126,53 @@ body {
 .newbie-guide-todo-list-btn {
     --newbie-guide-todo-list-percentage: 60;
 } */
+
+/* Drop-in mobile card layout for plain data tables: wrap the existing
+   <table> in <div class="responsive-table"> and add data-label="Column
+   Name" to every <td> (matching its <th>) — no other markup changes
+   needed. Below 640px each <tr> renders as its own bordered card with
+   label/value pairs instead of a horizontally-scrolling table; at 640px+
+   it's an ordinary table. Matches the app's existing dark card tokens
+   (#171e33 fill, #2a3350 border, #7c86a3 muted label, #d7dcea value). */
+@media (max-width: 639.98px) {
+    .responsive-table table,
+    .responsive-table thead,
+    .responsive-table tbody,
+    .responsive-table tr,
+    .responsive-table td {
+        display: block;
+        width: 100%;
+    }
+    .responsive-table thead {
+        display: none;
+    }
+    .responsive-table tr {
+        background: #171e33;
+        border: 1px solid #2a3350;
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin-bottom: 10px;
+    }
+    .responsive-table td {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 6px 0;
+        border: none !important;
+        text-align: right;
+        color: #d7dcea;
+    }
+    .responsive-table td[data-label]::before {
+        content: attr(data-label);
+        font-size: 11px;
+        font-weight: 600;
+        color: #7c86a3;
+        text-align: left;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
+    .responsive-table td:empty {
+        display: none;
+    }
+}

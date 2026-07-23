@@ -11,6 +11,7 @@
 
         <div class="bg-[#171e33] border border-[#2a3350] rounded-xl overflow-hidden">
             <div class="overflow-x-auto">
+                <div class="responsive-table">
                 <table class="w-full text-sm text-left">
                     <thead class="text-[#7c86a3] text-xs uppercase bg-[#1c243c]">
                         <tr>
@@ -24,16 +25,16 @@
                     <tbody class="text-[#d7dcea]">
                         @forelse($payouts as $payout)
                             <tr class="border-t border-[#1c243c]">
-                                <td class="px-4 py-3 text-[#7c86a3]">{{ \Illuminate\Support\Carbon::parse($payout->payout_date_time)->format('Y-m-d H:i') }}</td>
-                                <td class="px-4 py-3 font-semibold">${{ number_format((float) $payout->payout_amount, 2) }}</td>
-                                <td class="px-4 py-3">{{ ucfirst($payout->payout_method) }}</td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-3 text-[#7c86a3]" data-label="Date">{{ \Illuminate\Support\Carbon::parse($payout->payout_date_time)->format('Y-m-d H:i') }}</td>
+                                <td class="px-4 py-3 font-semibold" data-label="Amount">${{ number_format((float) $payout->payout_amount, 2) }}</td>
+                                <td class="px-4 py-3" data-label="Method">{{ ucfirst($payout->payout_method) }}</td>
+                                <td class="px-4 py-3" data-label="Status">
                                     <span class="px-2 py-1 rounded text-xs font-medium
                                         {{ $payout->payout_status === 'completed' ? 'bg-[#16c087]/15 text-[#16c087]' : ($payout->payout_status === 'rejected' ? 'bg-[#f4534a]/15 text-[#f4534a]' : 'bg-[#7c86a3]/15 text-[#7c86a3]') }}">
                                         {{ ucfirst($payout->payout_status) }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3">
+                                <td class="px-4 py-3" data-label="Action">
                                     <a href="{{ route('payout.show', $payout->id) }}" class="text-[#4f8ef7] text-xs hover:underline">View</a>
                                 </td>
                             </tr>
@@ -44,6 +45,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
     </div>

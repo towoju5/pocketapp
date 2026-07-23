@@ -4,7 +4,7 @@
 
     <div class="flex items-center gap-2 sm:gap-3.5 ml-auto">
     <div class="relative">
-        <button type="button" id="balanceMenuBtn" class="bg-transparent border-0 cursor-pointer text-right px-1 sm:px-2 py-1 rounded-lg flex items-center gap-1.5 sm:gap-2 text-[#d7dcea]">
+        <button type="button" id="balanceMenuBtn" class="bg-transparent border border-[#2a3350] cursor-pointer text-right px-2 sm:px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-[#d7dcea]">
             <span>
                 <span class="hidden sm:block text-[11px] text-[#7c86a3]">{{ ucfirst($wallet_balance['name'] ?? 'Wallet') }}</span>
                 <span id="topbarBalance" class="block text-[13px] sm:text-[15px] font-semibold" data-wallet-slug="{{ data_get($wallet_balance, 'slug', auth()->user()->trade_wallet ?? 'qt_demo_usd') }}">{{ formatPrice($wallet_balance['balance'] ?? 0) }}</span>
@@ -29,8 +29,12 @@
     </a>
 
     <div class="relative">
-        <button type="button" id="avatarMenuBtn" class="w-[34px] h-[34px] rounded-full flex items-center justify-center border-0 cursor-pointer" style="background:#33406b;">
-            <i class="fa fa-user text-[#9aa4c2]"></i>
+        <button type="button" id="avatarMenuBtn" class="w-[34px] h-[34px] rounded-full flex items-center justify-center border-0 cursor-pointer overflow-hidden" style="background:#33406b;">
+            @if($_user->avatar ?? null)
+                <img src="{{ $_user->avatar }}" alt="Avatar" class="w-full h-full object-cover">
+            @else
+                <i class="fa fa-user text-[#9aa4c2]"></i>
+            @endif
         </button>
         <div id="avatarMenu" class="hidden absolute top-14 right-0 z-40 w-[190px] bg-[#171e33] border border-[#2a3350] rounded-xl p-1.5" style="box-shadow:0 20px 60px rgba(0,0,0,0.4);">
             <a href="{{ route('profile.edit') }}" class="block px-3 py-2.5 rounded-lg text-sm text-[#7c86a3] hover:text-white">Profile</a>

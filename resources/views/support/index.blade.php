@@ -21,6 +21,7 @@
 
         <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6">
             <div class="overflow-x-auto">
+                <div class="responsive-table">
                 <table class="w-full text-left text-sm text-[#d7dcea]">
                     <thead>
                         <tr class="text-[#7c86a3] text-xs uppercase">
@@ -30,10 +31,10 @@
                     <tbody>
                         @forelse ($tickets as $ticket)
                             <tr class="border-t border-[#2a3350]">
-                                <td class="py-3.5 px-4 text-white">{{ $ticket->subject }}</td>
-                                <td class="py-3.5 px-4 capitalize text-xs text-[#7c86a3]">{{ $ticket->priority }}</td>
-                                <td class="py-3.5 px-4"><span class="status-badge status-{{ $ticket->status }}">{{ $ticket->status }}</span></td>
-                                <td class="py-3.5 px-4 text-right">
+                                <td class="py-3.5 px-4 text-white" data-label="Subject">{{ $ticket->subject }}</td>
+                                <td class="py-3.5 px-4 capitalize text-xs text-[#7c86a3]" data-label="Priority">{{ $ticket->priority }}</td>
+                                <td class="py-3.5 px-4" data-label="Status"><span class="status-badge status-{{ $ticket->status }}">{{ $ticket->status }}</span></td>
+                                <td class="py-3.5 px-4 text-right" data-label="Action">
                                     <a href="{{ route('support-tickets.show', $ticket) }}" class="text-[#4f8ef7] font-semibold text-xs no-underline">View &rarr;</a>
                                 </td>
                             </tr>
@@ -42,6 +43,7 @@
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
             <div class="mt-5">{{ $tickets->links() }}</div>
         </div>

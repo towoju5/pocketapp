@@ -42,6 +42,7 @@
 
         <div class="tourney-tab-panel hidden" data-panel="results">
             <div class="bg-[#171e33] border border-[#2a3350] rounded-xl overflow-hidden">
+                <div class="responsive-table">
                 <table class="w-full text-sm text-left">
                     <thead class="text-[#7c86a3] text-xs uppercase bg-[#1c243c]">
                         <tr><th class="px-4 py-3">Tournament</th><th class="px-4 py-3">Joined</th><th class="px-4 py-3">Status</th></tr>
@@ -49,15 +50,16 @@
                     <tbody class="text-[#d7dcea]">
                         @forelse($myResults as $entry)
                             <tr class="border-t border-[#1c243c]">
-                                <td class="px-4 py-3">{{ $entry->tournament->tournament_title ?? '—' }}</td>
-                                <td class="px-4 py-3 text-[#7c86a3]">{{ \Carbon\Carbon::parse($entry->tournament_subscription_date_time)->format('Y-m-d H:i') }}</td>
-                                <td class="px-4 py-3">{{ ucfirst($entry->tournament_wining_status) }}</td>
+                                <td class="px-4 py-3" data-label="Tournament">{{ $entry->tournament->tournament_title ?? '—' }}</td>
+                                <td class="px-4 py-3 text-[#7c86a3]" data-label="Joined">{{ \Carbon\Carbon::parse($entry->tournament_subscription_date_time)->format('Y-m-d H:i') }}</td>
+                                <td class="px-4 py-3" data-label="Status">{{ ucfirst($entry->tournament_wining_status) }}</td>
                             </tr>
                         @empty
                             <tr><td colspan="3" class="px-4 py-10 text-center text-[#7c86a3]">You haven't joined any tournaments yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
         </div>
 

@@ -1,0 +1,47 @@
+# Reverse-proxy snippet for Laravel Reverb (the WebSocket server that pushes
+# live asset price ticks to every connected browser — see
+# deploy/supervisor/pocketapp-reverb.conf and resources/js/echo.js).
+#
+# Why this is needed: Reverb (started via `php artisan reverb:start`) only
+# binds to a local port (REVERB_SERVER_PORT, default 8080) — it is not
+# reachable from the internet on its own, and it does not speak TLS itself.
+# Since the site is served over https, the browser's WebSocket connection
+# MUST also be wss:// (a plain ws:// socket from an https:// page is blocked
+# as mixed content and fails silently) — nginx is what terminates that TLS
+# and forwards the upgraded connection to Reverb over plain ws on localhost.
+#
+# Install: paste this `location` block inside the EXISTING `server { }` block
+# for your domain in /etc/nginx/sites-available/<your-site>.conf — the one
+# that already has `listen 443 ssl;` and proxies PHP-FPM for the rest of the
+# app. Do not create a second separate server block for this.
+#
+# After editing, test and reload:
+#   sudo nginx -t && sudo systemctl reload nginx
+#
+# Then set in .env (values baked into the frontend build via the VITE_*
+# copies, so `npm run build` must be re-run after changing these):
+#   REVERB_HOST=yourdomain.com
+#   REVERB_PORT=443
+#   REVERB_SCHEME=https
+#   REVERB_SERVER_HOST=127.0.0.1
+#   REVERB_SERVER_PORT=8080
+
+location /app/ {
+    proxy_pass http://127.0.0.1:8080;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_read_timeout 60s;
+}
+
+location /apps/ {
+    proxy_pass http://127.0.0.1:8080;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}

@@ -13,8 +13,8 @@
     <a href="{{ route('profile.edit', ['tab' => 'account']) }}" class="rail-nav-btn flex-1" data-nav="settings" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;font-weight:700;color:#7c86a3;text-decoration:none;">
         <i class="fa fa-gear" style="font-size:14px;"></i>Settings
     </a>
-    <a href="{{ route('trading.profile') }}" class="rail-nav-btn flex-1" data-nav="profile-page" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;font-weight:700;color:#7c86a3;text-decoration:none;">
-        <i class="fa fa-user" style="font-size:14px;"></i>Profile
+    <a href="{{ route('p2p-offers.index') }}" class="rail-nav-btn flex-1" data-nav="market" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;font-weight:700;color:#7c86a3;text-decoration:none;">
+        <i class="fa fa-arrow-right-arrow-left" style="font-size:14px;"></i>P2P
     </a>
     <button type="button" class="rail-nav-btn flex-1" data-nav="more" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:9px;font-weight:700;color:#7c86a3;cursor:pointer;">
         <i class="fa fa-bars" style="font-size:14px;"></i>Menu

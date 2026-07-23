@@ -38,6 +38,7 @@
         <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6 mb-6">
             <h3 class="text-white font-bold mb-4">Commission History</h3>
             <div class="overflow-x-auto">
+                <div class="responsive-table">
                 <table class="w-full text-sm text-left">
                     <thead class="text-[#7c86a3] text-xs uppercase">
                         <tr>
@@ -50,16 +51,17 @@
                     <tbody class="text-[#d7dcea]">
                         @forelse ($commissions as $c)
                             <tr class="border-t border-[#1c243c]">
-                                <td class="py-3 px-3 font-semibold text-white">{{ $c->referredUser->first_name ?? 'Trader' }}</td>
-                                <td class="py-3 px-3">L{{ $c->level }}</td>
-                                <td class="py-3 px-3 capitalize">{{ $c->activity_type }}</td>
-                                <td class="py-3 px-3 text-[#16c087] font-semibold">{{ formatPrice($c->commission_amount) }}</td>
+                                <td class="py-3 px-3 font-semibold text-white" data-label="From">{{ $c->referredUser->first_name ?? 'Trader' }}</td>
+                                <td class="py-3 px-3" data-label="Level">L{{ $c->level }}</td>
+                                <td class="py-3 px-3 capitalize" data-label="Activity">{{ $c->activity_type }}</td>
+                                <td class="py-3 px-3 text-[#16c087] font-semibold" data-label="Commission">{{ formatPrice($c->commission_amount) }}</td>
                             </tr>
                         @empty
                             <tr><td colspan="4" class="text-center py-10 text-[#7c86a3] font-semibold">No commissions yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
+                </div>
             </div>
             <div class="mt-4">{{ $commissions->links() }}</div>
         </div>
