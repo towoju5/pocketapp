@@ -1,0 +1,18 @@
+[Unit]
+Description=Browser-Based WebSocket Relay
+After=network.target redis.service
+
+[Service]
+Type=simple
+User=youruser
+WorkingDirectory=/opt/ws-relay
+Environment=DISPLAY=:99
+ExecStartPre=/usr/bin/Xvfb :99 -screen 0 1280x800x24 &
+ExecStart=/opt/ws-relay/venv/bin/python /opt/ws-relay/relay_browser.py
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

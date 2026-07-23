@@ -23,11 +23,11 @@
     <div class="flex-1 flex flex-col min-w-0 relative">
 
         <div class="flex items-center gap-2 px-4 py-2.5 relative box-border">
-            <button type="button" id="assetPopoverBtn" class="flex items-center gap-2.5 font-bold text-[15px] px-2.5 py-1.5 rounded-lg bg-transparent border-0 text-[#ece5ff] cursor-pointer">
+            <button type="button" id="assetPopoverBtn" class="flex items-center gap-2.5 font-bold text-[15px] px-2.5 py-1.5 rounded-lg bg-transparent border border-[#4a2f7a] text-[#ece5ff] cursor-pointer">
                 <span id="activeAssetLabel">{{ $data->symbol }}</span>
                 <i class="fa fa-chevron-down" style="font-size:12px;"></i>
-                <span class="w-px h-4 bg-[#4a2f7a] mx-1"></span>
-                <span id="rateLabel" class="text-xs font-normal text-[#a190c9]">{{ $data->name }}</span>
+                <!-- <span class="w-px h-4 bg-[#4a2f7a] mx-1"></span>
+                <span id="rateLabel" class="text-xs font-normal text-[#a190c9]">{{ $data->name }}</span> -->
             </button>
 
             <button type="button" id="chartTypeBtn" class="w-[34px] h-[34px] rounded-lg bg-transparent border-0 text-[#a190c9] cursor-pointer">

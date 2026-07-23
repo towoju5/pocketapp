@@ -34,7 +34,7 @@
 const { chromium } = require('playwright');
 
 const APP_URL = (process.env.APP_URL || 'http://127.0.0.1:8001').replace(/\/$/, '');
-const COLLECTOR_SECRET = process.env.PRICE_COLLECTOR_SECRET;
+const COLLECTOR_SECRET = process.env.PRICE_COLLECTOR_SECRET ?? "31b9d4d7812efd3021af7fc354efe33c0453d4eeee743aeb";
 const IQCENT_ORIGIN = 'https://iqcent.com';
 const FLUSH_INTERVAL_MS = 300;
 const SYMBOL_REFRESH_MS = 10 * 60 * 1000;
@@ -169,6 +169,29 @@ async function spawnPage() {
         bufferTick(symbol, price, t);
     });
 
+    // iqcent's SUBSCRIBE.TICK has no visible ack/reject in the message
+    // shapes seen so far (onmessage only ever recognized {p,t,s} tick
+    // pushes) — logging any other shape surfaces one if it exists, instead
+    // of it being silently dropped like every non-tick message currently is.
+    const seenUnknownShapes = new Set();
+    await newPage.exposeFunction('__collectorReportUnknownMessage', (raw) => {
+        const shape = Object.keys(JSON.parse(raw)).sort().join(',') || '(non-object)';
+        if (seenUnknownShapes.has(shape) || seenUnknownShapes.size >= 10) return;
+        seenUnknownShapes.add(shape);
+        console.log(`[collector] unrecognized WS message shape [${shape}]: ${raw.slice(0, 300)}`);
+    });
+
+    // Whether a subscription actually "succeeded" isn't something iqcent
+    // confirms directly — the only signal available is whether a tick for
+    // that symbol shows up afterward. Reports back which subscribed symbols
+    // did/didn't tick within the window below, every time a batch is
+    // subscribed (initial catalog AND later incremental adds).
+    await newPage.exposeFunction('__collectorReportSubscriptionResult', (label, successful, failed) => {
+        console.log(`[collector] ${label} subscription result: ${successful.length} confirmed ticking, ${failed.length} silent so far (of ${successful.length + failed.length})`);
+        if (successful.length) console.log(`[collector]   ticking: ${successful.join(', ')}`);
+        if (failed.length) console.warn(`[collector]   silent (rejected, rate-limited, or just not trading right now): ${failed.join(', ')}`);
+    });
+
     // Navigate to iqcent's own origin first so the WS connection presents
     // exactly like a real visitor's browser tab instead of a blank page.
     await newPage.goto(IQCENT_ORIGIN, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch((e) => {
@@ -193,6 +216,21 @@ async function spawnPage() {
         // a small amount of coverage for materially better stability.
         const NUM_CONNECTIONS = 8;
         const connections = []; // index -> { ws, symbols: Set<string>, backoffMs }
+        const tickedSymbols = new Set(); // every symbol that has ever produced at least one tick
+
+        // Checks which of `ids` are (not) in tickedSymbols yet and reports
+        // the split back to Node. Fires VERIFY_DELAY_MS after a subscribe
+        // batch is sent — long enough for a normally-ticking asset to have
+        // produced at least one tick, short enough to still be a useful
+        // per-batch signal rather than a lifetime one.
+        const VERIFY_DELAY_MS = 30000;
+        function verifySubscriptions(ids, label) {
+            setTimeout(() => {
+                const successful = ids.filter((id) => tickedSymbols.has(id));
+                const failed = ids.filter((id) => !tickedSymbols.has(id));
+                window.__collectorReportSubscriptionResult(label, successful, failed);
+            }, VERIFY_DELAY_MS);
+        }
 
         function connectPoolMember(idx) {
             const conn = connections[idx];
@@ -214,7 +252,11 @@ async function spawnPage() {
                 // Tick pushes key the symbol as "s" (SUBSCRIBE.TICK requests use
                 // "id" for which symbol to subscribe to — a different field on
                 // the send side than what comes back on the receive side).
-                if (!msg || typeof msg.p !== 'number' || typeof msg.t !== 'number' || !msg.s) return;
+                if (!msg || typeof msg.p !== 'number' || typeof msg.t !== 'number' || !msg.s) {
+                    window.__collectorReportUnknownMessage(event.data);
+                    return;
+                }
+                tickedSymbols.add(msg.s);
                 window.__collectorReportTick(msg.s, msg.p, msg.t);
             };
             // Exponential backoff (capped) instead of a fixed fast retry — a
@@ -232,6 +274,7 @@ async function spawnPage() {
         }
         initialSymbols.forEach((id, i) => connections[i % NUM_CONNECTIONS].symbols.add(id));
         connections.forEach((_, idx) => connectPoolMember(idx));
+        verifySubscriptions(initialSymbols, 'initial');
 
         window.__collectorSubscribe = (ids) => {
             ids.forEach((id) => {
@@ -244,6 +287,7 @@ async function spawnPage() {
                     target.ws.send(JSON.stringify({ id, param: 'Option', operation: 'SUBSCRIBE.TICK' }));
                 }
             });
+            verifySubscriptions(ids, 'incremental');
         };
     }, subscribedSymbols);
 
