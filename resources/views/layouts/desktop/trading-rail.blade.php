@@ -10,9 +10,9 @@
             <button type="button" class="rail-nav-btn" data-nav="profile" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:#7c86a3;margin-bottom:4px;cursor:pointer;">
                 <i class="fa fa-user" style="font-size:16px;"></i>Profile
             </button>
-            <button type="button" class="rail-nav-btn" data-nav="market" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:#7c86a3;margin-bottom:4px;cursor:pointer;">
-                <i class="fa fa-chart-column" style="font-size:16px;"></i>Market
-            </button>
+            <a href="{{ route('p2p-offers.index') }}" class="rail-nav-btn" data-nav="market" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:#7c86a3;text-decoration:none;margin-bottom:4px;">
+                <i class="fa fa-chart-column" style="font-size:16px;"></i>P2P
+            </a>
             <button type="button" class="rail-nav-btn" data-nav="achievements" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:#7c86a3;margin-bottom:4px;cursor:pointer;">
                 <i class="fa fa-trophy" style="font-size:16px;"></i>Rewards
             </button>

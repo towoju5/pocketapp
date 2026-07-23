@@ -56,6 +56,22 @@
                 </div>
 
                 <div>
+                    <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Accepted Payment Methods</label>
+                    @if ($paymentMethods->isEmpty())
+                        <p class="text-sm text-[#7c86a3]">No payment methods have been configured yet. Contact support.</p>
+                    @else
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                            @foreach ($paymentMethods as $method)
+                                <label class="flex items-center gap-2 bg-[#1c243c] border border-[#2a3350] rounded-lg px-3 py-2.5 text-sm text-white cursor-pointer">
+                                    <input type="checkbox" name="payment_methods[]" value="{{ $method->name }}" {{ in_array($method->name, old('payment_methods', [])) ? 'checked' : '' }}>
+                                    {{ $method->name }}
+                                </label>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+
+                <div>
                     <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Terms (optional)</label>
                     <textarea name="terms" rows="3" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#4f8ef7]">{{ old('terms') }}</textarea>
                 </div>

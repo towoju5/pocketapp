@@ -227,7 +227,7 @@
                 <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-4"><div class="text-xs text-[#7c86a3]">Max. profit</div><div class="text-lg font-bold text-white">${{ number_format($maxProfit, 2) }}</div></div>
             </div>
             <div class="bg-[#171e33] border border-[#2a3350] rounded-xl p-6 mb-4">
-                <h3 class="text-white font-semibold mb-4">Profitability</h3>
+                <h3 class="text-white font-semibold mb-4">Won vs Lost Trades</h3>
                 <canvas id="profitabilityChart"></canvas>
             </div>
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -283,7 +283,10 @@
                 headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json', 'Accept': 'application/json' },
                 body: JSON.stringify({ name: btn.dataset.key, value: willBeOn ? '1' : '' }),
             })
-                .then((res) => res.json())
+                .then((res) => {
+                    if (!res.ok) throw new Error('Request failed');
+                    return res.json();
+                })
                 .then(() => btn.classList.toggle('toggle--on', willBeOn))
                 .catch(() => toastr.error('Failed to update preference.'));
         });
@@ -355,13 +358,29 @@
         });
     });
 
-    const profitabilityData = @json($profitabilityData);
+    const profitabilityLabels = @json($profitabilityLabels);
+    const wonByDate = @json($wonByDate);
+    const lostByDate = @json($lostByDate);
     const tradeAmountsByAssets = @json($tradeAmountsByAssets);
     const tradesDistributionByAssets = @json($tradesDistributionByAssets);
 
     new Chart(document.getElementById('profitabilityChart'), {
-        type: 'line',
-        data: { labels: Object.keys(profitabilityData), datasets: [{ label: 'Profitability', data: Object.values(profitabilityData), borderColor: '#4f8ef7', backgroundColor: 'rgba(79,142,247,0.2)', borderWidth: 2 }] },
+        type: 'bar',
+        data: {
+            labels: profitabilityLabels,
+            datasets: [
+                { label: 'Won', data: wonByDate, backgroundColor: 'rgba(22,192,135,0.7)', borderColor: '#16c087', borderWidth: 1 },
+                { label: 'Lost', data: lostByDate, backgroundColor: 'rgba(244,83,74,0.7)', borderColor: '#f4534a', borderWidth: 1 },
+            ],
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { ticks: { color: '#9ca3af', precision: 0 }, beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+            },
+            plugins: { legend: { labels: { color: '#e5e7eb' } } },
+        },
     });
     new Chart(document.getElementById('tradeAmountsChart'), {
         type: 'bar',

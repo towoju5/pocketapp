@@ -21,6 +21,7 @@
             ['admin.plan-subscriptions.index', 'Plan Subscriptions', 'heroicon-o-arrow-path'],
             ['admin.p2p-offers.index', 'P2P Offers', 'heroicon-o-arrows-right-left'],
             ['admin.p2p-trades.index', 'P2P Trades', 'heroicon-o-shield-check'],
+            ['admin.payment-methods.index', 'P2P Payment Methods', 'heroicon-o-credit-card'],
         ],
         'People' => [
             ['admin.users.index', 'Users', 'heroicon-o-users'],

@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\ExpressTrade;
+use App\Services\ExpressTradeSettlementService;
 use App\Services\PriceFeedService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -16,11 +17,21 @@ class ExpressTradeJob implements ShouldQueue
     {
     }
 
-    public function handle(PriceFeedService $priceFeed): void
+    public function handle(PriceFeedService $priceFeed, ExpressTradeSettlementService $settlement): void
     {
         try {
             $trade = $this->trade->fresh();
-            if (!$trade) {
+
+            // Already settled — an admin's force-win/force-lose/void action
+            // (see Admin\ExpressTradeController) can close a trade before its
+            // natural expiry, and this same delayed job still fires at the
+            // original close time regardless.
+            if (!$trade || $trade->trade_status !== 'open') {
+                return;
+            }
+
+            if ($trade->admin_forced_outcome) {
+                $settlement->settle($trade, $trade->admin_forced_outcome);
                 return;
             }
 
@@ -28,34 +39,14 @@ class ExpressTradeJob implements ShouldQueue
             $finalPrice = is_numeric($finalPrice) ? (float) $finalPrice : 0;
 
             if ($trade->trade_direction === 'up' && $finalPrice > 0 && $finalPrice > $trade->start_price) {
-                $trade->trade_status = 'win';
+                $outcome = 'win';
             } elseif ($trade->trade_direction === 'down' && $finalPrice > 0 && $finalPrice < $trade->start_price) {
-                $trade->trade_status = 'win';
+                $outcome = 'win';
             } else {
-                $trade->trade_status = 'lose';
+                $outcome = 'lose';
             }
 
-            $trade->end_price = $finalPrice;
-            $trade->save();
-
-            if ($trade->trade_status === 'win') {
-                // trade_profit already IS the total payout (stake + profit) —
-                // adding trade_amount again would double-refund the stake.
-                $trade->user->getWallet($trade->trade_wallet)->deposit(
-                    $trade->trade_profit,
-                    ['description' => "Successfully won express trade ID {$trade->id}"]
-                );
-            } else {
-                (new \App\Services\CashbackService())->applyLossCashback($trade->user, $trade);
-            }
-
-            (new \App\Services\ReferralCommissionService())->distribute(
-                $trade->user,
-                'express_trade',
-                (float) $trade->trade_amount,
-                $trade->trade_wallet,
-                $trade
-            );
+            $settlement->settle($trade, $outcome, $finalPrice);
         } catch (\Throwable $e) {
             Log::error('ExpressTradeJob failed', ['trade_id' => $this->trade->id, 'error' => $e->getMessage()]);
         }

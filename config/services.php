@@ -39,4 +39,10 @@ return [
         'secret' => env('PRICE_COLLECTOR_SECRET'),
     ],
 
+    'deepseek' => [
+        'api_key' => env('DEEPSEEK_API_KEY'),
+        'url' => env('DEEPSEEK_API_URL', 'https://api.deepseek.com/chat/completions'),
+        'model' => env('DEEPSEEK_MODEL', 'deepseek-chat'),
+    ],
+
 ];

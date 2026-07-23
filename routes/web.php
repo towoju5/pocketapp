@@ -34,15 +34,9 @@ Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middlewar
 Route::get('assets/status', [HomeController::class, 'assetStatus'])->middleware(['auth', 'verified'])->name('assets.status');
 Route::get('assets/history', [PriceCollectorController::class, 'history'])->middleware(['auth', 'verified'])->name('assets.history');
 
-// Called by the standalone price collector (collector/index.js), not by
-// end-user browsers — authenticated via shared secret, not the auth guard.
-// Batched: one request per flush interval carrying every tick since the
-// last one, not one request per tick (see PriceCollectorController::ingestTicks).
-Route::post('internal/assets/ticks', [PriceCollectorController::class, 'ingestTicks'])
-    ->middleware('collector.secret')
-    ->name('internal.assets.ticks')
-    ->withoutMiddleware(VerifyCsrfToken::class);
-Route::get('internal/assets/symbols', [PriceCollectorController::class, 'symbols'])->middleware('collector.secret')->name('internal.assets.symbols');
+// The collector's internal/assets/* endpoints live in routes/api.php instead
+// (stateless by default — no session/cookies/CSRF) — see the comment there
+// for why they moved out of the 'web' group entirely.
 
 Route::get('dashboard-2', function () {
     return view('dash');
@@ -63,6 +57,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('express-trades', [ExpressTradeController::class, 'index'])->name('express-trades.index');
 
     Route::get('wallet', [\App\Http\Controllers\WalletController::class, 'index'])->name('wallet.index');
+    Route::post('wallet/reset-demo', [\App\Http\Controllers\WalletController::class, 'resetDemoBalance'])->name('wallet.reset-demo');
 
     Route::get('achievements', [\App\Http\Controllers\AchievementController::class, 'index'])->name('achievements.index');
 
@@ -85,7 +80,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('trading-profile', [ProfileController::class, 'tradingProfile'])->name('trading.profile');
     Route::get('profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::match(['post', 'patch'], 'profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::patch('profile/photo/update', [ProfileController::class, 'update'])->name('profile.photo.update');
+    Route::patch('profile/photo/update', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
     Route::delete('profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::post('/change-password', [ProfileController::class, 'updatePassword'])->name('password.update');
 

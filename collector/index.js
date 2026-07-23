@@ -48,7 +48,8 @@ let browser = null;
 let page = null;
 let symbols = [];
 let shuttingDown = false;
-let relaunching = false;
+let relaunching = false; // guards the reactive (stall/crash-triggered) full relaunch
+let warmSwapping = false; // guards the proactive overlap-relaunch below
 let lastTickAt = Date.now();
 let tickBuffer = [];
 let forwardedCount = 0;
@@ -64,7 +65,8 @@ setInterval(() => {
  * rejecting an existing session's reconnect attempts after enough activity,
  * and a fixed fast retry loop doesn't get past that) — force a full
  * relaunch for a clean browser fingerprint instead of trusting the same
- * flagged page to recover.
+ * flagged page to recover. This is the reactive fallback; warmSwap() below
+ * is what's meant to keep this from ever actually needing to fire.
  */
 const STALL_THRESHOLD_MS = 60000;
 function startStallWatchdog() {
@@ -78,7 +80,7 @@ function startStallWatchdog() {
 }
 
 async function fetchSymbols() {
-    const res = await fetch(`${APP_URL}/internal/assets/symbols`, {
+    const res = await fetch(`${APP_URL}/api/internal/assets/symbols`, {
         headers: { 'X-Collector-Secret': COLLECTOR_SECRET },
     });
     if (!res.ok) throw new Error(`symbols fetch failed: HTTP ${res.status}`);
@@ -107,7 +109,7 @@ async function flushTicks() {
     tickBuffer = [];
 
     try {
-        const res = await fetch(`${APP_URL}/internal/assets/ticks`, {
+        const res = await fetch(`${APP_URL}/api/internal/assets/ticks`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -145,39 +147,60 @@ function scheduleSymbolRefresh() {
     }, SYMBOL_REFRESH_MS);
 }
 
-async function launch() {
-    console.log('[collector] launching headless browser...');
-    browser = await chromium.launch({
+/**
+ * Builds a fully-subscribed browser+page and hands it back — deliberately
+ * does NOT touch the shared `browser`/`page` globals or attach any
+ * close/crash handling. This lets warmSwap() run a brand-new page fully
+ * alongside the currently-active one (both delivering real ticks) and only
+ * cut over once the new one is confirmed live, instead of the old
+ * close-then-relaunch approach which always had a dead window while the new
+ * browser spun up from scratch.
+ */
+async function spawnPage() {
+    const newBrowser = await chromium.launch({
         headless: true,
         args: ['--no-sandbox', '--disable-dev-shm-usage'],
     });
-    const context = await browser.newContext();
-    page = await context.newPage();
-    page.on('pageerror', (err) => console.error('[collector:page] ERROR', err.message));
+    const context = await newBrowser.newContext();
+    const newPage = await context.newPage();
+    newPage.on('pageerror', (err) => console.error('[collector:page] ERROR', err.message));
 
-    await page.exposeFunction('__collectorReportTick', (symbol, price, t) => {
+    await newPage.exposeFunction('__collectorReportTick', (symbol, price, t) => {
         bufferTick(symbol, price, t);
     });
 
     // Navigate to iqcent's own origin first so the WS connection presents
     // exactly like a real visitor's browser tab instead of a blank page.
-    await page.goto(IQCENT_ORIGIN, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch((e) => {
+    await newPage.goto(IQCENT_ORIGIN, { waitUntil: 'domcontentloaded', timeout: 30000 }).catch((e) => {
         console.error('[collector] navigation to iqcent failed (continuing anyway)', e.message);
     });
 
-    symbols = await fetchSymbols();
-    console.log(`[collector] subscribing to ${symbols.length} symbols`);
+    const subscribedSymbols = await fetchSymbols();
+    console.log(`[collector] subscribing to ${subscribedSymbols.length} symbols`);
 
-    await page.evaluate((initialSymbols) => {
-        let ws = null;
-        let subscribedIds = new Set();
+    await newPage.evaluate((initialSymbols) => {
+        // iqcent appears to cap how many SUBSCRIBE.TICK subscriptions a
+        // single WS connection actually honors — verified empirically: one
+        // connection subscribing to the full ~158-symbol catalog only ever
+        // got ticks for ~16 of them (reproducible), regardless of how the
+        // sends were paced (tight loop vs staggered barely moved the
+        // number). Splitting the catalog across a pool of connections
+        // instead got 127/158 at 8 connections and 133/158 at 16 — a real
+        // per-connection ceiling, not a send-rate issue. 16 connections also
+        // measurably destabilized the pool (stalls roughly every ~2min vs
+        // ~4min at 1 connection) — presumably more simultaneous connections
+        // from one IP/session reads as more suspicious, not less. 8 trades
+        // a small amount of coverage for materially better stability.
+        const NUM_CONNECTIONS = 8;
+        const connections = []; // index -> { ws, symbols: Set<string>, backoffMs }
 
-        let backoffMs = 3000;
-        function connect() {
-            ws = new WebSocket('wss://iqcent.com/trade-api-ws/api/ws/price');
+        function connectPoolMember(idx) {
+            const conn = connections[idx];
+            const ws = new WebSocket('wss://iqcent.com/trade-api-ws/api/ws/price');
+            conn.ws = ws;
             ws.onopen = () => {
-                backoffMs = 3000; // reset backoff on a successful handshake
-                subscribedIds.forEach((id) => {
+                conn.backoffMs = 3000; // reset backoff on a successful handshake
+                conn.symbols.forEach((id) => {
                     ws.send(JSON.stringify({ id, param: 'Option', operation: 'SUBSCRIBE.TICK' }));
                 });
             };
@@ -198,50 +221,75 @@ async function launch() {
             // tight reconnect loop looks more automated, not less, to
             // whatever flagged the connection in the first place.
             ws.onclose = () => {
-                setTimeout(connect, backoffMs);
-                backoffMs = Math.min(backoffMs * 2, 30000);
+                setTimeout(() => connectPoolMember(idx), conn.backoffMs);
+                conn.backoffMs = Math.min(conn.backoffMs * 2, 30000);
             };
             ws.onerror = () => {};
         }
 
+        for (let i = 0; i < NUM_CONNECTIONS; i++) {
+            connections.push({ ws: null, symbols: new Set(), backoffMs: 3000 });
+        }
+        initialSymbols.forEach((id, i) => connections[i % NUM_CONNECTIONS].symbols.add(id));
+        connections.forEach((_, idx) => connectPoolMember(idx));
+
         window.__collectorSubscribe = (ids) => {
-            ids.forEach((id) => subscribedIds.add(id));
-            if (ws && ws.readyState === WebSocket.OPEN) {
-                ids.forEach((id) => ws.send(JSON.stringify({ id, param: 'Option', operation: 'SUBSCRIBE.TICK' })));
-            }
+            ids.forEach((id) => {
+                // Add each new symbol to whichever pool connection currently
+                // holds the fewest, keeping the pool balanced over time.
+                let target = connections[0];
+                connections.forEach((c) => { if (c.symbols.size < target.symbols.size) target = c; });
+                target.symbols.add(id);
+                if (target.ws && target.ws.readyState === WebSocket.OPEN) {
+                    target.ws.send(JSON.stringify({ id, param: 'Option', operation: 'SUBSCRIBE.TICK' }));
+                }
+            });
         };
+    }, subscribedSymbols);
 
-        window.__collectorSubscribe(initialSymbols);
-        connect();
-    }, symbols);
-    lastTickAt = Date.now(); // give the fresh connection a full stall window before judging it
+    return { browser: newBrowser, page: newPage, symbols: subscribedSymbols };
+}
 
+/**
+ * Makes `candidate` the active page: swaps the shared globals over to it and
+ * attaches close/crash handling. The handler checks page identity (not a
+ * boolean flag) so it can tell a deliberate hand-off (an older page closing
+ * because warmSwap() retired it) apart from a real unexpected death of the
+ * page that's actually current at the time — the old approach's global
+ * `relaunching` flag couldn't make that distinction for overlapping pages.
+ */
+function promote(candidate) {
+    browser = candidate.browser;
+    page = candidate.page;
+    symbols = candidate.symbols;
+    lastTickAt = Date.now(); // give the fresh page a full stall window before judging it
+
+    const thisPage = page;
     page.once('close', () => {
-        // `relaunching` is already true for the entire duration of an
-        // intentional relaunch()'s own `browser.close()` call — without this
-        // check, that close firing THIS handler calls relaunch() again,
-        // which calls relaunch() again, forever, on a ~2s cycle, regardless
-        // of whether the new browser is healthy. Only a close nobody asked
-        // for should trigger a new relaunch.
-        if (shuttingDown || relaunching) return;
-        console.error('[collector] page closed unexpectedly, relaunching...');
+        if (shuttingDown || page !== thisPage) return; // expected — a newer page already took over
+        console.error('[collector] active page closed unexpectedly, relaunching...');
         setTimeout(relaunch, 2000);
     });
     page.once('crash', () => {
-        if (shuttingDown || relaunching) return;
-        console.error('[collector] page crashed, relaunching...');
+        if (shuttingDown || page !== thisPage) return;
+        console.error('[collector] active page crashed, relaunching...');
         setTimeout(relaunch, 2000);
     });
+}
+
+async function launch() {
+    console.log('[collector] launching headless browser...');
+    const candidate = await spawnPage();
+    promote(candidate);
+    scheduleNextWarmSwap();
 }
 
 let lastRelaunchAt = 0;
 const RELAUNCH_MIN_GAP_MS = 5000;
 
+/** Reactive fallback: something actually died unexpectedly. Closes it and starts fresh — necessarily has a gap, unlike warmSwap(). */
 async function relaunch() {
     if (relaunching) return;
-    // Belt-and-suspenders against any other path that ends up calling this
-    // repeatedly for a genuine, persistent reason — never spin faster than
-    // this regardless of who's asking.
     const sinceLast = Date.now() - lastRelaunchAt;
     if (sinceLast < RELAUNCH_MIN_GAP_MS) {
         setTimeout(relaunch, RELAUNCH_MIN_GAP_MS - sinceLast);
@@ -267,11 +315,73 @@ async function relaunch() {
         });
 }
 
+/**
+ * Proactive fix for the actual root cause: empirically the pool goes quiet
+ * ~150s after a fresh subscribe regardless of anything tried at the
+ * individual-connection level (staggered starts, rotating connections one at
+ * a time) — strongly suggesting whatever flags it is scoped to the *page's*
+ * browser session/fingerprint, not each WebSocket's own lifetime. So instead
+ * of waiting for that cliff and paying for a cold relaunch (browser boot +
+ * subscribe, with zero ticks flowing the whole time), spin up a full
+ * replacement page well before the cliff, let it run side-by-side with the
+ * still-healthy current one, and only then cut over — the audience never
+ * sees a gap because the outgoing page is still ticking right up until the
+ * moment the incoming one takes over.
+ */
+const WARM_SWAP_INTERVAL_MS = 100000; // comfortably under the observed ~150s cliff
+
+function scheduleNextWarmSwap() {
+    setTimeout(warmSwap, WARM_SWAP_INTERVAL_MS);
+}
+
+async function warmSwap() {
+    if (shuttingDown || warmSwapping || relaunching) {
+        scheduleNextWarmSwap();
+        return;
+    }
+    warmSwapping = true;
+    console.log('[collector] warm-swapping to a fresh page ahead of the usual stall window...');
+    try {
+        const candidate = await spawnPage();
+        const oldBrowser = browser;
+        promote(candidate);
+        console.log('[collector] warm swap complete, retiring previous page');
+        // Give it a moment in case anything was still mid-flight, then let it go.
+        setTimeout(() => {
+            oldBrowser.close().catch(() => {});
+        }, 3000);
+    } catch (e) {
+        console.error('[collector] warm swap failed, keeping current page', e.message);
+        scheduleNextWarmSwap();
+    } finally {
+        warmSwapping = false;
+    }
+}
+
+/**
+ * A self-scheduling loop, not setInterval — setInterval fires on a fixed
+ * clock regardless of whether the previous flush's request already
+ * completed. If the server ever takes longer than FLUSH_INTERVAL_MS to
+ * process a batch (very possible under this SQLite-backed cache with pooled
+ * connections now sending far more volume), requests start overlapping and
+ * stack up, and concurrent writers to the same SQLite file can commit out of
+ * order — an older tick's transaction finishing after a newer one's silently
+ * overwrites it with a stale price/timestamp. Awaiting each flush fully
+ * before scheduling the next guarantees the collector itself never has more
+ * than one ingest request in flight.
+ */
+async function flushLoop() {
+    while (!shuttingDown) {
+        await flushTicks();
+        await new Promise((r) => setTimeout(r, FLUSH_INTERVAL_MS));
+    }
+}
+
 launch()
     .then(() => {
         scheduleSymbolRefresh();
         startStallWatchdog();
-        setInterval(flushTicks, FLUSH_INTERVAL_MS);
+        flushLoop();
     })
     .catch((e) => {
         console.error('[collector] failed to start', e.message);

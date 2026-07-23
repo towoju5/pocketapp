@@ -7,7 +7,7 @@
         <button type="button" id="balanceMenuBtn" class="bg-transparent border-0 cursor-pointer text-right px-1 sm:px-2 py-1 rounded-lg flex items-center gap-1.5 sm:gap-2 text-[#d7dcea]">
             <span>
                 <span class="hidden sm:block text-[11px] text-[#7c86a3]">{{ ucfirst($wallet_balance['name'] ?? 'Wallet') }}</span>
-                <span class="block text-[13px] sm:text-[15px] font-semibold">{{ formatPrice($wallet_balance['balance'] ?? 0) }}</span>
+                <span id="topbarBalance" class="block text-[13px] sm:text-[15px] font-semibold" data-wallet-slug="{{ data_get($wallet_balance, 'slug', auth()->user()->trade_wallet ?? 'qt_demo_usd') }}">{{ formatPrice($wallet_balance['balance'] ?? 0) }}</span>
             </span>
             <i class="fa fa-chevron-down text-[#7c86a3]" style="font-size:11px;"></i>
         </button>

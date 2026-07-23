@@ -73,9 +73,9 @@
     
                             <!-- Right Panel -->
                             <div class="lg:col-span-2 grid grid-cols-1 gap-6">
-                                <!-- Profitability Chart -->
+                                <!-- Won vs Lost Chart -->
                                 <div class="bg-gray-800 p-6 rounded-md">
-                                    <div class="text-lg font-semibold mb-4">Profitability</div>
+                                    <div class="text-lg font-semibold mb-4">Won vs Lost Trades</div>
                                     <canvas id="profitabilityChart"></canvas>
                                 </div>
     
@@ -103,31 +103,49 @@
 @push('js')
     <script src="//cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        // Profitability Chart Data
-        const profitabilityLabels = @json($profitabilityData->keys());
-        const profitabilityValues = @json($profitabilityData->values());
-    
+        // Won vs Lost Chart Data
+        const profitabilityLabels = @json($profitabilityLabels);
+        const wonByDate = @json($wonByDate);
+        const lostByDate = @json($lostByDate);
+
         // Trade Amounts by Assets Data
         const tradeAmountsLabels = @json($tradeAmountsByAssets->keys());
         const tradeAmountsValues = @json($tradeAmountsByAssets->values());
-    
+
         // Trades Distribution by Assets Data
         const tradesDistributionLabels = @json($tradesDistributionByAssets->keys());
         const tradesDistributionValues = @json($tradesDistributionByAssets->values());
-    
-        // Profitability Chart
+
+        // Won vs Lost Chart
         const profitabilityCtx = document.getElementById('profitabilityChart').getContext('2d');
         new Chart(profitabilityCtx, {
-            type: 'line',
+            type: 'bar',
             data: {
                 labels: profitabilityLabels,
-                datasets: [{
-                    label: 'Profitability',
-                    data: profitabilityValues,
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderWidth: 2,
-                }]
+                datasets: [
+                    {
+                        label: 'Won',
+                        data: wonByDate,
+                        backgroundColor: 'rgba(22, 192, 135, 0.7)',
+                        borderColor: '#16c087',
+                        borderWidth: 1,
+                    },
+                    {
+                        label: 'Lost',
+                        data: lostByDate,
+                        backgroundColor: 'rgba(244, 83, 74, 0.7)',
+                        borderColor: '#f4534a',
+                        borderWidth: 1,
+                    },
+                ]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    x: { ticks: { color: '#9ca3af' }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                    y: { ticks: { color: '#9ca3af', precision: 0 }, beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' } },
+                },
+                plugins: { legend: { labels: { color: '#e5e7eb' } } },
             }
         });
     

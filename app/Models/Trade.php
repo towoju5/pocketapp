@@ -24,6 +24,7 @@ class Trade extends Model
 
     protected $casts = [
         "trade_extra_info" => "array",
+        "admin_action_at" => "datetime",
     ];
 
     protected $appends = ['trade_duration'];
@@ -31,6 +32,11 @@ class Trade extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function adminActionBy()
+    {
+        return $this->belongsTo(User::class, 'admin_action_by');
     }
 
     // public function getTradeDurationAttribute()

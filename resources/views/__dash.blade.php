@@ -121,7 +121,7 @@
         </div>
 
         {{-- Chart canvas --}}
-        <div class="flex-1 relative mx-4 rounded-xl overflow-hidden" style="background:radial-gradient(ellipse at 50% 30%,#2b1854 0%,#150c30 70%);">
+        <div id="chartCanvasWrap" class="flex-1 relative mx-4 rounded-xl overflow-hidden" style="background:radial-gradient(ellipse at 50% 30%,#2b1854 0%,#150c30 70%);">
             <div class="absolute top-3.5 left-3.5 z-10 rounded-lg px-2.5 py-1.5 text-xs text-[#a190c9] flex items-center gap-2" style="background:rgba(45,26,92,0.85);border:1px solid #4a2f7a;">
                 <span id="liveClock"></span>
                 <span id="livePrice" class="text-white font-bold"></span>
@@ -130,6 +130,10 @@
                     <!-- <span id="sourceLabel">Simulated</span> -->
                 </span>
             </div>
+
+            {{-- Win/lose result toasts stack here, bottom-left, well above
+                 the timeframe button (bottom-3.5) so they never overlap it. --}}
+            <div id="tradeResultToasts" class="absolute bottom-16 left-3.5 z-30 flex flex-col-reverse gap-2"></div>
 
             <div id="kline-chart" class="w-full h-full"></div>
 
@@ -410,19 +414,28 @@
 
 @push('js')
 <script>
-    window.Echo.private('trades.user.{{ auth()->id() }}')
-        .listen('TradeUpdated', (event) => {
-            if (window.updateOrInsertTradeCard) window.updateOrInsertTradeCard(event);
-        });
+    // window.Echo is set up by echo.js, imported by the app.js module bundle
+    // loaded in <head>. Module scripts are deferred (execute after parsing,
+    // right before DOMContentLoaded) — this inline script sits later in the
+    // body and would otherwise run first, hitting window.Echo while it's
+    // still undefined and throwing silently (killing this whole block, so
+    // none of the real-time trade/balance/sound updates ever engaged).
+    // Waiting for DOMContentLoaded guarantees app.js has already run.
+    document.addEventListener('DOMContentLoaded', () => {
+        window.Echo.private('trades.user.{{ auth()->id() }}')
+            .listen('TradeUpdated', (event) => {
+                if (window.updateOrInsertTradeCard) window.updateOrInsertTradeCard(event);
+            });
 
-    window.Echo.channel('signals')
-        .listen('SignalCreated', (e) => {
-            console.log('New Signal:', e);
-        });
+        window.Echo.channel('signals')
+            .listen('SignalCreated', (e) => {
+                console.log('New Signal:', e);
+            });
 
-    if (window.startCountdowns) {
-        window.startCountdowns(@json($active_trades));
-    }
+        if (window.startCountdowns) {
+            window.startCountdowns(@json($active_trades));
+        }
+    });
 </script>
 @endpush
 @endsection

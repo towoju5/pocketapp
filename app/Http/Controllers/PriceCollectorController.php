@@ -40,23 +40,27 @@ class PriceCollectorController extends Controller
 
         $broadcastTicks = [];
 
-        // One commit for the whole batch instead of one per tick — the cache
-        // table backing this (CACHE_STORE=database) is on the same SQLite
-        // file as everything else, and per-write commits under this volume
-        // is exactly the kind of thing that reintroduces the request-queue
-        // backup this batching exists to avoid.
-        DB::transaction(function () use ($validated, $priceFeed, &$broadcastTicks) {
-            foreach ($validated['ticks'] as $tick) {
-                $symbol = $tick['symbol'];
-                $price = (float) $tick['price'];
-                $epochMs = $tick['t'] ?? (int) (microtime(true) * 1000);
+        // Deliberately NOT wrapped in one DB::transaction() — Laravel's
+        // database cache store already does its own insert-then-update
+        // atomicity per key, and under SQLite an exception caught internally
+        // by that fallback (the normal path for updating a key that already
+        // exists) can leave a surrounding manually-started transaction in a
+        // state where later statements in the same transaction silently
+        // don't persist. That was quietly losing most price updates —
+        // batches reported success and volume looked fine, but per-symbol
+        // timestamps stopped advancing. WAL mode + busy_timeout (see
+        // config/database.php) handle serializing concurrent writers at the
+        // SQLite level instead.
+        foreach ($validated['ticks'] as $tick) {
+            $symbol = $tick['symbol'];
+            $price = (float) $tick['price'];
+            $epochMs = $tick['t'] ?? (int) (microtime(true) * 1000);
 
-                $priceFeed->updatePrice($symbol, $price);
-                $priceFeed->appendHistoryTick($symbol, $price, $epochMs);
+            $priceFeed->updatePrice($symbol, $price);
+            $priceFeed->appendHistoryTick($symbol, $price, $epochMs);
 
-                $broadcastTicks[] = ['symbol' => $symbol, 'price' => $price, 't' => $epochMs];
-            }
-        });
+            $broadcastTicks[] = ['symbol' => $symbol, 'price' => $price, 't' => $epochMs];
+        }
 
         // Reverb caps message size (10KB default) — a catch-up burst after a
         // relaunch can carry several hundred ticks in one flush, well past

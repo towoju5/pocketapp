@@ -23,9 +23,10 @@ use App\Http\Controllers\Admin\{
     DepositController,
     TradeController,
     ExpressTradeController,
+    PaymentMethodController,
 };
 
-Route::prefix('admin')->middleware(['auth', 'verified'])->as('admin.')->group(function () {
+Route::prefix('admin')->middleware(['auth', 'verified', 'admin'])->as('admin.')->group(function () {
     Route::view('dashboard', 'admin.dashboard')->name('dashboard');
 
     Route::resources([
@@ -39,12 +40,19 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->as('admin.')->group(fu
         'referral-rates' => ReferralCommissionRateController::class,
     ]);
 
+    Route::post('signals/generate-ai', [SignalController::class, 'generateAi'])->name('signals.generate-ai');
+
     Route::resource('plan-subscriptions', PlanSubscriptionController::class)->only(['index', 'show']);
     Route::post('plan-subscriptions/{planSubscription}/cancel', [PlanSubscriptionController::class, 'cancel'])->name('plan-subscriptions.cancel');
 
     Route::resource('p2p-offers', P2pOfferController::class)->only(['index', 'show']);
     Route::resource('p2p-trades', P2pTradeController::class)->only(['index', 'show']);
     Route::post('p2p-trades/{p2pTrade}/resolve', [P2pTradeController::class, 'resolve'])->name('p2p-trades.resolve');
+
+    Route::get('payment-methods', [PaymentMethodController::class, 'index'])->name('payment-methods.index');
+    Route::post('payment-methods', [PaymentMethodController::class, 'store'])->name('payment-methods.store');
+    Route::post('payment-methods/{paymentMethod}/toggle', [PaymentMethodController::class, 'toggle'])->name('payment-methods.toggle');
+    Route::delete('payment-methods/{paymentMethod}', [PaymentMethodController::class, 'destroy'])->name('payment-methods.destroy');
 
     Route::resource('task-submissions', TaskSubmissionController::class)->only(['index', 'show']);
     Route::post('task-submissions/{taskSubmission}/approve', [TaskSubmissionController::class, 'approve'])->name('task-submissions.approve');
@@ -81,5 +89,11 @@ Route::prefix('admin')->middleware(['auth', 'verified'])->as('admin.')->group(fu
     Route::resource('deposits', DepositController::class)->only(['index', 'show']);
 
     Route::resource('trades', TradeController::class)->only(['index', 'show']);
+    Route::post('trades/{trade}/force-win', [TradeController::class, 'forceWin'])->name('trades.force-win');
+    Route::post('trades/{trade}/force-lose', [TradeController::class, 'forceLose'])->name('trades.force-lose');
+    Route::post('trades/{trade}/void', [TradeController::class, 'void'])->name('trades.void');
     Route::resource('express-trades', ExpressTradeController::class)->only(['index', 'show']);
+    Route::post('express-trades/{expressTrade}/force-win', [ExpressTradeController::class, 'forceWin'])->name('express-trades.force-win');
+    Route::post('express-trades/{expressTrade}/force-lose', [ExpressTradeController::class, 'forceLose'])->name('express-trades.force-lose');
+    Route::post('express-trades/{expressTrade}/void', [ExpressTradeController::class, 'void'])->name('express-trades.void');
 });

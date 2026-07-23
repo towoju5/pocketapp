@@ -34,6 +34,17 @@
                 <div><dt class="text-[#7c86a3]">Deadline</dt><dd class="text-white font-semibold">{{ $trade->payment_deadline->format('d M, H:i') }}</dd></div>
             </dl>
 
+            @if (!empty($trade->offer?->payment_methods))
+                <div class="mt-5">
+                    <p class="text-[#7c86a3] text-xs uppercase font-bold mb-2.5">Accepted Payment Methods</p>
+                    <div class="flex flex-wrap gap-1.5">
+                        @foreach ($trade->offer->payment_methods as $method)
+                            <span class="text-xs bg-[#1c243c] border border-[#2a3350] text-white px-2.5 py-1 rounded-md">{{ $method }}</span>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             @if ($trade->payment_proof_path)
                 <div class="mt-5">
                     <p class="text-[#7c86a3] text-xs uppercase font-bold mb-2.5">Payment Proof</p>

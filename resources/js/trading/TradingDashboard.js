@@ -1,4 +1,5 @@
 import { ChartManager, periodSecondsToKlinePeriod, COLOR_SCHEMES } from './chart.js';
+import { parseServerDate, rearmCountdowns } from './tradeCards.js';
 
 const TF_OPTIONS = [
     [5, 'S5'], [15, 'S15'], [30, 'S30'],
@@ -792,10 +793,10 @@ export default class TradingDashboard {
                     document.getElementById('tradesList')?.insertAdjacentHTML('afterbegin', data.html);
                 }
                 if (data.trade?.trade_close_time && data.trade?.trade_currency) {
-                    const expiryMs = new Date(String(data.trade.trade_close_time).replace(' ', 'T')).getTime();
+                    const expiryDate = parseServerDate(data.trade.trade_close_time);
                     const entryPrice = data.trade.start_price != null ? parseFloat(data.trade.start_price) : undefined;
-                    if (!Number.isNaN(expiryMs)) {
-                        this.chart?.setExpiryLine(data.trade.id, data.trade.trade_currency, expiryMs, entryPrice);
+                    if (expiryDate) {
+                        this.chart?.setExpiryLine(data.trade.id, data.trade.trade_currency, expiryDate.getTime(), entryPrice);
                     }
                 }
             } else {
@@ -829,6 +830,12 @@ export default class TradingDashboard {
             const source = this.el.hiddenSections.querySelector(`#${this.state.activePanel}`);
             this.el.mainContent.style.display = 'block';
             this.el.mainContent.innerHTML = source ? source.innerHTML : '';
+            // Cloning via innerHTML produces brand-new DOM nodes with no
+            // memory of any countdown interval ticking on the node it was
+            // cloned from — re-arm every countdown in the freshly-shown
+            // copy from its own data-close-time attribute so it actually
+            // counts down instead of sitting frozen (see tradeCards.js).
+            rearmCountdowns(this.el.mainContent);
         } else {
             this.el.mainContent.style.display = 'none';
             this.el.mainContent.innerHTML = '';

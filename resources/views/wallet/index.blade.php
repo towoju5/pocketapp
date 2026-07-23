@@ -10,6 +10,14 @@
             <div class="text-right">
                 <div class="text-xs text-[#7c86a3]">Available balance</div>
                 <div class="text-lg font-bold text-white">{{ formatPrice($wallet_balance['balance'] ?? 0) }}</div>
+                @if(is_demo_wallet(auth()->user()->active_wallet_slug ?? 'qt_demo_usd') && ($wallet_balance['balance'] ?? 0) < 10000)
+                    <form method="POST" action="{{ route('wallet.reset-demo') }}" class="mt-1.5">
+                        @csrf
+                        <button type="submit" class="text-xs font-semibold text-[#4f8ef7] hover:underline">
+                            <i class="fa fa-rotate-right"></i> Reset demo balance to $10,000
+                        </button>
+                    </form>
+                @endif
             </div>
         </div>
 
@@ -106,6 +114,11 @@
                     <div class="flex justify-between text-xs text-[#7c86a3] py-2 border-t border-[#2a3350] mb-4">
                         <span>Minimum</span><span class="text-[#d7dcea]">$30</span>
                     </div>
+
+                    @if (auth()->user()->google2fa_enabled)
+                        <label class="block text-xs text-[#7c86a3] mb-1.5">2FA Authentication Code</label>
+                        <input type="text" name="one_time_password" inputmode="numeric" pattern="[0-9]*" maxlength="6" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg p-2.5 text-white text-sm mb-4" placeholder="123456" required {{ $kycVerified ? '' : 'disabled' }}>
+                    @endif
 
                     <button type="submit" class="w-full bg-[#4f8ef7] hover:bg-[#3d7de0] text-white font-bold text-sm py-3 rounded-lg" {{ $kycVerified ? '' : 'disabled' }}>
                         Confirm withdrawal

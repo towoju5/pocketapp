@@ -56,10 +56,17 @@
                         <span class="text-[#7c86a3] text-xs">{{ $offer->maker->first_name ?? 'Trader' }}</span>
                     </div>
                     <div class="text-2xl font-bold text-white mb-3.5">{{ formatPrice($offer->price_per_unit) }} <span class="text-xs text-[#7c86a3] font-normal">/ unit</span></div>
-                    <div class="text-sm text-[#7c86a3] mb-5">
+                    <div class="text-sm text-[#7c86a3] mb-3.5">
                         Limits: {{ formatPrice($offer->min_limit) }} &ndash; {{ formatPrice($offer->max_limit) }}<br>
                         Available: {{ formatPrice($offer->available_amount) }}
                     </div>
+                    @if (!empty($offer->payment_methods))
+                        <div class="flex flex-wrap gap-1.5 mb-3.5">
+                            @foreach ($offer->payment_methods as $method)
+                                <span class="text-xs bg-[#1c243c] border border-[#2a3350] text-[#7c86a3] px-2 py-1 rounded-md">{{ $method }}</span>
+                            @endforeach
+                        </div>
+                    @endif
                     <a href="{{ route('p2p-trades.index') }}?offer={{ $offer->id }}" onclick="document.getElementById('trade-form-{{ $offer->id }}').classList.toggle('hidden'); return false;" class="block w-full text-center bg-[#4f8ef7] hover:bg-[#3f7de6] text-white text-sm font-semibold py-2.5 rounded-lg">Trade</a>
 
                     <form id="trade-form-{{ $offer->id }}" method="POST" action="{{ route('p2p-trades.store', $offer) }}" class="hidden mt-3.5">

@@ -13,13 +13,13 @@ class PriceFeedService
     private const CACHE_TTL_SECONDS = 300;
 
     /** Rolling backfill window exposed to new chart loads. */
-    private const HISTORY_WINDOW_SECONDS = 600;
+    private const HISTORY_WINDOW_SECONDS = 900;
 
     /** Hard cap per symbol regardless of tick rate, so one very active symbol can't balloon the cache entry. */
-    private const HISTORY_MAX_ENTRIES = 1500;
+    private const HISTORY_MAX_ENTRIES = 3000;
 
     /** Slightly longer than the window itself so a quiet symbol's backfill doesn't vanish early. */
-    private const HISTORY_TTL_SECONDS = 900;
+    private const HISTORY_TTL_SECONDS = 1200;
 
     public function updatePrice(string $symbol, float $price): void
     {

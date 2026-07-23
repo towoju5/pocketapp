@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\P2pOffer;
+use App\Models\PaymentMethod;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -26,7 +27,9 @@ class P2pOfferController extends Controller
 
     public function create(): View
     {
-        return view('p2p.offers.create');
+        $paymentMethods = PaymentMethod::where('is_active', true)->orderBy('name')->get();
+
+        return view('p2p.offers.create', compact('paymentMethods'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -40,6 +43,7 @@ class P2pOfferController extends Controller
             'max_limit' => ['required', 'numeric', 'gte:min_limit'],
             'available_amount' => ['required', 'numeric', 'min:0.01'],
             'payment_methods' => ['nullable', 'array'],
+            'payment_methods.*' => ['string', 'exists:payment_methods,name'],
             'terms' => ['nullable', 'string', 'max:2000'],
         ]);
 

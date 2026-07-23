@@ -32,6 +32,7 @@
                     <th>Wallet</th>
                     <th>Status</th>
                     <th>Placed</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -49,13 +50,49 @@
                         <td class="text-xs uppercase text-slate-400">{{ str_contains($trade->trade_wallet, 'real') ? 'Real' : 'Demo' }}</td>
                         <td><x-badge :status="$trade->trade_status === 'lose' ? 'danger' : ($trade->trade_status === 'win' ? 'success' : 'pending')">{{ ucfirst($trade->trade_status) }}</x-badge></td>
                         <td class="text-xs text-slate-400">{{ $trade->created_at->format('d M, H:i:s') }}</td>
+                        <td>
+                            <div class="flex items-center gap-2 whitespace-nowrap">
+                                <a href="{{ route('admin.express-trades.show', $trade) }}" class="text-xs font-semibold text-brand-blue hover:underline">View</a>
+                                @if ($trade->trade_status === 'open')
+                                    <form method="POST" action="{{ route('admin.express-trades.force-win', $trade) }}" class="js-force-form">
+                                        @csrf
+                                        <input type="hidden" name="notes" class="js-notes">
+                                        <button type="submit" class="text-xs font-semibold text-brand-emerald hover:underline">Win</button>
+                                    </form>
+                                    <form method="POST" action="{{ route('admin.express-trades.force-lose', $trade) }}" class="js-force-form">
+                                        @csrf
+                                        <input type="hidden" name="notes" class="js-notes">
+                                        <button type="submit" class="text-xs font-semibold text-brand-danger hover:underline">Lose</button>
+                                    </form>
+                                    <form method="POST" action="{{ route('admin.express-trades.void', $trade) }}" class="js-force-form">
+                                        @csrf
+                                        <input type="hidden" name="notes" class="js-notes">
+                                        <button type="submit" class="text-xs font-semibold text-slate-400 hover:underline">Void</button>
+                                    </form>
+                                @endif
+                            </div>
+                        </td>
                     </tr>
                 @empty
-                    <tr><td colspan="7" class="text-center py-10 text-slate-400">No express trades yet.</td></tr>
+                    <tr><td colspan="8" class="text-center py-10 text-slate-400">No express trades yet.</td></tr>
                 @endforelse
             </tbody>
         </x-data-table>
 
         <div class="mt-6">{{ $trades->links() }}</div>
     </x-glass-card>
+
+    <script>
+        document.querySelectorAll('.js-force-form').forEach((form) => {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const action = form.querySelector('button').textContent.trim();
+                const notes = prompt(`Reason for forcing this trade to ${action.toUpperCase()} (required):`);
+                if (!notes) return;
+                if (!confirm(`Force this trade to ${action.toUpperCase()}?`)) return;
+                form.querySelector('.js-notes').value = notes;
+                form.submit();
+            });
+        });
+    </script>
 @endsection

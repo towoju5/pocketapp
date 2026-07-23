@@ -39,6 +39,13 @@ class TradeUpdated implements ShouldBroadcast
             'trade_percentage' => $this->trade->trade_percentage,
             'trade_direction' => $this->trade->trade_direction,
             'start_price' => $this->trade->start_price,
+            'trade_wallet' => $this->trade->trade_wallet,
+            // Lets the frontend update the topbar balance the instant it
+            // actually changes — not just on win/lose settlement, but also
+            // right when a trade is first placed: the stake is debited
+            // immediately at that point (see TradeController::placeTrade),
+            // it isn't held until the trade closes.
+            'wallet_balance' => (float) $this->trade->user->getWallet($this->trade->trade_wallet)->balance,
             'html' => view('mini-pages.trade-list', ['trade' => $this->trade])->render(),
         ];
     }

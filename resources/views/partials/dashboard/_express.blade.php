@@ -157,9 +157,9 @@
                         </button>
                     </div>
 
-                    {{-- ###########  ASSET LIST ############ --}}
+                    {{-- ###########  ASSET LIST (online assets only) ############ --}}
                     <div id="asset-list" class="mt-4 space-y-3">
-                        @foreach($assets as $asset)
+                        @forelse($assets as $asset)
                         <div class="asset-row-item asset-item-{{ $asset->id }} flex items-center justify-between gap-3" data-type="{{ $asset->asset_group }}">
                             {{-- up --}}
                             <button class="trade-btn up asset_{{ $asset->id }}" data-assetid="{{ $asset->id }}" data-percentage="{{ number_format($asset->asset_profit_margin * 100, 0) }}" data-asset="{{ $asset->symbol }}" data-direction="up" onclick="selectTrade(this)">
@@ -199,7 +199,9 @@
                                 </svg>
                             </button>
                         </div>
-                        @endforeach
+                        @empty
+                        <p class="text-sm text-[#7c86a3] text-center py-6">No assets are currently streaming — check back shortly.</p>
+                        @endforelse
                     </div>
 
                 </div>

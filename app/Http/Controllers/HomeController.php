@@ -38,8 +38,10 @@ class HomeController extends Controller
         $signals = Signal::latest()->where('is_active', true)->get();
         ['traders24hours' => $traders24hours, 'tradersTopRanked' => $tradersTopRanked, 'tradersTop100' => $tradersTop100] = TraderLeaderboard::build();
 
-        // Get assets
-        $assets = Assets::where('is_otc', true)->get();
+        // Express trading only ever lists assets currently streaming — a
+        // symbol iqcent has open but this app isn't receiving live ticks for
+        // right now would just place trades against a stale/absent price.
+        $assets = Assets::where('is_otc', true)->get()->filter(fn ($asset) => $priceFeed->isOnline($asset->symbol))->values();
         $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->where('trade_status', 'open')->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->get();
         $closedExpressTrades = ExpressTrade::where('user_id', $user->id)->whereIn('trade_status', ['win', 'lose'])->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->take(20)->get();
 
@@ -92,7 +94,7 @@ class HomeController extends Controller
         $signals = Signal::latest()->where('is_active', true)->get();
         ['traders24hours' => $traders24hours, 'tradersTopRanked' => $tradersTopRanked, 'tradersTop100' => $tradersTop100] = TraderLeaderboard::build();
 
-        $assets = Assets::where('is_otc', true)->get();
+        $assets = Assets::where('is_otc', true)->get()->filter(fn ($asset) => $priceFeed->isOnline($asset->symbol))->values();
         $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->where('trade_status', 'open')->where('trade_wallet', 'like', '%demo%')->with('asset')->latest()->get();
         $closedExpressTrades = ExpressTrade::where('user_id', $user->id)->whereIn('trade_status', ['win', 'lose'])->where('trade_wallet', 'like', '%demo%')->with('asset')->latest()->take(20)->get();
 

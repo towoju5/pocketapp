@@ -37,9 +37,18 @@ return [
             'database' => env('DB_DATABASE', database_path('database.sqlite')),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
-            'busy_timeout' => null,
-            'journal_mode' => null,
-            'synchronous' => null,
+            // WAL lets readers and writers proceed concurrently instead of
+            // exclusively locking the whole file per write (SQLite's default
+            // rollback-journal mode) — with the price collector now doing
+            // frequent batched writes plus normal app traffic on the same
+            // file, the default mode was causing "database is locked"
+            // failures under concurrency. busy_timeout makes a write that
+            // still can't get the lock retry for up to 5s instead of failing
+            // immediately (which used to surface as ticks the collector
+            // logged as delivered but that silently never persisted).
+            'busy_timeout' => 5000,
+            'journal_mode' => 'wal',
+            'synchronous' => 'normal',
         ],
 
         'mysql' => [

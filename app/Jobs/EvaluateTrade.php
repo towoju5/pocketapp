@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Tournament;
 use App\Models\User;
 use App\Services\PriceFeedService;
+use App\Services\TradeSettlementService;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -23,11 +24,28 @@ class EvaluateTrade implements ShouldQueue
         $this->trade = $trade;
     }
 
-    public function handle(PriceFeedService $priceFeed)
+    public function handle(PriceFeedService $priceFeed, TradeSettlementService $settlement)
     {
         try {
             Log::debug("Evaluating trade: " . $this->trade->id);
-            $trade = $this->trade;
+            $trade = $this->trade->fresh();
+
+            // Already settled — an admin's force-win/force-lose/void action
+            // (see Admin\TradeController) can close a trade before its
+            // natural expiry, and this same delayed job still fires at the
+            // original close time regardless. Without this, that later
+            // firing would re-evaluate an already-closed trade against a
+            // fresh price and re-run wallet crediting on top of the admin's
+            // decision.
+            if (!$trade || $trade->trade_status !== 'pending') {
+                return;
+            }
+
+            if ($trade->admin_forced_outcome) {
+                $settlement->settle($trade, $trade->admin_forced_outcome);
+                return;
+            }
+
             // Server-cached price (kept warm by the price collector —
             // collector/index.js — via PriceCollectorController::ingestTick)
             // is authoritative — falls back to the ad-hoc REST scrape only if
@@ -40,45 +58,14 @@ class EvaluateTrade implements ShouldQueue
 
             // Evaluate trade
             if ($trade->trade_direction == 'up' && $finalPrice > 0 && $finalPrice > $trade->start_price) {
-                $trade->trade_status = 'win';
-                $trade->trade_profit = $trade->trade_profit;
+                $outcome = 'win';
             } elseif ($trade->trade_direction == 'down' && $finalPrice > 0 && $finalPrice < $trade->start_price) {
-                $trade->trade_status = 'win';
-                $trade->trade_profit = $trade->trade_profit;
+                $outcome = 'win';
             } else {
-                $trade->trade_status = 'lose';
+                $outcome = 'lose';
             }
 
-            $trade->end_price = $finalPrice;
-            $trade->save();
-
-            if ($trade->trade_status == 'win') {
-                // credit_user() operates on auth()->user(), which doesn't
-                // exist in a queued job — credit the trade's actual owner
-                // directly via their wallet instead.
-                // trade_profit already IS the total payout (stake + profit,
-                // computed as such in TradeController::placeTrade()) — adding
-                // trade_amount again here would double-refund the stake.
-                $trade->user->getWallet($trade->trade_wallet)->deposit(
-                    $trade->trade_profit,
-                    ['description' => "Successfully won trade ID {$trade->id}"]
-                );
-            } else {
-                (new \App\Services\CashbackService())->applyLossCashback($trade->user, $trade);
-            }
-
-            // Referral commission is volume-based (fires on every closed
-            // trade, win or lose) rather than profit-based, to keep the
-            // rule simple and avoid incentive-gaming complexity.
-            (new \App\Services\ReferralCommissionService())->distribute(
-                $trade->user,
-                'trade',
-                (float) $trade->trade_amount,
-                $trade->trade_wallet,
-                $trade
-            );
-
-            event(new \App\Events\TradeUpdated($trade));
+            $settlement->settle($trade, $outcome, $finalPrice);
         } catch (\Throwable $th) {
             Log::info(json_encode($th->getTraceAsString()));
         }

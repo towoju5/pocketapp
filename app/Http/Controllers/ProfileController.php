@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Session;
 use Illuminate\View\View;
-use PragmaRX\Google2FA\Google2FA;
+use PragmaRX\Google2FAQRCode\Google2FA;
 
 class ProfileController extends Controller
 {
@@ -42,7 +42,11 @@ class ProfileController extends Controller
             $user->google2fa_secret = $secret;
             $user->save();
         }
-        $google2fa_url = $this->google2fa->getQRCodeUrl(config('app.name'), $user->email, $secret);
+        // getQRCodeInline() renders an actual scannable image (an inline SVG
+        // data: URI via bacon/bacon-qr-code) — getQRCodeUrl() only returns
+        // the raw otpauth:// string, which is not an image and can't be
+        // used as an <img src>, hence the broken-image icon.
+        $google2fa_url = $this->google2fa->getQRCodeInline(config('app.name'), $user->email, $secret);
 
         $tradingStats = $this->buildTradingStats($user);
         $loyalty = $this->buildLoyaltyTier($user);
@@ -69,9 +73,15 @@ class ProfileController extends Controller
         $minTrade = $trades->min('trade_amount') ?? 0;
         $maxProfit = $trades->max('trade_profit') ?? 0;
 
-        $profitabilityData = $trades->groupBy(function ($trade) {
-            return \Carbon\Carbon::parse($trade->trade_close_time)->format('Y-m-d H:00:00');
-        })->map(fn($group) => $group->sum('trade_profit'));
+        // Won-vs-lost trades per day, not a raw trade_profit sum: trade_profit
+        // is fixed at trade-open time as the *potential* payout and a loss
+        // never touches it, so summing it across win+lose trades would count
+        // every lost trade's stake back in as if it had been won.
+        $closedTrades = $trades->whereIn('trade_status', ['win', 'lose']);
+        $closedByDate = $closedTrades->groupBy(fn ($trade) => \Carbon\Carbon::parse($trade->trade_close_time)->format('Y-m-d'));
+        $profitabilityLabels = $closedByDate->keys()->sort()->values();
+        $wonByDate = $profitabilityLabels->map(fn ($date) => $closedByDate[$date]->where('trade_status', 'win')->count());
+        $lostByDate = $profitabilityLabels->map(fn ($date) => $closedByDate[$date]->where('trade_status', 'lose')->count());
 
         $tradeAmountsByAssets = $trades->groupBy('trade_currency')->map(fn($group) => $group->sum('trade_amount'));
         $tradesDistributionByAssets = $trades->groupBy('trade_currency')->map(fn($group) => $group->count());
@@ -84,7 +94,9 @@ class ProfileController extends Controller
             'maxTrade',
             'minTrade',
             'maxProfit',
-            'profitabilityData',
+            'profitabilityLabels',
+            'wonByDate',
+            'lostByDate',
             'tradeAmountsByAssets',
             'tradesDistributionByAssets'
         );
@@ -137,6 +149,36 @@ class ProfileController extends Controller
         $request->user()->save();
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Handles just the avatar upload — deliberately its own method/validation
+     * rather than sharing update()'s ProfileUpdateRequest, which requires
+     * first_name/last_name/email. Submitting the avatar-only form against
+     * that shared validation always failed with "these fields are required"
+     * even though the form doesn't (and shouldn't need to) collect them, and
+     * update() never actually touched the uploaded file at all.
+     */
+    public function updatePhoto(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'max:4096'],
+        ]);
+
+        $user = $request->user();
+
+        if ($user->avatar) {
+            $oldPath = str_replace('/storage/', '', parse_url($user->avatar, PHP_URL_PATH) ?? '');
+            if ($oldPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($oldPath)) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+            }
+        }
+
+        $path = $request->file('avatar')->store('avatars', 'public');
+        $user->avatar = \Illuminate\Support\Facades\Storage::disk('public')->url($path);
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'photo-updated');
     }
 
     public function changeDefaultWallet($newDefaultWallet)
@@ -192,8 +234,21 @@ class ProfileController extends Controller
     {
         $request->validate([
             "name" => "required|string",
-            "value" => "required|string",
+            // Toggling a preference OFF sends value: '' (see the
+            // .preference-toggle click handler in profile/index.blade.php).
+            // The global ConvertEmptyStringsToNull middleware turns that
+            // into null before validation ever sees it, and 'required'
+            // rejects both empty-string and null — every "off" toggle 422'd,
+            // so it visually flipped in the UI but never actually persisted.
+            // 'nullable' lets null through; 'string' still applies whenever
+            // a real value ("1", a language code, etc.) is sent.
+            "value" => "present|nullable|string",
         ]);
+
+        // Normalize back to '' for storage — the config array stores plain
+        // truthy/falsy strings ('1' / ''), not null, so $isChecked =
+        // !empty($user->config[$key]) in the Blade view keeps working.
+        $request->merge(['value' => $request->input('value') ?? '']);
 
         $user = auth()->user();
         $user = User::findOrFail($user->id);

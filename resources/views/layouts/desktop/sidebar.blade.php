@@ -559,7 +559,7 @@
 	<!-- // Market -->
 	<div id="Market" class="text-white bg-[#0f172a]">
 		<div class="p-2 flex flex-col gap-2.5">
-			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
+			<a href="{{ route('p2p-offers.index') }}" class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg block">
 				<!-- content -->
 				<div class="text-white flex flex-row w-full gap-2">
 					<!-- ICON -->
@@ -569,10 +569,10 @@
 						</svg>
 					</span>
 					<!-- Text -->
-					<span class="text-sm">Market</span>
+					<span class="text-sm">P2P Trading</span>
 				</div>
 				<span></span>
-			</div>
+			</a>
 
 			<div class="bg-[#131a2c] hover:bg-slate-700 p-4 rounded-lg">
 				<!-- content -->
