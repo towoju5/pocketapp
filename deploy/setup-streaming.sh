@@ -131,6 +131,27 @@ fi
 echo
 echo "== 7. Collector dependencies (Node + Playwright/Chromium) =="
 (cd "$APP_ROOT/collector" && npm install)
+# npm install's postinstall (`playwright install --with-deps chromium`) sets
+# up the system-level shared libraries fine regardless of user, but the
+# browser BINARY itself downloads into whichever user ran this into their
+# own $HOME/.cache/ms-playwright. The supervisor conf runs the collector as
+# www-data, so if this script is run as root/a deploy user, that binary
+# lands somewhere www-data can never see it — install it again explicitly
+# for www-data.
+if id www-data >/dev/null 2>&1; then
+    (cd "$APP_ROOT/collector" && sudo -u www-data npx playwright install chromium)
+fi
+
+echo
+echo "== 7b. Ownership of writable dirs =="
+# Every artisan/npm command above runs as whoever invoked this script
+# (root, typically) — but the supervisor confs run reverb/collector/queue
+# work as www-data, so storage/ and bootstrap/cache/ need to actually be
+# writable by that user or every one of those processes crash-loops the
+# instant it tries to write a log line.
+if id www-data >/dev/null 2>&1; then
+    chown -R www-data:www-data "$APP_ROOT/storage" "$APP_ROOT/bootstrap/cache"
+fi
 
 echo
 echo "== 8. Installing/updating supervisor programs =="
