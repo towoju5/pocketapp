@@ -39,6 +39,18 @@ class TickerController extends Controller
     private const IQCENT_ORIGIN = 'https://iqcent.com';
     private const IQCENT_WS_URL = 'wss://iqcent.com/trade-api-ws/api/ws/price';
 
+    /**
+     * Panther's ChromeManager defaults every client to the same fixed
+     * chromedriver port (9515) unless told otherwise. That's invisible with
+     * a single client, but this runs as a pool — one OS process per batch,
+     * each opening its own client concurrently (see
+     * deploy/supervisor/pocketapp-ticker-collector.conf's numprocs) — so
+     * without a distinct port per batch, only the first process to start
+     * ever binds successfully and every other one dies immediately with
+     * "The port 9515 is already in use."
+     */
+    private const CHROME_DRIVER_BASE_PORT = 9515;
+
     /** How often buffered ticks are drained from the browser and stored/broadcast. */
     private const POLL_INTERVAL_SECONDS = 1;
 
@@ -78,6 +90,8 @@ class TickerController extends Controller
             '--disable-software-rasterizer',
             '--disable-blink-features=AutomationControlled',
             '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+        ], [
+            'port' => self::CHROME_DRIVER_BASE_PORT + $batchIndex,
         ]);
 
         try {

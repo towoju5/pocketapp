@@ -265,12 +265,30 @@ Check status: `sudo supervisorctl status`. Logs are in `storage/logs/`
 
 ## Troubleshooting
 
-- **Every chart shows "offline" / no price movement**: check
-  `storage/logs/ticker-collector.log`. Most common cause is a
-  Chrome/chromedriver version mismatch — compare `google-chrome --version`
-  against `./drivers/chromedriver --version`; if they've drifted apart,
-  regenerate: `composer install && vendor/bin/bdi detect drivers`, then
-  `sudo supervisorctl restart pocketapp-ticker-collector:*`.
+- **Every chart shows "offline" / no price movement**: check both
+  `storage/logs/ticker-collector.log` (Supervisor's raw stdout for the
+  command) and `storage/logs/laravel.log` (the detailed
+  navigate/subscribe/streaming log lines from `TickerController`).
+  - `"The port 9515 is already in use"`: something else already bound that
+    chromedriver port — normal if you manually ran `collectBatch()` (e.g.
+    via tinker) while Supervisor's own batches are already up; each batch
+    process needs a distinct port (`9515 + batchIndex`), so pass a
+    `batchIndex` outside your `numprocs` range for one-off manual testing.
+  - `"cannot create snap home dir"`: chromedriver launched Ubuntu's
+    **snap-packaged** Chromium (what `apt install chromium`/`chromium-browser`
+    silently resolves to on 22.04+), which can't run as a service user like
+    `www-data` at all. Install real Google Chrome
+    (`deploy/setup.sh`/`deploy/setup-streaming.sh` do this via the official
+    `.deb`) and make sure `pocketapp-ticker-collector.conf`'s
+    `environment=PANTHER_CHROME_BINARY=...` line points at it — both setup
+    scripts fill this in automatically, but if a conf was copied onto the
+    server by hand it may still say the literal placeholder
+    `__PANTHER_CHROME_BINARY__`.
+  - Otherwise, most likely a Chrome/chromedriver version mismatch — compare
+    `google-chrome --version` against `./drivers/chromedriver --version`;
+    if they've drifted apart, regenerate:
+    `composer install && vendor/bin/bdi detect drivers`.
+  - After any of the above: `sudo supervisorctl restart pocketapp-ticker-collector:*`.
 - **Chart doesn't update live but `assets/history` shows data**: the
   collector is working but Reverb isn't reaching the browser — check
   `sudo supervisorctl status pocketapp-reverb`, and confirm nginx's `/app/`

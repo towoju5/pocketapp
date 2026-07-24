@@ -177,7 +177,11 @@ if command -v supervisorctl >/dev/null 2>&1; then
     BATCH_SIZE=10
     NUMPROCS=$(( (ASSET_COUNT + BATCH_SIZE - 1) / BATCH_SIZE ))
     [ "$NUMPROCS" -lt 1 ] && NUMPROCS=1
+    if [ -z "$CHROME_BIN" ]; then
+        echo "  WARNING: pinning PANTHER_CHROME_BINARY to a Chrome that wasn't found — the collector will fail to start until a real (non-snap) Chrome is installed." >&2
+    fi
     sed -e "s|/var/www/pocketapp|$APP_ROOT|g" -e "s/^numprocs=.*/numprocs=$NUMPROCS/" \
+        -e "s|__PANTHER_CHROME_BINARY__|$CHROME_BIN|g" \
         "$APP_ROOT/deploy/supervisor/pocketapp-ticker-collector.conf" \
         > /etc/supervisor/conf.d/pocketapp-ticker-collector.conf
     echo "  ticker collector: $NUMPROCS process(es) (batch size $BATCH_SIZE, $ASSET_COUNT assets)"
