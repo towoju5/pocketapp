@@ -1,0 +1,71 @@
+# Full nginx vhost: PHP-FPM app + Reverb WebSocket proxy in one server block.
+#
+# deploy/setup.sh generates a working copy of this automatically (substituting
+# your real domain, app path, and PHP-FPM socket) into
+# /etc/nginx/sites-available/<domain> and symlinks it into sites-enabled. This
+# file is the template it works from — edit it if you need something the
+# script doesn't cover, or copy it by hand if you're configuring nginx
+# yourself.
+#
+# HTTPS: this only defines the port-80 server block. Once DNS for your domain
+# points at this machine, run:
+#   sudo certbot --nginx -d example.com
+# Certbot edits this file in place to add the 443 server block + redirect —
+# don't hand-write TLS config here.
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name example.com;
+
+    root /var/www/pocketapp/public;
+    index index.php;
+
+    client_max_body_size 25m;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+
+    access_log /var/log/nginx/pocketapp-access.log;
+    error_log  /var/log/nginx/pocketapp-error.log;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        include snippets/fastcgi-php.conf;
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+    }
+
+    # Deny dotfiles (.env, .git, etc) except the ACME challenge path certbot needs.
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+
+    # Reverb (WebSocket) — pushes live price ticks and other broadcasts to
+    # every connected browser (see resources/js/echo.js). Reverb itself only
+    # binds locally (deploy/supervisor/pocketapp-reverb.conf must be
+    # running) and doesn't speak TLS, so this terminates that and forwards
+    # the upgraded connection over plain ws on localhost.
+    location /app/ {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+    }
+
+    location /apps/ {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

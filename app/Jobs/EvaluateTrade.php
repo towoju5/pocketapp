@@ -46,9 +46,9 @@ class EvaluateTrade implements ShouldQueue
                 return;
             }
 
-            // Server-cached price (kept warm by the price collector —
-            // collector/index.js — via PriceCollectorController::ingestTick)
-            // is authoritative — falls back to the ad-hoc REST scrape only if
+            // Server-cached price (kept warm by the ticker collector — see
+            // TickerController::collectBatch) is authoritative — falls back
+            // to the ad-hoc REST scrape only if
             // the cache has nothing for this symbol.
             $currentPrice = $priceFeed->getPrice($trade->trade_currency) ?? getAssetData($trade->trade_currency, true);
             if (is_array($currentPrice)) {

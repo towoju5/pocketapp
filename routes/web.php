@@ -1,6 +1,5 @@
 <?php
 
-use App\Events\TickReceived;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\DepositController;
@@ -24,7 +23,6 @@ use App\Models\Trade;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Schema;
 
 
@@ -36,49 +34,6 @@ Route::get('dashboard/demo/{coin?}', [HomeController::class, 'demo'])->middlewar
 Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
 Route::get('assets/status', [HomeController::class, 'assetStatus'])->middleware(['auth', 'verified'])->name('assets.status');
 Route::get('assets/history', [PriceCollectorController::class, 'history'])->middleware(['auth', 'verified'])->name('assets.history');
-
-// The collector's internal/assets/* endpoints live in routes/api.php instead
-// (stateless by default — no session/cookies/CSRF) — see the comment there
-// for why they moved out of the 'web' group entirely.
-
-
-Route::post('/web-tick', function (Request $request) {
-    $tick = $request->validate([
-        's' => 'required|string',
-        't' => 'required|integer',
-        'p' => 'required|numeric',
-    ]);
-
-    $symbol = strtoupper($tick['s']);
-
-    $redisKey = "market:{$symbol}:ticks";
-
-    Redis::pipeline(function ($pipe) use ($redisKey, $tick) {
-        // Add newest tick to the front
-        $pipe->lpush($redisKey, json_encode($tick));
-
-        // Keep only the latest 5000 ticks
-        $pipe->ltrim($redisKey, 0, 4999);
-    });
-
-    // Broadcast to frontend
-    broadcast(new TickReceived($symbol, $tick));
-
-    return response()->json([
-        'success' => true,
-    ]);
-});
-
-
-Route::get('/ticks/{symbol}', function (string $symbol) {
-    $key = 'market:' . strtoupper($symbol) . ':ticks';
-
-    return collect(Redis::lrange($key, 0, -1))
-        ->reverse() // oldest -> newest
-        ->map(fn ($tick) => json_decode($tick, true))
-        ->values();
-});
-
 
 Route::get('dashboard-2', function () {
     return view('dash');
