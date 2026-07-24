@@ -28,11 +28,13 @@
         "prevailexcel/laravel-nowpayments": "^1.0",
         "symfony/dom-crawler": "^7.2",
         "symfony/http-client": "^7.2",
+        "symfony/panther": "^2.4",
         "textalk/websocket": "^1.6",
         "yadahan/laravel-authentication-log": "^1.7",
         "yoeunes/toastr": "^3.1"
     },
     "require-dev": {
+        "dbrekelmans/bdi": "^1.4",
         "fakerphp/faker": "^1.23",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
