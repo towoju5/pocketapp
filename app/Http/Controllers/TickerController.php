@@ -12,7 +12,13 @@ class TickerController extends Controller
         // 1. Initialize a Chrome Instance with Panther
         // We append standard stealth arguments to seamlessly blend past Cloudflare blocks
         $client = Client::createChromeClient(null, [
-            '--no-sandbox',
+            '--headless',                 // Run completely backgrounded without GUI requirements
+            '--no-sandbox',               // Mandatory to avoid instant crash when executing as root user
+            '--disable-sandbox',          // Redundant safety barrier flag for container nodes
+            '--disable-gpu',              // Prevents internal hardware graphics processing failures
+            '--disable-dev-shm-usage',    // CRUCIAL: Overrides tiny 64MB /dev/shm shared memory limits on Docker/VPS
+            '--remote-debugging-port=9222', // Keeps the internal orchestration port explicitly designated
+            '--disable-software-rasterizer',
             '--disable-blink-features=AutomationControlled',
             '--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
         ]);
