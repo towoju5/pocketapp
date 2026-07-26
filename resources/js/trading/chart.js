@@ -6,10 +6,14 @@ const MAX_CANDLES = 500;
  * Owns one asset's candle/line buffers, fed by ticks the ChartManager routes
  * to it from the app's own backend broadcast (see ChartManager._initBroadcast)
  * instead of each tab opening its own connection to iqcent — every user's
- * chart is driven by the exact same server-relayed stream this way. Kept
- * alive for as long as its tab is open, independent of whether it's the
- * currently active (visible/tradeable) tab — this is what lets switching
- * tabs be instant.
+ * chart is driven by the exact same server-relayed stream this way. That
+ * stream now originates from websockets-setup/ws.py writing ticks into
+ * Redis, tailed and rebroadcast over Reverb by `php artisan ticks:bridge-redis`
+ * (app/Console/Commands/BridgeRedisTicks.php) — this file's interface with
+ * the backend (the 'asset-prices' Echo channel, the history REST endpoint)
+ * is unchanged by that swap. Kept alive for as long as its tab is open,
+ * independent of whether it's the currently active (visible/tradeable) tab —
+ * this is what lets switching tabs be instant.
  */
 export class AssetFeed {
     constructor(symbol, periodSeconds, onTick, historyUrl) {
@@ -152,11 +156,11 @@ export class AssetFeed {
         try {
             const res = await fetch(url, { signal: controller.signal });
             const data = await res.json();
-            // Raw [epochMs, price] ticks from our own rolling cache (see
-            // PriceFeedService::getHistoryTicks) — replayed oldest-first
-            // through the same bucketing the live feed uses, so they come
-            // out correctly shaped for whatever period is currently
-            // selected instead of needing a separate candle format.
+            // Raw [epochMs, price] ticks from the Redis Stream ws.py writes
+            // ticks into (see PriceFeedService::getHistoryTicks) — replayed
+            // oldest-first through the same bucketing the live feed uses, so
+            // they come out correctly shaped for whatever period is
+            // currently selected instead of needing a separate candle format.
             const ticks = Array.isArray(data?.ticks) ? data.ticks : [];
             if (ticks.length > 0) {
                 this.hasReceivedData = true;
@@ -299,11 +303,13 @@ export class ChartManager {
 
     /**
      * One shared subscription to the backend's own price broadcast (see
-     * AssetPriceBatchUpdated/collector/index.js) instead of each AssetFeed
-     * opening its own connection to iqcent — every open tab's ticks arrive
-     * over this single channel and get routed to whichever feed matches the
-     * symbol. Batched: one event can carry many ticks (possibly for many
-     * symbols) from a single collector flush.
+     * AssetPriceBatchUpdated, emitted by `php artisan ticks:bridge-redis` —
+     * app/Console/Commands/BridgeRedisTicks.php — as it tails the Redis
+     * streams websockets-setup/ws.py writes ticks into) instead of each
+     * AssetFeed opening its own connection to iqcent — every open tab's
+     * ticks arrive over this single channel and get routed to whichever feed
+     * matches the symbol. Batched: one event can carry many ticks (possibly
+     * for many symbols) from a single bridge flush.
      */
     _initBroadcast() {
         if (!window.Echo) return;

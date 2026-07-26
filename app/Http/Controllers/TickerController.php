@@ -8,6 +8,14 @@ use Illuminate\Support\Facades\Log;
 use Symfony\Component\Panther\Client;
 
 /**
+ * SUPERSEDED as the price source by websockets-setup/ws.py, which writes
+ * ticks straight into Redis, plus `php artisan ticks:bridge-redis`
+ * (app/Console/Commands/BridgeRedisTicks.php) which rebroadcasts them —
+ * see deploy/supervisor/pocketapp-redis-tick-bridge.conf. Left in place
+ * (not deleted) in case this pipeline is ever needed again: its writes still
+ * land in the same Redis keys ws.py uses (via PriceFeedService), so it's
+ * safe to run alongside ws.py if ever re-enabled.
+ *
  * The backend price collector — the one real connection to iqcent's price
  * feed. Ticks flow into PriceFeedService (same store PriceCollectorController
  * and the charts already read from) and out over Reverb via

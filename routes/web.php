@@ -28,6 +28,10 @@ use Illuminate\Support\Facades\Schema;
 
 Route::get('/', [MarketingController::class, 'home'])->name('marketing.home');
 
+Route::get('redis', function (){
+    
+})
+
 
 
 Route::get('dashboard/demo/{coin?}', [HomeController::class, 'demo'])->middleware(['auth', 'verified'])->name('dashboard.demo');
