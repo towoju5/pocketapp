@@ -28,9 +28,9 @@ use Illuminate\Support\Facades\Schema;
 
 Route::get('/', [MarketingController::class, 'home'])->name('marketing.home');
 
-Route::get('redis', function (){
+// Route::get('redis', function (){
     
-})
+// })
 
 
 
