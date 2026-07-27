@@ -41,4 +41,17 @@ return [
         'model' => env('DEEPSEEK_MODEL', 'deepseek-chat'),
     ],
 
+    /*
+    | Brokeret's live price feed (wss://feed.brokeret.com/ws). Unlike
+    | iqcent, this endpoint isn't behind Cloudflare, so it's connected to
+    | directly from the backend (app/Console/Commands/StreamBrokeretTicks.php)
+    | over a plain WebSocket client — no headless-browser workaround needed.
+    | Keeping the URL/key server-side (not exposed to the frontend) is the
+    | whole point: the browser never talks to this feed directly.
+    */
+    'brokeret' => [
+        'ws_url' => env('BROKERET_WS_URL', 'wss://feed.brokeret.com/ws'),
+        'api_key' => env('BROKERET_API_KEY', 'demo'),
+    ],
+
 ];

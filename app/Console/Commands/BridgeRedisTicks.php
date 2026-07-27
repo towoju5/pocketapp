@@ -8,13 +8,19 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 /**
- * Bridges websockets-setup/ws.py's Redis Streams to the frontend: ws.py
- * writes ticks straight into Redis (ticks:{symbol} streams, see its own
- * docblock for the schema) with no knowledge of this app's WebSocket layer,
- * so this process tails those streams for newly-appended entries and
- * rebroadcasts them as AssetPriceBatchUpdated over Reverb — the exact same
- * event TickerController::collectBatch used to emit — so chart.js's
- * ChartManager._initBroadcast and every other Echo listener need no changes.
+ * Bridges Redis Streams to the frontend: websockets-setup/ws.py (now
+ * SUPERSEDED, see its own docblock) used to write ticks straight into Redis
+ * (ticks:{symbol} streams, see its own docblock for the schema) with no
+ * knowledge of this app's WebSocket layer; the current writer is
+ * StreamBrokeretTicks (app/Console/Commands/StreamBrokeretTicks.php, `php
+ * artisan ticks:stream-brokeret`), which connects to Brokeret's feed
+ * directly from this app and writes into the exact same Redis schema via
+ * PriceFeedService. Either way, this process only ever tails ticks:*
+ * streams for newly-appended entries — it has no idea which process wrote
+ * them — and rebroadcasts them as AssetPriceBatchUpdated over Reverb — the
+ * exact same event TickerController::collectBatch used to emit — so
+ * chart.js's ChartManager._initBroadcast and every other Echo listener need
+ * no changes regardless of which writer is active.
  *
  * Runs forever as one long-lived process (see
  * deploy/supervisor/pocketapp-redis-tick-bridge.conf), not per-request:

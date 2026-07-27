@@ -12,9 +12,15 @@
         'STOCKS_USD' => 'Stocks (USD)', 'STOCKS_EUR' => 'Stocks (EUR)', 'STOCKS_OTC' => 'Stocks (OTC)',
         'INDEX_OTC' => 'Indices (OTC)',
     ];
-    $__allAssets = get_assets();
-    $__groups = $__allAssets->pluck('asset_group')->unique()->values();
     $__priceFeed = app(\App\Services\PriceFeedService::class);
+    // Old behavior: listed every asset in the catalog and just badged
+    // offline ones instead of hiding them.
+    // $__allAssets = get_assets();
+    // Only assets currently streaming (i.e. actually receiving live ticks)
+    // should appear in the asset picker — an asset iqcent/Brokeret isn't
+    // ticking for right now would just show a stale/absent price.
+    $__allAssets = get_assets()->filter(fn ($asset) => $__priceFeed->isOnline($asset->symbol))->values();
+    $__groups = $__allAssets->pluck('asset_group')->unique()->values();
 @endphp
 
 <div class="flex-1 flex flex-col sm:flex-row min-h-0">

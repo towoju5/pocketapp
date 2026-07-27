@@ -16,6 +16,21 @@ MAX_SYMBOLS = 50
 PING_INTERVAL_MS = 25000  # send a PING every 25s, comfortably under the ~60s timeout
 
 # ---------------------------------------------------------------------------
+# SUPERSEDED as the price source by app/Console/Commands/StreamBrokeretTicks.php
+# (`php artisan ticks:stream-brokeret`): Brokeret's feed (wss://feed.brokeret.com/ws)
+# isn't behind Cloudflare, so the Laravel app now connects to it directly as a
+# plain WebSocket client instead of driving this Playwright browser against
+# iqcent. That command writes into this exact same Redis schema (see
+# PriceFeedService), so app/Console/Commands/BridgeRedisTicks.php keeps
+# rebroadcasting ticks over Reverb with no changes needed there.
+#
+# This file is left in place (not deleted) in case iqcent's feed is ever
+# needed again — it's safe to run alongside the new pipeline since both
+# write into the same ticks:{symbol}/latest_tick:{symbol} keys, just don't
+# run both against the same symbols at once (last writer wins per tick).
+# ---------------------------------------------------------------------------
+
+# ---------------------------------------------------------------------------
 # Redis config - match whatever your Laravel app's REDIS_HOST/PORT/PASSWORD/DB
 # are set to (check your .env), so both sides talk to the same instance.
 # ---------------------------------------------------------------------------
@@ -756,7 +771,7 @@ with sync_playwright() as p:
                 sym = data.get("s")
                 if sym in symbol_status:
                     connection_stats["ticks_received"] += 1
-                    print(f"[tick] {data}")
+                    # print(f"[tick] {data}")
 
                     # Store in Redis with a rolling 7-day retention window:
                     #  1) Append to a per-symbol Stream for full history,
