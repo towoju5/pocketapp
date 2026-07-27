@@ -1,4 +1,11 @@
 <?php return array (
+  'ably/laravel-broadcaster' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Ably\\LaravelBroadcaster\\LaravelAblyBroadcasterServiceProvider',
+    ),
+  ),
   'bavix/laravel-wallet' => 
   array (
     'providers' => 
@@ -54,6 +61,13 @@
     'providers' => 
     array (
       0 => 'Laravel\\Sail\\SailServiceProvider',
+    ),
+  ),
+  'laravel/sanctum' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Laravel\\Sanctum\\SanctumServiceProvider',
     ),
   ),
   'laravel/sentinel' => 

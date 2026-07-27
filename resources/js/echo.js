@@ -1,11 +1,14 @@
-import Echo from 'laravel-echo';
-
-import Pusher from 'pusher-js';
-window.Pusher = Pusher;
+import Echo from '@ably/laravel-echo';
+import * as Ably from 'ably';
+window.Ably = Ably;
 
 // --- Legacy: Laravel Reverb (SUPERSEDED by Ably below — see config/broadcasting.php
 // and .env's BROADCAST_CONNECTION. Kept, not deleted, in case broadcasting
 // ever moves back to a self-hosted server.) ---
+//
+// import Echo from 'laravel-echo';
+// import Pusher from 'pusher-js';
+// window.Pusher = Pusher;
 //
 // // forceTLS/transports must follow VITE_REVERB_SCHEME rather than being
 // // hardcoded to plain ws:// — a page served over https (any real VPS deploy)
@@ -37,39 +40,66 @@ window.Pusher = Pusher;
 //     forceTLS: reverbIsSecure,
 //     enabledTransports: reverbIsSecure ? ['ws', 'wss'] : ['ws'],
 // });
+//
+// window.Echo.connector.pusher.connection.bind('state_change', (states) => {
+//     console.log(`[echo] connection: ${states.previous} -> ${states.current}`);
+// });
+// window.Echo.connector.pusher.connection.bind('error', (err) => {
+//     console.error('[echo] connection error — check that Reverb is running (supervisorctl status) and that nginx is proxying wss:// through to it (see deploy/nginx/reverb-proxy.conf.example):', err);
+// });
 
-// Ably doesn't ship its own connector in this version of laravel-echo, but it
-// doesn't need one: Ably speaks the Pusher protocol at realtime-pusher.ably.io,
-// so the same PusherConnector (pusher-js, imported above) that used to talk
-// to Reverb now talks to Ably instead — same broadcaster: 'pusher', just a
-// different host/key. `key` here is ONLY the public "appId.keyId" half of
-// ABLY_KEY (see .env) — never the secret half, since this value ships in the
-// built JS bundle for anyone to read. `cluster` is required by pusher-js's
-// constructor even though Ably ignores it (wsHost below takes precedence).
-if (!import.meta.env.VITE_ABLY_PUBLIC_KEY) {
-    console.error(
-        '[echo] VITE_ABLY_PUBLIC_KEY is empty in the built bundle — price streaming cannot ' +
-        'authenticate. Set ABLY_KEY and VITE_ABLY_PUBLIC_KEY in .env (see .env.example) and ' +
-        'rebuild (VITE_* vars are baked in at build time, so editing .env alone does not fix ' +
-        'an already-built bundle).'
-    );
-}
+// --- Legacy: Ably via Laravel's built-in Pusher-protocol-compatible driver
+// (SUPERSEDED by the native ably/laravel-broadcaster + @ably/laravel-echo
+// pairing below. That built-in driver required a public Ably key baked into
+// the JS bundle AND enabling "Pusher compatibility mode" in the Ably
+// dashboard's Protocol Adapter Settings. Neither is needed below: the native
+// connector authenticates purely through this app's own /broadcasting/auth
+// route — already registered automatically by bootstrap/app.php's
+// withRouting(channels: ...) — the exact same route Reverb's private
+// channels always used, so the browser never needs any Ably key at all.) ---
+//
+// if (!import.meta.env.VITE_ABLY_PUBLIC_KEY) {
+//     console.error(
+//         '[echo] VITE_ABLY_PUBLIC_KEY is empty in the built bundle — price streaming cannot ' +
+//         'authenticate. Set ABLY_KEY and VITE_ABLY_PUBLIC_KEY in .env (see .env.example) and ' +
+//         'rebuild (VITE_* vars are baked in at build time, so editing .env alone does not fix ' +
+//         'an already-built bundle).'
+//     );
+// }
+//
+// window.Echo = new Echo({
+//     broadcaster: 'pusher',
+//     key: import.meta.env.VITE_ABLY_PUBLIC_KEY,
+//     cluster: '',
+//     wsHost: 'realtime-pusher.ably.io',
+//     wsPort: 443,
+//     wssPort: 443,
+//     forceTLS: true,
+//     enabledTransports: ['ws', 'wss'],
+//     disableStats: true,
+// });
+//
+// window.Echo.connector.pusher.connection.bind('state_change', (states) => {
+//     console.log(`[echo] connection: ${states.previous} -> ${states.current}`);
+// });
+// window.Echo.connector.pusher.connection.bind('error', (err) => {
+//     console.error('[echo] connection error — check ABLY_KEY/VITE_ABLY_PUBLIC_KEY in .env and that your Ably app/key is active:', err);
+// });
 
+// Native Ably connector (@ably/laravel-echo + ably-js). No key of any kind
+// ships to the browser — it authenticates by POSTing to /broadcasting/auth
+// (session cookie + the csrf-token meta tag already present in
+// layouts/desktop/trading.blade.php), which config/broadcasting.php's 'ably'
+// connection signs server-side using the full ABLY_KEY. Public channels
+// (like 'asset-prices', see chart.js) skip the per-channel token upgrade
+// entirely and only need the connection-level token.
 window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: import.meta.env.VITE_ABLY_PUBLIC_KEY,
-    cluster: '',
-    wsHost: 'realtime-pusher.ably.io',
-    wsPort: 443,
-    wssPort: 443,
-    forceTLS: true,
-    enabledTransports: ['ws', 'wss'],
-    disableStats: true,
+    broadcaster: 'ably',
 });
 
-window.Echo.connector.pusher.connection.bind('state_change', (states) => {
-    console.log(`[echo] connection: ${states.previous} -> ${states.current}`);
-});
-window.Echo.connector.pusher.connection.bind('error', (err) => {
-    console.error('[echo] connection error — check ABLY_KEY/VITE_ABLY_PUBLIC_KEY in .env and that your Ably app/key is active:', err);
+window.Echo.connector.ably.connection.on((stateChange) => {
+    console.log(`[echo] connection: ${stateChange.previous} -> ${stateChange.current}`);
+    if (stateChange.current === 'failed' || stateChange.current === 'suspended') {
+        console.error('[echo] Ably connection failed/suspended — check ABLY_KEY in .env and that /broadcasting/auth is reachable:', stateChange.reason);
+    }
 });
