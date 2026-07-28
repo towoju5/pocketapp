@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
+use App\Listeners\BroadcastWalletBalance;
 use App\Models\Bitgo;
 use App\Models\Option;
+use Bavix\Wallet\Internal\Events\BalanceUpdatedEventInterface;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
@@ -24,6 +27,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Real-time balance sync across every open tab/device (see
+        // WalletBalanceUpdated's docblock) — hooked at the wallet-package
+        // level so it covers every balance-affecting action generically,
+        // not just trade placement/settlement.
+        Event::listen(BalanceUpdatedEventInterface::class, BroadcastWalletBalance::class);
+
         // Check if the options table exists before querying
         if (Schema::hasTable('options')) {
             $social_trades = social_trades();

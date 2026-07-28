@@ -45,6 +45,14 @@ function parseDuration(text) {
 export default class TradingDashboard {
     constructor(options) {
         this.options = options;
+        // Present only on pages (e.g. dashboard-ui.blade.php / base_url/ui)
+        // that opt into driving the asset list + chart from the
+        // independent Brokeret broadcast channel (see StreamBrokeretFeed /
+        // BrokeretTicksUpdated on the backend) instead of this app's own DB
+        // catalog + 'asset-prices' broadcast — see _initLiveFeed(). The
+        // backend owns the actual WebSocket connection to Brokeret; the
+        // browser only ever talks to this app's own broadcaster.
+        this.liveFeedConfig = options.liveFeed || null;
         this.assetsBySymbol = new Map((options.assets || []).map((a) => [a.symbol, a]));
 
         const restoredTabs = this._restoreTabs();
@@ -84,7 +92,11 @@ export default class TradingDashboard {
         this._renderTfOptions();
         this._renderChartTypeOptions();
         this._startClock();
-        this._startAssetStatusPolling();
+        if (this.liveFeedConfig) {
+            this._initLiveFeed();
+        } else {
+            this._startAssetStatusPolling();
+        }
 
         window.toggleTradeMenu = (button, tabKey) => this._toggleTradeMenu(button, tabKey);
     }
@@ -93,8 +105,8 @@ export default class TradingDashboard {
         this.el = {
             assetPopoverBtn: document.getElementById('assetPopoverBtn'),
             assetPopover: document.getElementById('assetPopover'),
-            assetCatButtons: document.querySelectorAll('.asset-cat-btn'),
-            assetRows: document.querySelectorAll('.asset-row'),
+            assetCatButtonsContainer: document.getElementById('assetCatButtons'),
+            assetRowListContainer: document.getElementById('assetRowList'),
             assetSearchInput: document.getElementById('assetSearchInput'),
             activeAssetLabel: document.getElementById('activeAssetLabel'),
             rateLabel: document.getElementById('rateLabel'),
@@ -169,15 +181,29 @@ export default class TradingDashboard {
         };
     }
 
+    /** Live NodeLists queried on demand rather than cached once — dashboard-ui's live-feed mode appends category buttons/rows well after construction. */
+    _assetCatButtons() {
+        return this.el.assetCatButtonsContainer?.querySelectorAll('.asset-cat-btn') ?? [];
+    }
+
+    _assetRows() {
+        return this.el.assetRowListContainer?.querySelectorAll('.asset-row') ?? [];
+    }
+
     _bindStaticEvents() {
         this.el.assetPopoverBtn?.addEventListener('click', () => this._toggleAssetPopover());
         this.el.addTabBtn?.addEventListener('click', () => this._toggleAssetPopover(true));
-        this.el.assetCatButtons.forEach((btn) => {
-            btn.addEventListener('click', () => this._selectCategory(btn.dataset.cat));
+        // Delegated (not bound per-element) so category buttons/rows added
+        // dynamically after construction — live-feed mode — work with no
+        // extra wiring.
+        this.el.assetCatButtonsContainer?.addEventListener('click', (e) => {
+            const btn = e.target.closest('.asset-cat-btn');
+            if (btn) this._selectCategory(btn.dataset.cat);
         });
         this.el.assetSearchInput?.addEventListener('input', (e) => this._filterAssetRows(e.target.value));
-        this.el.assetRows.forEach((row) => {
-            row.addEventListener('click', () => this._selectAsset(row.dataset.symbol));
+        this.el.assetRowListContainer?.addEventListener('click', (e) => {
+            const row = e.target.closest('.asset-row');
+            if (row) this._selectAsset(row.dataset.symbol);
         });
 
         this.el.chartTypeBtn?.addEventListener('click', () => this._toggleChartTypePopover());
@@ -255,17 +281,17 @@ export default class TradingDashboard {
 
     _selectCategory(cat) {
         this.state.currentCat = cat;
-        this.el.assetCatButtons.forEach((btn) => {
+        this._assetCatButtons().forEach((btn) => {
             btn.classList.toggle('asset-cat-btn--active', btn.dataset.cat === cat);
         });
-        this.el.assetRows.forEach((row) => {
+        this._assetRows().forEach((row) => {
             row.classList.toggle('hidden', row.dataset.cat !== cat);
         });
     }
 
     _filterAssetRows(search) {
         const needle = search.trim().toLowerCase();
-        this.el.assetRows.forEach((row) => {
+        this._assetRows().forEach((row) => {
             const matchesCat = !needle || row.dataset.cat === this.state.currentCat;
             const matchesSearch = !needle || (row.dataset.search || '').includes(needle);
             row.classList.toggle('hidden', needle ? !matchesSearch : row.dataset.cat !== this.state.currentCat);
@@ -773,6 +799,15 @@ export default class TradingDashboard {
 
         if (this.el.directionInput) this.el.directionInput.value = direction;
 
+        // Optimistic UI: the request/response round trip (network + Laravel
+        // bootstrap + DB writes) is real time the click otherwise just sits
+        // there — showing the card/countdown/chart marker off the same
+        // inputs the server will use (current price, amount, duration)
+        // before the response even lands makes the click feel instant
+        // regardless of that latency. Reconciled with the real trade below;
+        // removed outright if placement actually fails.
+        const optimistic = this._renderOptimisticTradeCard(direction);
+
         try {
             const formData = new FormData(this.el.tradeForm);
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
@@ -789,8 +824,17 @@ export default class TradingDashboard {
 
             if (res.ok && data?.status) {
                 window.toastr?.success(data.message || 'Trade placed successfully!');
-                if (data.html) {
-                    document.getElementById('tradesList')?.insertAdjacentHTML('afterbegin', data.html);
+                this._removeOptimisticTradeCard(optimistic?.id);
+                // Insert + arm the countdown from this response rather than
+                // waiting on the TradeUpdated broadcast (which is
+                // ShouldBroadcast — queued — and can lag behind a busy/absent
+                // worker): reuses the exact same insert/countdown logic the
+                // live broadcast path uses (tradeCards.js), just fed from the
+                // XHR response instead of the socket event. The broadcast
+                // still arrives shortly after and reconciles wallet_balance,
+                // which isn't in this response.
+                if (data.trade && data.html && window.updateOrInsertTradeCard) {
+                    window.updateOrInsertTradeCard({ ...data.trade, html: data.html });
                 }
                 if (data.trade?.trade_close_time && data.trade?.trade_currency) {
                     const expiryDate = parseServerDate(data.trade.trade_close_time);
@@ -800,10 +844,12 @@ export default class TradingDashboard {
                     }
                 }
             } else {
+                this._removeOptimisticTradeCard(optimistic?.id);
                 const message = data?.message || data?.errors || 'Unable to place trade. Please try again.';
                 window.toastr?.error(typeof message === 'string' ? message : 'Unable to place trade. Please try again.');
             }
         } catch (e) {
+            this._removeOptimisticTradeCard(optimistic?.id);
             console.error('[TradingDashboard] trade submit failed', e);
             window.toastr?.error('Unable to place trade. Please try again.');
         } finally {
@@ -811,6 +857,68 @@ export default class TradingDashboard {
             const asset = this.assetsBySymbol.get(this.state.activeAssetSymbol);
             this.el.ctaButtons.forEach((btn) => { btn.disabled = asset?.online === false; });
         }
+    }
+
+    /**
+     * Builds and inserts a provisional trade card off the same inputs the
+     * server is about to receive (symbol, amount, duration, direction) plus
+     * whatever price is currently on screen — not the server's actual
+     * entry price, which is read from Redis a moment later in placeTrade().
+     * Purely a perceived-latency trick (see _submitTrade): the real trade
+     * from the server response replaces this one outright, so a few cents
+     * of drift between this provisional price and the real entry price is
+     * never visible for more than the length of the request.
+     */
+    _renderOptimisticTradeCard(direction) {
+        const list = document.getElementById('openTradeList');
+        if (!list) return null;
+
+        const symbol = this.state.activeAssetSymbol;
+        const asset = this.assetsBySymbol.get(symbol);
+        const amount = this.state.tradeAmount;
+        const margin = parseFloat(asset?.asset_profit_margin ?? this.options.initialProfitMargin ?? 0);
+        const payout = amount + margin * amount;
+        const profit = margin * amount;
+        const pct = (margin * 100).toFixed(0);
+        const closeTimeMs = Date.now() + this.state.tradeDurationSec * 1000;
+        const entryPrice = this.chart?.feeds.get(symbol)?.lastPrice;
+        const id = `optimistic-${Date.now()}`;
+        const up = direction === 'up';
+
+        document.getElementById('openTradeListEmpty')?.remove();
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = `
+            <div class="trade-card" id="trade-card-${id}" style="border-left-color:#f2a93b;">
+                <div class="trade-card__row">
+                    <div class="trade-card__asset">
+                        <span class="trade-card__dir trade-card__dir--${up ? 'up' : 'down'}"><i class="fas fa-arrow-${up ? 'up' : 'down'}"></i></span>
+                        <span class="trade-card__symbol">${symbol}</span>
+                        <span class="trade-card__pct">+${pct}%</span>
+                    </div>
+                    <div class="trade-card__countdown" id="countdown-${id}">--:--:--</div>
+                </div>
+                <div class="trade-card__row trade-card__row--figures">
+                    <div><div class="trade-card__label">Stake</div><div class="trade-card__value">$${amount.toFixed(2)}</div></div>
+                    <div><div class="trade-card__label">Potential Payout</div><div class="trade-card__value">$${payout.toFixed(2)}</div></div>
+                    <div><div class="trade-card__label">Potential Profit</div><div class="trade-card__value">+$${profit.toFixed(2)}</div></div>
+                </div>
+            </div>
+        `.trim();
+        list.prepend(wrapper.firstElementChild);
+
+        window.startCountdowns?.([{
+            id, trade_currency: symbol,
+            trade_close_time: new Date(closeTimeMs).toISOString(),
+            start_price: entryPrice,
+        }]);
+
+        return { id };
+    }
+
+    _removeOptimisticTradeCard(id) {
+        if (!id) return;
+        document.getElementById(`trade-card-${id}`)?.remove();
+        this.chart?.clearExpiryLine(id);
     }
 
     // ---- right rail (trades/signals/social/express/tournaments/pending/hotkeys) ----
@@ -894,7 +1002,8 @@ export default class TradingDashboard {
             const online = asset?.online !== false;
             const priceEl = row.querySelector('.mw-price');
             const statusEl = row.querySelector('.mw-status');
-            if (priceEl) priceEl.textContent = feed?.lastPrice != null ? feed.lastPrice : '—';
+            const price = asset?.lastPrice ?? feed?.lastPrice;
+            if (priceEl) priceEl.textContent = price != null ? this._formatLivePrice(symbol, price) : '—';
             if (statusEl) {
                 statusEl.textContent = online ? 'Online' : 'Offline';
                 statusEl.style.color = online ? '#16c087' : '#7c86a3';
@@ -983,6 +1092,7 @@ export default class TradingDashboard {
             colorScheme: this.state.colorScheme,
             showGrid: this.state.showGrid,
             historyUrl: this.options.historyUrl,
+            disableBroadcast: !!this.liveFeedConfig,
         });
         this.el.toggleAreaBtn?.classList.toggle('toggle--on', this.state.showArea);
         this.el.toggleGridBtn?.classList.toggle('toggle--on', this.state.showGrid);
@@ -998,9 +1108,167 @@ export default class TradingDashboard {
 
     _onOrderTick(price, epochMs) {
         if (this.el.livePrice) this.el.livePrice.textContent = String(price);
-        if (this.el.sourceLabel) this.el.sourceLabel.textContent = 'Live · iqcent';
+        if (this.el.sourceLabel) this.el.sourceLabel.textContent = this.liveFeedConfig ? 'Live · Brokeret' : 'Live · iqcent';
         if (this.el.sourceDot) this.el.sourceDot.classList.add('source-dot--live');
         if (this.state.autoScroll) this.chart?.scrollToRealTime();
+    }
+
+    // ---- live feed (base_url/ui — backend-mediated Brokeret broadcast) ----
+
+    /**
+     * Subscribes to the backend's own Brokeret rebroadcast (see
+     * StreamBrokeretFeed / App\Events\BrokeretTicksUpdated) — the browser
+     * never connects to Brokeret directly; the backend owns that WebSocket
+     * and relays ticks over this app's normal broadcaster (Ably) instead,
+     * the same way chart.js's default _initBroadcast() does for the main
+     * dashboard's 'asset-prices' channel, just on a separate channel/event
+     * so the two pipelines can't interfere with each other. The asset
+     * catalog isn't known up front like it is for the DB-backed dashboard,
+     * so categories and rows are built incrementally as symbols are first
+     * observed on the channel.
+     */
+    _initLiveFeed() {
+        this._setFeedStatus('connecting');
+        if (!window.Echo) return;
+
+        window.Echo.channel('brokeret-feed').listen('.ticks-updated', (e) => {
+            this._markLiveFeedActive();
+            this._onLiveTicks((e.ticks || []).map((t) => ({
+                symbol: t.symbol, bid: t.bid, ask: t.ask, mid: t.mid, category: t.category, t: t.t,
+            })));
+        });
+
+        this._startLiveFeedStaleCheck();
+    }
+
+    /** Ticks arrive several times a second while connected — a gap longer than this means the feed (or its backend process) has gone quiet. */
+    _markLiveFeedActive() {
+        this._lastLiveFeedTickAt = Date.now();
+        this._setFeedStatus('live');
+    }
+
+    _startLiveFeedStaleCheck() {
+        const STALE_MS = 20000;
+        const ASSET_OFFLINE_MS = 45000;
+        setInterval(() => {
+            if (this._lastLiveFeedTickAt && (Date.now() - this._lastLiveFeedTickAt) > STALE_MS) {
+                this._setFeedStatus('reconnecting');
+            }
+            const now = Date.now();
+            this.assetsBySymbol.forEach((asset, symbol) => {
+                if (asset.online === false || !asset._lastTickAt) return;
+                if ((now - asset._lastTickAt) > ASSET_OFFLINE_MS) this._onLiveAssetOffline(symbol);
+            });
+        }, 5000);
+    }
+
+    _setFeedStatus(status) {
+        this.el.sourceDot?.classList.toggle('source-dot--live', status === 'live');
+        if (this.el.sourceLabel) {
+            this.el.sourceLabel.textContent = status === 'live' ? 'Live · Brokeret'
+                : status === 'reconnecting' ? 'Reconnecting…' : 'Connecting…';
+        }
+    }
+
+    _liveCategoryLabel(cat) {
+        const labels = this.liveFeedConfig?.categoryLabels || {};
+        return labels[cat] || (cat ? cat.charAt(0).toUpperCase() + cat.slice(1) : 'Other');
+    }
+
+    _onLiveTicks(updates) {
+        updates.forEach(({ symbol, bid, ask, mid, category, t }) => {
+            let asset = this.assetsBySymbol.get(symbol);
+            if (!asset) {
+                asset = {
+                    symbol, name: symbol, asset_group: category,
+                    // No DB payout config exists for a symbol discovered
+                    // purely from the stream — fall back to whatever margin
+                    // the server-seeded default asset carries.
+                    asset_profit_margin: this.options.initialProfitMargin ?? 0.85,
+                    is_otc: false,
+                };
+                this.assetsBySymbol.set(symbol, asset);
+            }
+            asset.bid = bid;
+            asset.ask = ask;
+            asset.lastPrice = mid;
+            asset.online = true;
+            asset._lastTickAt = Date.now();
+
+            if (!asset._rowRendered) {
+                // Brokeret's own category wins once observed, even for the
+                // server-seeded default asset (whose asset_group otherwise
+                // came from the unrelated DB taxonomy).
+                asset.asset_group = category;
+                asset._rowRendered = true;
+                this._ensureCategoryButton(category);
+                this._addAssetRow(asset);
+                if (!this.state.currentCat) this._selectCategory(category);
+            } else {
+                this._updateAssetRowPrice(symbol, mid);
+            }
+
+            // Only symbols with an open chart tab have a feed to route into.
+            if (this.chart?.feeds.has(symbol)) {
+                this.chart.ingestExternalTick(symbol, mid, t);
+            }
+            if (symbol === this.state.activeAssetSymbol) {
+                this._onAssetAvailabilityChange(symbol, true);
+            }
+        });
+    }
+
+    _onLiveAssetOffline(symbol) {
+        const asset = this.assetsBySymbol.get(symbol);
+        if (asset) asset.online = false;
+        this.el.assetRowListContainer?.querySelector(`[data-symbol="${symbol}"] .asset-status-badge`)?.classList.remove('hidden');
+        if (symbol === this.state.activeAssetSymbol) this._onAssetAvailabilityChange(symbol, false);
+    }
+
+    _ensureCategoryButton(cat) {
+        const container = this.el.assetCatButtonsContainer;
+        if (!container || container.querySelector(`[data-cat="${cat}"]`)) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'asset-cat-btn';
+        btn.dataset.cat = cat;
+        btn.style.cssText = 'display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;font-size:13px;font-weight:500;border:none;cursor:pointer;text-align:left;background:transparent;color:#a190c9;width:100%;';
+        btn.textContent = this._liveCategoryLabel(cat);
+        container.appendChild(btn);
+    }
+
+    _addAssetRow(asset) {
+        const container = this.el.assetRowListContainer;
+        if (!container || container.querySelector(`[data-symbol="${asset.symbol}"]`)) return;
+        document.getElementById('assetRowListEmpty')?.remove();
+        const row = document.createElement('div');
+        row.className = 'asset-row' + (asset.asset_group === this.state.currentCat ? '' : ' hidden');
+        row.dataset.cat = asset.asset_group || '';
+        row.dataset.symbol = asset.symbol;
+        row.dataset.search = (asset.symbol + ' ' + (asset.name || '')).toLowerCase();
+        row.dataset.online = '1';
+        row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px;border-radius:8px;cursor:pointer;';
+        row.innerHTML = `
+            <div class="flex items-center gap-2.5">
+                <span class="text-[13px] font-medium">${asset.symbol}</span>
+                <span class="asset-status-badge hidden text-[10px] font-semibold px-1.5 py-0.5 rounded" style="background:rgba(124,134,163,0.15);color:#a190c9;">Offline</span>
+            </div>
+            <span class="row-price text-[13px] font-semibold text-[#a190c9]">&mdash;</span>
+        `;
+        container.appendChild(row);
+        this._updateAssetRowPrice(asset.symbol, asset.lastPrice);
+    }
+
+    _updateAssetRowPrice(symbol, price) {
+        const row = this.el.assetRowListContainer?.querySelector(`[data-symbol="${symbol}"]`);
+        if (!row) return;
+        const priceEl = row.querySelector('.row-price');
+        if (priceEl && price != null) priceEl.textContent = this._formatLivePrice(symbol, price);
+        row.querySelector('.asset-status-badge')?.classList.add('hidden');
+    }
+
+    _formatLivePrice(symbol, price) {
+        return Number(price).toFixed(this._inferPricePrecision(symbol));
     }
 
     _onAssetAvailabilityChange(symbol, available) {
@@ -1044,7 +1312,7 @@ export default class TradingDashboard {
             }
         });
 
-        this.el.assetRows.forEach((row) => {
+        this._assetRows().forEach((row) => {
             const symbol = row.dataset.symbol;
             if (!Object.prototype.hasOwnProperty.call(status, symbol)) return;
             const online = !!status[symbol];

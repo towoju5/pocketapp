@@ -5,6 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    {{-- Read by resources/js/echo.js at page-load time (not baked in at
+         build time) so switching BROADCAST_CONNECTION in .env and reloading
+         the page is enough to switch which realtime backend the browser
+         talks to — no `npm run build` needed. --}}
+    <meta name="broadcaster" content="{{ config('broadcasting.default') }}">
     <title>@yield('title', 'Trading - Polaris Option')</title>
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">

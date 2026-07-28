@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Tournament;
 use App\Models\User;
+use App\Services\BrokeretFeedService;
 use App\Services\PriceFeedService;
 use App\Services\TradeSettlementService;
 use Illuminate\Bus\Queueable;
@@ -24,7 +25,7 @@ class EvaluateTrade implements ShouldQueue
         $this->trade = $trade;
     }
 
-    public function handle(PriceFeedService $priceFeed, TradeSettlementService $settlement)
+    public function handle(PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed, TradeSettlementService $settlement)
     {
         try {
             Log::debug("Evaluating trade: " . $this->trade->id);
@@ -48,9 +49,18 @@ class EvaluateTrade implements ShouldQueue
 
             // Server-cached price (kept warm by the ticker collector — see
             // TickerController::collectBatch) is authoritative — falls back
-            // to the ad-hoc REST scrape only if
-            // the cache has nothing for this symbol.
-            $currentPrice = $priceFeed->getPrice($trade->trade_currency) ?? getAssetData($trade->trade_currency, true);
+            // to BrokeretFeedService (for symbols only that independent
+            // pipeline knows about, e.g. base_url/ui's Gold/"XAUUSD" — see
+            // TradeController::placeTrade, which resolves entry price the
+            // same way) and only then to the ad-hoc REST scrape.
+            $currentPrice = $priceFeed->getPrice($trade->trade_currency);
+            if ($currentPrice === null) {
+                $latest = $brokeretFeed->getLatest($trade->trade_currency);
+                $currentPrice = ($latest && isset($latest['b'], $latest['a']))
+                    ? (((float) $latest['b'] + (float) $latest['a']) / 2)
+                    : null;
+            }
+            $currentPrice ??= getAssetData($trade->trade_currency, true);
             if (is_array($currentPrice)) {
                 Log::info("checking rate as an array: ". json_encode($currentPrice));
             }

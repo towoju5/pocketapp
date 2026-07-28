@@ -221,7 +221,7 @@ export class ChartManager {
     constructor(container, {
         onOrderTick, onAvailabilityChange, onDrawingsChanged, onUserDrag, pricePrecision = 5,
         chartType = 'candles', showArea = true, periodSeconds = 60,
-        colorScheme = 'classic', showGrid = true, historyUrl = null,
+        colorScheme = 'classic', showGrid = true, historyUrl = null, disableBroadcast = false,
     } = {}) {
         this.container = container;
         this.historyUrl = historyUrl;
@@ -298,7 +298,12 @@ export class ChartManager {
             },
         });
         this._applyCenterOffset();
-        this._initBroadcast();
+        // disableBroadcast: true opts out of the backend's Echo broadcast
+        // entirely — used by pages (e.g. dashboard-ui.blade.php) that drive
+        // ticks from a direct external WebSocket via ingestExternalTick()
+        // instead, so a symbol's chart never receives two competing price
+        // sources at once.
+        if (!disableBroadcast) this._initBroadcast();
     }
 
     /**
@@ -322,6 +327,11 @@ export class ChartManager {
         const feed = this.feeds.get(symbol);
         if (!feed) return;
         feed.ingestTick(price, t || Date.now());
+    }
+
+    /** Public entry point for external (non-Echo) tick sources, e.g. BrokeretFeed. Only affects symbols with an already-open tab. */
+    ingestExternalTick(symbol, price, epochMs) {
+        this._onBroadcastTick({ symbol, price, t: epochMs });
     }
 
     _candlesForType(feed) {

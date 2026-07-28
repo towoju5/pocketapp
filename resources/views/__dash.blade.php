@@ -51,12 +51,14 @@
             {{-- Asset popover --}}
             <div id="assetPopover" class="hidden absolute top-14 left-4 right-4 sm:right-auto z-30 w-auto sm:w-[650px] max-w-[650px] bg-[#2d1a5c] border border-[#4a2f7a] rounded-2xl flex overflow-hidden" style="box-shadow:0 30px 80px rgba(0,0,0,0.5);">
                 <div class="w-[110px] sm:w-[190px] p-2 sm:p-3 border-r border-[#4a2f7a] flex flex-col gap-1 box-border">
-                    @foreach($__groups as $group)
-                        <button type="button" class="asset-cat-btn {{ $loop->first ? 'asset-cat-btn--active' : '' }}" data-cat="{{ $group }}"
-                            style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;font-size:13px;font-weight:500;border:none;cursor:pointer;text-align:left;background:transparent;color:#a190c9;width:100%;">
-                            {{ $catLabels[$group] ?? ucfirst(strtolower($group)) }}
-                        </button>
-                    @endforeach
+                    <div id="assetCatButtons" class="flex flex-col gap-1">
+                        @foreach($__groups as $group)
+                            <button type="button" class="asset-cat-btn {{ $loop->first ? 'asset-cat-btn--active' : '' }}" data-cat="{{ $group }}"
+                                style="display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:8px;font-size:13px;font-weight:500;border:none;cursor:pointer;text-align:left;background:transparent;color:#a190c9;width:100%;">
+                                {{ $catLabels[$group] ?? ucfirst(strtolower($group)) }}
+                            </button>
+                        @endforeach
+                    </div>
                     <p class="text-[11px] text-[#a190c9] leading-relaxed mt-3 px-3">OTC quotes are provided by liquidity providers without exchange supervision.</p>
                 </div>
                 <div class="flex-1 p-3 flex flex-col min-h-0 box-border">
@@ -64,7 +66,7 @@
                         <input type="text" id="assetSearchInput" placeholder="Search" class="bg-transparent border-0 outline-none flex-1 text-[#ece5ff] text-sm">
                         <i class="fa fa-magnifying-glass text-[#a190c9]" style="font-size:12px;"></i>
                     </div>
-                    <div class="flex-1 overflow-y-auto" style="max-height:380px;">
+                    <div id="assetRowList" class="flex-1 overflow-y-auto" style="max-height:380px;">
                         @foreach($__allAssets as $asset)
                             @php($__online = $__priceFeed->isOnline($asset->symbol))
                             <div class="asset-row {{ $loop->first ? '' : 'hidden' }}" data-cat="{{ $asset->asset_group }}" data-symbol="{{ $asset->symbol }}"
@@ -196,7 +198,7 @@
                         </div>
                         <div class="flex items-stretch gap-1.5 mb-2">
                             <button type="button" id="amountStepDown" class="max-sm:hidden sm:block w-9 flex-shrink-0 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] font-bold hover:text-white hover:border-[#f2a93b]">&minus;</button>
-                            <input type="text" inputmode="decimal" pattern="^\d*\.?\d*$" id="input_amount_field" name="amount" autocomplete="off" placeholder="10" value="10" readonly
+                            <input type="text" inputmode="decimal" pattern="^\d*\.?\d*$" id="input_amount_field" name="amount" autocomplete="off" placeholder="10" value="10"
                                 class="max-sm:pointer-events-none flex-1 min-w-0 bg-[#3d2570] border border-[#4a2f7a] rounded-lg text-center outline-none text-[#ece5ff] font-semibold text-sm">
                             <button type="button" id="amountStepUp" class="max-sm:hidden sm:block w-9 flex-shrink-0 rounded-lg bg-[#3d2570] border border-[#4a2f7a] text-[#a190c9] font-bold hover:text-white hover:border-[#f2a93b]">+</button>
                         </div>
@@ -431,6 +433,13 @@
         window.Echo.private('trades.user.{{ auth()->id() }}')
             .listen('TradeUpdated', (event) => {
                 if (window.updateOrInsertTradeCard) window.updateOrInsertTradeCard(event);
+            })
+            // Fires on every wallet balance change (deposits, withdrawals,
+            // promo redemption, admin credit, P2P, etc.), not just trades —
+            // see App\Events\WalletBalanceUpdated — so the topbar balance
+            // stays in sync across every open tab/device with no reload.
+            .listen('.balance-updated', (event) => {
+                if (window.applyTopbarBalance) window.applyTopbarBalance(event.wallet_slug, event.balance);
             });
 
         window.Echo.channel('signals')

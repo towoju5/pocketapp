@@ -31,6 +31,8 @@
         <!-- TradingView Widget Script -->
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        {{-- Read by resources/js/echo.js at page-load time — see layouts/desktop/trading.blade.php's copy of this tag for why. --}}
+        <meta name="broadcaster" content="{{ config('broadcasting.default') }}">
         <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css">
         <script src="//unpkg.com/lightweight-charts@3.8.0/dist/lightweight-charts.standalone.production.js"></script>
         <style>

@@ -1,13 +1,20 @@
 <div class="h-16 border-b border-[#2a3350] flex items-center justify-between gap-2 sm:gap-3.5 px-3 sm:px-5 flex-shrink-0 relative box-border w-full">
 
+    @php
+        $__activeWalletSlug = data_get($wallet_balance, 'slug', auth()->user()->trade_wallet ?? 'qt_demo_usd');
+        $__isDemoWallet = is_demo_wallet($__activeWalletSlug);
+    @endphp
+
     <a href="{{ route('dashboard') }}" class="w-9 h-9 rounded-[10px] flex items-center justify-center font-bold text-white text-xs flex-shrink-0" style="background:linear-gradient(135deg,#4f8ef7,#a855f7);">TX</a>
 
     <div class="flex items-center gap-2 sm:gap-3.5 ml-auto">
     <div class="relative">
-        <button type="button" id="balanceMenuBtn" class="bg-transparent border border-[#2a3350] cursor-pointer text-right px-2 sm:px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-[#d7dcea]">
+        <button type="button" id="balanceMenuBtn" class="relative bg-transparent border border-[#2a3350] cursor-pointer text-right px-2 sm:px-3 py-1.5 rounded-lg flex items-center gap-1.5 sm:gap-2 text-[#d7dcea]">
+            {{-- Straddles the button's own top border, centered — flips text/color when the active wallet (see topbarBalance's data-wallet-slug) changes. --}}
+            <span id="topbarWalletModeBadge" class="absolute left-1/2 px-1.5 py-[1px] rounded-full text-[9px] font-bold leading-none tracking-wide whitespace-nowrap {{ $__isDemoWallet ? 'bg-[#f2a93b] text-[#1a1030]' : 'bg-[#16c087] text-[#04150d]' }}" style="top:0;transform:translate(-50%,-50%);">{{ $__isDemoWallet ? 'DEMO' : 'LIVE' }}</span>
             <span>
                 <span class="hidden sm:block text-[11px] text-[#7c86a3]">{{ ucfirst($wallet_balance['name'] ?? 'Wallet') }}</span>
-                <span id="topbarBalance" class="block text-[13px] sm:text-[15px] font-semibold" data-wallet-slug="{{ data_get($wallet_balance, 'slug', auth()->user()->trade_wallet ?? 'qt_demo_usd') }}">{{ formatPrice($wallet_balance['balance'] ?? 0) }}</span>
+                <span id="topbarBalance" class="block text-[13px] sm:text-[15px] font-semibold" data-wallet-slug="{{ $__activeWalletSlug }}">{{ formatPrice($wallet_balance['balance'] ?? 0) }}</span>
             </span>
             <i class="fa fa-chevron-down text-[#7c86a3]" style="font-size:11px;"></i>
         </button>

@@ -13,7 +13,31 @@ use Illuminate\Http\Request;
 
 class HomeController extends Controller
 {
+    /**
+     * base_url/dashboard — the default landing dashboard (every login
+     * redirect, topbar logo, and nav link points at route('dashboard')).
+     * Renders dashboard-ui.blade.php: live chart/asset list driven off the
+     * independent Brokeret broadcast pipeline (see BrokeretFeedService /
+     * StreamBrokeretFeed and TradingDashboard.js's liveFeed option) rather
+     * than the legacy iqcent-backed __dash.blade.php, which is no longer
+     * routed to by default but is left in place, not deleted.
+     */
     public function dashboard(Request $request, PriceFeedService $priceFeed, $coin = null)
+    {
+        return view('dashboard-ui', $this->buildDashboardData($priceFeed, $coin));
+    }
+
+    /**
+     * base_url/ui — kept as a working alias of base_url/dashboard (same
+     * view, same data) now that dashboard-ui.blade.php is the default, in
+     * case anything still links or was bookmarked here.
+     */
+    public function ui(Request $request, PriceFeedService $priceFeed, $coin = null)
+    {
+        return view('dashboard-ui', $this->buildDashboardData($priceFeed, $coin));
+    }
+
+    private function buildDashboardData(PriceFeedService $priceFeed, $coin = null): array
     {
         $user = auth()->user();
         if (isset($coin)) {
@@ -45,7 +69,7 @@ class HomeController extends Controller
         $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->where('trade_status', 'open')->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->get();
         $closedExpressTrades = ExpressTrade::where('user_id', $user->id)->whereIn('trade_status', ['win', 'lose'])->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->take(20)->get();
 
-        return view('__dash', compact([
+        return compact([
             'data',
             'assetCategories',
             'isOutOfTradingHours',
@@ -59,7 +83,7 @@ class HomeController extends Controller
             'recent_closed_trades',
             'openedExpressTrades',
             'closedExpressTrades'
-        ]));
+        ]);
     }
 
     public function demo(Request $request, PriceFeedService $priceFeed, $coin = null)
@@ -100,7 +124,7 @@ class HomeController extends Controller
 
         $wallet_balance = $user->getWallet($user->active_wallet_slug ?? 'qt_demo_usd') ?? ["balance" => 0];
 
-        return view('__dash', compact([
+        return view('dashboard-ui', compact([
             'data',
             'assetCategories',
             'isOutOfTradingHours',

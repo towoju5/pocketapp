@@ -43,7 +43,7 @@ export function updateOrInsertTradeCard(event) {
         window.tradingDashboard?.chart?.clearExpiryLine(event.id);
 
         if (event.trade_status === 'win' || event.trade_status === 'lose') {
-            updateTopbarBalance(event);
+            applyTopbarBalance(event.trade_wallet, event.wallet_balance);
             playResultSound(event.trade_status);
             showTradeResultToast(event);
         }
@@ -65,17 +65,24 @@ export function updateOrInsertTradeCard(event) {
             document.getElementById('openTradeListEmpty')?.remove();
             list.prepend(fresh);
         }
-        updateTopbarBalance(event);
+        applyTopbarBalance(event.trade_wallet, event.wallet_balance);
         startCountdowns([event]);
     }
 }
 
-/** Updates the topbar balance in place if this event's wallet matches the one currently shown. */
-function updateTopbarBalance(event) {
-    if (event.wallet_balance == null) return;
+/**
+ * Updates the topbar balance in place if `walletSlug` matches the one
+ * currently shown. Exported so it can be driven by any balance-affecting
+ * event, not just trade placement/settlement — see WalletBalanceUpdated
+ * (app/Events/WalletBalanceUpdated.php), which fires on every wallet
+ * mutation (deposits, withdrawals, promo redemption, admin credit, etc.),
+ * keeping the balance in sync across every open tab/device with no reload.
+ */
+export function applyTopbarBalance(walletSlug, balance) {
+    if (balance == null) return;
     const el = document.getElementById('topbarBalance');
-    if (!el || el.dataset.walletSlug !== event.trade_wallet) return;
-    el.textContent = `$${Number(event.wallet_balance).toFixed(2)}`;
+    if (!el || el.dataset.walletSlug !== walletSlug) return;
+    el.textContent = `$${Number(balance).toFixed(2)}`;
 }
 
 let audioCtx = null;

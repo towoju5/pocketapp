@@ -1,0 +1,306 @@
+  2026-07-28 04:03:21 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:03:22 App\Events\TradeUpdated ........................ 1s DONE
+  2026-07-28 04:03:22 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:03:22 App\Jobs\EvaluateTrade .................... 23.27ms DONE
+  2026-07-28 04:03:22 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:03:23 App\Events\TradeUpdated .................. 412.27ms DONE
+  2026-07-28 04:03:23 App\Jobs\EvaluateTrade ......................... RUNNING
+2026-07-28 04:03:38	cURL error:	2026-07-28 04:03:38	28	2026-07-28 04:03:38	Resolving timed out after 4000 milliseconds
+  2026-07-28 04:03:39 App\Jobs\EvaluateTrade ........................ 16s DONE
+  2026-07-28 04:03:39 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:03:42 App\Events\TradeUpdated ........................ 3s DONE
+  2026-07-28 04:03:42 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:03:42 App\Jobs\EvaluateTrade .................... 19.50ms DONE
+  2026-07-28 04:03:42 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:03:44 App\Events\TradeUpdated ........................ 1s DONE
+  2026-07-28 04:03:44 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:03:45 App\Jobs\EvaluateTrade ......................... 1s DONE
+  2026-07-28 04:03:45 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:03:46 App\Events\TradeUpdated .................. 715.46ms DONE
+  2026-07-28 04:03:46 App\Jobs\EvaluateTrade ......................... RUNNING
+2026-07-28 04:04:02	cURL error:	2026-07-28 04:04:02	28	2026-07-28 04:04:02	Resolving timed out after 4000 milliseconds
+2026-07-28 04:04:12	cURL error:	2026-07-28 04:04:12	28	2026-07-28 04:04:12	Resolving timed out after 4000 milliseconds
+2026-07-28 04:04:17	cURL error:	2026-07-28 04:04:17	28	2026-07-28 04:04:17	Resolving timed out after 4000 milliseconds
+  2026-07-28 04:04:18 App\Jobs\EvaluateTrade ........................ 32s DONE
+  2026-07-28 04:04:18 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:04:19 App\Events\TradeUpdated .................. 887.91ms DONE
+  2026-07-28 04:04:19 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:04:19 App\Jobs\EvaluateTrade .................... 16.51ms DONE
+  2026-07-28 04:04:19 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:04:20 App\Events\TradeUpdated .................. 914.12ms DONE
+  2026-07-28 04:04:20 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:04:22 App\Jobs\EvaluateTrade ......................... 1s DONE
+  2026-07-28 04:04:22 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:04:23 App\Events\TradeUpdated .................. 803.53ms DONE
+  2026-07-28 04:04:23 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:04:23 App\Jobs\EvaluateTrade .................... 12.27ms DONE
+  2026-07-28 04:04:23 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:04:23 App\Events\TradeUpdated .................. 870.38ms DONE
+  2026-07-28 04:04:23 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:04:24 App\Events\TradeUpdated .................. 895.21ms DONE
+  2026-07-28 04:04:24 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:04:25 App\Events\TradeUpdated .................. 906.73ms DONE
+  2026-07-28 04:04:25 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:04:26 App\Events\TradeUpdated .................. 803.78ms DONE
+  2026-07-28 04:04:26 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:04:27 App\Events\TradeUpdated .................. 817.08ms DONE
+  2026-07-28 04:04:27 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:04:28 App\Events\TradeUpdated .................. 822.76ms DONE
+  2026-07-28 04:04:28 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:04:28 App\Events\TradeUpdated .................. 775.30ms DONE
+  2026-07-28 04:04:28 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:04:29 App\Events\TradeUpdated .................. 842.86ms DONE
+  2026-07-28 04:16:12 Yadahan\AuthenticationLog\Notifications\NewDevice  RUNNING
+  2026-07-28 04:16:12 Yadahan\AuthenticationLog\Notifications\NewDevice  144.43ms DONE
+  2026-07-28 04:16:24 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:16:24 App\Events\TradeUpdated .................. 336.96ms DONE
+  2026-07-28 04:16:53 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:16:53 App\Jobs\EvaluateTrade ................... 231.41ms DONE
+  2026-07-28 04:16:53 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:16:54 App\Events\TradeUpdated .................. 295.05ms DONE
+  2026-07-28 04:22:00 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:22:00 App\Events\TradeUpdated .................. 269.61ms DONE
+  2026-07-28 04:22:15 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:22:16 App\Jobs\EvaluateTrade ................... 160.65ms DONE
+  2026-07-28 04:22:16 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:22:16 App\Events\TradeUpdated .................. 260.72ms DONE
+  2026-07-28 04:22:31 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:22:31 App\Events\TradeUpdated .................. 237.08ms DONE
+  2026-07-28 04:22:38 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:22:38 App\Events\TradeUpdated .................. 287.13ms DONE
+  2026-07-28 04:22:43 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:22:44 App\Jobs\EvaluateTrade .................... 93.26ms DONE
+  2026-07-28 04:22:44 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:22:44 App\Events\TradeUpdated .................. 268.12ms DONE
+  2026-07-28 04:22:52 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:22:52 App\Events\TradeUpdated .................. 235.95ms DONE
+  2026-07-28 04:22:56 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:22:56 App\Jobs\EvaluateTrade ................... 104.72ms DONE
+  2026-07-28 04:22:56 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:22:56 App\Events\TradeUpdated .................. 265.21ms DONE
+  2026-07-28 04:23:02 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:03 App\Events\TradeUpdated .................. 253.12ms DONE
+  2026-07-28 04:23:07 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:23:07 App\Jobs\EvaluateTrade ................... 120.10ms DONE
+  2026-07-28 04:23:07 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:07 App\Events\TradeUpdated .................. 239.81ms DONE
+  2026-07-28 04:23:12 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:12 App\Events\TradeUpdated .................. 239.79ms DONE
+  2026-07-28 04:23:16 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:23:16 App\Jobs\EvaluateTrade .................... 86.64ms DONE
+  2026-07-28 04:23:16 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:17 App\Events\TradeUpdated .................. 254.96ms DONE
+  2026-07-28 04:23:21 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:21 App\Events\TradeUpdated .................. 251.04ms DONE
+  2026-07-28 04:23:25 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:23:25 App\Jobs\EvaluateTrade .................... 99.69ms DONE
+  2026-07-28 04:23:25 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:25 App\Events\TradeUpdated .................. 233.64ms DONE
+  2026-07-28 04:23:31 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:23:31 App\Jobs\EvaluateTrade ................... 110.83ms DONE
+  2026-07-28 04:23:31 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:32 App\Events\TradeUpdated .................. 276.08ms DONE
+  2026-07-28 04:23:33 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:33 App\Events\TradeUpdated .................. 254.42ms DONE
+  2026-07-28 04:23:34 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:34 App\Events\TradeUpdated .................. 297.56ms DONE
+  2026-07-28 04:23:35 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:36 App\Events\TradeUpdated .................. 276.31ms DONE
+  2026-07-28 04:23:36 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:36 App\Events\TradeUpdated .................. 252.50ms DONE
+  2026-07-28 04:23:37 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:23:37 App\Jobs\EvaluateTrade ................... 101.14ms DONE
+  2026-07-28 04:23:37 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:37 App\Events\TradeUpdated .................. 229.54ms DONE
+  2026-07-28 04:23:37 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:37 App\Events\TradeUpdated .................. 254.70ms DONE
+  2026-07-28 04:23:37 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:38 App\Events\TradeUpdated .................. 245.02ms DONE
+  2026-07-28 04:23:39 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:23:39 App\Jobs\EvaluateTrade ................... 131.89ms DONE
+  2026-07-28 04:23:39 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:39 App\Events\TradeUpdated .................. 234.93ms DONE
+  2026-07-28 04:23:39 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:39 App\Events\TradeUpdated .................. 237.00ms DONE
+  2026-07-28 04:23:39 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:40 App\Events\TradeUpdated .................. 250.24ms DONE
+  2026-07-28 04:23:40 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:23:40 App\Jobs\EvaluateTrade ................... 115.03ms DONE
+  2026-07-28 04:23:40 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:23:40 App\Jobs\EvaluateTrade ................... 140.27ms DONE
+  2026-07-28 04:23:40 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:40 App\Events\TradeUpdated .................. 477.78ms DONE
+  2026-07-28 04:23:40 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:41 App\Events\TradeUpdated .................. 369.37ms DONE
+  2026-07-28 04:23:41 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:23:41 App\Jobs\EvaluateTrade ................... 141.81ms DONE
+  2026-07-28 04:23:41 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:41 App\Events\TradeUpdated .................. 269.69ms DONE
+  2026-07-28 04:23:42 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:23:42 App\Jobs\EvaluateTrade ................... 105.95ms DONE
+  2026-07-28 04:23:42 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:42 App\Events\TradeUpdated .................. 270.56ms DONE
+  2026-07-28 04:23:43 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:23:44 App\Jobs\EvaluateTrade ................... 145.95ms DONE
+  2026-07-28 04:23:44 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:23:44 App\Jobs\EvaluateTrade ................... 120.91ms DONE
+  2026-07-28 04:23:44 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:44 App\Events\TradeUpdated .................. 266.73ms DONE
+  2026-07-28 04:23:44 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:44 App\Events\TradeUpdated .................. 250.93ms DONE
+  2026-07-28 04:23:53 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:54 App\Events\TradeUpdated .................. 272.01ms DONE
+  2026-07-28 04:23:58 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:23:58 App\Jobs\EvaluateTrade ................... 145.41ms DONE
+  2026-07-28 04:23:58 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:23:58 App\Events\TradeUpdated .................. 280.15ms DONE
+  2026-07-28 04:25:47 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:25:47 App\Events\TradeUpdated .................. 264.32ms DONE
+  2026-07-28 04:25:54 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:25:55 App\Events\TradeUpdated .................. 282.36ms DONE
+  2026-07-28 04:25:59 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:25:59 App\Jobs\EvaluateTrade ................... 124.29ms DONE
+  2026-07-28 04:25:59 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:25:59 App\Events\TradeUpdated .................. 287.24ms DONE
+  2026-07-28 04:26:05 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:06 App\Events\TradeUpdated .................. 298.28ms DONE
+  2026-07-28 04:26:06 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:06 App\Events\TradeUpdated .................. 268.47ms DONE
+  2026-07-28 04:26:07 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:07 App\Events\TradeUpdated .................. 255.40ms DONE
+  2026-07-28 04:26:08 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:08 App\Events\TradeUpdated .................. 233.25ms DONE
+  2026-07-28 04:26:09 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:26:09 App\Jobs\EvaluateTrade ................... 117.93ms DONE
+  2026-07-28 04:26:09 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:10 App\Events\TradeUpdated .................. 257.43ms DONE
+  2026-07-28 04:26:10 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:26:10 App\Jobs\EvaluateTrade ................... 140.25ms DONE
+  2026-07-28 04:26:10 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:10 App\Events\TradeUpdated .................. 250.08ms DONE
+  2026-07-28 04:26:11 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:26:11 App\Jobs\EvaluateTrade ................... 111.00ms DONE
+  2026-07-28 04:26:11 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:11 App\Events\TradeUpdated .................. 228.23ms DONE
+  2026-07-28 04:26:12 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:26:13 App\Jobs\EvaluateTrade ................... 149.86ms DONE
+  2026-07-28 04:26:13 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:13 App\Events\TradeUpdated .................. 281.71ms DONE
+  2026-07-28 04:26:23 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:23 App\Events\TradeUpdated .................. 267.34ms DONE
+  2026-07-28 04:26:27 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:26:27 App\Jobs\EvaluateTrade ................... 133.80ms DONE
+  2026-07-28 04:26:27 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:28 App\Events\TradeUpdated .................. 287.52ms DONE
+  2026-07-28 04:26:36 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:36 App\Events\TradeUpdated .................. 303.97ms DONE
+  2026-07-28 04:26:40 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:26:40 App\Jobs\EvaluateTrade ................... 118.95ms DONE
+  2026-07-28 04:26:40 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:40 App\Events\TradeUpdated .................. 256.00ms DONE
+  2026-07-28 04:26:42 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:43 App\Events\TradeUpdated .................. 272.55ms DONE
+  2026-07-28 04:26:46 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:26:46 App\Jobs\EvaluateTrade ................... 107.13ms DONE
+  2026-07-28 04:26:46 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:46 App\Events\TradeUpdated .................. 242.95ms DONE
+  2026-07-28 04:26:52 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:26:52 App\Jobs\EvaluateTrade ................... 113.18ms DONE
+  2026-07-28 04:26:52 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:26:52 App\Events\TradeUpdated .................. 294.72ms DONE
+  2026-07-28 04:28:39 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:28:39 App\Events\TradeUpdated .................. 283.42ms DONE
+  2026-07-28 04:28:47 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:28:47 App\Jobs\EvaluateTrade .................... 48.52ms DONE
+  2026-07-28 04:28:47 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:28:48 App\Events\TradeUpdated .................. 581.93ms DONE
+  2026-07-28 04:28:58 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:28:58 App\Events\TradeUpdated .................. 249.96ms DONE
+  2026-07-28 04:29:01 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:01 App\Events\TradeUpdated .................. 287.48ms DONE
+  2026-07-28 04:29:02 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:29:03 App\Jobs\EvaluateTrade ................... 571.06ms DONE
+  2026-07-28 04:29:03 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:03 App\Events\TradeUpdated .................. 288.07ms DONE
+  2026-07-28 04:29:08 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:09 App\Events\TradeUpdated .................. 220.44ms DONE
+  2026-07-28 04:29:09 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:29:09 App\Jobs\EvaluateTrade .................... 16.20ms DONE
+  2026-07-28 04:29:09 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:09 App\Events\TradeUpdated .................. 253.56ms DONE
+  2026-07-28 04:29:11 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:29:11 App\Jobs\EvaluateTrade ................... 557.41ms DONE
+  2026-07-28 04:29:11 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:12 App\Events\TradeUpdated .................. 254.68ms DONE
+  2026-07-28 04:29:14 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:14 App\Events\TradeUpdated .................. 298.47ms DONE
+  2026-07-28 04:29:19 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:29:19 App\Jobs\EvaluateTrade ................... 479.95ms DONE
+  2026-07-28 04:29:19 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:20 App\Events\TradeUpdated .................. 261.48ms DONE
+  2026-07-28 04:29:27 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:27 App\Events\TradeUpdated .................. 250.57ms DONE
+  2026-07-28 04:29:32 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:29:32 App\Jobs\EvaluateTrade .................... 17.89ms DONE
+  2026-07-28 04:29:32 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:32 App\Events\TradeUpdated .................. 252.99ms DONE
+  2026-07-28 04:29:37 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:38 App\Events\TradeUpdated .................. 255.60ms DONE
+  2026-07-28 04:29:42 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:29:42 App\Jobs\EvaluateTrade ................... 540.98ms DONE
+  2026-07-28 04:29:42 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:42 App\Events\TradeUpdated .................. 249.16ms DONE
+  2026-07-28 04:29:46 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:47 App\Events\TradeUpdated .................. 269.06ms DONE
+  2026-07-28 04:29:50 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:29:50 App\Jobs\EvaluateTrade ................... 505.63ms DONE
+  2026-07-28 04:29:50 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:50 App\Events\TradeUpdated .................. 267.74ms DONE
+  2026-07-28 04:29:54 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:55 App\Events\TradeUpdated .................. 246.84ms DONE
+  2026-07-28 04:29:59 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:29:59 App\Jobs\EvaluateTrade .................... 21.82ms DONE
+  2026-07-28 04:29:59 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:29:59 App\Events\TradeUpdated .................. 255.12ms DONE
+  2026-07-28 04:30:31 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:30:31 App\Events\TradeUpdated .................. 275.59ms DONE
+  2026-07-28 04:30:36 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:30:37 App\Jobs\EvaluateTrade ................... 508.27ms DONE
+  2026-07-28 04:30:37 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:30:37 App\Events\TradeUpdated .................. 263.51ms DONE
+  2026-07-28 04:30:42 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:30:42 App\Events\TradeUpdated .................. 277.22ms DONE
+  2026-07-28 04:30:46 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:30:47 App\Jobs\EvaluateTrade ................... 528.71ms DONE
+  2026-07-28 04:30:47 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:30:47 App\Events\TradeUpdated .................. 267.65ms DONE
+  2026-07-28 04:30:51 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:30:51 App\Events\TradeUpdated .................. 272.85ms DONE
+  2026-07-28 04:30:55 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:30:56 App\Jobs\EvaluateTrade ................... 571.57ms DONE
+  2026-07-28 04:30:56 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:30:56 App\Events\TradeUpdated .................. 276.02ms DONE
+  2026-07-28 04:31:00 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:31:01 App\Events\TradeUpdated .................. 295.45ms DONE
+  2026-07-28 04:31:05 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:31:05 App\Jobs\EvaluateTrade ................... 644.51ms DONE
+  2026-07-28 04:31:05 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:31:06 App\Events\TradeUpdated .................. 278.78ms DONE
+  2026-07-28 04:31:10 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:31:10 App\Events\TradeUpdated .................. 261.42ms DONE
+  2026-07-28 04:31:14 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:31:14 App\Jobs\EvaluateTrade .................... 46.44ms DONE
+  2026-07-28 04:31:14 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:31:14 App\Events\TradeUpdated .................. 281.31ms DONE
+  2026-07-28 04:31:19 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:31:20 App\Events\TradeUpdated .................. 335.40ms DONE
+  2026-07-28 04:31:24 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:31:24 App\Jobs\EvaluateTrade ................... 552.73ms DONE
+  2026-07-28 04:31:24 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:31:24 App\Events\TradeUpdated .................. 272.29ms DONE
+  2026-07-28 04:31:29 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:31:30 App\Events\TradeUpdated .................. 271.74ms DONE
+  2026-07-28 04:31:34 App\Jobs\EvaluateTrade ......................... RUNNING
+  2026-07-28 04:31:34 App\Jobs\EvaluateTrade .................... 45.37ms DONE
+  2026-07-28 04:31:34 App\Events\TradeUpdated ........................ RUNNING
+  2026-07-28 04:31:34 App\Events\TradeUpdated .................. 287.34ms DONE

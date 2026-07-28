@@ -8,6 +8,7 @@ use App\Models\Assets;
 use App\Models\Trade;
 use App\Jobs\EvaluateTrade;
 use App\Models\User;
+use App\Services\BrokeretFeedService;
 use App\Services\PriceFeedService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
@@ -54,7 +55,7 @@ class TradeController extends Controller
         return view('trades.index', compact('trades', 'assets', 'mode'));
     }
 
-    public function placeTrade(Request $request, PriceFeedService $priceFeed)
+    public function placeTrade(Request $request, PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed)
     {
         $validated = Validator::make($request->all(), [
             'asset' => 'required|string',
@@ -78,11 +79,28 @@ class TradeController extends Controller
             return response()->json(['errors' => "Asset not found"], 404);
         }
 
-        if (!$priceFeed->isOnline($symbol)) {
+        // BrokeretFeedService is checked only when the primary (iqcent-based)
+        // pipeline has nothing for this symbol — existing assets' pricing is
+        // completely unaffected. This is what lets base_url/ui's live-feed-only
+        // assets (e.g. Gold, seeded under Brokeret's own "XAUUSD" symbol —
+        // see the add_gold_asset_for_brokeret_ui migration) actually be
+        // tradable, without touching PriceFeedService/the main pipeline at all.
+        $onlineViaPriceFeed = $priceFeed->isOnline($symbol);
+        $onlineViaBrokeret = !$onlineViaPriceFeed && $brokeretFeed->isOnline($symbol);
+
+        if (!$onlineViaPriceFeed && !$onlineViaBrokeret) {
             return response()->json(['status' => false, 'message' => 'This asset is currently unavailable for trading.'], 422);
         }
 
-        $currentPrice = $priceFeed->getPrice($symbol);
+        if ($onlineViaPriceFeed) {
+            $currentPrice = $priceFeed->getPrice($symbol);
+        } else {
+            $latest = $brokeretFeed->getLatest($symbol);
+            $currentPrice = ($latest && isset($latest['b'], $latest['a']))
+                ? (((float) $latest['b'] + (float) $latest['a']) / 2)
+                : null;
+        }
+
         if (null === $currentPrice) {
             return response()->json(['status' => false, 'message' => 'Unable to fetch the current price for this asset. Please try again.'], 422);
         }
@@ -165,9 +183,9 @@ class TradeController extends Controller
         return view('trades.show', compact('trade'));
     }
 
-    public function store(Request $request, PriceFeedService $priceFeed)
+    public function store(Request $request, PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed)
     {
-        return $this->placeTrade($request, $priceFeed);
+        return $this->placeTrade($request, $priceFeed, $brokeretFeed);
     }
 
     public function socialTrades()

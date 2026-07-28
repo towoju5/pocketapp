@@ -36,6 +36,8 @@ Route::get('/', [MarketingController::class, 'home'])->name('marketing.home');
 
 Route::get('dashboard/demo/{coin?}', [HomeController::class, 'demo'])->middleware(['auth', 'verified'])->name('dashboard.demo');
 Route::get('dashboard/{coin?}', [HomeController::class, 'dashboard'])->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('ui', [HomeController::class, 'ui'])->middleware(['auth', 'verified'])->name('dashboard.ui');
+Route::get('brokeret/history', [\App\Http\Controllers\BrokeretController::class, 'history'])->middleware(['auth', 'verified'])->name('brokeret.history');
 Route::get('assets/status', [HomeController::class, 'assetStatus'])->middleware(['auth', 'verified'])->name('assets.status');
 Route::get('assets/history', [PriceCollectorController::class, 'history'])->middleware(['auth', 'verified'])->name('assets.history');
 
