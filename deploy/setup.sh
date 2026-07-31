@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 #
+# NOTE: this script provisions the older Reverb + headless-Chrome-collector
+# configuration and defaults to a SQLite database. For a new install, prefer
+# ../install.sh instead — it sets up the current recommended stack (MySQL,
+# Redis, PHP 8.4, the Brokeret price stream, Ably broadcasting) end to end.
+# This script is kept for sites that were already deployed with the older
+# configuration it describes below.
+#
 # One-shot bootstrap for a fresh Ubuntu/Debian VPS: installs every system
 # dependency, configures .env, builds the app, wires up Supervisor (Reverb +
 # queue workers + the ticker price collector), the cron scheduler, and an
@@ -19,7 +26,7 @@
 #   DOMAIN          Your domain (e.g. example.com). Without it, APP_URL/nginx
 #                    are left for you to configure by hand.
 #   GIT_REPO_URL     Clone source if the app isn't already checked out here.
-#   PHP_VERSION      Defaults to 8.3.
+#   PHP_VERSION      Defaults to 8.4.
 #   APP_USER         System user the app runs as. Defaults to www-data.
 #
 # See README.md for the full explanation of what each step does and why.
@@ -29,7 +36,7 @@ set -euo pipefail
 APP_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DOMAIN="${DOMAIN:-}"
 GIT_REPO_URL="${GIT_REPO_URL:-}"
-PHP_VERSION="${PHP_VERSION:-8.3}"
+PHP_VERSION="${PHP_VERSION:-8.4}"
 APP_USER="${APP_USER:-www-data}"
 BATCH_SIZE=10
 
@@ -46,7 +53,7 @@ fi
 echo "== 1/11: System packages =="
 apt-get update -y
 apt-get install -y software-properties-common curl git unzip ca-certificates \
-    supervisor sqlite3 nginx certbot python3-certbot-nginx
+    supervisor sqlite3 redis-server nginx certbot python3-certbot-nginx
 
 if ! php -v 2>/dev/null | grep -q "PHP ${PHP_VERSION}"; then
     # Ubuntu's own repos only carry one PHP version at a time (often not the
@@ -59,7 +66,12 @@ apt-get install -y \
     "php${PHP_VERSION}-fpm" "php${PHP_VERSION}-cli" "php${PHP_VERSION}-sqlite3" \
     "php${PHP_VERSION}-curl" "php${PHP_VERSION}-mbstring" "php${PHP_VERSION}-xml" \
     "php${PHP_VERSION}-bcmath" "php${PHP_VERSION}-gd" "php${PHP_VERSION}-zip" \
-    "php${PHP_VERSION}-intl"
+    "php${PHP_VERSION}-intl" "php${PHP_VERSION}-redis"
+
+# PriceFeedService/BrokeretFeedService talk to Redis directly (REDIS_CLIENT=
+# phpredis in .env.example) regardless of which broadcaster/price pipeline is
+# active — without the server running, price reads/writes fail outright.
+systemctl enable --now redis-server
 
 if ! command -v composer >/dev/null 2>&1; then
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

@@ -13,6 +13,8 @@
         <dl class="grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
             <div><dt class="text-slate-400">ID</dt><dd class="font-semibold text-white">{{ $asset->id }}</dd></div>
             <div><dt class="text-slate-400">Asset Group</dt><dd class="font-semibold text-white">{{ $asset->asset_group }}</dd></div>
+            <div><dt class="text-slate-400">Price Source</dt><dd class="font-semibold text-white">{{ $asset->price_source }}</dd></div>
+            <div><dt class="text-slate-400">Active</dt><dd class="font-semibold text-white">{{ $asset->is_active ? 'Yes' : 'No' }}</dd></div>
             <div><dt class="text-slate-400">Exchange Float</dt><dd class="font-semibold text-white">{{ $asset->exchange_float }}</dd></div>
             <div><dt class="text-slate-400">Profit Margin</dt><dd class="font-semibold text-white">{{ $asset->asset_profit_margin }}</dd></div>
             <div><dt class="text-slate-400">Created</dt><dd class="font-semibold text-white">{{ $asset->created_at->format('d M, Y H:i') }}</dd></div>

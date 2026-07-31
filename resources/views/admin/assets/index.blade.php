@@ -17,12 +17,17 @@
                     <option value="{{ $group }}" {{ $group == $assetGroup ? 'selected' : '' }}>{{ $group }}</option>
                 @endforeach
             </select>
+            <select name="price_source" class="brand-input-dark max-w-xs">
+                <option value="">All Sources</option>
+                <option value="iqcent" {{ $priceSource === 'iqcent' ? 'selected' : '' }}>iqcent</option>
+                <option value="brokeret" {{ $priceSource === 'brokeret' ? 'selected' : '' }}>Brokeret</option>
+            </select>
             <button type="submit" class="brand-btn-outline">Filter</button>
         </form>
 
         <x-data-table>
             <thead>
-                <tr><th>#</th><th>Symbol</th><th>Name</th><th>Group</th><th>Float</th><th></th></tr>
+                <tr><th>#</th><th>Symbol</th><th>Name</th><th>Group</th><th>Source</th><th>Active</th><th>Float</th><th></th></tr>
             </thead>
             <tbody>
                 @forelse ($assets as $asset)
@@ -31,6 +36,14 @@
                         <td class="font-semibold text-white">{{ $asset->symbol }}</td>
                         <td>{{ $asset->name }}</td>
                         <td>{{ $asset->asset_group }}</td>
+                        <td>{{ $asset->price_source }}</td>
+                        <td>
+                            @if ($asset->is_active)
+                                <span class="text-brand-success">Active</span>
+                            @else
+                                <span class="text-brand-danger">Inactive</span>
+                            @endif
+                        </td>
                         <td>{{ $asset->exchange_float }}</td>
                         <td class="text-right space-x-3">
                             <a href="{{ route('admin.assets.show', $asset) }}" class="text-brand-blue hover:underline">View</a>
@@ -42,7 +55,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="6" class="text-center py-10 text-slate-400">No assets found.</td></tr>
+                    <tr><td colspan="8" class="text-center py-10 text-slate-400">No assets found.</td></tr>
                 @endforelse
             </tbody>
         </x-data-table>

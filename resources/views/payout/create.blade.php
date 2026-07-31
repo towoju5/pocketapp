@@ -42,6 +42,9 @@
                         <select name="payment_method" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]">
                             <option value="USDT">USDT (TRC20)</option>
                             <option value="Bank">Bank Transfer</option>
+                            @foreach (($gatewayProviders ?? collect()) as $provider)
+                                <option value="{{ $provider->slug }}">{{ $provider->display_name }}</option>
+                            @endforeach
                         </select>
                     </div>
 
@@ -54,8 +57,20 @@
                     </div>
 
                     <div>
-                        <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">USDT (TRC20) Address</label>
-                        <input type="text" name="address" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white font-mono focus:outline-none focus:border-[#4f8ef7]" placeholder="Txxxxxxxxxxxxxxxxxxxxxxxxxxxx" value="{{ old('address') }}" required>
+                        <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Destination address / email</label>
+                        <input type="text" name="address" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white font-mono focus:outline-none focus:border-[#4f8ef7]" placeholder="Wallet address, PayPal email, etc." value="{{ old('address') }}" required>
+                        <p class="mt-1 text-xs text-[#7c86a3]">Crypto wallet address, PayPal email, or (for bank-transfer gateways) leave the bank fields below filled in too.</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Bank code <span class="normal-case font-normal">(if applicable)</span></label>
+                            <input type="text" name="bank_code" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" value="{{ old('bank_code') }}">
+                        </div>
+                        <div>
+                            <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Account number <span class="normal-case font-normal">(if applicable)</span></label>
+                            <input type="text" name="account_number" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" value="{{ old('account_number') }}">
+                        </div>
                     </div>
 
                     <button type="submit" class="w-full bg-[#4f8ef7] hover:bg-[#3f7de6] text-white font-bold text-sm uppercase tracking-wide py-4 rounded-lg transition">Submit Withdrawal</button>

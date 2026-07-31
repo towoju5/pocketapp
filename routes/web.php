@@ -4,8 +4,10 @@ use App\Http\Controllers\ApiController;
 use App\Http\Controllers\ChartController;
 use App\Http\Controllers\DepositController;
 use App\Http\Controllers\ExpressTradeController;
+use App\Http\Controllers\GatewayCheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MarketingController;
+use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\PayoutController;
 use App\Http\Controllers\PriceCollectorController;
 use App\Http\Controllers\ProfileController;
@@ -46,6 +48,9 @@ Route::get('dashboard-2', function () {
 })->middleware(['auth', 'verified'])->name('dash');
 
 Route::middleware(['auth'])->group(function () {
+    Route::post('gateway/{provider:slug}/checkout', [GatewayCheckoutController::class, 'redirect'])->name('gateway.checkout');
+    Route::get('gateway/return', [GatewayCheckoutController::class, 'return'])->name('gateway.return');
+
     Route::resource('deposits', DepositController::class);
     Route::get('deposit-history', [DepositController::class, 'getDepositHistory']);
     Route::post('deposits/{deposit}/cancel', [DepositController::class, 'cancelDeposit']);
@@ -135,6 +140,10 @@ Route::get('tt', function () {
 
     return $response->json();
 });
+
+Route::post('webhooks/payments/{slug}', [PaymentWebhookController::class, 'handle'])
+    ->withoutMiddleware(VerifyCsrfToken::class)
+    ->name('webhooks.payments');
 
 
 require __DIR__ . '/auth.php';

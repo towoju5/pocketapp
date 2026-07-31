@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\{
     TradeController,
     ExpressTradeController,
     PaymentMethodController,
+    PaymentProviderController,
 };
 
 Route::prefix('admin')->middleware(['auth', 'verified', 'admin'])->as('admin.')->group(function () {
@@ -53,6 +54,8 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'admin'])->as('admin.')-
     Route::post('payment-methods', [PaymentMethodController::class, 'store'])->name('payment-methods.store');
     Route::post('payment-methods/{paymentMethod}/toggle', [PaymentMethodController::class, 'toggle'])->name('payment-methods.toggle');
     Route::delete('payment-methods/{paymentMethod}', [PaymentMethodController::class, 'destroy'])->name('payment-methods.destroy');
+
+    Route::resource('payment-providers', PaymentProviderController::class)->only(['index', 'edit', 'update']);
 
     Route::resource('task-submissions', TaskSubmissionController::class)->only(['index', 'show']);
     Route::post('task-submissions/{taskSubmission}/approve', [TaskSubmissionController::class, 'approve'])->name('task-submissions.approve');

@@ -42,6 +42,22 @@
                     <option value="0" {{ old('is_otc', $asset->is_otc) ? '' : 'selected' }}>No</option>
                 </select>
             </div>
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Price Source</label>
+                <select name="price_source" class="brand-input-dark">
+                    <option value="iqcent" {{ old('price_source', $asset->price_source) === 'iqcent' ? 'selected' : '' }}>iqcent (headless-Chrome collector)</option>
+                    <option value="brokeret" {{ old('price_source', $asset->price_source) === 'brokeret' ? 'selected' : '' }}>Brokeret (base_url/ui feed)</option>
+                </select>
+                @error('price_source') <p class="mt-1 text-xs text-brand-danger">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Active</label>
+                <select name="is_active" class="brand-input-dark">
+                    <option value="1" {{ old('is_active', $asset->is_active) ? 'selected' : '' }}>Yes — tradable</option>
+                    <option value="0" {{ old('is_active', $asset->is_active) ? '' : 'selected' }}>No — deactivated</option>
+                </select>
+                <p class="mt-1 text-xs text-slate-500">If both an iqcent and a Brokeret row exist for the same instrument, deactivate whichever source shouldn't be live.</p>
+            </div>
             <div class="sm:col-span-2">
                 <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Extra Data (JSON)</label>
                 <textarea name="extra_data" rows="4" class="brand-input-dark">{{ old('extra_data', is_array($asset->extra_data) ? json_encode($asset->extra_data, JSON_PRETTY_PRINT) : $asset->extra_data) }}</textarea>

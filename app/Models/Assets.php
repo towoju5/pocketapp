@@ -18,7 +18,9 @@ class Assets extends Model
         'exchange_float',
         'asset_profit_margin',
         'extra_data',
-        'is_otc'
+        'is_otc',
+        'price_source',
+        'is_active'
     ];
 
     // If you have timestamps and soft deletes
@@ -26,6 +28,7 @@ class Assets extends Model
 
     protected $casts = [
         'extra_data' => 'array',
-        'is_otc' => 'boolean'
+        'is_otc' => 'boolean',
+        'is_active' => 'boolean'
     ];
 }

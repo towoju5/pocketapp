@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\PaymentProvider;
 use App\Models\Payout;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,8 +19,9 @@ class PayoutController extends Controller
     public function create()
     {
         $kycVerified = auth()->user()->kyc?->status === 'verified';
+        $gatewayProviders = PaymentProvider::where('is_active', true)->where('can_payout', true)->orderBy('sort_order')->get();
 
-        return view('payout.create', compact('kycVerified'));
+        return view('payout.create', compact('kycVerified', 'gatewayProviders'));
     }
 
     public function store(Request $request, Google2FA $google2fa)

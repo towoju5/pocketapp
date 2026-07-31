@@ -34,10 +34,22 @@
                 <input type="number" step="0.01" name="asset_profit_margin" class="brand-input-dark" value="{{ old('asset_profit_margin') }}">
                 @error('asset_profit_margin') <p class="mt-1 text-xs text-brand-danger">{{ $message }}</p> @enderror
             </div>
-            <div class="flex items-end pb-2">
+            <div>
+                <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Price Source</label>
+                <select name="price_source" class="brand-input-dark" required>
+                    <option value="iqcent" {{ old('price_source', 'iqcent') === 'iqcent' ? 'selected' : '' }}>iqcent (headless-Chrome collector)</option>
+                    <option value="brokeret" {{ old('price_source') === 'brokeret' ? 'selected' : '' }}>Brokeret (base_url/ui feed)</option>
+                </select>
+                @error('price_source') <p class="mt-1 text-xs text-brand-danger">{{ $message }}</p> @enderror
+            </div>
+            <div class="flex items-end gap-6 pb-2">
                 <label class="flex items-center gap-2 text-sm text-slate-300">
                     <input type="checkbox" name="is_otc" value="1" {{ old('is_otc') ? 'checked' : '' }} class="rounded border-slate-600 bg-transparent text-brand-blue">
                     OTC Asset
+                </label>
+                <label class="flex items-center gap-2 text-sm text-slate-300">
+                    <input type="checkbox" name="is_active" value="1" {{ old('is_active', true) ? 'checked' : '' }} class="rounded border-slate-600 bg-transparent text-brand-blue">
+                    Active
                 </label>
             </div>
 

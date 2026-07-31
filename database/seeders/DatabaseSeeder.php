@@ -17,7 +17,9 @@ class DatabaseSeeder extends Seeder
             // UserSeeder::class,
             // TradeSeeder::class,
             AssetSeeder::class,
+            BrokeretAssetSeeder::class,
             BitgoSeeder::class,
+            PaymentProviderSeeder::class,
             // CountryStateCityTableSeeder::class,
         ]);
     }

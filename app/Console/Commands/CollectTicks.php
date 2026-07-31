@@ -53,7 +53,18 @@ class CollectTicks extends Command
     /** @return string[] */
     private function resolveBatch(int $batchIndex, int $batchSize): array
     {
-        $batches = Assets::orderBy('id')->pluck('symbol')->chunk($batchSize)->values();
+        // Scoped to price_source='iqcent' and is_active — the `assets`
+        // table also holds Brokeret's catalog (bare codes like "EURUSD",
+        // seeded by BrokeretAssetSeeder / auto-registered by
+        // BrokeretFeedService) and any admin-deactivated rows. Subscribing
+        // either through iqcent's WS protocol here would waste a batch slot
+        // on a symbol it will never recognize.
+        $batches = Assets::where('price_source', 'iqcent')
+            ->where('is_active', true)
+            ->orderBy('id')
+            ->pluck('symbol')
+            ->chunk($batchSize)
+            ->values();
 
         return ($batches->get($batchIndex) ?? collect())->values()->all();
     }

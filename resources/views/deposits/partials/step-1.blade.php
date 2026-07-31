@@ -19,17 +19,19 @@
     <form action="{{ route('deposit.step_1') }}" id="payment-methods" class="payinForm grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
         @csrf
         <input type="hidden" name="deposit_step" value="1">
-        @forelse ($methods as $method)
+        @forelse ($gatewayProviders as $provider)
             <label class="payment-method bg-[#171e33] border border-[#2a3350] rounded-xl p-4 flex flex-col justify-between cursor-pointer" style="min-width: 200px;">
                 <div class="flex items-center justify-between">
-                    <span class="text-sm font-semibold text-white">{{ $method->wallet_name }}</span>
-                    <img src="{{ $method->coin_logo }}" alt="{{ $method->wallet_ticker }}" class="h-6">
+                    <span class="text-sm font-semibold text-white">{{ $provider->display_name }}</span>
+                    @if ($provider->logo_url)
+                        <img src="{{ $provider->logo_url }}" alt="{{ $provider->display_name }}" class="h-6">
+                    @endif
                 </div>
                 <div class="flex justify-between text-xs text-[#7c86a3] mt-4">
-                    <span>Min: ${{ $method->min_deposit }}</span>
+                    <span>Min: ${{ $provider->min_deposit ?? '1.00' }}</span>
                     <span>Instantly</span>
                 </div>
-                <input type="radio" name="deposit_method" value="{{ $method->id }}" class="hidden">
+                <input type="radio" name="deposit_method" value="{{ $provider->slug }}" class="hidden">
             </label>
         @empty
             <div class="col-span-4 text-center text-[#7c86a3] py-10">No deposit methods are configured yet.</div>

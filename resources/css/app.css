@@ -52,6 +52,31 @@
     div > table tbody tr:hover {
         @apply bg-glass-surface-light;
     }
+
+    /* Admin sidebar's scrollable nav — slim, on-brand scrollbar instead of
+       the default chunky OS one, since the group list can grow past the
+       viewport height as more admin sections are added. */
+    .sidebar-nav {
+        scrollbar-width: thin;
+        scrollbar-color: theme('colors.glass.border') transparent;
+    }
+
+    .sidebar-nav::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb {
+        @apply rounded-full bg-glass-border;
+    }
+
+    .sidebar-nav::-webkit-scrollbar-thumb:hover {
+        background: theme('colors.brand.amber');
+        opacity: 0.6;
+    }
 }
 
 

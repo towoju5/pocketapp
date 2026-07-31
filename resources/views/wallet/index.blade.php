@@ -32,17 +32,6 @@
                     @include('deposits.partials.step-1')
                 </div>
             </div>
-
-            <div class="mt-4">
-                <p class="text-xs text-[#7c86a3] mb-2">Other payment methods (coming soon)</p>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                    @foreach(['Card', 'Bank Transfer', 'UPI', 'PIX'] as $comingSoon)
-                        <div class="bg-[#171e33] border border-[#2a3350] rounded-lg p-3 text-center text-xs text-[#7c86a3] opacity-50 cursor-not-allowed">
-                            {{ $comingSoon }}
-                        </div>
-                    @endforeach
-                </div>
-            </div>
         </div>
 
         <div class="wallet-tab-panel hidden" data-panel="withdraw">

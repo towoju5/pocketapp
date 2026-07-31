@@ -3810,7 +3810,13 @@ class AssetSeeder extends Seeder
         
 
         $assets = (array)$assets;
-        DB::table('assets')->delete();
+        // Scoped to price_source='iqcent' only — this seeder re-runs on
+        // every deploy (see .gitlab-ci.yml's `migrate --seed --force`), and
+        // a blanket delete() here would also wipe every Brokeret-sourced
+        // row (Gold, and anything BrokeretFeedService has auto-registered)
+        // on the very next deploy, since migrations/auto-registration only
+        // insert once and would never re-create them.
+        DB::table('assets')->where('price_source', 'iqcent')->delete();
         foreach ($assets as $category => $asset) {
             if(str_contains('OTC', $asset['optionType'])) {
                 $isOtc = true;
@@ -3822,7 +3828,8 @@ class AssetSeeder extends Seeder
                 'exchange_float' => 0,
                 'asset_profit_margin' => $asset['payoutCorr'],
                 // 'extra_data' => $asset,
-                'is_otc' => true
+                'is_otc' => true,
+                'price_source' => 'iqcent',
             ]);
         }
     }

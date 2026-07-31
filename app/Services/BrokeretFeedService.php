@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
@@ -21,7 +22,7 @@ use Illuminate\Support\Facades\Redis;
 class BrokeretFeedService
 {
     /** Seconds since the last received tick after which a symbol is considered offline. */
-    private const ONLINE_THRESHOLD_SECONDS = 45;
+    private const ONLINE_THRESHOLD_SECONDS = 10;
 
     /** Rolling backfill window exposed to a fresh chart load. */
     private const HISTORY_WINDOW_SECONDS = 900;
@@ -32,14 +33,66 @@ class BrokeretFeedService
     /** How long a symbol's tick history is retained in Redis. */
     private const STREAM_RETENTION_SECONDS = 7 * 24 * 60 * 60;
 
+    /** Default profit margin for a Brokeret symbol auto-registered into `assets` — matches the Gold migration's. */
+    private const DEFAULT_PROFIT_MARGIN = 0.85;
+
+    /**
+     * Symbols already confirmed present in the `assets` table this process
+     * lifetime — avoids an insertOrIgnore() on every single tick (several
+     * per second, per symbol) once a symbol is known-registered. Resets on
+     * restart, which just costs one extra (still cheap, still ignored-if-
+     * exists) query per symbol the first time it's seen again — never a
+     * correctness issue, only ever a minor efficiency one.
+     */
+    private array $registeredSymbols = [];
+
     public function updateLatest(string $symbol, float $bid, float $ask, string $category, int $epochMs): void
     {
+        $this->ensureAssetRegistered($symbol, $category);
+
         try {
             Redis::set($this->latestKey($symbol), json_encode([
                 's' => $symbol, 't' => $epochMs, 'b' => $bid, 'a' => $ask, 'c' => $category,
             ]));
         } catch (\Throwable $e) {
             Log::warning('[BrokeretFeedService] updateLatest failed', ['symbol' => $symbol, 'error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Registers `symbol` in the shared `assets` table the first time this
+     * process sees it stream, so it's tradable (TradeController::placeTrade)
+     * and appears in any DB-gated asset list (e.g. ExpressTradeController)
+     * without waiting for someone to trade it first. Brokeret has no fixed,
+     * enumerable symbol catalog to pre-seed from (see StreamBrokeretFeed's
+     * docblock) — this is that catalog, built as symbols are actually seen.
+     *
+     * Deliberately does NOT touch PriceFeedService, the 'asset-prices'
+     * channel, or anything iqcent-side — this only ever inserts a Brokeret-
+     * tagged row (price_source='brokeret'), never modifies an existing one,
+     * so it can't clobber an iqcent asset even on a symbol collision.
+     */
+    private function ensureAssetRegistered(string $symbol, string $category): void
+    {
+        if (isset($this->registeredSymbols[$symbol])) {
+            return;
+        }
+        $this->registeredSymbols[$symbol] = true;
+
+        try {
+            DB::table('assets')->insertOrIgnore([
+                'symbol' => $symbol,
+                'name' => $symbol,
+                'asset_group' => strtoupper($category ?: 'OTHER'),
+                'exchange_float' => 0,
+                'asset_profit_margin' => self::DEFAULT_PROFIT_MARGIN,
+                'is_otc' => false,
+                'price_source' => 'brokeret',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        } catch (\Throwable $e) {
+            Log::warning('[BrokeretFeedService] asset auto-registration failed', ['symbol' => $symbol, 'error' => $e->getMessage()]);
         }
     }
 

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Bitgo;
+use App\Models\PaymentProvider;
 use Illuminate\Support\Facades\Auth;
 
 class WalletController extends Controller
@@ -15,11 +15,11 @@ class WalletController extends Controller
             create_user_wallet($user->id);
         }
 
-        $methods = Bitgo::where('can_deposit', true)->get();
+        $gatewayProviders = PaymentProvider::where('is_active', true)->where('can_deposit', true)->orderBy('sort_order')->get();
         $kycVerified = $user->kyc?->status === 'verified';
         $tab = request('tab', 'deposit');
 
-        return view('wallet.index', compact('methods', 'kycVerified', 'tab'));
+        return view('wallet.index', compact('gatewayProviders', 'kycVerified', 'tab'));
     }
 
     /**

@@ -9,6 +9,14 @@ download to a running production site on a Linux VPS: software
 requirements, minimum server specs, installation, configuration, the
 background services the app depends on, and troubleshooting.
 
+**Fastest path:** if you're on a fresh Ubuntu/Debian VPS, `sudo ./install.sh`
+at the repo root installs every dependency (PHP 8.4, MySQL, Redis, Node,
+nginx, Supervisor), configures `.env`, creates and migrates the database,
+builds the frontend, and wires up all background services in one run — see
+[§4.1](#41-automated-install-recommended). Everything below also documents
+the manual steps, for anyone who wants to see (or control) each piece
+individually.
+
 ---
 
 ## Table of contents
@@ -47,10 +55,16 @@ notifications. Nothing settles without this running.
 Cron → schedule:run — matures investment plans, expires stale P2P trades.
 ```
 
-Data is stored in **SQLite** (`database/database.sqlite`, WAL mode) rather
-than a separate database server, to keep the deploy surface small. Redis is
-used as a cache/pub-sub layer for the live price feed, not as the primary
-datastore.
+Data is stored in **MySQL**. Redis is required in every configuration — it
+sits directly in the price-feed path (`PriceFeedService`/
+`BrokeretFeedService` read and write it regardless of which database or
+broadcaster you use), not just as an optional cache layer.
+
+> SQLite is still supported by the underlying Laravel config
+> (`config/database.php`) and is fine for quick local development, but MySQL
+> is the configuration this guide and `install.sh` set up, and the one
+> recommended for anything handling real trading balances — better
+> concurrent-write behavior under load than a single WAL-mode SQLite file.
 
 Real-time updates (price ticks, trade status, wallet balance, chat) are
 delivered over WebSockets through one of two interchangeable broadcasters,
@@ -82,22 +96,23 @@ and (for Reverb only) making sure `reverb:start` is running.
 
 | Component | Version | Purpose |
 |---|---|---|
-| PHP | **8.2 or newer** (8.3 recommended) | Application runtime |
+| PHP | **8.4 or newer** | Application runtime (`composer.json` requires `^8.4`) |
 | Composer | 2.x | PHP dependency management |
 | Node.js | **18 or newer** (20 recommended) + npm | Building frontend assets (Vite) |
-| SQLite 3 | any recent version | Primary datastore |
-| Redis | 6.x or newer | Live price cache / pub-sub for the feed pipeline |
+| MySQL | **8.0 or newer** (MariaDB 10.6+ also works) | Primary datastore |
+| Redis | 6.x or newer | **Required.** Used directly by the price-feed services, independent of database or broadcaster choice |
 | nginx | any recent version | Web server / reverse proxy |
 | Supervisor | any recent version | Keeps the queue worker and price-feed processes running permanently |
 | Certbot | any recent version | Free HTTPS certificates (optional but recommended) |
 
 **Required PHP extensions:** `bcmath`, `ctype`, `curl`, `dom`, `fileinfo`,
 `filter`, `hash`, `iconv`, `json`, `libxml`, `mbstring`, `openssl`, `pcre`,
-`pdo`, `pdo_sqlite`, `sqlite3`, `phar`, `reflection`, `session`, `simplexml`,
+`pdo`, `pdo_mysql`, `phar`, `reflection`, `session`, `simplexml`,
 `tokenizer`, `xml`, `xmlwriter`, `zip`, `gd`, `intl`, and **`redis`**
 (phpredis — `.env.example` sets `REDIS_CLIENT=phpredis`; this is a PHP
 extension, not a Composer package, so `composer install` alone will not
-provide it).
+provide it). Add `pdo_sqlite`/`sqlite3` only if you intend to use SQLite for
+local development instead of MySQL.
 
 ### 2.3 Optional / feature-specific dependencies
 
@@ -131,20 +146,22 @@ but as a baseline:
 
 | Tier | vCPU | RAM | Storage | Suitable for |
 |---|---|---|---|---|
-| **Minimum** | 1 vCPU | 2 GB | 20 GB SSD | Development, staging, or a small live site with light traffic. Ably for broadcasting, `ticks:stream-brokeret` for prices (no headless browser). |
-| **Recommended** | 2 vCPU | 4 GB | 40 GB SSD | A production site with real trading volume. Comfortable headroom for the queue worker, price stream, PHP-FPM workers, and `npm run build`. |
-| **Self-hosted Reverb** | 2 vCPU | 4–8 GB | 40 GB SSD | Same as Recommended, but budget extra RAM/CPU if you expect hundreds of concurrent WebSocket connections, since your own server (not Ably) is holding every connection open. |
-| **Legacy Chrome collector enabled** | 4 vCPU | 8 GB+ | 60 GB SSD | Only if you also run `ticks:collect` (`pocketapp-ticker-collector`) as a fallback price source. Each headless Chrome instance uses roughly 150–300 MB RAM, and the pool runs one instance per ~10 tracked assets — this adds up fast on a large asset catalog. |
+| **Minimum** | 2 vCPU | **4 GB** | **40 GB SSD** | The baseline for any real deployment — MySQL, Redis, PHP-FPM, the queue worker, and the Brokeret price stream all running together. Ably for broadcasting, `ticks:stream-brokeret` for prices (no headless browser). |
+| **Recommended** | 4 vCPU | 8 GB | 60 GB SSD | A production site with real trading volume. Comfortable headroom for MySQL, the queue worker, price stream, PHP-FPM workers, and `npm run build`. |
+| **Self-hosted Reverb** | 4 vCPU | 8 GB | 60 GB SSD | Same as Recommended, but budget extra RAM/CPU if you expect hundreds of concurrent WebSocket connections, since your own server (not Ably) is holding every connection open. |
+| **Legacy PHP/Chrome collector enabled** | 4 vCPU | 8 GB+ | 60 GB+ SSD | Only if you also run `ticks:collect` (`pocketapp-ticker-collector`) as a fallback price source. Each headless Chrome instance uses roughly 150–300 MB RAM, and the pool runs one instance per ~10 tracked assets — this adds up fast on a large asset catalog. |
+| **Legacy `ws.py` relay enabled** | 4+ vCPU | **16 GB** | 60 GB+ SSD | Only if you run `websockets-setup/ws.py` (the Python/Playwright browser relay) instead of the Brokeret stream. This is the heaviest option — a full Playwright-driven Chromium session held open continuously consumes noticeably more RAM than either the native Brokeret WebSocket client or the batched Panther/Chrome collector, so provision accordingly. |
 
 Notes:
 
 - **RAM during build**: `npm run build` (Vite) can transiently use 1 GB+ of
-  RAM while bundling. On a 1 GB VPS this will fail or get OOM-killed —
-  either provision at least 2 GB, or add a swap file before building
+  RAM while bundling. Provision at least the minimum above, or add a swap
+  file before building if you're ever running tighter than that
   (`fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile`).
-- **Disk growth**: the SQLite database accumulates trade, tick, and wallet
+- **Disk growth**: the database accumulates trade, tick, and wallet
   transaction history over time. Plan storage (and backups) accordingly for
-  an actively-traded site, and monitor `database/database.sqlite`'s size.
+  an actively-traded site, and monitor MySQL's data directory size
+  (`du -sh /var/lib/mysql`).
 - **Bandwidth**: with Ably, most WebSocket bandwidth is offloaded to Ably's
   infrastructure. With self-hosted Reverb, every connected browser's
   WebSocket traffic flows through your VPS directly — factor that into your
@@ -154,7 +171,33 @@ Notes:
 
 ## 4. Installation
 
-### 4.1 Get the code onto the server
+### 4.1 Automated install (recommended)
+
+```bash
+git clone <your-repo-or-extracted-zip> /var/www/pocketapp
+cd /var/www/pocketapp
+DOMAIN=example.com sudo -E ./install.sh
+```
+
+This installs PHP 8.4, MySQL, Redis, Node, nginx, Supervisor, and Certbot;
+creates the MySQL database and user; configures `.env` (including
+generating `APP_KEY` and, if you're using it, Reverb credentials);
+`composer install`s and `npm run build`s; migrates and seeds the database;
+sets file permissions; installs the queue worker, Brokeret price stream,
+and Redis bridge into Supervisor; installs the cron scheduler; and
+generates an nginx vhost. It's idempotent — re-running it after `git pull`
+is how you deploy updates. See the comments at the top of `install.sh` for
+every environment variable it accepts (broadcaster choice, DB credentials,
+PHP version, etc.).
+
+Skip to [§4.4](#44-configure-env) to fill in the API keys `install.sh`
+can't know for you (Brokeret, Ably), then jump to
+[§7](#7-first-run-checklist).
+
+The rest of this section documents the same steps by hand, for anyone who
+wants full control over each one, or isn't on an apt-based distro.
+
+### 4.2 Get the code onto the server
 
 ```bash
 git clone <your-repo-or-extracted-zip> /var/www/pocketapp
@@ -164,21 +207,21 @@ cd /var/www/pocketapp
 (If you downloaded a `.zip` from Envato instead of cloning, extract it to
 `/var/www/pocketapp` and continue from there.)
 
-### 4.2 Install system packages
+### 4.3 Install system packages
 
 ```bash
 sudo apt-get update
 sudo apt-get install -y software-properties-common curl git unzip ca-certificates \
-    supervisor sqlite3 redis-server nginx certbot python3-certbot-nginx
+    supervisor mysql-server redis-server nginx certbot python3-certbot-nginx
 
-# PHP 8.3 (ondrej/php PPA carries current versions on Ubuntu)
+# PHP 8.4 (ondrej/php PPA carries current versions on Ubuntu)
 sudo add-apt-repository -y ppa:ondrej/php
 sudo apt-get update
-sudo apt-get install -y php8.3-fpm php8.3-cli php8.3-sqlite3 php8.3-curl \
-    php8.3-mbstring php8.3-xml php8.3-bcmath php8.3-gd php8.3-zip \
-    php8.3-intl php8.3-redis
+sudo apt-get install -y php8.4-fpm php8.4-cli php8.4-mysql php8.4-curl \
+    php8.4-mbstring php8.4-xml php8.4-bcmath php8.4-gd php8.4-zip \
+    php8.4-intl php8.4-redis
 
-sudo systemctl enable --now redis-server
+sudo systemctl enable --now mysql redis-server
 
 # Composer
 curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -188,7 +231,7 @@ curl -fsSL https://deb.nodesource.com/setup_20.x | sudo bash -
 sudo apt-get install -y nodejs
 ```
 
-### 4.3 Install dependencies and build assets
+### 4.4 Install dependencies and build assets
 
 ```bash
 cd /var/www/pocketapp
@@ -197,7 +240,7 @@ npm install
 npm run build
 ```
 
-### 4.4 Configure `.env`
+### 4.5 Configure `.env`
 
 ```bash
 cp .env.example .env
@@ -210,6 +253,14 @@ At minimum, set:
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=https://your-domain.com
+
+# Database (created in the next step)
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=pocketapp
+DB_USERNAME=pocketapp
+DB_PASSWORD=a-strong-password
 
 # Price feed (see your Brokeret account/documentation for these values)
 BROKERET_WS_URL=wss://feed.brokeret.com/ws
@@ -243,22 +294,35 @@ Fill in any optional integrations you plan to use (`NOWPAYMENTS_*`,
 `BITGO_*`, `DEEPSEEK_API_KEY`, `ZENROWS_API_KEY`) — see
 [§5](#5-environment-configuration-reference).
 
-### 4.5 Database
+### 4.6 Database
+
+Create the database and a dedicated (non-root) user matching what you put
+in `.env`:
 
 ```bash
-touch database/database.sqlite
-php artisan migrate --force
-php artisan db:seed --force   # first run only — seeds the tradable asset catalog
+sudo mysql <<'SQL'
+CREATE DATABASE pocketapp CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'pocketapp'@'127.0.0.1' IDENTIFIED BY 'a-strong-password';
+GRANT ALL PRIVILEGES ON pocketapp.* TO 'pocketapp'@'127.0.0.1';
+FLUSH PRIVILEGES;
+SQL
 ```
 
-### 4.6 Permissions
+Then run migrations and seed the tradable asset catalog:
+
+```bash
+php artisan migrate --force
+php artisan db:seed --force   # first run only
+```
+
+### 4.7 Permissions
 
 ```bash
 php artisan storage:link
-sudo chown -R www-data:www-data storage bootstrap/cache database
+sudo chown -R www-data:www-data storage bootstrap/cache
 ```
 
-### 4.7 Cache & optimize
+### 4.8 Cache & optimize
 
 ```bash
 php artisan config:clear
@@ -267,7 +331,7 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-### 4.8 Background services (Supervisor)
+### 4.9 Background services (Supervisor)
 
 See [§6](#6-background-services) for the full list and what each one does.
 At minimum, for a working site you need the queue worker and a price
@@ -284,10 +348,10 @@ sudo supervisorctl update
 sudo supervisorctl start pocketapp-queue-worker:* pocketapp-brokeret-stream pocketapp-redis-tick-bridge
 ```
 
-If you chose `BROADCAST_CONNECTION=reverb` in step 4.4, also install and
+If you chose `BROADCAST_CONNECTION=reverb` in step 4.5, also install and
 start `deploy/supervisor/pocketapp-reverb.conf`.
 
-### 4.9 Cron (Laravel scheduler)
+### 4.10 Cron (Laravel scheduler)
 
 ```bash
 ( sudo crontab -u www-data -l 2>/dev/null; \
@@ -297,7 +361,7 @@ start `deploy/supervisor/pocketapp-reverb.conf`.
 
 This drives `plans:mature` and `p2p:expire-trades` (see `routes/console.php`).
 
-### 4.10 nginx
+### 4.11 nginx
 
 Use `deploy/nginx/pocketapp.conf.example` as a starting point for your
 vhost (PHP-FPM passthrough, plus the `/app/` and `/apps/` WebSocket proxy
@@ -321,8 +385,8 @@ sudo nginx -t && sudo systemctl reload nginx
 | `APP_DEBUG` | `false` on a live server — never expose stack traces publicly |
 | `APP_URL` | Your site's public URL |
 | `APP_KEY` | Generated by `php artisan key:generate` |
-| `DB_CONNECTION` | `sqlite` (default) |
-| `REDIS_HOST` / `REDIS_PORT` / `REDIS_PASSWORD` | Redis connection (defaults work for a local install) |
+| `DB_CONNECTION` / `DB_HOST` / `DB_PORT` / `DB_DATABASE` / `DB_USERNAME` / `DB_PASSWORD` | MySQL connection (`DB_CONNECTION=mysql` is the default in `.env.example`) |
+| `REDIS_HOST` / `REDIS_PORT` / `REDIS_PASSWORD` | Redis connection — **required**, not optional (defaults work for a local install) |
 | `BROKERET_WS_URL` / `BROKERET_API_KEY` | Live price feed connection |
 | `BROADCAST_CONNECTION` | `ably` or `reverb` — see [§1](#1-architecture-overview) |
 
@@ -365,6 +429,7 @@ All are managed by Supervisor; templates are in `deploy/supervisor/`.
 | Brokeret feed for `/ui` dashboard | `php artisan ticks:stream-brokeret-ui` | Only if you use the `/ui` live-dashboard route — it runs its own independent feed/broadcast, separate from the main dashboard's pipeline. |
 | Reverb server | `php artisan reverb:start` | Only if `BROADCAST_CONNECTION=reverb`. Not needed with Ably. |
 | Legacy headless-browser collector | `php artisan ticks:collect --batch=N --size=10` | Optional fallback price source (scrapes iqcent via headless Chrome). Not required if the Brokeret stream is running. Needs Google Chrome installed — see [§2.3](#23-optional--feature-specific-dependencies). |
+| Legacy `ws.py` relay | `python relay_browser.py` (see `headless/RUNNING.md`) | Optional alternative fallback price source — a Playwright-driven browser relay, run under `systemd`/Xvfb, not Supervisor. Superseded by the Brokeret stream; only relevant if you specifically need it. Budget the **16 GB RAM tier** from [§3](#3-minimum-vps-server-requirements) if enabling this. |
 | Cron → `schedule:run` | via crontab, not Supervisor | **Always.** Matures investment plans and expires stale P2P trades every minute. |
 
 Check status any time with:
@@ -471,9 +536,9 @@ instead.
 - [ ] All Supervisor processes required for your configuration show
       `RUNNING`
 - [ ] Cron is installed for the app user (`crontab -u www-data -l`)
-- [ ] Regular backups are configured for `database/database.sqlite` and
-      `.env` — this app moves real trading balances; treat backups and
-      server access accordingly
+- [ ] Regular backups are configured for the MySQL database (e.g. a nightly
+      `mysqldump`) and `.env` — this app moves real trading balances; treat
+      backups and server access accordingly
 - [ ] Telescope access is restricted — `app/Providers/TelescopeServiceProvider.php`'s
       `gate()` should list only your own admin email(s) before this ships
       to a public server, or disable Telescope in production entirely

@@ -75,16 +75,23 @@ class TradeController extends Controller
         $validated['asset'] = $symbol;
 
         $asset = Assets::where('symbol', $symbol)->first();
-        if (!$asset) {
+        if (!$asset || !$asset->is_active) {
+            // Same 404 whether the row genuinely doesn't exist or an admin
+            // has deactivated it (e.g. to pick the OTHER source's row for
+            // this instrument — see the is_active migration) — a
+            // deactivated asset should look exactly like "not found" to a
+            // trader, not surface which source got turned off.
             return response()->json(['errors' => "Asset not found"], 404);
         }
 
         // BrokeretFeedService is checked only when the primary (iqcent-based)
         // pipeline has nothing for this symbol — existing assets' pricing is
-        // completely unaffected. This is what lets base_url/ui's live-feed-only
-        // assets (e.g. Gold, seeded under Brokeret's own "XAUUSD" symbol —
-        // see the add_gold_asset_for_brokeret_ui migration) actually be
-        // tradable, without touching PriceFeedService/the main pipeline at all.
+        // completely unaffected. This is what lets base_url/ui's live-feed
+        // assets (source-tagged price_source='brokeret' — see
+        // BrokeretFeedService::ensureAssetRegistered, which registers each
+        // one into this table the first time it's seen streaming, well
+        // before anyone could select and trade it) actually be tradable,
+        // without touching PriceFeedService/the main pipeline at all.
         $onlineViaPriceFeed = $priceFeed->isOnline($symbol);
         $onlineViaBrokeret = !$onlineViaPriceFeed && $brokeretFeed->isOnline($symbol);
 

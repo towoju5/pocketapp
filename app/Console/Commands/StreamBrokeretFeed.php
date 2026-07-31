@@ -29,6 +29,15 @@ use WebSocket\Client as WsClient;
  *
  * Run permanently (see deploy/supervisor/pocketapp-brokeret-ui-stream.conf):
  *   php artisan ticks:stream-brokeret-ui
+ *
+ * Explicitly stops Laravel Telescope from recording in handle() — Telescope
+ * watches every Redis command/event/HTTP call and buffers them in memory for
+ * later display, which is fine for a request-scoped web process but grows
+ * without bound in a daemon that never terminates and hits Redis/broadcasts
+ * many times a second. Left running, this process's RSS climbed from ~85MB
+ * to 500MB+ within minutes and was repeatedly SIGKILLed (OOM) — confirmed
+ * this was Telescope, not a leak in this class's own (tiny, per-flush-reset)
+ * state.
  */
 class StreamBrokeretFeed extends Command
 {
@@ -44,6 +53,10 @@ class StreamBrokeretFeed extends Command
 
     public function handle(BrokeretFeedService $feed): int
     {
+        if (class_exists(\Laravel\Telescope\Telescope::class)) {
+            \Laravel\Telescope\Telescope::stopRecording();
+        }
+
         $wsUrl = config('services.brokeret.ws_url');
         $apiKey = config('services.brokeret.api_key');
         $reconnectDelay = max(1, (int) $this->option('reconnect-delay'));

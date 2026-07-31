@@ -5,28 +5,33 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Assets;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AssetController extends Controller
 {
     public function index(Request $request)
     {
-        // Get the asset group filter from the request
+        // Get the asset group / price source filters from the request
         $assetGroup = $request->input('asset_group');
+        $priceSource = $request->input('price_source');
 
-        // Query the assets, applying the filter if present
+        // Query the assets, applying the filters if present
         $query = Assets::query();
 
         if ($assetGroup) {
             $query->where('asset_group', $assetGroup);
         }
+        if ($priceSource) {
+            $query->where('price_source', $priceSource);
+        }
 
         // Paginate the results
-        $assets = $query->paginate(10);
+        $assets = $query->paginate(10)->withQueryString();
 
         // Pass the list of asset groups to the view for filtering
         $assetGroups = Assets::select('asset_group')->distinct()->pluck('asset_group');
 
-        return view('admin.assets.index', compact('assets', 'assetGroups', 'assetGroup'))->with('success', 'Page successfully loaded.');
+        return view('admin.assets.index', compact('assets', 'assetGroups', 'assetGroup', 'priceSource'))->with('success', 'Page successfully loaded.');
     }
 
 
@@ -38,13 +43,19 @@ class AssetController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'symbol' => 'required|max:255',
+            // Uniqueness is now enforced at the DB level too (see the
+            // add_unique_index_to_assets_symbol migration) — validating it
+            // here as well turns what would otherwise be a raw 500 on a
+            // duplicate symbol into a normal form error.
+            'symbol' => 'required|max:255|unique:assets,symbol',
             'name' => 'required|max:255',
             'asset_group' => 'required|max:255',
             'exchange_float' => 'required|max:255',
             'asset_profit_margin' => 'nullable|numeric',
             'extra_data' => 'nullable|array',
             'is_otc' => 'nullable|boolean',
+            'price_source' => 'required|in:iqcent,brokeret',
+            'is_active' => 'nullable|boolean',
         ]);
 
         // Handle extra_data as JSON if provided
@@ -70,13 +81,15 @@ class AssetController extends Controller
     public function update(Request $request, Assets $asset)
     {
         $validated = $request->validate([
-            'symbol' => 'required|max:255',
+            'symbol' => ['required', 'max:255', Rule::unique('assets', 'symbol')->ignore($asset->id)],
             'name' => 'required|max:255',
             'asset_group' => 'required|max:255',
             'exchange_float' => 'required|max:255',
             'asset_profit_margin' => 'nullable|numeric',
             'extra_data' => 'nullable|array',
             'is_otc' => 'nullable|boolean',
+            'price_source' => 'required|in:iqcent,brokeret',
+            'is_active' => 'nullable|boolean',
         ]);
 
         // Handle extra_data as JSON if provided

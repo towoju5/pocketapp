@@ -44,15 +44,15 @@ class HomeController extends Controller
             $coin = str_replace('--', '/', $coin);
         }
 
-        $data = Assets::where('symbol', $coin)->first();
+        $data = Assets::where('is_active', true)->where('symbol', $coin)->first();
 
         if (!$data or $coin == null) {
-            $data = Assets::first();
+            $data = Assets::where('is_active', true)->first();
         }
 
         $isOutOfTradingHours = !$priceFeed->isOnline($data->symbol);
 
-        $assetCategories = Assets::groupBy('asset_group')->get();
+        $assetCategories = Assets::where('is_active', true)->groupBy('asset_group')->get();
         $chart_coin = $data->symbol;
         // Dashboard scopes to whichever wallet (demo/real) the user currently has
         // active — demo and real trades must never be shown mixed together.
@@ -65,7 +65,7 @@ class HomeController extends Controller
         // Express trading only ever lists assets currently streaming — a
         // symbol iqcent has open but this app isn't receiving live ticks for
         // right now would just place trades against a stale/absent price.
-        $assets = Assets::where('is_otc', true)->get()->filter(fn ($asset) => $priceFeed->isOnline($asset->symbol))->values();
+        $assets = Assets::where('is_otc', true)->where('is_active', true)->get()->filter(fn ($asset) => $priceFeed->isOnline($asset->symbol))->values();
         $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->where('trade_status', 'open')->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->get();
         $closedExpressTrades = ExpressTrade::where('user_id', $user->id)->whereIn('trade_status', ['win', 'lose'])->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->take(20)->get();
 
@@ -93,10 +93,10 @@ class HomeController extends Controller
             $coin = str_replace('--', '/', $coin);
         }
 
-        $data = Assets::where('symbol', $coin)->first();
+        $data = Assets::where('is_active', true)->where('symbol', $coin)->first();
 
         if (!$data or $coin == null) {
-            $data = Assets::first();
+            $data = Assets::where('is_active', true)->first();
         }
 
         $isOutOfTradingHours = !$priceFeed->isOnline($data->symbol);
@@ -111,14 +111,14 @@ class HomeController extends Controller
             $user->save();
         }
 
-        $assetCategories = Assets::groupBy('asset_group')->get();
+        $assetCategories = Assets::where('is_active', true)->groupBy('asset_group')->get();
         $chart_coin = $data->symbol;
         $active_trades = Trade::where(["trade_status" => "pending", "user_id" => auth()->id()])->where('trade_wallet', 'like', '%demo%')->latest()->get();
         $recent_closed_trades = Trade::whereIn("trade_status", ["pending", "win", "lose"])->whereUserId(auth()->id())->where('trade_wallet', 'like', '%demo%')->whereBetween('created_at', [now()->subMinutes(10), now()])->latest()->get();
         $signals = Signal::latest()->where('is_active', true)->get();
         ['traders24hours' => $traders24hours, 'tradersTopRanked' => $tradersTopRanked, 'tradersTop100' => $tradersTop100] = TraderLeaderboard::build();
 
-        $assets = Assets::where('is_otc', true)->get()->filter(fn ($asset) => $priceFeed->isOnline($asset->symbol))->values();
+        $assets = Assets::where('is_otc', true)->where('is_active', true)->get()->filter(fn ($asset) => $priceFeed->isOnline($asset->symbol))->values();
         $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->where('trade_status', 'open')->where('trade_wallet', 'like', '%demo%')->with('asset')->latest()->get();
         $closedExpressTrades = ExpressTrade::where('user_id', $user->id)->whereIn('trade_status', ['win', 'lose'])->where('trade_wallet', 'like', '%demo%')->with('asset')->latest()->take(20)->get();
 
@@ -142,9 +142,18 @@ class HomeController extends Controller
         ]));
     }
 
-    public function assetStatus(PriceFeedService $priceFeed)
+    public function assetStatus(PriceFeedService $priceFeed, \App\Services\BrokeretFeedService $brokeretFeed)
     {
-        $status = Assets::pluck('symbol')->mapWithKeys(fn ($symbol) => [$symbol => $priceFeed->isOnline($symbol)]);
+        // Dispatch per row's price_source — PriceFeedService only ever
+        // knows about iqcent symbols, so checking it for a Brokeret-tagged
+        // symbol (e.g. "EURUSD") always reports offline regardless of
+        // whether Brokeret is actually streaming it.
+        $status = Assets::select('symbol', 'price_source')->get()
+            ->mapWithKeys(fn ($asset) => [
+                $asset->symbol => $asset->price_source === 'brokeret'
+                    ? $brokeretFeed->isOnline($asset->symbol)
+                    : $priceFeed->isOnline($asset->symbol),
+            ]);
 
         return response()->json($status);
     }

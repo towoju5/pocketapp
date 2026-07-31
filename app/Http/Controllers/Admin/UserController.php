@@ -69,8 +69,7 @@ class UserController extends Controller
         ]);
 
         if($validator->fails()) {
-            var_dump($validator->errors()); exit;
-            return back()->with($validator->errors())->withInput();
+            return back()->withErrors($validator)->withInput();
         }
 
         $user = User::findorFail($userId);
