@@ -17,16 +17,21 @@ class SignalController extends Controller
         return view('admin.signals.index', compact('signals'));
     }
 
-    /** Picks a currently-online asset by recent trend (AI-assisted when DEEPSEEK_API_KEY is set) and publishes it as a signal. */
+    /** Publishes a signal for every currently-online asset (AI-assisted when a DeepSeek key is set). */
     public function generateAi(AiSignalService $aiSignal)
     {
         try {
-            $aiSignal->generate(auth()->id());
+            $signals = $aiSignal->generate(auth()->id());
         } catch (\RuntimeException $e) {
             return back()->with('error', $e->getMessage());
         }
 
-        return redirect()->route('admin.signals.index')->with('success', 'AI-generated signal published.');
+        $count = count($signals);
+
+        return redirect()->route('admin.signals.index')->with(
+            'success',
+            $count === 1 ? '1 AI-generated signal published.' : "{$count} AI-generated signals published."
+        );
     }
 
     public function destroy(Signal $signal)
