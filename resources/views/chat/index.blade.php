@@ -41,7 +41,7 @@
                     @if(auth()->user()->is_admin)
                         Search for someone above to start a conversation.
                     @else
-                        Our support team isn't available to chat right now.
+                        No support agent is available right now — leave a message and we'll respond as soon as we're back.
                     @endif
                 </div>
             @endforelse
@@ -72,6 +72,41 @@
 
             <form id="chatSendForm" class="p-3 border-t border-[#2a3350] flex items-center gap-2 flex-shrink-0">
                 <input type="text" id="chatMessageInput" placeholder="Type a message..." autocomplete="off"
+                    class="flex-1 bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-[#4f8ef7]">
+                <button type="submit" class="bg-[#4f8ef7] hover:bg-[#3f7de6] text-white w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
+                    <i class="fa fa-paper-plane"></i>
+                </button>
+            </form>
+        @elseif(!auth()->user()->is_admin && !$supportAvailable)
+            <div class="h-16 border-b border-[#2a3350] flex items-center px-5 gap-3 flex-shrink-0">
+                <div class="w-9 h-9 rounded-full bg-[#33406b] flex items-center justify-center text-white text-xs font-bold">S</div>
+                <div>
+                    <span class="text-sm font-semibold text-white">Support</span>
+                    <span class="block text-[10px] text-[#7c86a3]">No agent available right now</span>
+                </div>
+            </div>
+
+            <div id="chatMessages" class="flex-1 overflow-y-auto p-5 space-y-3" data-last-id="0">
+                @forelse (($offlineTicket->replies ?? collect()) as $reply)
+                    <div class="flex {{ $reply->is_admin_reply ? 'justify-start' : 'justify-end' }}">
+                        <div class="max-w-[60%] {{ !$reply->is_admin_reply ? 'bg-[#4f8ef7] text-white' : 'bg-[#1c243c] text-[#d7dcea] border border-[#2a3350]' }} rounded-xl px-4 py-2.5 text-sm">
+                            <p>{{ $reply->message }}</p>
+                            <span class="block text-[10px] mt-1 opacity-70">{{ $reply->created_at->format('H:i') }}</span>
+                        </div>
+                    </div>
+                @empty
+                    <p class="text-center text-xs text-[#7c86a3]">Leave a message below — it'll be waiting for our support team.</p>
+                @endforelse
+            </div>
+
+            @if($offlineTicket)
+                <div class="px-3 pb-1 text-center">
+                    <a href="{{ route('support-tickets.show', $offlineTicket) }}" class="text-[11px] text-[#4f8ef7] hover:underline">View as support ticket</a>
+                </div>
+            @endif
+
+            <form id="chatSendForm" class="p-3 border-t border-[#2a3350] flex items-center gap-2 flex-shrink-0">
+                <input type="text" id="chatMessageInput" placeholder="Leave a message for support..." autocomplete="off"
                     class="flex-1 bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-2.5 text-sm text-white outline-none focus:border-[#4f8ef7]">
                 <button type="submit" class="bg-[#4f8ef7] hover:bg-[#3f7de6] text-white w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0">
                     <i class="fa fa-paper-plane"></i>
@@ -181,6 +216,14 @@
                     if (res.status) {
                         appendMessage(res.message, true);
                         messageInput.value = '';
+                        if (res.offline && res.ticket_url && !document.getElementById('offlineTicketLink')) {
+                            const link = document.createElement('a');
+                            link.id = 'offlineTicketLink';
+                            link.href = res.ticket_url;
+                            link.className = 'block text-center text-[11px] text-[#4f8ef7] hover:underline py-2 border-t border-[#2a3350]';
+                            link.textContent = 'View as support ticket';
+                            sendForm.parentElement.insertBefore(link, sendForm);
+                        }
                     } else {
                         window.toastr?.error(res.message || 'Unable to send message.');
                     }
@@ -188,8 +231,9 @@
                 .catch(() => window.toastr?.error('Unable to send message.'));
         });
 
-        // Real-time push when a real broadcast driver is configured...
-        if (window.Echo && messagesEl) {
+        // Real-time push when a real broadcast driver is configured — only
+        // relevant once there's an actual contact (not the offline/no-support state).
+        if (window.Echo && messagesEl && messagesEl.dataset.contactId) {
             window.Echo.private(`chat.user.{{ auth()->id() }}`)
                 .listen('.chat.message', (e) => {
                     if (String(e.sender_id) === messagesEl.dataset.contactId) {
@@ -199,7 +243,7 @@
         }
 
         // ...and a polling fallback so it works regardless.
-        if (messagesEl) {
+        if (messagesEl && messagesEl.dataset.contactId) {
             setInterval(() => {
                 const contactId = messagesEl.dataset.contactId;
                 const afterId = messagesEl.dataset.lastId || 0;

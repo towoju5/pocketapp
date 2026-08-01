@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\ChatMessageSent;
 use App\Models\ChatMessage;
+use App\Models\SupportTicket;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -13,6 +14,7 @@ class ChatController extends Controller
     {
         $userId = auth()->id();
         $isAdmin = (bool) auth()->user()->is_admin;
+        $supportAvailable = true;
 
         if ($isAdmin) {
             // Distinct set of everyone this admin has exchanged a message
@@ -23,6 +25,7 @@ class ChatController extends Controller
         } else {
             // Regular users only ever talk to support — no open user search.
             $contactIds = User::where('is_admin', true)->pluck('id');
+            $supportAvailable = $contactIds->isNotEmpty();
         }
 
         $contacts = User::whereIn('id', $contactIds)
@@ -41,6 +44,7 @@ class ChatController extends Controller
 
         $activeContact = $contact;
         $messages = collect();
+        $offlineTicket = null;
 
         if ($activeContact) {
             $messages = ChatMessage::conversationBetween($userId, $activeContact->id)
@@ -51,9 +55,18 @@ class ChatController extends Controller
                 ->where('receiver_id', $userId)
                 ->whereNull('read_at')
                 ->update(['read_at' => now()]);
+        } elseif (!$isAdmin && !$supportAvailable) {
+            // No admin/support account exists yet — still let the user drop
+            // a message via the Support Ticket system (no live receiver
+            // required), so it's waiting whenever support becomes available.
+            $offlineTicket = SupportTicket::where('user_id', $userId)
+                ->where('status', 'open')
+                ->latest()
+                ->with('replies')
+                ->first();
         }
 
-        return view('chat.index', compact('contacts', 'activeContact', 'messages'));
+        return view('chat.index', compact('contacts', 'activeContact', 'messages', 'supportAvailable', 'offlineTicket'));
     }
 
     public function search(Request $request)
@@ -80,10 +93,34 @@ class ChatController extends Controller
 
     public function send(Request $request)
     {
-        $validated = $request->validate([
-            'receiver_id' => 'required|exists:users,id',
-            'body' => 'required|string|max:2000',
-        ]);
+        $body = $request->validate(['body' => 'required|string|max:2000'])['body'];
+
+        if (!auth()->user()->is_admin && !User::where('is_admin', true)->exists()) {
+            $ticket = SupportTicket::firstOrCreate(
+                ['user_id' => auth()->id(), 'status' => 'open'],
+                ['subject' => 'Chat message', 'priority' => 'normal']
+            );
+
+            $reply = $ticket->replies()->create([
+                'user_id' => auth()->id(),
+                'is_admin_reply' => false,
+                'message' => $body,
+            ]);
+
+            return response()->json([
+                'status' => true,
+                'offline' => true,
+                'ticket_url' => route('support-tickets.show', $ticket),
+                'message' => [
+                    'id' => 'ticket-' . $reply->id,
+                    'sender_id' => auth()->id(),
+                    'body' => $reply->message,
+                    'created_at' => $reply->created_at->format('H:i'),
+                ],
+            ]);
+        }
+
+        $validated = $request->validate(['receiver_id' => 'required|exists:users,id']);
 
         if ((int) $validated['receiver_id'] === auth()->id()) {
             return response()->json(['status' => false, 'message' => "You can't message yourself."], 422);
@@ -92,7 +129,7 @@ class ChatController extends Controller
         $message = ChatMessage::create([
             'sender_id' => auth()->id(),
             'receiver_id' => $validated['receiver_id'],
-            'body' => $validated['body'],
+            'body' => $body,
         ]);
 
         broadcast(new ChatMessageSent($message))->toOthers();
