@@ -12,12 +12,18 @@ class ChatController extends Controller
     public function index(?User $contact = null)
     {
         $userId = auth()->id();
+        $isAdmin = (bool) auth()->user()->is_admin;
 
-        // Distinct set of everyone this user has exchanged a message with,
-        // most-recently-active first.
-        $contactIds = ChatMessage::where('sender_id', $userId)->pluck('receiver_id')
-            ->merge(ChatMessage::where('receiver_id', $userId)->pluck('sender_id'))
-            ->unique();
+        if ($isAdmin) {
+            // Distinct set of everyone this admin has exchanged a message
+            // with, most-recently-active first.
+            $contactIds = ChatMessage::where('sender_id', $userId)->pluck('receiver_id')
+                ->merge(ChatMessage::where('receiver_id', $userId)->pluck('sender_id'))
+                ->unique();
+        } else {
+            // Regular users only ever talk to support — no open user search.
+            $contactIds = User::where('is_admin', true)->pluck('id');
+        }
 
         $contacts = User::whereIn('id', $contactIds)
             ->get()
@@ -52,6 +58,8 @@ class ChatController extends Controller
 
     public function search(Request $request)
     {
+        abort_unless(auth()->user()->is_admin, 403);
+
         $q = trim((string) $request->input('q'));
         if ($q === '') {
             return response()->json([]);

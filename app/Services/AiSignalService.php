@@ -24,14 +24,32 @@ class AiSignalService
     /** @throws \RuntimeException when there isn't enough live data to generate a signal */
     public function generate(?int $createdBy = null): Signal
     {
-        $candidates = $this->buildCandidates();
+        $provider = get_option('active_chart_provider', 'all');
+        $candidates = $this->buildCandidates($provider);
 
         if (empty($candidates)) {
-            throw new \RuntimeException('No assets currently have enough live price history to generate a signal from.');
+            $assetCount = Assets::query()
+                ->when($provider !== 'all', fn ($q) => $q->where('price_source', $provider))
+                ->count();
+
+            if ($assetCount === 0) {
+                throw new \RuntimeException(
+                    $provider === 'all'
+                        ? 'No assets are configured yet — add one under Assets first.'
+                        : "No assets are configured for the active chart provider ({$provider}). Add one, or change the Active Chart Provider in Settings."
+                );
+            }
+
+            throw new \RuntimeException(
+                $provider === 'all'
+                    ? 'No assets currently have a live price feed. Make sure the price feed collector is running.'
+                    : "No assets on the active chart provider ({$provider}) currently have a live price feed. Make sure that provider's price feed collector is running, or switch Active Chart Provider in Settings."
+            );
         }
 
-        $pick = config('services.deepseek.api_key')
-            ? $this->pickWithDeepSeek($candidates)
+        $apiKey = get_option('deepseek_api_key') ?: config('services.deepseek.api_key');
+        $pick = $apiKey
+            ? $this->pickWithDeepSeek($candidates, $apiKey)
             : $this->pickWithHeuristic($candidates);
 
         $signal = Signal::create([
@@ -54,11 +72,15 @@ class AiSignalService
     /**
      * @return array<int, array{symbol: string, price: float, change_pct: float}>
      */
-    private function buildCandidates(): array
+    private function buildCandidates(string $provider = 'all'): array
     {
         $candidates = [];
 
-        foreach (Assets::all() as $asset) {
+        $assets = Assets::query()
+            ->when($provider !== 'all', fn ($q) => $q->where('price_source', $provider))
+            ->get();
+
+        foreach ($assets as $asset) {
             if (!$this->priceFeed->isOnline($asset->symbol)) {
                 continue;
             }
@@ -110,14 +132,14 @@ class AiSignalService
     }
 
     /** @param array<int, array{symbol: string, price: float, change_pct: float}> $candidates */
-    private function pickWithDeepSeek(array $candidates): array
+    private function pickWithDeepSeek(array $candidates, string $apiKey): array
     {
         $lines = collect($candidates)
             ->map(fn ($c) => sprintf('%s: last price %.5f, %.2f%% change over the recent window', $c['symbol'], $c['price'], $c['change_pct']))
             ->implode("\n");
 
         try {
-            $response = Http::withToken(config('services.deepseek.api_key'))
+            $response = Http::withToken($apiKey)
                 ->timeout(15)
                 ->post(config('services.deepseek.url'), [
                     'model' => config('services.deepseek.model', 'deepseek-chat'),

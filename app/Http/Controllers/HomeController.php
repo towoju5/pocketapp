@@ -50,6 +50,10 @@ class HomeController extends Controller
             $data = Assets::where('is_active', true)->first();
         }
 
+        if (!$data) {
+            abort(503, 'No active trading assets are currently configured. Please contact support.');
+        }
+
         $isOutOfTradingHours = !$priceFeed->isOnline($data->symbol);
 
         $assetCategories = Assets::where('is_active', true)->groupBy('asset_group')->get();
@@ -97,6 +101,10 @@ class HomeController extends Controller
 
         if (!$data or $coin == null) {
             $data = Assets::where('is_active', true)->first();
+        }
+
+        if (!$data) {
+            abort(503, 'No active trading assets are currently configured. Please contact support.');
         }
 
         $isOutOfTradingHours = !$priceFeed->isOnline($data->symbol);

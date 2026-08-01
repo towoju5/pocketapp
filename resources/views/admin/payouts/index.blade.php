@@ -38,7 +38,7 @@
             <tbody>
                 @forelse ($payouts as $payout)
                     <tr>
-                        <td>{{ $payout->user->first_name }} {{ $payout->user->last_name }}</td>
+                        <td>{{ $payout->user->first_name ?? 'User' }} {{ $payout->user->last_name ?? '' }}</td>
                         <td class="font-mono font-semibold text-white">{{ formatPrice((float) $payout->payout_amount) }}</td>
                         <td class="capitalize">{{ $payout->payout_method }}</td>
                         <td>{{ $payout->created_at->format('d M, Y H:i') }}</td>

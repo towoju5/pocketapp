@@ -10,3 +10,4 @@ Artisan::command('inspire', function () {
 
 Schedule::command('plans:mature')->hourly();
 Schedule::command('p2p:expire-trades')->everyFiveMinutes();
+Schedule::command('cashback:process-volume')->daily();

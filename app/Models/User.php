@@ -31,6 +31,7 @@ class User extends Authenticatable
         'password',
         'config',
         'referred_by',
+        'is_admin',
     ];
 
     /**
@@ -64,6 +65,7 @@ class User extends Authenticatable
             'password'          => 'hashed',
             'config'            => 'array',
             'address'           => 'array',
+            'is_admin'          => 'boolean',
         ];
     }
 

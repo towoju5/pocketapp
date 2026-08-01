@@ -13,7 +13,7 @@
             <tbody>
                 @forelse ($submissions as $sub)
                     <tr>
-                        <td>{{ $sub->user->first_name }} {{ $sub->user->last_name }}</td>
+                        <td>{{ $sub->user->first_name ?? 'User' }} {{ $sub->user->last_name ?? '' }}</td>
                         <td>{{ $sub->task->title ?? '—' }}</td>
                         <td>{{ formatPrice($sub->reward_amount) }}</td>
                         <td><a href="{{ $sub->proof_url }}" target="_blank" class="text-brand-blue hover:underline">Link</a></td>

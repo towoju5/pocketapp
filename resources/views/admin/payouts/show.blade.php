@@ -3,7 +3,7 @@
 @section('title', 'Review Withdrawal')
 
 @section('content')
-    <x-page-header :title="'Review: ' . $payout->user->first_name . ' ' . $payout->user->last_name" subtitle="Requested {{ $payout->created_at->format('d M, Y H:i') }}">
+    <x-page-header :title="'Review: ' . ($payout->user->first_name ?? 'User') . ' ' . ($payout->user->last_name ?? '')" subtitle="Requested {{ $payout->created_at->format('d M, Y H:i') }}">
         <x-slot:actions>
             <x-badge :status="$payout->payout_status" />
         </x-slot:actions>

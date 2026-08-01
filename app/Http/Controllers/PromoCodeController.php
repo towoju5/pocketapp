@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Deposit;
 use App\Models\PromoCode;
 use App\Models\PromoCodeRedemption;
+use App\Services\CashbackService;
 use Illuminate\Http\Request;
 
 class PromoCodeController extends Controller
@@ -17,7 +18,7 @@ class PromoCodeController extends Controller
         return view('finance.promo-codes', compact('promoCodes', 'redeemedIds'));
     }
 
-    public function redeem(Request $request)
+    public function redeem(Request $request, CashbackService $cashbackService)
     {
         $validated = $request->validate([
             'code' => 'required|string',
@@ -57,11 +58,13 @@ class PromoCodeController extends Controller
             'description' => "Promo code bonus: {$promoCode->promo_code}",
         ]);
 
-        PromoCodeRedemption::create([
+        $redemption = PromoCodeRedemption::create([
             'user_id' => $user->id,
             'promo_code_id' => $promoCode->id,
             'amount_credited' => $amount,
         ]);
+
+        $cashbackService->applyPromoCashback($user, $promoCode->promo_code, $redemption);
 
         return response()->json([
             'status' => true,

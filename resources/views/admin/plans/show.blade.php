@@ -17,7 +17,7 @@
             <tbody>
                 @forelse ($plan->subscriptions()->with('user')->latest()->limit(20)->get() as $sub)
                     <tr>
-                        <td>{{ $sub->user->first_name }} {{ $sub->user->last_name }}</td>
+                        <td>{{ $sub->user->first_name ?? 'User' }} {{ $sub->user->last_name ?? '' }}</td>
                         <td>{{ formatPrice($sub->stake_amount) }}</td>
                         <td>{{ formatPrice($sub->expected_payout) }}</td>
                         <td>{{ $sub->matures_at->format('d M, Y') }}</td>

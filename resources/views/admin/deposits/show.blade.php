@@ -3,7 +3,7 @@
 @section('title', 'Deposit Detail')
 
 @section('content')
-    <x-page-header :title="'Deposit: ' . $deposit->user->first_name . ' ' . $deposit->user->last_name" subtitle="Submitted {{ $deposit->created_at->format('d M, Y H:i') }}">
+    <x-page-header :title="'Deposit: ' . ($deposit->user->first_name ?? 'User') . ' ' . ($deposit->user->last_name ?? '')" subtitle="Submitted {{ $deposit->created_at->format('d M, Y H:i') }}">
         <x-slot:actions>
             <x-badge :status="$deposit->deposit_status" />
         </x-slot:actions>

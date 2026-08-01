@@ -41,9 +41,13 @@ class UserController extends Controller
             'username'   => 'required|string|unique:users,username,' . $user->id,
             'phone'      => 'nullable|string|max:20',
         ]);
-    
+
+        if ($user->id !== auth()->id()) {
+            $validated['is_admin'] = $request->boolean('is_admin');
+        }
+
         $user->update($validated);
-    
+
         return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');
     }
     

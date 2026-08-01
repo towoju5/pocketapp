@@ -3,7 +3,7 @@
 @section('title', 'Review KYC Submission')
 
 @section('content')
-    <x-page-header :title="'Review: ' . $kyc->user->first_name . ' ' . $kyc->user->last_name" subtitle="Submitted {{ $kyc->submitted_at?->format('d M, Y H:i') }}">
+    <x-page-header :title="'Review: ' . ($kyc->user->first_name ?? 'User') . ' ' . ($kyc->user->last_name ?? '')" subtitle="Submitted {{ $kyc->submitted_at?->format('d M, Y H:i') }}">
         <x-slot:actions>
             <x-badge :status="$kyc->status" />
         </x-slot:actions>

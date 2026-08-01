@@ -13,6 +13,7 @@
         <x-glass-card title="Identity">
             <dl class="space-y-3 text-sm">
                 <div class="flex justify-between"><dt class="text-slate-400">Username</dt><dd class="font-semibold text-white">{{ $user->username }}</dd></div>
+                <div class="flex justify-between"><dt class="text-slate-400">Admin Access</dt><dd class="font-semibold {{ $user->is_admin ? 'text-brand-emerald' : 'text-slate-500' }}">{{ $user->is_admin ? 'Yes' : 'No' }}</dd></div>
                 <div class="flex justify-between"><dt class="text-slate-400">Phone</dt><dd class="font-semibold text-white">{{ $user->phone ?? 'N/A' }}</dd></div>
                 <div class="flex justify-between"><dt class="text-slate-400">KYC Status</dt><dd><x-badge :status="$user->kyc->status ?? 'unverified'" /></dd></div>
                 <div class="flex justify-between"><dt class="text-slate-400">Joined</dt><dd class="font-semibold text-white">{{ $user->created_at->format('d M, Y') }}</dd></div>

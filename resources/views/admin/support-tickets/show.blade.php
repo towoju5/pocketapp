@@ -3,7 +3,7 @@
 @section('title', $ticket->subject)
 
 @section('content')
-    <x-page-header :title="$ticket->subject" subtitle="{{ $ticket->user->first_name }} {{ $ticket->user->last_name }}">
+    <x-page-header :title="$ticket->subject" subtitle="{{ $ticket->user->first_name ?? 'User' }} {{ $ticket->user->last_name ?? '' }}">
         <x-slot:actions>
             <x-badge :status="$ticket->status" />
         </x-slot:actions>

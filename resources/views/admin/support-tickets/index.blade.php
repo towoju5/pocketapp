@@ -13,7 +13,7 @@
             <tbody>
                 @forelse ($tickets as $ticket)
                     <tr>
-                        <td>{{ $ticket->user->first_name }} {{ $ticket->user->last_name }}</td>
+                        <td>{{ $ticket->user->first_name ?? 'User' }} {{ $ticket->user->last_name ?? '' }}</td>
                         <td class="text-white">{{ $ticket->subject }}</td>
                         <td class="capitalize">{{ $ticket->priority }}</td>
                         <td><x-badge :status="$ticket->status" /></td>

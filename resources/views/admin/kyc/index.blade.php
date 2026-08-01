@@ -19,7 +19,7 @@
             <tbody>
                 @forelse ($submissions as $kyc)
                     <tr>
-                        <td>{{ $kyc->user->first_name }} {{ $kyc->user->last_name }}</td>
+                        <td>{{ $kyc->user->first_name ?? 'User' }} {{ $kyc->user->last_name ?? '' }}</td>
                         <td class="capitalize">{{ str_replace('_', ' ', $kyc->document_type) }}</td>
                         <td>{{ $kyc->submitted_at?->format('d M, Y H:i') }}</td>
                         <td><x-badge :status="$kyc->status" /></td>

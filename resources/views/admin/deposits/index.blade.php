@@ -32,7 +32,7 @@
             <tbody>
                 @forelse ($deposits as $deposit)
                     <tr>
-                        <td>{{ $deposit->user->first_name }} {{ $deposit->user->last_name }}</td>
+                        <td>{{ $deposit->user->first_name ?? 'User' }} {{ $deposit->user->last_name ?? '' }}</td>
                         <td class="font-mono font-semibold text-white">{{ formatPrice((float) $deposit->deposit_amount) }}</td>
                         <td class="capitalize">{{ $deposit->deposit_method }}</td>
                         <td>{{ $deposit->created_at->format('d M, Y H:i') }}</td>

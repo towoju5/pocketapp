@@ -43,6 +43,21 @@
             </div>
         </div>
 
+        <div class="mb-5 flex items-center justify-between rounded-lg bg-white/5 px-4 py-3">
+            <div>
+                <div class="text-sm font-semibold text-white">Admin Access</div>
+                <p class="text-xs text-slate-400 mt-1">Grants full access to the admin console.</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" name="is_admin" value="1" {{ old('is_admin', $user->is_admin) ? 'checked' : '' }} {{ $user->id === auth()->id() ? 'disabled' : '' }} class="sr-only peer">
+                <div class="w-11 h-6 bg-slate-700 rounded-full peer peer-checked:bg-brand-blue transition-colors"></div>
+                <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
+            </label>
+        </div>
+        @if ($user->id === auth()->id())
+            <p class="mb-4 -mt-3 text-xs text-slate-500">You can't change your own admin access.</p>
+        @endif
+
         <button type="submit" class="brand-btn-primary">Save Changes</button>
     </form>
 </x-glass-card>

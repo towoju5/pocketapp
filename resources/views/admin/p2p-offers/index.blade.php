@@ -13,7 +13,7 @@
             <tbody>
                 @forelse ($offers as $offer)
                     <tr>
-                        <td>{{ $offer->maker->first_name }} {{ $offer->maker->last_name }}</td>
+                        <td>{{ $offer->maker->first_name ?? 'User' }} {{ $offer->maker->last_name ?? '' }}</td>
                         <td class="capitalize">{{ $offer->type }}</td>
                         <td>{{ $offer->currency }}</td>
                         <td>{{ formatPrice($offer->price_per_unit) }}</td>

@@ -3,7 +3,7 @@
 @section('title', 'Subscription #' . $subscription->id)
 
 @section('content')
-    <x-page-header :title="'Subscription #' . $subscription->id" subtitle="{{ $subscription->user->first_name }} {{ $subscription->user->last_name }}">
+    <x-page-header :title="'Subscription #' . $subscription->id" subtitle="{{ $subscription->user->first_name ?? 'User' }} {{ $subscription->user->last_name ?? '' }}">
         <x-slot:actions>
             <x-badge :status="$subscription->status" />
         </x-slot:actions>

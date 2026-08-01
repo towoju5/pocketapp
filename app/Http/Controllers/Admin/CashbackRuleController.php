@@ -23,42 +23,42 @@ class CashbackRuleController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'type' => 'required|in:loss,volume,promo',
             'percentage' => 'required|numeric|min:0|max:100',
             'volume_threshold' => 'nullable|integer|min:0',
             'promo_code' => 'nullable|string|max:50',
-            'active' => 'boolean',
         ]);
+        $validated['active'] = $request->boolean('active');
 
-        CashbackRule::create($request->all());
+        CashbackRule::create($validated);
 
         return redirect()->route('admin.cashbacks.index')->with('success', 'Cashback rule created successfully.');
     }
 
-    public function edit(CashbackRule $cashbackRule)
+    public function edit(CashbackRule $cashback)
     {
-        return view('admin.cashbacks.edit', compact('cashbackRule'));
+        return view('admin.cashbacks.edit', ['cashbackRule' => $cashback]);
     }
 
-    public function update(Request $request, CashbackRule $cashbackRule)
+    public function update(Request $request, CashbackRule $cashback)
     {
-        $request->validate([
+        $validated = $request->validate([
             'type' => 'required|in:loss,volume,promo',
             'percentage' => 'required|numeric|min:0|max:100',
             'volume_threshold' => 'nullable|integer|min:0',
             'promo_code' => 'nullable|string|max:50',
-            'active' => 'boolean',
         ]);
+        $validated['active'] = $request->boolean('active');
 
-        $cashbackRule->update($request->all());
+        $cashback->update($validated);
 
         return redirect()->route('admin.cashbacks.index')->with('success', 'Cashback rule updated successfully.');
     }
 
-    public function destroy(CashbackRule $cashbackRule)
+    public function destroy(CashbackRule $cashback)
     {
-        $cashbackRule->delete();
+        $cashback->delete();
         return redirect()->route('admin.cashbacks.index')->with('success', 'Cashback rule deleted.');
     }
 }

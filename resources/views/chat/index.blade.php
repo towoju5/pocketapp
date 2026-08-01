@@ -6,14 +6,20 @@
 <div class="flex-1 flex min-h-0">
     {{-- Contact list --}}
     <div class="w-[280px] border-r border-[#2a3350] flex flex-col flex-shrink-0">
-        <div class="p-3 border-b border-[#2a3350]">
-            <div class="relative">
-                <i class="fa fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-[#7c86a3] text-xs"></i>
-                <input type="text" id="chatSearchInput" placeholder="Search people..."
-                    class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg pl-9 pr-3 py-2 text-sm text-white outline-none focus:border-[#4f8ef7]">
+        @if(auth()->user()->is_admin)
+            <div class="p-3 border-b border-[#2a3350]">
+                <div class="relative">
+                    <i class="fa fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-[#7c86a3] text-xs"></i>
+                    <input type="text" id="chatSearchInput" placeholder="Search people..."
+                        class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg pl-9 pr-3 py-2 text-sm text-white outline-none focus:border-[#4f8ef7]">
+                </div>
+                <div id="chatSearchResults" class="hidden absolute z-20 w-[252px] mt-1 bg-[#171e33] border border-[#2a3350] rounded-lg overflow-hidden" style="box-shadow:0 20px 60px rgba(0,0,0,0.4);"></div>
             </div>
-            <div id="chatSearchResults" class="hidden absolute z-20 w-[252px] mt-1 bg-[#171e33] border border-[#2a3350] rounded-lg overflow-hidden" style="box-shadow:0 20px 60px rgba(0,0,0,0.4);"></div>
-        </div>
+        @else
+            <div class="p-3 border-b border-[#2a3350]">
+                <span class="text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">Support</span>
+            </div>
+        @endif
         <div class="flex-1 overflow-y-auto">
             @forelse($contacts as $contact)
                 <a href="{{ route('chat.show', $contact->id) }}" class="flex items-center gap-3 px-3.5 py-3 border-b border-[#1c243c] {{ $activeContact && $activeContact->id === $contact->id ? 'bg-[#1c243c]' : '' }} hover:bg-[#1c243c]">
@@ -31,7 +37,13 @@
                     </div>
                 </a>
             @empty
-                <div class="p-4 text-center text-xs text-[#7c86a3]">Search for someone above to start a conversation.</div>
+                <div class="p-4 text-center text-xs text-[#7c86a3]">
+                    @if(auth()->user()->is_admin)
+                        Search for someone above to start a conversation.
+                    @else
+                        Our support team isn't available to chat right now.
+                    @endif
+                </div>
             @endforelse
         </div>
     </div>
@@ -71,7 +83,13 @@
                     <div class="w-14 h-14 rounded-full bg-[#1c243c] border border-[#2a3350] flex items-center justify-center mx-auto mb-4">
                         <i class="fa fa-comments text-[#4f8ef7] text-xl"></i>
                     </div>
-                    <p class="text-[#7c86a3] text-sm">Search for someone or select a conversation to start chatting.</p>
+                    <p class="text-[#7c86a3] text-sm">
+                        @if(auth()->user()->is_admin)
+                            Search for someone or select a conversation to start chatting.
+                        @else
+                            Select a conversation to talk to our support team.
+                        @endif
+                    </p>
                 </div>
             </div>
         @endif

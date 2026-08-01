@@ -15,11 +15,11 @@
         </x-slot:actions>
     </x-page-header>
 
-    @if (!config('services.deepseek.api_key'))
+    @if (!get_option('deepseek_api_key') && !config('services.deepseek.api_key'))
         <div class="mb-6 rounded-xl border border-brand-amber/20 bg-brand-amber/10 px-4 py-3 text-sm text-brand-amber">
-            No <code>DEEPSEEK_API_KEY</code> configured — "Generate with AI" currently falls back to a local trend
-            heuristic (picks the asset with the largest recent move). Add a DeepSeek API key to <code>.env</code> to
-            use real AI-written picks and rationale instead.
+            No DeepSeek API key configured — "Generate with AI" currently falls back to a local trend
+            heuristic (picks the asset with the largest recent move). Add a DeepSeek API key in
+            <a href="{{ route('admin.settings.index') }}" class="underline">Settings</a> to use real AI-written picks and rationale instead.
         </div>
     @endif
 

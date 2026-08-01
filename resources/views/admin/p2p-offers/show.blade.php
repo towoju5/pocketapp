@@ -3,7 +3,7 @@
 @section('title', 'P2P Offer #' . $offer->id)
 
 @section('content')
-    <x-page-header :title="'Offer #' . $offer->id" subtitle="{{ $offer->maker->first_name }} {{ $offer->maker->last_name }}">
+    <x-page-header :title="'Offer #' . $offer->id" subtitle="{{ $offer->maker->first_name ?? 'User' }} {{ $offer->maker->last_name ?? '' }}">
         <x-slot:actions><x-badge :status="$offer->status" /></x-slot:actions>
     </x-page-header>
 
