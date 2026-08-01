@@ -43,6 +43,14 @@ class ChatController extends Controller
             ->values();
 
         $activeContact = $contact;
+
+        // The sidebar/search already restrict non-admins to admin contacts,
+        // but that's client-facing only — enforce it here too so a non-admin
+        // can't reach another regular user by guessing/reusing a /chat/{id} URL.
+        if ($activeContact && !$isAdmin && !$activeContact->is_admin) {
+            abort(404);
+        }
+
         $messages = collect();
         $offlineTicket = null;
 
@@ -126,6 +134,14 @@ class ChatController extends Controller
             return response()->json(['status' => false, 'message' => "You can't message yourself."], 422);
         }
 
+        // Non-admins can only ever message support (an admin) — never another regular user.
+        if (!auth()->user()->is_admin) {
+            $receiverIsAdmin = User::where('id', $validated['receiver_id'])->where('is_admin', true)->exists();
+            if (!$receiverIsAdmin) {
+                return response()->json(['status' => false, 'message' => 'You can only message support.'], 403);
+            }
+        }
+
         $message = ChatMessage::create([
             'sender_id' => auth()->id(),
             'receiver_id' => $validated['receiver_id'],
@@ -148,6 +164,10 @@ class ChatController extends Controller
     /** Polling fallback for when real-time broadcasting isn't configured — fetches anything newer than $afterId. */
     public function poll(Request $request, User $contact)
     {
+        if (!auth()->user()->is_admin && !$contact->is_admin) {
+            abort(404);
+        }
+
         $afterId = (int) $request->input('after_id', 0);
         $userId = auth()->id();
 

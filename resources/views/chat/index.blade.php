@@ -181,28 +181,72 @@
         }
         scrollToBottom();
 
-        function appendMessage(msg, isMine) {
+        // Short two-tone beep, synthesized on the fly — no audio asset needed.
+        let audioCtx = null;
+        function playChime() {
+            try {
+                audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                const now = audioCtx.currentTime;
+                [880, 1320].forEach((freq, i) => {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    gain.gain.setValueAtTime(0.001, now + i * 0.09);
+                    gain.gain.linearRampToValueAtTime(0.15, now + i * 0.09 + 0.01);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.09 + 0.15);
+                    osc.connect(gain).connect(audioCtx.destination);
+                    osc.start(now + i * 0.09);
+                    osc.stop(now + i * 0.09 + 0.16);
+                });
+            } catch (e) { /* Web Audio unsupported/blocked — silently skip the chime. */ }
+        }
+
+        /** status: 'sent' | 'pending' | 'failed' */
+        function appendMessage(msg, isMine, status = 'sent') {
             const wrapper = document.createElement('div');
             wrapper.className = `flex ${isMine ? 'justify-end' : 'justify-start'}`;
+            if (msg.localId) wrapper.dataset.localId = msg.localId;
+
             wrapper.innerHTML = `
-                <div class="max-w-[60%] ${isMine ? 'bg-[#4f8ef7] text-white' : 'bg-[#1c243c] text-[#d7dcea] border border-[#2a3350]'} rounded-xl px-4 py-2.5 text-sm">
-                    <p></p>
-                    <span class="block text-[10px] mt-1 opacity-70">${msg.created_at}</span>
+                <div class="max-w-[60%]">
+                    <div class="${isMine ? 'bg-[#4f8ef7] text-white' : 'bg-[#1c243c] text-[#d7dcea] border border-[#2a3350]'} rounded-xl px-4 py-2.5 text-sm" style="${status === 'pending' ? 'opacity:0.6;' : ''}">
+                        <p></p>
+                        <span class="block text-[10px] mt-1 opacity-70">${msg.created_at}</span>
+                    </div>
+                    <div class="chat-status mt-1 text-right"></div>
                 </div>
             `;
             wrapper.querySelector('p').textContent = msg.body;
+            renderStatus(wrapper, status);
             messagesEl.appendChild(wrapper);
-            messagesEl.dataset.lastId = msg.id;
+            if (status === 'sent') messagesEl.dataset.lastId = msg.id;
             scrollToBottom();
+
+            if (!isMine && status === 'sent') playChime();
+
+            return wrapper;
         }
 
-        sendForm?.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const body = messageInput.value.trim();
-            if (!body || !messagesEl) return;
+        function renderStatus(wrapper, status) {
+            const statusEl = wrapper.querySelector('.chat-status');
+            if (!statusEl) return;
+            if (status === 'failed') {
+                statusEl.innerHTML = `
+                    <span class="text-[10px] text-brand-danger inline-flex items-center gap-1">
+                        <i class="fa fa-circle-exclamation"></i> Failed
+                        <button type="button" class="chat-resend-btn underline hover:no-underline" style="color:inherit;">Resend</button>
+                    </span>
+                `;
+            } else {
+                statusEl.innerHTML = '';
+            }
+        }
+
+        function sendBody(body, localId) {
             const receiverId = messagesEl.dataset.contactId;
 
-            fetch("{{ route('chat.send') }}", {
+            return fetch("{{ route('chat.send') }}", {
                 method: 'POST',
                 headers: {
                     'X-CSRF-TOKEN': csrfToken(),
@@ -210,25 +254,66 @@
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ receiver_id: receiverId, body }),
-            })
-                .then((r) => r.json())
+            }).then((r) => r.json());
+        }
+
+        function handleSendResult(wrapper, res) {
+            if (res.status) {
+                delete wrapper.dataset.localId;
+                messagesEl.dataset.lastId = res.message.id;
+                renderStatus(wrapper, 'sent');
+                if (res.offline && res.ticket_url && !document.getElementById('offlineTicketLink')) {
+                    const link = document.createElement('a');
+                    link.id = 'offlineTicketLink';
+                    link.href = res.ticket_url;
+                    link.className = 'block text-center text-[11px] text-[#4f8ef7] hover:underline py-2 border-t border-[#2a3350]';
+                    link.textContent = 'View as support ticket';
+                    sendForm.parentElement.insertBefore(link, sendForm);
+                }
+            } else {
+                renderStatus(wrapper, 'failed');
+                window.toastr?.error(res.message || 'Unable to send message.');
+            }
+        }
+
+        sendForm?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const body = messageInput.value.trim();
+            if (!body || !messagesEl) return;
+            messageInput.value = '';
+
+            const localId = 'local-' + Date.now() + '-' + Math.random().toString(36).slice(2);
+            const wrapper = appendMessage(
+                { localId, body, created_at: new Date().toTimeString().slice(0, 5) },
+                true,
+                'pending'
+            );
+
+            sendBody(body, localId)
+                .then((res) => handleSendResult(wrapper, res))
+                .catch(() => renderStatus(wrapper, 'failed'));
+        });
+
+        // Click-to-resend for any failed bubble (event delegation — bubbles are added dynamically).
+        messagesEl?.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('chat-resend-btn')) return;
+            const wrapper = e.target.closest('[data-local-id]');
+            if (!wrapper) return;
+            const body = wrapper.querySelector('p')?.textContent ?? '';
+            if (!body) return;
+
+            renderStatus(wrapper, 'pending');
+            wrapper.querySelector('.rounded-xl').style.opacity = '0.6';
+
+            sendBody(body, wrapper.dataset.localId)
                 .then((res) => {
-                    if (res.status) {
-                        appendMessage(res.message, true);
-                        messageInput.value = '';
-                        if (res.offline && res.ticket_url && !document.getElementById('offlineTicketLink')) {
-                            const link = document.createElement('a');
-                            link.id = 'offlineTicketLink';
-                            link.href = res.ticket_url;
-                            link.className = 'block text-center text-[11px] text-[#4f8ef7] hover:underline py-2 border-t border-[#2a3350]';
-                            link.textContent = 'View as support ticket';
-                            sendForm.parentElement.insertBefore(link, sendForm);
-                        }
-                    } else {
-                        window.toastr?.error(res.message || 'Unable to send message.');
-                    }
+                    wrapper.querySelector('.rounded-xl').style.opacity = '';
+                    handleSendResult(wrapper, res);
                 })
-                .catch(() => window.toastr?.error('Unable to send message.'));
+                .catch(() => {
+                    wrapper.querySelector('.rounded-xl').style.opacity = '';
+                    renderStatus(wrapper, 'failed');
+                });
         });
 
         // Real-time push when a real broadcast driver is configured — only

@@ -1,28 +1,44 @@
 <div class="relative flex-shrink-0">
+    @php
+        $activeNav = match(true) {
+            request()->routeIs('dashboard*') => 'trading',
+            request()->routeIs('wallet.*', 'finance.*') => 'finance',
+            request()->routeIs('profile.*') => 'profile',
+            request()->routeIs('p2p-offers.*', 'p2p-trades.*') => 'market',
+            request()->routeIs('achievements.*', 'plans.*', 'tasks.*') => 'achievements',
+            request()->routeIs('tournaments.*') => 'tournaments',
+            request()->routeIs('chat.*') => 'chat',
+            request()->routeIs('support-tickets.*', 'notifications.*') => 'help',
+            default => null,
+        };
+        $navBorder = fn ($key) => $activeNav === $key ? '#4f8ef7' : '#2a3350';
+        $navColor = fn ($key) => $activeNav === $key ? '#4f8ef7' : '#7c86a3';
+        $navClass = fn ($key) => 'rail-nav-btn' . ($activeNav === $key ? ' rail-nav-btn--active' : '');
+    @endphp
     <div class="flex max-sm:hidden w-[84px] h-full bg-[#171e33] border-r border-[#2a3350] flex-col items-center py-3 overflow-y-auto box-border">
         <div class="flex flex-col items-center gap-1 w-full">
-            <a href="{{ route('dashboard') }}" class="rail-nav-btn rail-nav-btn--active" data-nav="trading" style="background:#1c243c;border:1px solid #4f8ef7;border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:#4f8ef7;text-decoration:none;margin-bottom:4px;">
+            <a href="{{ route('dashboard') }}" class="{{ $navClass('trading') }}" data-nav="trading" style="background:#1c243c;border:1px solid {{ $navBorder('trading') }};border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:{{ $navColor('trading') }};text-decoration:none;margin-bottom:4px;">
                 <i class="fa fa-chart-line" style="font-size:16px;"></i>Trading
             </a>
-            <button type="button" class="rail-nav-btn" data-nav="finance" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:#7c86a3;margin-bottom:4px;cursor:pointer;">
+            <button type="button" class="{{ $navClass('finance') }}" data-nav="finance" style="background:#1c243c;border:1px solid {{ $navBorder('finance') }};border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:{{ $navColor('finance') }};margin-bottom:4px;cursor:pointer;">
                 <i class="fa fa-wallet" style="font-size:16px;"></i>Finance
             </button>
-            <button type="button" class="rail-nav-btn" data-nav="profile" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:#7c86a3;margin-bottom:4px;cursor:pointer;">
+            <button type="button" class="{{ $navClass('profile') }}" data-nav="profile" style="background:#1c243c;border:1px solid {{ $navBorder('profile') }};border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:{{ $navColor('profile') }};margin-bottom:4px;cursor:pointer;">
                 <i class="fa fa-user" style="font-size:16px;"></i>Profile
             </button>
-            <a href="{{ route('p2p-offers.index') }}" class="rail-nav-btn" data-nav="market" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:#7c86a3;text-decoration:none;margin-bottom:4px;">
+            <a href="{{ route('p2p-offers.index') }}" class="{{ $navClass('market') }}" data-nav="market" style="background:#1c243c;border:1px solid {{ $navBorder('market') }};border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:{{ $navColor('market') }};text-decoration:none;margin-bottom:4px;">
                 <i class="fa fa-chart-column" style="font-size:16px;"></i>P2P
             </a>
-            <button type="button" class="rail-nav-btn" data-nav="achievements" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:#7c86a3;margin-bottom:4px;cursor:pointer;">
+            <button type="button" class="{{ $navClass('achievements') }}" data-nav="achievements" style="background:#1c243c;border:1px solid {{ $navBorder('achievements') }};border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:{{ $navColor('achievements') }};margin-bottom:4px;cursor:pointer;">
                 <i class="fa fa-trophy" style="font-size:16px;"></i>Rewards
             </button>
-            <a href="{{ route('tournaments.index') }}" class="rail-nav-btn" data-nav="tournaments" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:#7c86a3;text-decoration:none;margin-bottom:4px;">
+            <a href="{{ route('tournaments.index') }}" class="{{ $navClass('tournaments') }}" data-nav="tournaments" style="background:#1c243c;border:1px solid {{ $navBorder('tournaments') }};border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:{{ $navColor('tournaments') }};text-decoration:none;margin-bottom:4px;">
                 <i class="fa fa-medal" style="font-size:16px;"></i>Tournaments
             </a>
-            <a href="{{ route('chat.index') }}" class="rail-nav-btn" data-nav="chat" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:#7c86a3;text-decoration:none;margin-bottom:4px;">
+            <a href="{{ route('chat.index') }}" class="{{ $navClass('chat') }}" data-nav="chat" style="background:#1c243c;border:1px solid {{ $navBorder('chat') }};border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:{{ $navColor('chat') }};text-decoration:none;margin-bottom:4px;">
                 <i class="fa fa-comments" style="font-size:16px;"></i>Chat
             </a>
-            <button type="button" class="rail-nav-btn" data-nav="help" style="background:#1c243c;border:1px solid #2a3350;border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:#7c86a3;cursor:pointer;">
+            <button type="button" class="{{ $navClass('help') }}" data-nav="help" style="background:#1c243c;border:1px solid {{ $navBorder('help') }};border-radius:8px;padding:8px 4px;width:58px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:9.5px;font-weight:700;color:{{ $navColor('help') }};cursor:pointer;">
                 <i class="fa fa-circle-question" style="font-size:16px;"></i>Help
             </button>
         </div>

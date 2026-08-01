@@ -54,8 +54,8 @@
                 <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
             </label>
         </div>
-        @if ($user->id === auth()->id())
-            <p class="mb-4 -mt-3 text-xs text-slate-500">You can't change your own admin access.</p>
+        @if ($user->id === auth()->id() && $user->is_admin)
+            <p class="mb-4 -mt-3 text-xs text-slate-500">You can't remove your own admin access.</p>
         @endif
 
         <button type="submit" class="brand-btn-primary">Save Changes</button>
