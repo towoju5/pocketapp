@@ -17,8 +17,14 @@ use Illuminate\Support\Facades\Log;
  */
 class AiSignalService
 {
-    public function __construct(private PriceFeedService $priceFeed)
+    public function __construct(private PriceFeedService $priceFeed, private BrokeretFeedService $brokeretFeed)
     {
+    }
+
+    /** Each asset's live feed lives in a different Redis namespace depending on its price_source. */
+    private function feedFor(Assets $asset): PriceFeedService|BrokeretFeedService
+    {
+        return $asset->price_source === 'brokeret' ? $this->brokeretFeed : $this->priceFeed;
     }
 
     /** @throws \RuntimeException when there isn't enough live data to generate a signal */
@@ -81,11 +87,13 @@ class AiSignalService
             ->get();
 
         foreach ($assets as $asset) {
-            if (!$this->priceFeed->isOnline($asset->symbol)) {
+            $feed = $this->feedFor($asset);
+
+            if (!$feed->isOnline($asset->symbol)) {
                 continue;
             }
 
-            $ticks = $this->priceFeed->getHistoryTicks($asset->symbol);
+            $ticks = $feed->getHistoryTicks($asset->symbol);
             if (count($ticks) < 2) {
                 continue;
             }

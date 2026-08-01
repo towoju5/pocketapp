@@ -49,7 +49,7 @@
                 <p class="text-xs text-slate-400 mt-1">Grants full access to the admin console.</p>
             </div>
             <label class="relative inline-flex items-center cursor-pointer">
-                <input type="checkbox" name="is_admin" value="1" {{ old('is_admin', $user->is_admin) ? 'checked' : '' }} {{ $user->id === auth()->id() ? 'disabled' : '' }} class="sr-only peer">
+                <input type="checkbox" name="is_admin" value="1" {{ old('is_admin', $user->is_admin) ? 'checked' : '' }} {{ ($user->id === auth()->id() && $user->is_admin) ? 'disabled' : '' }} class="sr-only peer">
                 <div class="w-11 h-6 bg-slate-700 rounded-full peer peer-checked:bg-brand-blue transition-colors"></div>
                 <div class="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-5"></div>
             </label>

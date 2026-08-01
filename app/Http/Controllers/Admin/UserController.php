@@ -42,7 +42,11 @@ class UserController extends Controller
             'phone'      => 'nullable|string|max:20',
         ]);
 
-        if ($user->id !== auth()->id()) {
+        // Self-editing an existing admin: the toggle is disabled client-side
+        // (can't self-demote), so leave is_admin untouched rather than
+        // reading an unsubmitted field as false. Anyone else — including
+        // yourself when you're not yet admin — can have it set normally.
+        if (!($user->id === auth()->id() && $user->is_admin)) {
             $validated['is_admin'] = $request->boolean('is_admin');
         }
 
