@@ -47,12 +47,6 @@
 #   BROKERET_API_KEY       Your real Brokeret API key. Left as the
 #                          "demo" placeholder if not set — fill it in by
 #                          hand before going live.
-#   ENABLE_LEGACY_COLLECTOR  "true" to also install Google Chrome and the
-#                          headless-browser ticker-collector pool as a
-#                          fallback price source. Off by default — the
-#                          Brokeret stream doesn't need it. See
-#                          SETUP_GUIDE.md §3 for why this needs much more
-#                          RAM if enabled.
 #
 # IMPORTANT — Ably safety note: routes/channels.php resolves the configured
 # broadcaster the instant it's loaded (on every request/artisan command).
@@ -79,8 +73,6 @@ ABLY_KEY="${ABLY_KEY:-}"
 VITE_ABLY_PUBLIC_KEY="${VITE_ABLY_PUBLIC_KEY:-}"
 BROKERET_WS_URL="${BROKERET_WS_URL:-wss://feed.brokeret.com/ws}"
 BROKERET_API_KEY="${BROKERET_API_KEY:-}"
-ENABLE_LEGACY_COLLECTOR="${ENABLE_LEGACY_COLLECTOR:-false}"
-BATCH_SIZE=10
 
 if [ "$(id -u)" -ne 0 ]; then
     echo "ERROR: run this as root (sudo -E ./install.sh)." >&2
@@ -292,28 +284,6 @@ START_PROGRAMS="pocketapp-queue-worker:* pocketapp-brokeret-stream pocketapp-red
 if [ "$BROADCASTER" = "reverb" ]; then
     copy_supervisor_conf pocketapp-reverb
     START_PROGRAMS="$START_PROGRAMS pocketapp-reverb:*"
-fi
-
-if [ "$ENABLE_LEGACY_COLLECTOR" = "true" ]; then
-    echo "  ENABLE_LEGACY_COLLECTOR=true — installing Google Chrome + the headless-browser collector pool"
-    if ! command -v google-chrome-stable >/dev/null 2>&1 && ! command -v google-chrome >/dev/null 2>&1; then
-        curl -fsSL -o /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        apt-get install -y /tmp/chrome.deb || apt-get -f install -y
-        rm -f /tmp/chrome.deb
-    fi
-    CHROME_BIN="$(command -v google-chrome-stable || command -v google-chrome || true)"
-    chmod +x "$APP_ROOT/drivers/chromedriver"
-
-    NUMPROCS=$(( (ASSET_COUNT + BATCH_SIZE - 1) / BATCH_SIZE ))
-    [ "$NUMPROCS" -lt 1 ] && NUMPROCS=1
-    if [ -z "$CHROME_BIN" ]; then
-        echo "  WARNING: no Chrome binary found — the collector will fail to start until one is installed." >&2
-    fi
-    sed -e "s|/var/www/pocketapp|$APP_ROOT|g" -e "s/^numprocs=.*/numprocs=$NUMPROCS/" \
-        -e "s|__PANTHER_CHROME_BINARY__|$CHROME_BIN|g" \
-        "$APP_ROOT/deploy/supervisor/pocketapp-ticker-collector.conf" > /etc/supervisor/conf.d/pocketapp-ticker-collector.conf
-    START_PROGRAMS="$START_PROGRAMS pocketapp-ticker-collector:*"
-    echo "  ticker collector: $NUMPROCS process(es) (batch size $BATCH_SIZE, $ASSET_COUNT assets)"
 fi
 
 supervisorctl reread

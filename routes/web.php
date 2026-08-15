@@ -6,6 +6,7 @@ use App\Http\Controllers\DepositController;
 use App\Http\Controllers\ExpressTradeController;
 use App\Http\Controllers\GatewayCheckoutController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\KycWebhookController;
 use App\Http\Controllers\MarketingController;
 use App\Http\Controllers\PaymentWebhookController;
 use App\Http\Controllers\PayoutController;
@@ -144,6 +145,10 @@ Route::get('tt', function () {
 Route::post('webhooks/payments/{slug}', [PaymentWebhookController::class, 'handle'])
     ->withoutMiddleware(VerifyCsrfToken::class)
     ->name('webhooks.payments');
+
+Route::post('webhooks/kyc/{slug}', [KycWebhookController::class, 'handle'])
+    ->withoutMiddleware(VerifyCsrfToken::class)
+    ->name('webhooks.kyc');
 
 
 require __DIR__ . '/auth.php';

@@ -155,9 +155,21 @@ class TradeController extends Controller
             return response()->json(['status' => false, 'message' => 'Error placing trade']);
         }
 
-        event(new NewTradeCreated($trade));
-        event(new TradeUpdated($trade));
+        // Settlement must be scheduled unconditionally before the broadcasts
+        // below — NewTradeCreated is ShouldBroadcastNow (fires synchronously,
+        // right here, not queued), so a transient broadcaster failure (Reverb
+        // restart, Ably hiccup) throwing would otherwise abort this method
+        // before EvaluateTrade ever gets dispatched, permanently stranding a
+        // trade that already debited the user's wallet: pending forever, no
+        // job ever scheduled to settle it.
         EvaluateTrade::dispatch($trade)->delay(now()->addSeconds($validated['duration']));
+
+        try {
+            event(new NewTradeCreated($trade));
+            event(new TradeUpdated($trade));
+        } catch (\Throwable $e) {
+            Log::error('Trade broadcast failed (settlement still scheduled)', ['trade_id' => $trade->id, 'error' => $e->getMessage()]);
+        }
 
         try {
             (new \App\Services\TradeCopyService())->mirror($trade);

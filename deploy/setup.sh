@@ -1,18 +1,28 @@
 #!/usr/bin/env bash
 #
-# NOTE: this script provisions the older Reverb + headless-Chrome-collector
-# configuration and defaults to a SQLite database. For a new install, prefer
-# ../install.sh instead — it sets up the current recommended stack (MySQL,
-# Redis, PHP 8.4, the Brokeret price stream, Ably broadcasting) end to end.
-# This script is kept for sites that were already deployed with the older
-# configuration it describes below.
+# NOTE: this script provisions the older Reverb-based configuration and
+# defaults to a SQLite database. For a new install, prefer ../install.sh
+# instead — it sets up the current recommended stack (MySQL, Redis, PHP 8.4,
+# the Brokeret price stream, Ably broadcasting) end to end. This script is
+# kept for sites that were already deployed with the older configuration it
+# describes below.
+#
+# The iqcent headless-Chrome ticker collector this script used to also wire
+# up (TickerController/CollectTicks) has been removed from the app entirely
+# — Brokeret is now the only price source. If this script previously set up
+# `pocketapp-ticker-collector` for you, that Supervisor program is now
+# orphaned (references a command that no longer exists) and should be
+# stopped/removed by hand: `supervisorctl stop pocketapp-ticker-collector:*
+# && rm /etc/supervisor/conf.d/pocketapp-ticker-collector.conf &&
+# supervisorctl update`. Any assets that only had a price via that collector
+# (price_source='iqcent' with no Brokeret equivalent) no longer receive live
+# prices and will show as unavailable for trading.
 #
 # One-shot bootstrap for a fresh Ubuntu/Debian VPS: installs every system
 # dependency, configures .env, builds the app, wires up Supervisor (Reverb +
-# queue workers + the ticker price collector), the cron scheduler, and an
-# nginx vhost — then starts everything. Safe to re-run any time (every step
-# checks before it acts) — re-running after a `git pull` is how you deploy
-# updates.
+# queue workers), the cron scheduler, and an nginx vhost — then starts
+# everything. Safe to re-run any time (every step checks before it acts) —
+# re-running after a `git pull` is how you deploy updates.
 #
 # Usage (as root, from anywhere):
 #   git clone <your-repo-url> /var/www/pocketapp
@@ -38,7 +48,6 @@ DOMAIN="${DOMAIN:-}"
 GIT_REPO_URL="${GIT_REPO_URL:-}"
 PHP_VERSION="${PHP_VERSION:-8.4}"
 APP_USER="${APP_USER:-www-data}"
-BATCH_SIZE=10
 
 if [ "$(id -u)" -ne 0 ]; then
     echo "ERROR: run this as root (sudo -E ./deploy/setup.sh)." >&2
@@ -50,7 +59,7 @@ if ! command -v apt-get >/dev/null 2>&1; then
     exit 1
 fi
 
-echo "== 1/11: System packages =="
+echo "== 1/9: System packages =="
 apt-get update -y
 apt-get install -y software-properties-common curl git unzip ca-certificates \
     supervisor sqlite3 redis-server nginx certbot python3-certbot-nginx
@@ -82,18 +91,8 @@ if ! command -v node >/dev/null 2>&1; then
     apt-get install -y nodejs
 fi
 
-# Google Chrome — the actual browser Panther drives to get past iqcent's
-# Cloudflare check (see app/Http/Controllers/TickerController.php). The
-# matching chromedriver binary is already committed at drivers/chromedriver;
-# this just needs a browser for it to control.
-if ! command -v google-chrome-stable >/dev/null 2>&1 && ! command -v google-chrome >/dev/null 2>&1; then
-    curl -fsSL -o /tmp/chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-    apt-get install -y /tmp/chrome.deb || apt-get -f install -y
-    rm -f /tmp/chrome.deb
-fi
-
 echo
-echo "== 2/11: Application code =="
+echo "== 2/9: Application code =="
 if [ ! -f "$APP_ROOT/artisan" ]; then
     if [ -n "$GIT_REPO_URL" ]; then
         git clone "$GIT_REPO_URL" "$APP_ROOT"
@@ -105,7 +104,7 @@ fi
 cd "$APP_ROOT"
 
 echo
-echo "== 3/11: .env =="
+echo "== 3/9: .env =="
 ENV_FILE="$APP_ROOT/.env"
 [ -f "$ENV_FILE" ] || cp "$APP_ROOT/.env.example" "$ENV_FILE"
 cp "$ENV_FILE" "$ENV_FILE.bak.$(date +%Y%m%d%H%M%S)"
@@ -163,74 +162,51 @@ if [ -z "$REVERB_HOST_CUR" ] || [ "$REVERB_HOST_CUR" = "localhost" ] || [ "$REVE
 fi
 
 echo
-echo "== 4/11: PHP & JS dependencies =="
+echo "== 4/9: PHP & JS dependencies =="
 composer install --no-interaction --prefer-dist --optimize-autoloader
 npm install
 npm run build
 
 echo
-echo "== 5/11: Database =="
+echo "== 5/9: Database =="
 [ -f database/database.sqlite ] || touch database/database.sqlite
 php artisan migrate --force
 
 ASSET_COUNT="$(sqlite3 database/database.sqlite "SELECT COUNT(*) FROM assets;" 2>/dev/null || echo 0)"
 if [ "${ASSET_COUNT:-0}" -eq 0 ]; then
-    # Seeds the tradable asset catalog (AssetSeeder) the ticker collector
-    # subscribes to — without it there's nothing for TickerController to
-    # stream, and every chart shows "offline".
     php artisan db:seed --force
     ASSET_COUNT="$(sqlite3 database/database.sqlite "SELECT COUNT(*) FROM assets;" 2>/dev/null || echo 0)"
 fi
 echo "  $ASSET_COUNT assets in catalog"
 
 echo
-echo "== 6/11: storage:link, permissions, config cache =="
+echo "== 6/9: storage:link, permissions, config cache =="
 [ -L public/storage ] || php artisan storage:link
 chown -R "$APP_USER:$APP_USER" storage bootstrap/cache database
-chmod +x drivers/chromedriver
 php artisan config:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
 echo
-echo "== 7/11: Chrome / chromedriver sanity check =="
-CHROME_BIN="$(command -v google-chrome-stable || command -v google-chrome || true)"
-if [ -n "$CHROME_BIN" ]; then
-    echo "  chrome:       $("$CHROME_BIN" --version)"
-    echo "  chromedriver: $(./drivers/chromedriver --version)"
-    echo "  (major versions should roughly match — if the ticker collector can't start, regenerate the driver with: vendor/bin/bdi detect drivers)"
-else
-    echo "  WARNING: no Chrome binary found — the ticker collector (TickerController) cannot run without one." >&2
-fi
-
-echo
-echo "== 8/11: Supervisor (Reverb, queue workers, ticker collector) =="
+echo "== 7/9: Supervisor (Reverb, queue workers) =="
 sed -e "s|/var/www/pocketapp|$APP_ROOT|g" \
     "$APP_ROOT/deploy/supervisor/pocketapp-reverb.conf" > /etc/supervisor/conf.d/pocketapp-reverb.conf
 sed -e "s|/var/www/pocketapp|$APP_ROOT|g" \
     "$APP_ROOT/deploy/supervisor/pocketapp-queue-worker.conf" > /etc/supervisor/conf.d/pocketapp-queue-worker.conf
 
-# numprocs must cover the whole catalog at 10 symbols/process — recompute
-# from the actual asset count instead of trusting the checked-in default,
-# which drifts as the catalog grows.
-NUMPROCS=$(( (ASSET_COUNT + BATCH_SIZE - 1) / BATCH_SIZE ))
-[ "$NUMPROCS" -lt 1 ] && NUMPROCS=1
-if [ -z "$CHROME_BIN" ]; then
-    echo "  WARNING: pinning PANTHER_CHROME_BINARY to a Chrome that wasn't found — the collector will fail to start until a real (non-snap) Chrome is installed." >&2
-fi
-sed -e "s|/var/www/pocketapp|$APP_ROOT|g" -e "s/^numprocs=.*/numprocs=$NUMPROCS/" \
-    -e "s|__PANTHER_CHROME_BINARY__|$CHROME_BIN|g" \
-    "$APP_ROOT/deploy/supervisor/pocketapp-ticker-collector.conf" > /etc/supervisor/conf.d/pocketapp-ticker-collector.conf
-echo "  ticker collector: $NUMPROCS process(es) (batch size $BATCH_SIZE, $ASSET_COUNT assets)"
-
 supervisorctl reread
 supervisorctl update
-supervisorctl restart pocketapp-reverb:* pocketapp-queue-worker:* pocketapp-ticker-collector:* || \
-    supervisorctl start pocketapp-reverb:* pocketapp-queue-worker:* pocketapp-ticker-collector:*
+supervisorctl restart pocketapp-reverb:* pocketapp-queue-worker:* || \
+    supervisorctl start pocketapp-reverb:* pocketapp-queue-worker:*
+
+echo "  NOTE: this script no longer sets up a price feed (the iqcent ticker"
+echo "  collector it used to wire up here has been removed from the app)."
+echo "  Set up the Brokeret stream by hand — see SETUP_GUIDE.md, or migrate"
+echo "  this deployment to ../install.sh, which does it automatically."
 
 echo
-echo "== 9/11: Cron (Laravel scheduler) =="
+echo "== 8/9: Cron (Laravel scheduler) =="
 # routes/console.php has Schedule::command(...) entries (plans:mature,
 # p2p:expire-trades) — nothing runs them without this.
 CRON_LINE="* * * * * cd $APP_ROOT && php artisan schedule:run >> /dev/null 2>&1"
@@ -238,7 +214,7 @@ CRON_LINE="* * * * * cd $APP_ROOT && php artisan schedule:run >> /dev/null 2>&1"
     | crontab -u "$APP_USER" -
 
 echo
-echo "== 10/11: nginx =="
+echo "== 9/9: nginx =="
 if [ -n "$DOMAIN" ]; then
     sed -e "s/example\.com/$DOMAIN/g" \
         -e "s|/var/www/pocketapp|$APP_ROOT|g" \
@@ -254,13 +230,12 @@ else
 fi
 
 echo
-echo "== 11/11: Done =="
+echo "== Done =="
 supervisorctl status
 echo
 echo "Logs:"
 echo "  tail -f $APP_ROOT/storage/logs/reverb.log"
 echo "  tail -f $APP_ROOT/storage/logs/queue-worker.log"
-echo "  tail -f $APP_ROOT/storage/logs/ticker-collector.log"
 echo
 echo "Next: create your first account at the site, then make it an admin:"
 echo "  cd $APP_ROOT && php artisan tinker --execute=\"App\\Models\\User::where('email','you@example.com')->update(['is_admin' => true]);\""

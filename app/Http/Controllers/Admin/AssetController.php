@@ -54,7 +54,12 @@ class AssetController extends Controller
             'asset_profit_margin' => 'nullable|numeric',
             'extra_data' => 'nullable|array',
             'is_otc' => 'nullable|boolean',
-            'price_source' => 'required|in:iqcent,brokeret',
+            // iqcent's collector (TickerController/CollectTicks) has been
+            // removed — no process will ever put a live price on a new
+            // iqcent-tagged asset, so it's no longer a valid choice here.
+            // update() below still allows it, for editing the assets that
+            // were already created against it before removal.
+            'price_source' => 'required|in:brokeret',
             'is_active' => 'nullable|boolean',
         ]);
 
@@ -88,6 +93,10 @@ class AssetController extends Controller
             'asset_profit_margin' => 'nullable|numeric',
             'extra_data' => 'nullable|array',
             'is_otc' => 'nullable|boolean',
+            // Still allows 'iqcent' here (unlike store() above) so the ~158
+            // assets already tagged that way before the collector was
+            // removed can still be edited/deactivated without the form
+            // silently reassigning their source.
             'price_source' => 'required|in:iqcent,brokeret',
             'is_active' => 'nullable|boolean',
         ]);

@@ -45,7 +45,7 @@
             <div>
                 <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Price Source</label>
                 <select name="price_source" class="brand-input-dark">
-                    <option value="iqcent" {{ old('price_source', $asset->price_source) === 'iqcent' ? 'selected' : '' }}>iqcent (headless-Chrome collector)</option>
+                    <option value="iqcent" {{ old('price_source', $asset->price_source) === 'iqcent' ? 'selected' : '' }}>iqcent (collector retired — no live price, keep only to manage/deactivate)</option>
                     <option value="brokeret" {{ old('price_source', $asset->price_source) === 'brokeret' ? 'selected' : '' }}>Brokeret (base_url/ui feed)</option>
                 </select>
                 @error('price_source') <p class="mt-1 text-xs text-brand-danger">{{ $message }}</p> @enderror

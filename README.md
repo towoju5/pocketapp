@@ -2,29 +2,37 @@
 
 A Laravel binary-options trading platform: user wallets, deposits/payouts,
 express trades, tournaments, social trading — with live asset price charts
-fed by a self-hosted price collector (no third-party market data API; prices
-are scraped directly from iqcent via a real headless Chrome browser, because
-iqcent sits behind Cloudflare and blocks anything that isn't one).
+fed by a direct WebSocket connection to Brokeret's price feed (no third-party
+market data API, no headless browser — Brokeret isn't behind Cloudflare, so
+the backend connects to it as a plain WS client).
 
 ## Architecture
 
 ```
-iqcent.com (WebSocket price feed, behind Cloudflare)
+feed.brokeret.com (WebSocket price feed)
         │
         ▼
-Headless Chrome × N  ──  app/Http/Controllers/TickerController.php
- (Panther, one per     ──  driven by: php artisan ticks:collect
-  batch of ~10 assets)     (Supervisor: pocketapp-ticker-collector)
+StreamBrokeretTicks  ──  app/Console/Commands/StreamBrokeretTicks.php
+                          driven by: php artisan ticks:stream-brokeret
+                          (Supervisor: pocketapp-brokeret-stream)
         │
         ▼
-PriceFeedService (cache: current price, tick history, online/offline)
+PriceFeedService (Redis: current price, tick history, online/offline)
         │
         ▼
-AssetPriceBatchUpdated  ──  broadcast over Reverb (Supervisor: pocketapp-reverb)
+BridgeRedisTicks (php artisan ticks:bridge-redis) tails Redis and rebroadcasts
+        │
+        ▼
+AssetPriceBatchUpdated  ──  broadcast over Ably/Reverb (Supervisor: pocketapp-reverb, if self-hosting Reverb)
         │
         ▼
 Browser (Echo / resources/js/trading/chart.js) — every connected user's chart
 ```
+
+base_url/ui runs a second, fully independent Brokeret connection
+(`StreamBrokeretFeed` / `ticks:stream-brokeret-ui`) that streams every symbol
+Brokeret offers straight to that dashboard — see `SETUP_GUIDE.md` §6 for the
+full process list.
 
 Trade settlement, payouts, and loss-cashback all happen inside queued jobs
 (Supervisor: `pocketapp-queue-worker`) — nothing settles without a worker
@@ -38,31 +46,37 @@ small.
 
 ## Prerequisites
 
-A fresh Ubuntu or Debian VPS (root/sudo access) is all you need — the setup
-script installs everything else (nginx, PHP, Composer, Node, Chrome,
+A fresh Ubuntu or Debian VPS (root/sudo access) is all you need — the
+installer sets up everything else (nginx, PHP, MySQL, Redis, Composer, Node,
 Supervisor). You'll want:
 
 - A domain name pointed (A record) at the server's IP, if you want HTTPS —
   not required to get the app running over plain HTTP first.
 - The repo's git URL (or the code already `git clone`d onto the box).
+- A Brokeret WebSocket API key (`BROKERET_API_KEY`), and either an Ably key
+  or nothing else (self-hosted Reverb is the fallback broadcaster) — see
+  `SETUP_GUIDE.md` §2.4 for details.
 
 ## Quick start (fresh VPS → running site, one command)
 
 ```bash
 git clone <your-repo-url> /var/www/pocketapp
 cd /var/www/pocketapp
-DOMAIN=example.com sudo -E ./deploy/setup.sh
+DOMAIN=example.com sudo -E ./install.sh
 ```
 
 Or let the script do the clone too:
 
 ```bash
-GIT_REPO_URL=<your-repo-url> DOMAIN=example.com sudo -E ./deploy/setup.sh
+GIT_REPO_URL=<your-repo-url> DOMAIN=example.com sudo -E ./install.sh
 ```
 
-Without `DOMAIN`, everything runs except the nginx vhost (which needs a real
-hostname) — set it later and re-run; the script is safe to re-run any time,
-including for deploying updates (see below).
+`install.sh` is the current recommended installer — MySQL, Redis, the
+Brokeret WebSocket price stream, and Ably broadcasting by default. It's
+idempotent (every step checks current state before acting), so re-running it
+after `git pull` is how you deploy updates. See `SETUP_GUIDE.md` for the full
+walkthrough of every step, every environment variable, and the manual
+step-by-step equivalent if you'd rather not run a script with root.
 
 Once DNS for your domain resolves to the server, enable HTTPS:
 
@@ -77,98 +91,14 @@ cd /var/www/pocketapp
 php artisan tinker --execute="App\Models\User::where('email','you@example.com')->update(['is_admin' => true]);"
 ```
 
-### What the script does
+## Already deployed with the older SQLite/Reverb-only config?
 
-`deploy/setup.sh` is idempotent — every step checks current state before
-acting, so re-running it (e.g. after `git pull`) just brings things up to
-date rather than redoing everything blindly.
-
-1. **System packages** — nginx, PHP-FPM + required extensions, Composer,
-   Node.js, Supervisor, sqlite3, Google Chrome (the browser
-   `TickerController` drives — see Architecture above), certbot.
-2. **Application code** — clones the repo if it isn't already checked out at
-   the target path.
-3. **`.env`** — copies `.env.example` if missing, generates `APP_KEY` and
-   Reverb credentials (`REVERB_APP_ID/KEY/SECRET`), sets
-   `BROADCAST_CONNECTION=reverb` (broadcasts silently go nowhere without
-   this), and derives `REVERB_HOST`/`VITE_REVERB_*` from your domain — a
-   browser connects to your domain, never to `localhost`.
-4. **Dependencies** — `composer install`, `npm install`, `npm run build`
-   (`VITE_*` values are baked into the JS at build time, so this must run
-   after any `.env` change that touches them).
-5. **Database** — creates the SQLite file, runs migrations, and seeds the
-   ~150-asset catalog (`AssetSeeder`) if it's empty — nothing for the
-   collector to subscribe to, and every chart shows "offline", without this.
-6. **Permissions** — `storage:link`, ownership of `storage/`,
-   `bootstrap/cache/`, and `database/` (SQLite's WAL mode writes sidecar
-   files into that directory) to the app user, config/route/view caching.
-7. **Chrome/chromedriver check** — prints both versions so a mismatch is
-   obvious immediately rather than surfacing later as a silently-dead
-   collector process.
-8. **Supervisor** — installs `pocketapp-reverb`, `pocketapp-queue-worker`,
-   and `pocketapp-ticker-collector` into `/etc/supervisor/conf.d/`, sizing
-   the ticker collector's process count to the actual asset count
-   (`ceil(assets / 10)`), and (re)starts all three.
-9. **Cron** — installs the `schedule:run` entry for the app user.
-10. **nginx** — generates a vhost from `deploy/nginx/pocketapp.conf.example`
-    (PHP-FPM + the Reverb WebSocket proxy in one server block) if `DOMAIN`
-    is set.
-
-### Deploying updates
-
-```bash
-cd /var/www/pocketapp
-git pull
-sudo -E ./deploy/setup.sh
-```
-
-Re-running picks up new migrations, rebuilds frontend assets, and restarts
-the queue workers and ticker collector so they run the new code — a `git
-pull` alone does **not** do any of that (running PHP processes keep the old
-code loaded in memory until restarted).
-
-## Already deployed on a shared server? Just fixing the chart
-
-If the app is already checked out and working (DB migrated and linked,
-trades/payouts/queue workers all fine) on a box that also hosts other,
-unrelated sites — don't use `deploy/setup.sh` above. It installs system
-packages, generates a full nginx vhost, and manages Supervisor broadly; on a
-shared box that's more than you want and risks touching things that belong
-to another site.
-
-Use `deploy/setup-streaming.sh` instead — it only sets up the two pieces the
-chart actually needs (Reverb + the ticker collector) and is deliberately
-scoped to never touch anything else on the box:
-
-```bash
-cd /var/www/pocketapp   # wherever this app actually lives
-sudo ./deploy/setup-streaming.sh
-```
-
-What it does, and — just as importantly — what it deliberately doesn't:
-
-- Fixes `.env` (`BROADCAST_CONNECTION=reverb`, generates Reverb credentials,
-  derives `REVERB_HOST` from `APP_URL`) and rebuilds frontend assets so the
-  change reaches the browser.
-- Installs Google Chrome if it isn't already present (the browser
-  `TickerController` drives — the matching `drivers/chromedriver` binary is
-  already committed to the repo). A plain system package install; doesn't
-  touch any other site.
-- Seeds the asset catalog if it's empty, and installs/restarts **only**
-  `pocketapp-reverb` and `pocketapp-ticker-collector` in Supervisor —
-  never a blanket `supervisorctl restart`, which would restart every other
-  site's Supervisor-managed processes on the same box too.
-- **Never writes to nginx config.** It looks for this domain's existing
-  vhost under `/etc/nginx/sites-enabled/` and checks whether the Reverb
-  `location /app/` proxy block is already there. If it's missing, it tells
-  you exactly which file to add it to (the two blocks are in
-  `deploy/nginx/reverb-proxy.conf.example`) — editing someone else's vhost
-  automatically on a box with multiple domains is exactly the kind of thing
-  worth doing by hand, once, with your eyes on it.
-
-After it finishes, tail `storage/logs/ticker-collector.log` and
-`storage/logs/reverb.log`, then reload the site and check the browser
-devtools console for `[echo]` lines (see `resources/js/echo.js`).
+Sites originally bootstrapped with `deploy/setup.sh` (SQLite, Reverb, no
+Brokeret/Ably wiring) can keep using it for routine updates — `git pull`
+then `sudo -E ./deploy/setup.sh`. It no longer sets up a price feed itself
+(the iqcent-based collector it used to wire up has been removed from the
+app); see that script's own header comment for how to add the Brokeret
+stream to an existing deployment by hand, or migrate to `install.sh`.
 
 ## Manual setup (if you'd rather not run the script)
 
@@ -226,17 +156,15 @@ understand each piece before trusting a script with root.
    ```bash
    php artisan storage:link
    chown -R www-data:www-data storage bootstrap/cache database
-   chmod +x drivers/chromedriver
    ```
 
 6. **Supervisor** — copy each template from `deploy/supervisor/` into
    `/etc/supervisor/conf.d/`, replacing `/var/www/pocketapp` with your real
-   path. For `pocketapp-ticker-collector.conf`, set `numprocs` to
-   `ceil(number of rows in the assets table / 10)`. Then:
+   path. Then:
    ```bash
    supervisorctl reread
    supervisorctl update
-   supervisorctl start pocketapp-reverb:* pocketapp-queue-worker:* pocketapp-ticker-collector:*
+   supervisorctl start pocketapp-reverb:* pocketapp-queue-worker:*
    ```
 
 7. **Cron** (as the app user):
@@ -255,42 +183,31 @@ understand each piece before trusting a script with root.
 
 | Program (Supervisor) | What it does | Config |
 |---|---|---|
-| `pocketapp-reverb` | WebSocket server — delivers broadcasts to browsers | `deploy/supervisor/pocketapp-reverb.conf` |
+| `pocketapp-reverb` | WebSocket server — delivers broadcasts to browsers (only if self-hosting Reverb instead of Ably) | `deploy/supervisor/pocketapp-reverb.conf` |
 | `pocketapp-queue-worker` | Processes queued jobs — trade settlement, payouts, cashback | `deploy/supervisor/pocketapp-queue-worker.conf` |
-| `pocketapp-ticker-collector` | Headless-Chrome pool streaming live prices from iqcent | `deploy/supervisor/pocketapp-ticker-collector.conf` |
-| cron → `schedule:run` | Matures plans, expires stale P2P trades | installed by `deploy/setup.sh` |
+| `pocketapp-brokeret-stream` | Connects to Brokeret's WebSocket feed, writes ticks into Redis | `deploy/supervisor/pocketapp-brokeret-stream.conf` |
+| `pocketapp-redis-tick-bridge` | Tails Redis and rebroadcasts ticks to browsers | `deploy/supervisor/pocketapp-redis-tick-bridge.conf` |
+| cron → `schedule:run` | Matures plans, expires stale P2P trades | installed by `install.sh`/`deploy/setup.sh` |
+
+See `SETUP_GUIDE.md` §6 for the full list, including base_url/ui's
+independent `pocketapp-brokeret-ui-stream`.
 
 Check status: `sudo supervisorctl status`. Logs are in `storage/logs/`
-(`reverb.log`, `queue-worker.log`, `ticker-collector.log`).
+(`reverb.log`, `queue-worker.log`, `brokeret-stream.log`,
+`redis-tick-bridge.log`).
 
 ## Troubleshooting
 
-- **Every chart shows "offline" / no price movement**: check both
-  `storage/logs/ticker-collector.log` (Supervisor's raw stdout for the
-  command) and `storage/logs/laravel.log` (the detailed
-  navigate/subscribe/streaming log lines from `TickerController`).
-  - `"The port 9515 is already in use"`: something else already bound that
-    chromedriver port — normal if you manually ran `collectBatch()` (e.g.
-    via tinker) while Supervisor's own batches are already up; each batch
-    process needs a distinct port (`9515 + batchIndex`), so pass a
-    `batchIndex` outside your `numprocs` range for one-off manual testing.
-  - `"cannot create snap home dir"`: chromedriver launched Ubuntu's
-    **snap-packaged** Chromium (what `apt install chromium`/`chromium-browser`
-    silently resolves to on 22.04+), which can't run as a service user like
-    `www-data` at all. Install real Google Chrome
-    (`deploy/setup.sh`/`deploy/setup-streaming.sh` do this via the official
-    `.deb`) and make sure `pocketapp-ticker-collector.conf`'s
-    `environment=PANTHER_CHROME_BINARY=...` line points at it — both setup
-    scripts fill this in automatically, but if a conf was copied onto the
-    server by hand it may still say the literal placeholder
-    `__PANTHER_CHROME_BINARY__`.
-  - Otherwise, most likely a Chrome/chromedriver version mismatch — compare
-    `google-chrome --version` against `./drivers/chromedriver --version`;
-    if they've drifted apart, regenerate:
-    `composer install && vendor/bin/bdi detect drivers`.
-  - After any of the above: `sudo supervisorctl restart pocketapp-ticker-collector:*`.
-- **Chart doesn't update live but `assets/history` shows data**: the
-  collector is working but Reverb isn't reaching the browser — check
+- **Every chart shows "offline" / no price movement**: check
+  `storage/logs/brokeret-stream.log` (Supervisor's raw stdout for
+  `ticks:stream-brokeret`) and `storage/logs/laravel.log`. Confirm
+  `pocketapp-brokeret-stream` and `pocketapp-redis-tick-bridge` are both
+  running (`sudo supervisorctl status`) — the stream alone isn't enough,
+  the bridge is what actually gets ticks to the browser.
+- **Chart doesn't update live but `assets/history` shows data**: the price
+  stream is working but the broadcast isn't reaching the browser. On Ably,
+  check the browser devtools console for `[echo]` errors and confirm
+  `ABLY_KEY`/`VITE_ABLY_PUBLIC_KEY` are set. On self-hosted Reverb, check
   `sudo supervisorctl status pocketapp-reverb`, and confirm nginx's `/app/`
   and `/apps/` proxy blocks are in place and `REVERB_HOST`/`VITE_REVERB_HOST`
   match your real domain (then `npm run build` again if you changed them).

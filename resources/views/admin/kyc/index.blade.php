@@ -10,6 +10,7 @@
             <thead>
                 <tr>
                     <th>User</th>
+                    <th>Provider</th>
                     <th>Document Type</th>
                     <th>Submitted</th>
                     <th>Status</th>
@@ -20,7 +21,8 @@
                 @forelse ($submissions as $kyc)
                     <tr>
                         <td>{{ $kyc->user->first_name ?? 'User' }} {{ $kyc->user->last_name ?? '' }}</td>
-                        <td class="capitalize">{{ str_replace('_', ' ', $kyc->document_type) }}</td>
+                        <td class="capitalize">{{ $kyc->provider }}</td>
+                        <td class="capitalize">{{ $kyc->provider === 'manual' ? str_replace('_', ' ', $kyc->document_type) : '—' }}</td>
                         <td>{{ $kyc->submitted_at?->format('d M, Y H:i') }}</td>
                         <td><x-badge :status="$kyc->status" /></td>
                         <td class="text-right">
@@ -28,7 +30,7 @@
                         </td>
                     </tr>
                 @empty
-                    <tr><td colspan="5" class="text-center py-10 text-slate-400">No KYC submissions yet.</td></tr>
+                    <tr><td colspan="6" class="text-center py-10 text-slate-400">No KYC submissions yet.</td></tr>
                 @endforelse
             </tbody>
         </x-data-table>

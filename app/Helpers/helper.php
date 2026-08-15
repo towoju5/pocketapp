@@ -196,7 +196,9 @@ if (! function_exists('iqcent_proxy_url')) {
      * configured (iqcent sits behind Cloudflare's bot challenge, which blocks
      * most datacenter/server IPs even with browser-like headers); otherwise
      * hits iqcent directly, e.g. when running somewhere Cloudflare doesn't
-     * challenge.
+     * challenge. Only caller left is getAssetData() below — the headless-
+     * Chrome collector that used to need this too (TickerController) has
+     * been removed.
      */
     function iqcent_proxy_url(string $innerUrl): string
     {
@@ -210,6 +212,19 @@ if (! function_exists('iqcent_proxy_url')) {
 }
 
 if (! function_exists("getAssetData")) {
+    /**
+     * Ad-hoc synchronous scrape of iqcent's ticks REST endpoint — the last
+     * fallback EvaluateTrade/ExpressTradeJob reach for when neither
+     * PriceFeedService nor BrokeretFeedService has a price. Since the
+     * iqcent WS collector (TickerController/CollectTicks) was removed, this
+     * is now the *only* thing that can ever produce a price for
+     * price_source='iqcent' assets — but it's a one-shot HTTP call per
+     * settlement, not a live feed, so it's slow/unreliable (Cloudflare,
+     * rate limits) and TradeController::placeTrade already blocks opening
+     * *new* trades on any symbol that isn't reporting online via one of the
+     * two live feeds. This only matters for trades already pending when
+     * that collector was turned off.
+     */
     function getAssetData($asset, $rateOnly = false)
     {
         try {

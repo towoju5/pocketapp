@@ -10,16 +10,17 @@ use WebSocket\Client as WsClient;
 
 /**
  * Connects directly to Brokeret's live price feed (wss://feed.brokeret.com/ws)
- * from the Laravel backend and writes ticks into the exact same Redis schema
- * websockets-setup/ws.py uses (ticks:{symbol} streams + latest_tick:{symbol}),
- * via PriceFeedService — so app/Console/Commands/BridgeRedisTicks.php (which
- * already tails every ticks:* stream regardless of who wrote it) picks these
- * up and rebroadcasts them over Reverb with no changes needed there or in
- * chart.js.
+ * from the Laravel backend and writes ticks into the same Redis schema
+ * (ticks:{symbol} streams + latest_tick:{symbol}) the now-removed
+ * websockets-setup/ws.py used to write, via PriceFeedService — so
+ * app/Console/Commands/BridgeRedisTicks.php (which already tails every
+ * ticks:* stream regardless of who wrote it) picks these up and rebroadcasts
+ * them over Reverb with no changes needed there or in chart.js.
  *
- * Unlike iqcent (see TickerController's docblock), Brokeret isn't behind
- * Cloudflare, so a plain WebSocket client works here — no headless browser
- * needed. That also means the feed's URL/API key never has to reach the
+ * Unlike iqcent (whose collector has since been removed — it sat behind
+ * Cloudflare), Brokeret isn't behind Cloudflare, so a plain WebSocket client
+ * works here — no headless browser needed. That also means the feed's
+ * URL/API key never has to reach the
  * frontend: the browser only ever talks to this app's own Reverb server,
  * never to Brokeret directly, which is the whole point of running this as a
  * backend process rather than a client-side WebSocket.

@@ -54,4 +54,19 @@ return [
         'api_key' => env('BROKERET_API_KEY', 'demo'),
     ],
 
+    /*
+    | datafeedcl's live price feed (wss://datafeedcl.xyz/ws) plus its REST
+    | API (api_url — GET /api/assets to enumerate symbols, GET
+    | /api/assets/{symbol}/ticks?limit=N for recent ticks). Unlike Brokeret,
+    | this feed requires an explicit {"type":"subscribe","symbol":...} frame
+    | per symbol rather than pushing everything unsolicited — see
+    | app/Console/Commands/StreamDataFeedClTicks.php. Deliberately its own
+    | separate pipeline (app/Services/DataFeedClService.php) — see that
+    | class's docblock.
+    */
+    'datafeedcl' => [
+        'ws_url' => env('DATAFEEDCL_WS_URL', 'wss://datafeedcl.xyz/ws'),
+        'api_url' => env('DATAFEEDCL_API_URL', 'https://datafeedcl.xyz'),
+    ],
+
 ];

@@ -27,6 +27,8 @@
         'People' => [
             ['admin.users.index', 'Users', 'heroicon-o-users'],
             ['admin.kyc.index', 'KYC Requests', 'heroicon-o-identification'],
+            ['admin.kyc-providers.index', 'KYC Providers', 'heroicon-o-finger-print'],
+            ['admin.kyc-custom-fields.index', 'KYC Custom Fields', 'heroicon-o-list-bullet'],
             ['admin.referrals.index', 'Referrals', 'heroicon-o-share'],
             ['admin.referral-rates.index', 'Referral Rates', 'heroicon-o-adjustments-horizontal'],
         ],

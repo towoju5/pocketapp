@@ -91,9 +91,22 @@ class TradeCopyService
             'trade_percentage' => $percentageProfit,
         ]);
 
-        event(new \App\Events\NewTradeCreated($copiedTrade));
-        event(new \App\Events\TradeUpdated($copiedTrade));
+        // Dispatch settlement before broadcasting, and don't let a broadcast
+        // failure escape as an exception — NewTradeCreated is
+        // ShouldBroadcastNow (fires synchronously here, not queued), and this
+        // whole method already runs inside mirror()'s try/catch, so a thrown
+        // broadcaster error would otherwise both skip EvaluateTrade below
+        // (stranding this copied trade pending forever, after the
+        // follower's stake was already withdrawn) and get counted as a
+        // failed copy even though the trade was in fact created.
         EvaluateTrade::dispatch($copiedTrade)->delay($closeTime);
+
+        try {
+            event(new \App\Events\NewTradeCreated($copiedTrade));
+            event(new \App\Events\TradeUpdated($copiedTrade));
+        } catch (\Throwable $e) {
+            Log::error('Copy-trade broadcast failed (settlement still scheduled)', ['trade_id' => $copiedTrade->id, 'error' => $e->getMessage()]);
+        }
 
         return true;
     }

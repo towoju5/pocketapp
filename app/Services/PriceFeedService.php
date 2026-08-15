@@ -6,21 +6,23 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 /**
- * Reads (and, for legacy callers, writes) live price + tick history straight
- * from Redis — NOT Laravel's Cache. The Redis instance is populated by
- * websockets-setup/ws.py (a Playwright collector that subscribes to iqcent's
- * WS feed directly and writes ticks itself), which owns this key schema:
+ * Reads and writes live price + tick history straight from Redis — NOT
+ * Laravel's Cache. The Redis instance is populated by
+ * StreamBrokeretTicks (app/Console/Commands/StreamBrokeretTicks.php, `php
+ * artisan ticks:stream-brokeret`), which connects to Brokeret's feed
+ * directly and owns this key schema:
  *   latest_tick:{symbol} -> JSON string {"s","t","p"}, most recent tick
  *   ticks:{symbol}       -> Redis Stream of {s,t,p} entries, full history
- * ws.py trims both to a rolling 7-day window on every write. This class talks
- * to the "default" Redis connection (config/database.php), which must point
- * at the same host/port/db ws.py is configured for.
+ * Both are trimmed to a rolling 7-day window on every write. This class
+ * talks to the "default" Redis connection (config/database.php), which must
+ * point at the same host/port/db StreamBrokeretTicks is configured for.
  *
- * TickerController's headless-Chrome collector (the previous price source)
- * still calls updatePrice()/appendHistoryTick() below, kept functional in
- * case that pipeline is ever re-enabled — but it now writes into this same
- * Redis schema rather than Laravel's cache, so there is exactly one price
- * store regardless of which collector is running.
+ * Only ever populated for price_source='brokeret' assets. The iqcent
+ * collector (TickerController/CollectTicks/websockets-setup/ws.py) that used
+ * to write here for price_source='iqcent' assets has been removed —
+ * isOnline()/getPrice() for those symbols now always report offline/null,
+ * which is the intended behavior (see AssetController::store, which no
+ * longer allows creating new iqcent-tagged assets).
  */
 class PriceFeedService
 {

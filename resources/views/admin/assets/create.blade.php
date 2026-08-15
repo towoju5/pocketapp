@@ -37,10 +37,9 @@
             <div>
                 <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Price Source</label>
                 <select name="price_source" class="brand-input-dark" required>
-                    @php($defaultProvider = old('price_source', get_option('default_chart_provider', 'iqcent')))
-                    <option value="iqcent" {{ $defaultProvider === 'iqcent' ? 'selected' : '' }}>iqcent (headless-Chrome collector)</option>
-                    <option value="brokeret" {{ $defaultProvider === 'brokeret' ? 'selected' : '' }}>Brokeret (base_url/ui feed)</option>
+                    <option value="brokeret" selected>Brokeret (base_url/ui feed)</option>
                 </select>
+                <p class="mt-1 text-xs text-slate-500">iqcent's collector has been retired — Brokeret is the only live price source for new assets.</p>
                 @error('price_source') <p class="mt-1 text-xs text-brand-danger">{{ $message }}</p> @enderror
             </div>
             <div class="flex items-end gap-6 pb-2">

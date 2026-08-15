@@ -8,10 +8,13 @@ class KycVerification extends Model
 {
     protected $fillable = [
         'user_id',
+        'provider',
+        'provider_reference',
         'document_type',
         'document_front_path',
         'document_back_path',
         'selfie_path',
+        'custom_field_values',
         'status',
         'rejection_reason',
         'reviewed_by',
@@ -22,6 +25,7 @@ class KycVerification extends Model
     protected $casts = [
         'reviewed_at' => 'datetime',
         'submitted_at' => 'datetime',
+        'custom_field_values' => 'array',
     ];
 
     public function user()

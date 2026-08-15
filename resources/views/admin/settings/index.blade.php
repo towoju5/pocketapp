@@ -23,22 +23,13 @@
 
             <div class="mt-8 pt-6 border-t border-white/10">
                 <div class="text-sm font-semibold text-white mb-1">Price Feed</div>
-                <p class="text-xs text-slate-400 mb-4">Controls which live price feed new assets default to, and which feed AI signal generation draws candidates from.</p>
+                <p class="text-xs text-slate-400 mb-4">Controls which feed AI signal generation draws candidates from. Brokeret is the only live price source — new assets are always created against it (see Assets).</p>
 
-                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                    <div>
-                        <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Default Chart Provider</label>
-                        <select name="default_chart_provider" class="brand-input-dark" required>
-                            <option value="iqcent" {{ $defaultChartProvider === 'iqcent' ? 'selected' : '' }}>iqcent (headless-Chrome collector)</option>
-                            <option value="brokeret" {{ $defaultChartProvider === 'brokeret' ? 'selected' : '' }}>Brokeret (base_url/ui feed)</option>
-                        </select>
-                        <p class="mt-1 text-xs text-slate-500">Pre-selected when creating a new asset.</p>
-                    </div>
+                <div class="grid grid-cols-1 gap-4 sm:max-w-xs">
                     <div>
                         <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-400">Active Chart Provider</label>
                         <select name="active_chart_provider" class="brand-input-dark" required>
                             <option value="all" {{ $activeChartProvider === 'all' ? 'selected' : '' }}>All Providers</option>
-                            <option value="iqcent" {{ $activeChartProvider === 'iqcent' ? 'selected' : '' }}>iqcent</option>
                             <option value="brokeret" {{ $activeChartProvider === 'brokeret' ? 'selected' : '' }}>Brokeret</option>
                         </select>
                         <p class="mt-1 text-xs text-slate-500">Restricts "Generate with AI" signal candidates to this provider's assets.</p>

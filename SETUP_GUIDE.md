@@ -114,15 +114,7 @@ extension, not a Composer package, so `composer install` alone will not
 provide it). Add `pdo_sqlite`/`sqlite3` only if you intend to use SQLite for
 local development instead of MySQL.
 
-### 2.3 Optional / feature-specific dependencies
-
-- **Google Chrome (stable) + the bundled `drivers/chromedriver`** — only
-  needed if you enable the legacy headless-browser price collector
-  (`ticks:collect`). The default/recommended price pipeline (`ticks:stream-brokeret`)
-  is a plain WebSocket client and does not need a browser at all. See
-  [§6](#6-background-services) for which pipeline you actually need running.
-
-### 2.4 Third-party accounts
+### 2.3 Third-party accounts
 
 | Service | Required? | Used for |
 |---|---|---|
@@ -149,8 +141,6 @@ but as a baseline:
 | **Minimum** | 2 vCPU | **4 GB** | **40 GB SSD** | The baseline for any real deployment — MySQL, Redis, PHP-FPM, the queue worker, and the Brokeret price stream all running together. Ably for broadcasting, `ticks:stream-brokeret` for prices (no headless browser). |
 | **Recommended** | 4 vCPU | 8 GB | 60 GB SSD | A production site with real trading volume. Comfortable headroom for MySQL, the queue worker, price stream, PHP-FPM workers, and `npm run build`. |
 | **Self-hosted Reverb** | 4 vCPU | 8 GB | 60 GB SSD | Same as Recommended, but budget extra RAM/CPU if you expect hundreds of concurrent WebSocket connections, since your own server (not Ably) is holding every connection open. |
-| **Legacy PHP/Chrome collector enabled** | 4 vCPU | 8 GB+ | 60 GB+ SSD | Only if you also run `ticks:collect` (`pocketapp-ticker-collector`) as a fallback price source. Each headless Chrome instance uses roughly 150–300 MB RAM, and the pool runs one instance per ~10 tracked assets — this adds up fast on a large asset catalog. |
-| **Legacy `ws.py` relay enabled** | 4+ vCPU | **16 GB** | 60 GB+ SSD | Only if you run `websockets-setup/ws.py` (the Python/Playwright browser relay) instead of the Brokeret stream. This is the heaviest option — a full Playwright-driven Chromium session held open continuously consumes noticeably more RAM than either the native Brokeret WebSocket client or the batched Panther/Chrome collector, so provision accordingly. |
 
 Notes:
 
@@ -428,9 +418,11 @@ All are managed by Supervisor; templates are in `deploy/supervisor/`.
 | Redis → broadcast bridge | `php artisan ticks:bridge-redis` | **Yes**, alongside the stream above. Tails Redis and rebroadcasts ticks so charts update live in the browser. |
 | Brokeret feed for `/ui` dashboard | `php artisan ticks:stream-brokeret-ui` | Only if you use the `/ui` live-dashboard route — it runs its own independent feed/broadcast, separate from the main dashboard's pipeline. |
 | Reverb server | `php artisan reverb:start` | Only if `BROADCAST_CONNECTION=reverb`. Not needed with Ably. |
-| Legacy headless-browser collector | `php artisan ticks:collect --batch=N --size=10` | Optional fallback price source (scrapes iqcent via headless Chrome). Not required if the Brokeret stream is running. Needs Google Chrome installed — see [§2.3](#23-optional--feature-specific-dependencies). |
-| Legacy `ws.py` relay | `python relay_browser.py` (see `headless/RUNNING.md`) | Optional alternative fallback price source — a Playwright-driven browser relay, run under `systemd`/Xvfb, not Supervisor. Superseded by the Brokeret stream; only relevant if you specifically need it. Budget the **16 GB RAM tier** from [§3](#3-minimum-vps-server-requirements) if enabling this. |
 | Cron → `schedule:run` | via crontab, not Supervisor | **Always.** Matures investment plans and expires stale P2P trades every minute. |
+
+Brokeret is the only price source — the legacy iqcent-based collectors
+(`ticks:collect`/headless Chrome, and the standalone `ws.py` relay) have been
+removed from the app entirely.
 
 Check status any time with:
 
@@ -439,8 +431,7 @@ sudo supervisorctl status
 ```
 
 Logs live in `storage/logs/` (`queue-worker.log`, `brokeret-stream.log`,
-`redis-tick-bridge.log`, `reverb.log`, `ticker-collector.log`,
-`laravel.log`).
+`redis-tick-bridge.log`, `reverb.log`, `laravel.log`).
 
 **After every deploy**, restart the queue worker and any long-running
 commands so they pick up new code — a `git pull` alone does not do this

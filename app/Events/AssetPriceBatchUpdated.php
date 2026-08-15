@@ -8,10 +8,11 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 
 /**
- * Replaces per-tick AssetPriceUpdated broadcasts — the ticker collector (see
- * TickerController::collectBatch) flushes ticks in batches, so one broadcast
+ * Replaces per-tick AssetPriceUpdated broadcasts — the price collector
+ * (StreamBrokeretTicks, formerly TickerController::collectBatch before the
+ * iqcent pipeline was removed) flushes ticks in batches, so one broadcast
  * carries every tick from that flush instead of firing one WS push per tick
- * across the whole ~150-asset catalog.
+ * across the whole asset catalog.
  */
 class AssetPriceBatchUpdated implements ShouldBroadcastNow
 {

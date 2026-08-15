@@ -40,6 +40,45 @@
                     <input type="file" name="selfie" class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]" accept="image/*">
                 </div>
 
+                @foreach ($customFields ?? [] as $field)
+                    <div>
+                        <label class="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-[#7c86a3]">
+                            {{ $field->label }} @if($field->is_required) <span class="text-[#f4534a]">*</span> @endif
+                        </label>
+                        @php $inputName = "custom_fields[{$field->field_key}]"; @endphp
+                        @switch($field->field_type)
+                            @case('textarea')
+                                <textarea name="{{ $inputName }}" rows="3" @required($field->is_required) class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]"></textarea>
+                                @break
+                            @case('select')
+                                <select name="{{ $inputName }}" @required($field->is_required) class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]">
+                                    <option value="">Select&hellip;</option>
+                                    @foreach ($field->optionList() as $option)
+                                        <option value="{{ $option }}">{{ $option }}</option>
+                                    @endforeach
+                                </select>
+                                @break
+                            @case('checkbox')
+                                <label class="flex items-center gap-2 text-sm text-white">
+                                    <input type="checkbox" name="{{ $inputName }}" value="1" class="rounded border-[#2a3350] bg-[#1c243c]">
+                                    Yes
+                                </label>
+                                @break
+                            @case('file')
+                                <input type="file" name="{{ $inputName }}" @required($field->is_required) class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]">
+                                @break
+                            @case('date')
+                                <input type="date" name="{{ $inputName }}" @required($field->is_required) class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]">
+                                @break
+                            @case('number')
+                                <input type="number" name="{{ $inputName }}" @required($field->is_required) class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]">
+                                @break
+                            @default
+                                <input type="text" name="{{ $inputName }}" @required($field->is_required) class="w-full bg-[#1c243c] border border-[#2a3350] rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:border-[#4f8ef7]">
+                        @endswitch
+                    </div>
+                @endforeach
+
                 <button type="submit" class="w-full bg-[#4f8ef7] hover:bg-[#3f7de6] text-white font-semibold text-sm py-3 rounded-lg">Submit for Review</button>
             </form>
         </div>

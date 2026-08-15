@@ -6,7 +6,7 @@
     <div class="h-full flex flex-col">
         <div class="flex-1 overflow-y-auto pb-20">
             <div class="relative py-3 px-4">
-                <select onchange="changeTraderSection(this.value)" class="w-full py-2.5 rounded-md text-xs px-4 bg-[#0b1120] border border-[#454a56] text-white">
+                <select id="periodSelect" onchange="changeTraderSection(this.value)" class="w-full py-2.5 rounded-md text-xs px-4 bg-[#0b1120] border border-[#454a56] text-white">
                     <option value="24h">Top ranked traders for 24h</option>
                     <option value="7d">Top ranked traders</option>
                     <option value="30d">Top 100 traders</option>
@@ -20,7 +20,13 @@
                 @foreach($traders24hours as $trader)
                 <div class="px-3 py-2 flex items-center gap-2">
                     <div style="width: 20%" class="flex items-center justify-center h-full">
-                        <img src="{{ $trader->avatar }}" alt="Profile Image" class="w-10 h-10 rounded-full">
+                        @if($trader->avatar)
+                            <img src="{{ $trader->avatar }}" alt="Profile Image" class="w-10 h-10 rounded-full">
+                        @else
+                            <div class="w-10 h-10 rounded-full bg-[#33406b] flex items-center justify-center text-white text-xs font-bold">
+                                {{ strtoupper(substr($trader->username ?? $trader->first_name ?? 'U', 0, 2)) }}
+                            </div>
+                        @endif
                     </div>
                     <div class="w-full gap-8">
                         <div class="flex items-center justify-between text-sm">
@@ -53,7 +59,13 @@
                 @foreach($tradersTopRanked as $trader)
                 <div class="px-3 py-1 flex items-center gap-2 _social-trade-card">
                     <div style="width: 20%" class="flex items-center justify-center h-full">
-                        <img src="{{ $trader->avatar }}" alt="Profile Image" class="w-10 h-10 rounded-full">
+                        @if($trader->avatar)
+                            <img src="{{ $trader->avatar }}" alt="Profile Image" class="w-10 h-10 rounded-full">
+                        @else
+                            <div class="w-10 h-10 rounded-full bg-[#33406b] flex items-center justify-center text-white text-xs font-bold">
+                                {{ strtoupper(substr($trader->username ?? $trader->first_name ?? 'U', 0, 2)) }}
+                            </div>
+                        @endif
                     </div>
                     <div class="w-full gap-8">
                         <div class="flex items-center justify-between text-sm">
@@ -86,7 +98,13 @@
                 @foreach($tradersTop100 as $trader)
                 <div class="px-3 py-1 flex items-center gap-2">
                     <div style="width: 20%" class="flex items-center justify-center h-full">
-                        <img src="{{ $trader->avatar }}" alt="Profile Image" class="w-10 h-10 rounded-full">
+                        @if($trader->avatar)
+                            <img src="{{ $trader->avatar }}" alt="Profile Image" class="w-10 h-10 rounded-full">
+                        @else
+                            <div class="w-10 h-10 rounded-full bg-[#33406b] flex items-center justify-center text-white text-xs font-bold">
+                                {{ strtoupper(substr($trader->username ?? $trader->first_name ?? 'U', 0, 2)) }}
+                            </div>
+                        @endif
                     </div>
                     <div class="w-full gap-8">
                         <div class="flex items-center justify-between text-sm">

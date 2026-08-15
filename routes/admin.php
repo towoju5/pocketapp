@@ -9,6 +9,8 @@ use App\Http\Controllers\Admin\{
     SignalController,
     WalletController,
     KycController,
+    KycProviderController,
+    KycCustomFieldController,
     PlanController,
     PlanSubscriptionController,
     P2pOfferController,
@@ -81,6 +83,9 @@ Route::prefix('admin')->middleware(['auth', 'verified', 'admin'])->as('admin.')-
         Route::post('/{kyc}/approve', [KycController::class, 'approve'])->name('approve');
         Route::post('/{kyc}/reject', [KycController::class, 'reject'])->name('reject');
     });
+
+    Route::resource('kyc-providers', KycProviderController::class)->only(['index', 'edit', 'update']);
+    Route::resource('kyc-custom-fields', KycCustomFieldController::class)->except(['show']);
 
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');

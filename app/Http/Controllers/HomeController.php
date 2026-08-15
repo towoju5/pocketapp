@@ -165,23 +165,4 @@ class HomeController extends Controller
 
         return response()->json($status);
     }
-
-
-    public function get_asset_history($ticker, $isOTC = true)
-    {
-        $symbol = $ticker . "_Strike";
-        $history = file_get_contents("https://iqcent.com/trade-api/history?from=1745684639&to=1745702639&symbol={$symbol}&firstDataRequest=true&resolution=1");
-        return $history;
-    }
-
-    public function getTicks()
-    {
-        // $scraper = new IqcentDomScraper();
-        // $symbol = 'EUR/USD.X';
-        // $from = $to = now()->timestamp * 1000;
-
-        // $data = $scraper->getTickData($symbol, $from, $to);
-
-        // return response()->json(json_decode($data, true));
-    }
 }

@@ -47,12 +47,17 @@ class EvaluateTrade implements ShouldQueue
                 return;
             }
 
-            // Server-cached price (kept warm by the ticker collector — see
-            // TickerController::collectBatch) is authoritative — falls back
-            // to BrokeretFeedService (for symbols only that independent
+            // Server-cached price (kept warm by StreamBrokeretTicks — see
+            // PriceFeedService) is authoritative — falls back to
+            // BrokeretFeedService (for symbols only that independent
             // pipeline knows about, e.g. base_url/ui's Gold/"XAUUSD" — see
             // TradeController::placeTrade, which resolves entry price the
-            // same way) and only then to the ad-hoc REST scrape.
+            // same way) and only then to the ad-hoc REST scrape (the sole
+            // remaining fallback for price_source='iqcent' assets now that
+            // their collector has been removed — placeTrade already blocks
+            // new trades on any symbol neither feed reports online, so this
+            // path only matters for trades that were already pending when
+            // that collector was turned off).
             $currentPrice = $priceFeed->getPrice($trade->trade_currency);
             if ($currentPrice === null) {
                 $latest = $brokeretFeed->getLatest($trade->trade_currency);

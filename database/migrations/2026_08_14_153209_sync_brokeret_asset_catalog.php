@@ -1,43 +1,41 @@
 <?php
 
-namespace Database\Seeders;
-
-use Illuminate\Database\Seeder;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Seeds `assets` rows for Brokeret's tradable catalog — base_url/ui's
- * independent live-price pipeline (see BrokeretFeedService,
- * StreamBrokeretFeed), which has no fixed/enumerable symbol list anywhere
- * in this app's own config (it streams whatever Brokeret sends). This is
- * the canonical 326-symbol catalog supplied 2026-08-14 (see the matching
- * sync_brokeret_asset_catalog migration, which applies the same list to
- * already-deployed databases) — the single supported list going forward;
- * iqcent's collector has been removed entirely, so AssetSeeder (the old
- * iqcent-scoped seeder) is no longer called from DatabaseSeeder.
+ * Syncs `assets` to the canonical Brokeret catalog supplied 2026-08-14 (326
+ * symbols across Crypto/Majors/Minors/Exotics/Metals) — the same list
+ * BrokeretAssetSeeder now seeds fresh installs from.
  *
- * Deliberately insertOrIgnore(), never delete() first — this must never
- * disturb a row an admin has edited (e.g. flipped is_active) or one
- * BrokeretFeedService has already auto-registered live. Re-running this is
- * just "make sure every symbol in this list has a row with the right
- * name/category"; it does not prune anything — that pruning already
- * happened once, in the migration above, for symbols dropped from this list
- * (e.g. TONUSD).
+ * Two things happen, both scoped to price_source='brokeret' plus the
+ * (already-dark) 'iqcent' rows:
  *
- * New symbols Brokeret starts streaming after this snapshot was taken don't
- * need a seeder update to become tradable — BrokeretFeedService registers
- * those itself the moment they're first seen (see its
- * ensureAssetRegistered()), just without a friendly `name` until this list
- * is updated to include them.
+ *  1. Every row whose symbol is NOT in the canonical list gets soft-deleted
+ *     (Assets uses SoftDeletes) — this is all 158 iqcent-tagged rows (no
+ *     collector has fed them since the iqcent pipeline was removed; see the
+ *     price_source-in-admin-forms migration/commit around the same date)
+ *     plus one stray Brokeret symbol, TONUSD, that isn't in the new list.
+ *     Soft-delete, not a hard DELETE, so existing Trade/ExpressTrade rows
+ *     that reference these symbols by string (no FK) keep working — this
+ *     only removes them from the live, tradable catalog. It's also safe
+ *     against BrokeretFeedService::ensureAssetRegistered() resurrecting
+ *     TONUSD if Brokeret keeps streaming it: that call is a raw
+ *     insertOrIgnore() against the unique `symbol` index, which still finds
+ *     the (soft-deleted) row and skips re-inserting.
+ *
+ *  2. Every kept row gets its `name` and `asset_group` updated to the
+ *     canonical values (proper display names instead of the bare symbol;
+ *     uppercase category matching BrokeretFeedService's own
+ *     strtoupper($category) convention) — this also fixes a pre-existing
+ *     typo where GBPJPY was seeded with asset_group 'FOREX' instead of
+ *     'MINORS'. is_active/price_source are reasserted to true/'brokeret' in
+ *     case a row had drifted (e.g. an admin had deactivated it while
+ *     iqcent was still the redundant duplicate for the same instrument).
  */
-class BrokeretAssetSeeder extends Seeder
+return new class extends Migration
 {
-    /** Matches BrokeretFeedService::DEFAULT_PROFIT_MARGIN. */
-    private const DEFAULT_PROFIT_MARGIN = 0.85;
-
-    public function run(): void
-    {
-        $symbols = [
+    private const CATALOG = [
             ["symbol" => "AAVEUSD", "name" => "Aave / US Dollar", "category" => "CRYPTO"],
             ["symbol" => "ADAEUR", "name" => "Cardano / Euro", "category" => "CRYPTO"],
             ["symbol" => "ADAUSD", "name" => "Cardano / US Dollar", "category" => "CRYPTO"],
@@ -364,21 +362,44 @@ class BrokeretAssetSeeder extends Seeder
             ["symbol" => "ZECUSD", "name" => "Zcash / US Dollar", "category" => "CRYPTO"],
             ["symbol" => "ZILUSD", "name" => "Zilliqa / US Dollar", "category" => "CRYPTO"],
             ["symbol" => "ZROUSD", "name" => "LayerZero / US Dollar", "category" => "CRYPTO"],
-        ];
+    ];
 
-        foreach ($symbols as $entry) {
-            DB::table('assets')->insertOrIgnore([
-                'symbol' => $entry['symbol'],
-                'name' => $entry['name'],
-                'asset_group' => $entry['category'],
-                'exchange_float' => 0,
-                'asset_profit_margin' => self::DEFAULT_PROFIT_MARGIN,
-                'is_otc' => false,
-                'price_source' => 'brokeret',
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+    public function up(): void
+    {
+        $canonicalSymbols = array_column(self::CATALOG, 'symbol');
+
+        DB::table('assets')
+            ->whereNull('deleted_at')
+            ->whereNotIn('symbol', $canonicalSymbols)
+            ->update(['deleted_at' => now()]);
+
+        foreach (self::CATALOG as $entry) {
+            DB::table('assets')
+                ->where('symbol', $entry['symbol'])
+                ->whereNull('deleted_at')
+                ->update([
+                    'name' => $entry['name'],
+                    'asset_group' => $entry['category'],
+                    'price_source' => 'brokeret',
+                    'is_active' => true,
+                    'updated_at' => now(),
+                ]);
         }
     }
-}
+
+    /**
+     * Restores whatever this migration soft-deleted and reverts names/groups
+     * to the bare-symbol convention the previous seeder used. Doesn't attempt
+     * to recall each row's pre-migration asset_group/name individually —
+     * this is a best-effort rollback, not a perfect inverse.
+     */
+    public function down(): void
+    {
+        $canonicalSymbols = array_column(self::CATALOG, 'symbol');
+
+        DB::table('assets')
+            ->whereNotIn('symbol', $canonicalSymbols)
+            ->whereNotNull('deleted_at')
+            ->update(['deleted_at' => null]);
+    }
+};
