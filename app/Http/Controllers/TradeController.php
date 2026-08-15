@@ -9,6 +9,7 @@ use App\Models\Trade;
 use App\Jobs\EvaluateTrade;
 use App\Models\User;
 use App\Services\BrokeretFeedService;
+use App\Services\DataFeedClService;
 use App\Services\PriceFeedService;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Http\Request;
@@ -55,7 +56,7 @@ class TradeController extends Controller
         return view('trades.index', compact('trades', 'assets', 'mode'));
     }
 
-    public function placeTrade(Request $request, PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed)
+    public function placeTrade(Request $request, PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed, DataFeedClService $dataFeedCl)
     {
         $validated = Validator::make($request->all(), [
             'asset' => 'required|string',
@@ -84,28 +85,40 @@ class TradeController extends Controller
             return response()->json(['errors' => "Asset not found"], 404);
         }
 
-        // BrokeretFeedService is checked only when the primary (iqcent-based)
-        // pipeline has nothing for this symbol — existing assets' pricing is
-        // completely unaffected. This is what lets base_url/ui's live-feed
-        // assets (source-tagged price_source='brokeret' — see
+        // BrokeretFeedService/DataFeedClService are checked only when the
+        // primary (iqcent-based) pipeline has nothing for this symbol —
+        // existing assets' pricing is completely unaffected. This is what
+        // lets base_url/ui's live-feed assets (source-tagged
+        // price_source='brokeret' — see
         // BrokeretFeedService::ensureAssetRegistered, which registers each
         // one into this table the first time it's seen streaming, well
-        // before anyone could select and trade it) actually be tradable,
-        // without touching PriceFeedService/the main pipeline at all.
+        // before anyone could select and trade it) and datafeedcl's symbols
+        // (price_source='datafeedcl' — see
+        // DataFeedClService::ensureAssetRegistered, same idea) actually be
+        // tradable, without touching PriceFeedService/the main pipeline at all.
         $onlineViaPriceFeed = $priceFeed->isOnline($symbol);
         $onlineViaBrokeret = !$onlineViaPriceFeed && $brokeretFeed->isOnline($symbol);
 
-        if (!$onlineViaPriceFeed && !$onlineViaBrokeret) {
+        // DataFeedClService has no cache to check separately from its price —
+        // every call is a live HTTP round trip to datafeedcl.xyz, so this is
+        // fetched once and reused for both the online check and entry price
+        // below, rather than calling isOnline() then getPrice() separately.
+        $dataFeedClTick = (!$onlineViaPriceFeed && !$onlineViaBrokeret) ? $dataFeedCl->fetchLatestTick($symbol) : null;
+        $onlineViaDataFeedCl = $dataFeedClTick !== null;
+
+        if (!$onlineViaPriceFeed && !$onlineViaBrokeret && !$onlineViaDataFeedCl) {
             return response()->json(['status' => false, 'message' => 'This asset is currently unavailable for trading.'], 422);
         }
 
         if ($onlineViaPriceFeed) {
             $currentPrice = $priceFeed->getPrice($symbol);
-        } else {
+        } elseif ($onlineViaBrokeret) {
             $latest = $brokeretFeed->getLatest($symbol);
             $currentPrice = ($latest && isset($latest['b'], $latest['a']))
                 ? (((float) $latest['b'] + (float) $latest['a']) / 2)
                 : null;
+        } else {
+            $currentPrice = $dataFeedClTick['price'];
         }
 
         if (null === $currentPrice) {
@@ -202,9 +215,9 @@ class TradeController extends Controller
         return view('trades.show', compact('trade'));
     }
 
-    public function store(Request $request, PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed)
+    public function store(Request $request, PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed, DataFeedClService $dataFeedCl)
     {
-        return $this->placeTrade($request, $priceFeed, $brokeretFeed);
+        return $this->placeTrade($request, $priceFeed, $brokeretFeed, $dataFeedCl);
     }
 
     public function socialTrades()

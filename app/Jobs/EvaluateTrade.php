@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\Tournament;
 use App\Models\User;
 use App\Services\BrokeretFeedService;
+use App\Services\DataFeedClService;
 use App\Services\PriceFeedService;
 use App\Services\TradeSettlementService;
 use Illuminate\Bus\Queueable;
@@ -25,7 +26,7 @@ class EvaluateTrade implements ShouldQueue
         $this->trade = $trade;
     }
 
-    public function handle(PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed, TradeSettlementService $settlement)
+    public function handle(PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed, DataFeedClService $dataFeedCl, TradeSettlementService $settlement)
     {
         try {
             Log::debug("Evaluating trade: " . $this->trade->id);
@@ -52,18 +53,23 @@ class EvaluateTrade implements ShouldQueue
             // BrokeretFeedService (for symbols only that independent
             // pipeline knows about, e.g. base_url/ui's Gold/"XAUUSD" — see
             // TradeController::placeTrade, which resolves entry price the
-            // same way) and only then to the ad-hoc REST scrape (the sole
-            // remaining fallback for price_source='iqcent' assets now that
-            // their collector has been removed — placeTrade already blocks
-            // new trades on any symbol neither feed reports online, so this
-            // path only matters for trades that were already pending when
-            // that collector was turned off).
+            // same way), then DataFeedClService, which hits datafeedcl.xyz's
+            // REST API live (no caching/daemon — see that class's docblock),
+            // and only then to the ad-hoc REST scrape (the sole remaining
+            // fallback for price_source='iqcent' assets now that their
+            // collector has been removed — placeTrade already blocks new
+            // trades on any symbol none of these feeds report online, so
+            // this path only matters for trades that were already pending
+            // when a feed went down).
             $currentPrice = $priceFeed->getPrice($trade->trade_currency);
             if ($currentPrice === null) {
                 $latest = $brokeretFeed->getLatest($trade->trade_currency);
                 $currentPrice = ($latest && isset($latest['b'], $latest['a']))
                     ? (((float) $latest['b'] + (float) $latest['a']) / 2)
                     : null;
+            }
+            if ($currentPrice === null) {
+                $currentPrice = $dataFeedCl->getPrice($trade->trade_currency);
             }
             $currentPrice ??= getAssetData($trade->trade_currency, true);
             if (is_array($currentPrice)) {
