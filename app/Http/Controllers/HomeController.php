@@ -7,6 +7,8 @@ use App\Models\ExpressTrade;
 use App\Models\Signal;
 use App\Models\Trade;
 use App\Models\User;
+use App\Services\BrokeretFeedService;
+use App\Services\DataFeedClService;
 use App\Services\PriceFeedService;
 use App\Services\TraderLeaderboard;
 use Illuminate\Http\Request;
@@ -22,9 +24,9 @@ class HomeController extends Controller
      * than the legacy iqcent-backed __dash.blade.php, which is no longer
      * routed to by default but is left in place, not deleted.
      */
-    public function dashboard(Request $request, PriceFeedService $priceFeed, $coin = null)
+    public function dashboard(Request $request, PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed, DataFeedClService $dataFeedCl, $coin = null)
     {
-        return view('dashboard-ui', $this->buildDashboardData($priceFeed, $coin));
+        return view('dashboard-ui', $this->buildDashboardData($priceFeed, $brokeretFeed, $dataFeedCl, $coin));
     }
 
     /**
@@ -32,12 +34,30 @@ class HomeController extends Controller
      * view, same data) now that dashboard-ui.blade.php is the default, in
      * case anything still links or was bookmarked here.
      */
-    public function ui(Request $request, PriceFeedService $priceFeed, $coin = null)
+    public function ui(Request $request, PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed, DataFeedClService $dataFeedCl, $coin = null)
     {
-        return view('dashboard-ui', $this->buildDashboardData($priceFeed, $coin));
+        return view('dashboard-ui', $this->buildDashboardData($priceFeed, $brokeretFeed, $dataFeedCl, $coin));
     }
 
-    private function buildDashboardData(PriceFeedService $priceFeed, $coin = null): array
+    /**
+     * Routes an asset's online check to whichever live pipeline actually
+     * feeds it. `assets.price_source` (set at seed time — BrokeretAssetSeeder,
+     * or auto-registration — BrokeretFeedService::ensureAssetRegistered /
+     * DataFeedClService's equivalent) says which one; PriceFeedService
+     * (iqcent) only knows about its own symbols and returns false for
+     * anything else, so checking it unconditionally silently hid every
+     * non-iqcent asset from any online-filtered list.
+     */
+    private function isAssetOnline(Assets $asset, PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed, DataFeedClService $dataFeedCl): bool
+    {
+        return match ($asset->price_source) {
+            'brokeret' => $brokeretFeed->isOnline($asset->symbol),
+            'datafeedcl' => $dataFeedCl->isOnline($asset->symbol),
+            default => $priceFeed->isOnline($asset->symbol),
+        };
+    }
+
+    private function buildDashboardData(PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed, DataFeedClService $dataFeedCl, $coin = null): array
     {
         $user = auth()->user();
         if (isset($coin)) {
@@ -67,11 +87,21 @@ class HomeController extends Controller
         ['traders24hours' => $traders24hours, 'tradersTopRanked' => $tradersTopRanked, 'tradersTop100' => $tradersTop100] = TraderLeaderboard::build();
 
         // Express trading only ever lists assets currently streaming — a
-        // symbol iqcent has open but this app isn't receiving live ticks for
-        // right now would just place trades against a stale/absent price.
-        $assets = Assets::where('is_otc', true)->where('is_active', true)->get()->filter(fn ($asset) => $priceFeed->isOnline($asset->symbol))->values();
+        // symbol its pipeline has open but this app isn't receiving live
+        // ticks for right now would just place trades against a stale/absent
+        // price. See isAssetOnline() for why this can't just call
+        // $priceFeed->isOnline() for every row.
+        $assets = Assets::where('is_otc', true)->where('is_active', true)->get()->filter(fn ($asset) => $this->isAssetOnline($asset, $priceFeed, $brokeretFeed, $dataFeedCl))->values();
         $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->where('trade_status', 'open')->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->get();
         $closedExpressTrades = ExpressTrade::where('user_id', $user->id)->whereIn('trade_status', ['win', 'lose'])->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->take(20)->get();
+
+        // Fetched once per page render and handed to the browser's direct
+        // WebSocket client (see dashboard-ui.blade.php / dataFeedClFeed.js)
+        // so it knows which symbols to subscribe to — the browser can't call
+        // datafeedcl.xyz's REST API itself (no CORS headers, see
+        // DataFeedClService::fetchSymbolCatalog).
+        $dataFeedClCatalog = $dataFeedCl->fetchSymbolCatalog();
+        $dataFeedClWsUrl = config('services.datafeedcl.ws_url');
 
         return compact([
             'data',
@@ -86,11 +116,13 @@ class HomeController extends Controller
             'assets',
             'recent_closed_trades',
             'openedExpressTrades',
-            'closedExpressTrades'
+            'closedExpressTrades',
+            'dataFeedClCatalog',
+            'dataFeedClWsUrl',
         ]);
     }
 
-    public function demo(Request $request, PriceFeedService $priceFeed, $coin = null)
+    public function demo(Request $request, PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed, DataFeedClService $dataFeedCl, $coin = null)
     {
         $user = auth()->user();
         if (isset($coin)) {
@@ -126,11 +158,14 @@ class HomeController extends Controller
         $signals = Signal::latest()->where('is_active', true)->get();
         ['traders24hours' => $traders24hours, 'tradersTopRanked' => $tradersTopRanked, 'tradersTop100' => $tradersTop100] = TraderLeaderboard::build();
 
-        $assets = Assets::where('is_otc', true)->where('is_active', true)->get()->filter(fn ($asset) => $priceFeed->isOnline($asset->symbol))->values();
+        $assets = Assets::where('is_otc', true)->where('is_active', true)->get()->filter(fn ($asset) => $this->isAssetOnline($asset, $priceFeed, $brokeretFeed, $dataFeedCl))->values();
         $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->where('trade_status', 'open')->where('trade_wallet', 'like', '%demo%')->with('asset')->latest()->get();
         $closedExpressTrades = ExpressTrade::where('user_id', $user->id)->whereIn('trade_status', ['win', 'lose'])->where('trade_wallet', 'like', '%demo%')->with('asset')->latest()->take(20)->get();
 
         $wallet_balance = $user->getWallet($user->active_wallet_slug ?? 'qt_demo_usd') ?? ["balance" => 0];
+
+        $dataFeedClCatalog = $dataFeedCl->fetchSymbolCatalog();
+        $dataFeedClWsUrl = config('services.datafeedcl.ws_url');
 
         return view('dashboard-ui', compact([
             'data',
@@ -146,7 +181,9 @@ class HomeController extends Controller
             'assets',
             'recent_closed_trades',
             'openedExpressTrades',
-            'closedExpressTrades'
+            'closedExpressTrades',
+            'dataFeedClCatalog',
+            'dataFeedClWsUrl',
         ]));
     }
 

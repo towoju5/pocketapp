@@ -1,43 +1,34 @@
 <?php
 
-namespace Database\Seeders;
-
-use Illuminate\Database\Seeder;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Seeds `assets` rows for Brokeret's tradable catalog — base_url/ui's
- * independent live-price pipeline (see BrokeretFeedService,
- * StreamBrokeretFeed), which has no fixed/enumerable symbol list anywhere
- * in this app's own config (it streams whatever Brokeret sends). This is
- * the broker-supplied 183-symbol catalog (assets.json) provided 2026-08-19,
- * replacing the earlier 326-symbol snapshot from 2026-08-14 (see the
- * matching resync_brokeret_asset_catalog migration, which applies this same
- * list to already-deployed databases) — iqcent's collector has been removed
- * entirely, so AssetSeeder (the old iqcent-scoped seeder) is no longer
- * called from DatabaseSeeder.
+ * Resyncs `assets` to the broker-supplied catalog (assets.json) provided
+ * 2026-08-19 — 183 symbols across Stock/Index/Cryptocurrency/Currency/
+ * Commodity — the same list BrokeretAssetSeeder now seeds fresh installs
+ * from, replacing the earlier 326-symbol snapshot from 2026-08-14 (see
+ * sync_brokeret_asset_catalog).
  *
- * Source rows carry `payout` (0-100, mapped to asset_profit_margin/100),
- * `expTime`/`min_expiration` (stashed in `extra_data` — nothing else in the
- * `assets` schema has a slot for them), and `active`, which — unlike
- * BrokeretFeedService's own auto-registered rows — the source broker sets
- * per-symbol rather than defaulting to true (e.g. non-OTC instruments here
- * are inactive outside their exchange's trading hours).
+ * Scoped to price_source='brokeret' only — unlike the 2026-08-14 migration,
+ * this app now also has the fully independent DataFeedCl pipeline
+ * (price_source='datafeedcl', self-registered by DataFeedClService, no
+ * static catalog), which must NOT be touched here.
  *
- * Deliberately insertOrIgnore(), never delete() first — this must never
- * disturb a row an admin has edited (e.g. flipped is_active) or one
- * BrokeretFeedService has already auto-registered live. Re-running this is
- * just "make sure every symbol in this list has a row with the right
- * name/category"; it does not prune anything — that pruning already
- * happened once, in the migration above, for symbols dropped from this list.
+ *  1. Every price_source='brokeret' row whose symbol is NOT in the new
+ *     canonical list gets soft-deleted (Assets uses SoftDeletes). Safe
+ *     against BrokeretFeedService::ensureAssetRegistered() resurrecting a
+ *     dropped symbol if Brokeret keeps streaming it: that call is a raw
+ *     insertOrIgnore() against the unique `symbol` index, which still finds
+ *     the (soft-deleted) row and skips re-inserting.
  *
- * New symbols Brokeret starts streaming after this snapshot was taken don't
- * need a seeder update to become tradable — BrokeretFeedService registers
- * those itself the moment they're first seen (see its
- * ensureAssetRegistered()), just without a friendly `name` until this list
- * is updated to include them.
+ *  2. Every kept row gets name/asset_group/asset_profit_margin/is_otc/
+ *     is_active/extra_data updated to this snapshot's values. is_active is
+ *     reasserted from the broker's own per-symbol `active` flag (non-OTC
+ *     instruments here are inactive outside their exchange's trading
+ *     hours) rather than forced to true.
  */
-class BrokeretAssetSeeder extends Seeder
+return new class extends Migration
 {
     private const CATALOG = [
             ['symbol' => '#AAPL', 'name' => 'Apple', 'category' => 'STOCK', 'payout' => 50, 'is_otc' => false, 'is_active' => false, 'exp_time' => 1787157300, 'min_expiration' => 30],
@@ -225,25 +216,49 @@ class BrokeretAssetSeeder extends Seeder
             ['symbol' => 'ZARUSD_otc', 'name' => 'ZAR/USD OTC', 'category' => 'CURRENCY', 'payout' => 29, 'is_otc' => true, 'is_active' => true, 'exp_time' => 1787184000, 'min_expiration' => 30],
     ];
 
-    public function run(): void
+    public function up(): void
     {
+        $canonicalSymbols = array_column(self::CATALOG, 'symbol');
+
+        DB::table('assets')
+            ->where('price_source', 'brokeret')
+            ->whereNull('deleted_at')
+            ->whereNotIn('symbol', $canonicalSymbols)
+            ->update(['deleted_at' => now()]);
+
         foreach (self::CATALOG as $entry) {
-            DB::table('assets')->insertOrIgnore([
-                'symbol' => $entry['symbol'],
-                'name' => $entry['name'],
-                'asset_group' => $entry['category'],
-                'exchange_float' => 0,
-                'asset_profit_margin' => $entry['payout'] / 100,
-                'extra_data' => json_encode([
-                    'expTime' => $entry['exp_time'],
-                    'min_expiration' => $entry['min_expiration'],
-                ]),
-                'is_otc' => $entry['is_otc'],
-                'price_source' => 'brokeret',
-                'is_active' => $entry['is_active'],
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            DB::table('assets')
+                ->where('symbol', $entry['symbol'])
+                ->whereNull('deleted_at')
+                ->update([
+                    'name' => $entry['name'],
+                    'asset_group' => $entry['category'],
+                    'asset_profit_margin' => $entry['payout'] / 100,
+                    'extra_data' => json_encode([
+                        'expTime' => $entry['exp_time'],
+                        'min_expiration' => $entry['min_expiration'],
+                    ]),
+                    'is_otc' => $entry['is_otc'],
+                    'price_source' => 'brokeret',
+                    'is_active' => $entry['is_active'],
+                    'updated_at' => now(),
+                ]);
         }
     }
-}
+
+    /**
+     * Restores whatever this migration soft-deleted. Doesn't attempt to
+     * recall each row's pre-migration name/asset_group/margin individually
+     * — this is a best-effort rollback, not a perfect inverse.
+     */
+    public function down(): void
+    {
+        $canonicalSymbols = array_column(self::CATALOG, 'symbol');
+
+        DB::table('assets')
+            ->where('price_source', 'brokeret')
+            ->whereNotIn('symbol', $canonicalSymbols)
+            ->whereNotNull('deleted_at')
+            ->update(['deleted_at' => null]);
+    }
+};

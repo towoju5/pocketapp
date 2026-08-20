@@ -4,15 +4,14 @@
 
 @section('content')
 @php
-    // Unlike __dash.blade.php, this page's asset catalog isn't read from
-    // the DB at all — it's built live from whichever symbols the backend's
-    // independent Brokeret feed reports (see StreamBrokeretFeed /
-    // TradingDashboard.js's _onLiveTicks/liveFeed option), so the popover
-    // starts empty and fills in as ticks arrive. Defaults to Gold, using
-    // Brokeret's own raw symbol (no DB Assets row backs it — trade
-    // execution against live-feed-only symbols isn't wired up yet).
-    $__coin = 'XAUUSD';
-    $__defaultProfitMargin = 0.85;
+    // Unlike __dash.blade.php, this page's asset catalog isn't read from the
+    // DB at all — it's seeded from datafeedcl's own catalog (see
+    // DataFeedClService::fetchSymbolCatalog / TradingDashboard._seedAssetCatalog)
+    // and filled in further as live ticks arrive. Defaults to Tesla OTC,
+    // using datafeedcl's own raw symbol and real payout (60%, per GET
+    // /api/assets — see DataFeedClService::classify).
+    $__coin = '#TSLA_otc';
+    $__defaultProfitMargin = 0.60;
 @endphp
 
 <div class="flex-1 flex flex-col sm:flex-row min-h-0">
@@ -379,33 +378,44 @@
 
 <script type="application/json" id="trading-dashboard-config">
 {!! json_encode([
-    // Seeds just the default asset (Gold) the chart opens on — everything
-    // else in the popover is discovered live off the backend's Brokeret
-    // broadcast (see TradingDashboard.js's liveFeed handling). This row
-    // still waits for its first live tick like any other symbol, at which
-    // point its category is filled in from Brokeret's own taxonomy.
+    // Seeds just the default asset (Tesla OTC) the chart opens on, with its
+    // real datafeedcl catalog values — everything else in the popover comes
+    // from $dataFeedClCatalog (see TradingDashboard._seedAssetCatalog).
+    // $__coin is pre-populated into assetsBySymbol before _seedAssetCatalog
+    // runs, so _seedAssetCatalog skips it (already present) — these values
+    // must match its real catalog entry, not a placeholder, or the popover
+    // shows the wrong name/category for the asset the chart opens on.
     'assets' => [[
         'symbol' => $__coin,
-        'name' => 'Gold / US Dollar',
-        'asset_group' => null,
+        'name' => 'Tesla OTC',
+        'asset_group' => 'stocks',
         'asset_profit_margin' => $__defaultProfitMargin,
-        'is_otc' => false,
+        'is_otc' => true,
     ]],
     'initialSymbol' => $__coin,
     'initialProfitMargin' => $__defaultProfitMargin,
     'userId' => auth()->id(),
-    // Backed by BrokeretFeedService's own Redis history (independent of
-    // PriceFeedService/the main dashboard's tick store) — see
-    // BrokeretController::history.
-    'historyUrl' => route('brokeret.history'),
+    // No server-proxied candle backfill for datafeedcl — the WebSocket sends
+    // a 'history' backfill inline the moment a symbol is subscribed (see
+    // dataFeedClFeed.js / ChartManager.ingestExternalHistory), so there's
+    // nothing left for the backend to proxy. 'historyUrl' stays unset here
+    // (only the legacy Brokeret/iqcent feeds still use it).
     'liveFeed' => [
-        // The backend (StreamBrokeretFeed) owns the actual connection to
-        // Brokeret and rebroadcasts on the 'brokeret-feed' Echo channel —
-        // the browser never talks to Brokeret directly, so no URL/API key
-        // needs to be configured here.
         'categoryLabels' => [
             'majors' => 'Majors', 'minors' => 'Minors', 'exotics' => 'Exotics',
-            'metals' => 'Metals', 'crypto' => 'Crypto',
+            'metals' => 'Metals', 'crypto' => 'Crypto', 'stocks' => 'Stocks', 'indices' => 'Indices',
+        ],
+        // The browser connects straight to datafeedcl.xyz's WebSocket for
+        // both live ticks and their own history backfill (see
+        // resources/js/trading/dataFeedClFeed.js) — no backend relay in
+        // between. 'catalog' (fetched server-side once per page load, see
+        // HomeController) tells it which symbols exist and seeds the asset
+        // popover, since unlike Brokeret this feed pushes nothing unsolicited
+        // and datafeedcl's own catalog endpoint can't be called directly
+        // from the browser either (no CORS headers).
+        'datafeedcl' => [
+            'wsUrl' => $dataFeedClWsUrl,
+            'catalog' => $dataFeedClCatalog,
         ],
     ],
 ]) !!}

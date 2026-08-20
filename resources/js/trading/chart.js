@@ -36,10 +36,40 @@ export class AssetFeed {
         this._closed = false;
         this.hasReceivedData = false;
         this.lastPrice = null;
+        // Raw [epochMs, price] backfill from the last ingestHistory() call,
+        // oldest-first — kept so a period change can re-bucket locally
+        // instead of re-fetching (see ChartManager.setPeriod). Only ever
+        // populated for feeds fed via ingestHistory (e.g. DataFeedClLiveFeed's
+        // WS 'history' message); REST-backed feeds (historyUrl) don't set
+        // this and keep the old refetch-on-period-change behavior.
+        this._rawHistory = [];
         // Keep the current candle/time-axis moving forward every second even
         // between price ticks, so the chart never looks frozen while a trade
         // countdown is running.
         this._clockTimer = setInterval(() => this._advanceClock(), 1000);
+    }
+
+    /** Pushes a backfill of [epochMs, price] ticks, oldest-first, replacing whatever candles this feed currently has. Used by feeds whose live-tick source delivers its own history inline (e.g. datafeedcl's WS 'history' message) instead of a server-proxied historyUrl. */
+    ingestHistory(ticks) {
+        if (!Array.isArray(ticks) || !ticks.length) return;
+        this._rawHistory = ticks;
+        this._rebucketFromRawHistory();
+    }
+
+    /** Re-derives candles/haCandles/linePoints from _rawHistory — used both by ingestHistory() and by a period change (see ChartManager.setPeriod), so switching timeframes doesn't need a network round trip for a feed that already has its backfill in memory. */
+    _rebucketFromRawHistory() {
+        this.candles = [];
+        this.haCandles = [];
+        this.linePoints = [];
+        this._haPrevOpen = null;
+        this._haPrevClose = null;
+        this._haCurOpen = null;
+        for (const [epochMs, price] of this._rawHistory) {
+            this._pushOrUpdateCandle(price, epochMs);
+            this._pushLinePoint(price, epochMs);
+            this.lastPrice = price;
+        }
+        this.hasReceivedData = true;
     }
 
     /** Called by ChartManager whenever a broadcast tick for this symbol arrives. */
@@ -219,7 +249,7 @@ function hexToRgba(hex, alpha) {
  */
 export class ChartManager {
     constructor(container, {
-        onOrderTick, onAvailabilityChange, onDrawingsChanged, onUserDrag, pricePrecision = 5,
+        onOrderTick, onAvailabilityChange, onDrawingsChanged, onUserDrag, onOpenTab, pricePrecision = 5,
         chartType = 'candles', showArea = true, periodSeconds = 60,
         colorScheme = 'classic', showGrid = true, historyUrl = null, disableBroadcast = false,
     } = {}) {
@@ -253,6 +283,12 @@ export class ChartManager {
         this.onOrderTick = onOrderTick;
         this.onAvailabilityChange = onAvailabilityChange || (() => {});
         this.onDrawingsChanged = onDrawingsChanged || (() => {});
+        // Fired the moment a tab is FIRST opened for a symbol (never on
+        // switching back to an already-open one) — lets a live-tick source
+        // that requires an explicit per-symbol subscription (e.g. datafeedcl,
+        // see DataFeedClLiveFeed) start pulling ticks only for symbols the
+        // customer actually opens, instead of every symbol in the catalog.
+        this.onOpenTab = onOpenTab || (() => {});
         this._availabilityTimer = null;
 
         // Pending-trade expiry markers: tradeId -> { symbol, expiryMs, entryPrice },
@@ -334,6 +370,19 @@ export class ChartManager {
         this._onBroadcastTick({ symbol, price, t: epochMs });
     }
 
+    /** Public entry point for a WS-delivered history backfill (e.g. DataFeedClLiveFeed's 'history' message) — the counterpart to ingestExternalTick for feeds whose backfill arrives inline instead of via historyUrl. Only affects symbols with an already-open tab. */
+    ingestExternalHistory(symbol, ticks) {
+        const feed = this.feeds.get(symbol);
+        if (!feed) return;
+        feed.ingestHistory(ticks);
+        if (symbol === this.activeSymbol) {
+            // Forces klinecharts to re-request bars for this symbol now that
+            // feed.candles is populated — same mechanism activate()/
+            // setChartType() already use to reload the visible chart.
+            this.chart.setSymbol({ ticker: symbol, pricePrecision: this.pricePrecision, volumePrecision: 0 });
+        }
+    }
+
     _candlesForType(feed) {
         if (this.chartType === 'heikin') return feed.haCandles;
         if (this.chartType === 'line') return feed.linePoints.length ? feed.linePoints : feed.candles;
@@ -390,6 +439,7 @@ export class ChartManager {
             }
         }, this.historyUrl);
         this.feeds.set(symbol, feed);
+        this.onOpenTab(symbol);
         return feed;
     }
 
@@ -631,8 +681,16 @@ export class ChartManager {
         // Force a fresh history load at the new resolution for the active feed.
         const feed = this.activeSymbol && this.feeds.get(this.activeSymbol);
         if (feed) {
-            feed.candles = [];
-            feed.haCandles = [];
+            if (feed._rawHistory.length) {
+                // Already has its backfill in memory (datafeedcl) — re-bucket
+                // locally instead of blanking the chart until fetchHistory()
+                // (a no-op for this feed; there's no historyUrl) or the next
+                // live tick repopulates it.
+                feed._rebucketFromRawHistory();
+            } else {
+                feed.candles = [];
+                feed.haCandles = [];
+            }
         }
         this.chart.setPeriod(periodObj);
     }
