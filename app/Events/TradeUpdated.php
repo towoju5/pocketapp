@@ -29,24 +29,36 @@ class TradeUpdated implements ShouldBroadcast
 
     public function broadcastWith()
     {
+        return self::payload($this->trade);
+    }
+
+    /**
+     * The shape tradeCards.js's updateOrInsertTradeCard() actually reads
+     * (event.id/html/trade_status/wallet_balance/trade_wallet). Shared with
+     * TradeSettlementService::pushToTradeSocket() so the socket.io push and
+     * this Echo broadcast can never drift into sending different shapes for
+     * the same underlying update.
+     */
+    public static function payload(Trade $trade): array
+    {
         return [
-            'id' => $this->trade->id,
-            'trade_close_time' => $this->trade->trade_close_time,
-            'trade_currency' => $this->trade->trade_currency,
-            'trade_status' => $this->trade->trade_status,
-            'trade_amount' => $this->trade->trade_amount,
-            'trade_profit' => $this->trade->trade_profit,
-            'trade_percentage' => $this->trade->trade_percentage,
-            'trade_direction' => $this->trade->trade_direction,
-            'start_price' => $this->trade->start_price,
-            'trade_wallet' => $this->trade->trade_wallet,
+            'id' => $trade->id,
+            'trade_close_time' => $trade->trade_close_time,
+            'trade_currency' => $trade->trade_currency,
+            'trade_status' => $trade->trade_status,
+            'trade_amount' => $trade->trade_amount,
+            'trade_profit' => $trade->trade_profit,
+            'trade_percentage' => $trade->trade_percentage,
+            'trade_direction' => $trade->trade_direction,
+            'start_price' => $trade->start_price,
+            'trade_wallet' => $trade->trade_wallet,
             // Lets the frontend update the topbar balance the instant it
             // actually changes — not just on win/lose settlement, but also
             // right when a trade is first placed: the stake is debited
             // immediately at that point (see TradeController::placeTrade),
             // it isn't held until the trade closes.
-            'wallet_balance' => (float) $this->trade->user->getWallet($this->trade->trade_wallet)->balance,
-            'html' => view('mini-pages.trade-list', ['trade' => $this->trade])->render(),
+            'wallet_balance' => (float) $trade->user->getWallet($trade->trade_wallet)->balance,
+            'html' => view('mini-pages.trade-list', ['trade' => $trade])->render(),
         ];
     }
 }

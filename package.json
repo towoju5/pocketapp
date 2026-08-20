@@ -27,6 +27,7 @@
         "http-proxy": "^1.18.1",
         "klinecharts": "^10.0.0",
         "preline": "^2.6.0",
+        "socket.io-client": "^4.8.1",
         "websocket": "^1.0.35",
         "ws": "^8.18.0"
     }

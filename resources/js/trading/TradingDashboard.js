@@ -1,5 +1,8 @@
 import { ChartManager, periodSecondsToKlinePeriod, COLOR_SCHEMES } from './chart.js';
 import { parseServerDate, rearmCountdowns } from './tradeCards.js';
+import { DataFeedClLiveFeed } from './dataFeedClFeed.js';
+import { BrokeretWsFeed } from './brokeretWsFeed.js';
+import { TradeSocket } from './tradeSocket.js';
 
 const TF_OPTIONS = [
     [5, 'S5'], [15, 'S15'], [30, 'S30'],
@@ -97,6 +100,7 @@ export default class TradingDashboard {
         } else {
             this._startAssetStatusPolling();
         }
+        this._initTradeSocket();
 
         window.toggleTradeMenu = (button, tabKey) => this._toggleTradeMenu(button, tabKey);
     }
@@ -810,19 +814,40 @@ export default class TradingDashboard {
 
         try {
             const formData = new FormData(this.el.tradeForm);
-            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
-            const res = await fetch(this.el.tradeForm.getAttribute('action'), {
-                method: 'POST',
-                headers: {
-                    'Accept': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest',
-                    ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
-                },
-                body: formData,
-            });
-            const data = await res.json().catch(() => null);
+            let data;
 
-            if (res.ok && data?.status) {
+            // Feature-flagged: this._tradeSocket only exists on a page that's
+            // opted into node-services/tradesocket (see _initTradeSocket) —
+            // its absence, or a not-yet-connected socket, falls straight
+            // through to the pre-existing fetch path below, which stays the
+            // default/rollback. A mid-flight socket failure (relay
+            // unreachable, ack never arrives) also falls through rather than
+            // failing the trade outright — see the catch below.
+            if (this._tradeSocket?.connected) {
+                try {
+                    data = await this._tradeSocket.placeTrade(Object.fromEntries(formData.entries()));
+                } catch (e) {
+                    data = null;
+                }
+            }
+
+            let ok = data?.status === true;
+            if (!data) {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                const res = await fetch(this.el.tradeForm.getAttribute('action'), {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {}),
+                    },
+                    body: formData,
+                });
+                data = await res.json().catch(() => null);
+                ok = res.ok && data?.status === true;
+            }
+
+            if (ok) {
                 window.toastr?.success(data.message || 'Trade placed successfully!');
                 this._removeOptimisticTradeCard(optimistic?.id);
                 // Insert + arm the countdown from this response rather than
@@ -1085,6 +1110,7 @@ export default class TradingDashboard {
             // as clicking the "Enable autoscroll" toggle off — matches how
             // real trading platforms stop auto-centering once you've dragged.
             onUserDrag: () => this._toggleAutoscroll(false),
+            onOpenTab: (symbol) => this._onChartTabOpened(symbol),
             pricePrecision: this.options.initialPricePrecision || 5,
             chartType: this.state.currentChartType,
             showArea: this.state.showArea,
@@ -1108,27 +1134,104 @@ export default class TradingDashboard {
 
     _onOrderTick(price, epochMs) {
         if (this.el.livePrice) this.el.livePrice.textContent = String(price);
-        if (this.el.sourceLabel) this.el.sourceLabel.textContent = this.liveFeedConfig ? 'Live · Brokeret' : 'Live · iqcent';
+        if (this.el.sourceLabel) this.el.sourceLabel.textContent = this.liveFeedConfig ? `Live · ${this._liveFeedSourceName}` : 'Live · iqcent';
         if (this.el.sourceDot) this.el.sourceDot.classList.add('source-dot--live');
         if (this.state.autoScroll) this.chart?.scrollToRealTime();
     }
 
-    // ---- live feed (base_url/ui — backend-mediated Brokeret broadcast) ----
+    /**
+     * Feature-flagged: options.realtime.tradeSocketUrl only appears on a page
+     * that's opted into node-services/tradesocket. Its absence leaves
+     * this._tradeSocket unset, which _submitTrade already treats as "use the
+     * existing fetch path" — see that method. Connecting eagerly here (not
+     * lazily on first trade) means the socket has time to authenticate before
+     * anyone actually clicks a CTA button, rather than adding handshake
+     * latency to the very first trade.
+     */
+    _initTradeSocket() {
+        const url = this.options.realtime?.tradeSocketUrl;
+        if (!url) return;
+
+        this._tradeSocket = new TradeSocket(url);
+        this._tradeSocket.onTradeUpdated((payload) => {
+            if (window.updateOrInsertTradeCard) window.updateOrInsertTradeCard(payload);
+        });
+        this._tradeSocket.connect();
+    }
+
+    // ---- live feed (base_url/ui — direct-to-datafeedcl or backend-mediated Brokeret broadcast) ----
 
     /**
-     * Subscribes to the backend's own Brokeret rebroadcast (see
-     * StreamBrokeretFeed / App\Events\BrokeretTicksUpdated) — the browser
-     * never connects to Brokeret directly; the backend owns that WebSocket
-     * and relays ticks over this app's normal broadcaster (Ably) instead,
-     * the same way chart.js's default _initBroadcast() does for the main
-     * dashboard's 'asset-prices' channel, just on a separate channel/event
-     * so the two pipelines can't interfere with each other. The asset
-     * catalog isn't known up front like it is for the DB-backed dashboard,
-     * so categories and rows are built incrementally as symbols are first
-     * observed on the channel.
+     * Two possible sources, picked from liveFeedConfig:
+     *
+     * - datafeedcl (default — see dashboard-ui.blade.php): the browser opens
+     *   its own WebSocket straight to datafeedcl.xyz (DataFeedClLiveFeed,
+     *   see that file's docblock for why only this piece is direct while
+     *   candle backfill stays server-proxied). No backend relay for ticks at
+     *   all.
+     * - brokeret (legacy fallback, kept only for pages that don't pass a
+     *   'datafeedcl' config): subscribes to the backend's own Brokeret
+     *   rebroadcast (see StreamBrokeretFeed / App\Events\BrokeretTicksUpdated)
+     *   — the browser never connects to Brokeret directly; the backend owns
+     *   that WebSocket and relays ticks over this app's normal broadcaster
+     *   instead.
+     *
+     * Either way, the asset catalog/popover isn't known up front like it is
+     * for the DB-backed dashboard — categories and rows are built
+     * incrementally as symbols are first observed.
      */
     _initLiveFeed() {
         this._setFeedStatus('connecting');
+
+        const dfc = this.liveFeedConfig?.datafeedcl;
+        if (dfc?.wsUrl) {
+            this._liveFeedSourceName = 'datafeedcl';
+            // The popover/row list is fully browsable immediately off the
+            // catalog — no live subscription needed just to list symbols
+            // (see _seedAssetCatalog).
+            this._seedAssetCatalog(dfc.catalog);
+
+            this._dataFeedClFeed = new DataFeedClLiveFeed(dfc.wsUrl, {
+                onTicks: (updates) => {
+                    this._markLiveFeedActive();
+                    this._onLiveTicks(updates);
+                },
+                onHistory: (symbol, ticks) => this.chart?.ingestExternalHistory(symbol, ticks),
+                onStatusChange: (status) => this._setFeedStatus(status),
+            });
+            this._dataFeedClFeed.start();
+            // Any tab(s) opened before this feed existed (at minimum the
+            // initial active symbol, opened synchronously in the constructor
+            // by _activateAsset before this method ever runs) — see
+            // _onChartTabOpened.
+            this._pendingDataFeedClSubscriptions?.forEach((symbol) => this._dataFeedClFeed.subscribe(symbol));
+            this._pendingDataFeedClSubscriptions = null;
+
+            this._startLiveFeedStaleCheck();
+            return;
+        }
+
+        this._liveFeedSourceName = 'Brokeret';
+
+        // Feature-flagged: liveFeedConfig.brokeretWsUrl only appears on a page
+        // that's opted into node-services/pricefeed as the Brokeret transport
+        // (see node-services/README.md's rollout notes) — presence of the URL
+        // IS the flag, same idiom as dfc?.wsUrl above. Default (no URL set)
+        // stays the pre-existing Echo path untouched.
+        const wsUrl = this.liveFeedConfig?.brokeretWsUrl;
+        if (wsUrl) {
+            this._brokeretWsFeed = new BrokeretWsFeed(wsUrl, {
+                onTicks: (ticks) => {
+                    this._markLiveFeedActive();
+                    this._onLiveTicks(ticks);
+                },
+                onStatusChange: (status) => this._setFeedStatus(status),
+            });
+            this._brokeretWsFeed.start();
+            this._startLiveFeedStaleCheck();
+            return;
+        }
+
         if (!window.Echo) return;
 
         window.Echo.channel('brokeret-feed').listen('.ticks-updated', (e) => {
@@ -1139,6 +1242,70 @@ export default class TradingDashboard {
         });
 
         this._startLiveFeedStaleCheck();
+    }
+
+    /**
+     * Fired by ChartManager's onOpenTab the moment a chart tab is first
+     * opened for a symbol — the only trigger that should ever cause a
+     * datafeedcl subscription (see DataFeedClLiveFeed's docblock: no
+     * catalog-wide firehose). Queues if the feed hasn't been constructed yet
+     * (the very first call, for the initial active symbol, always lands
+     * before _initLiveFeed has run — see the constructor's call order).
+     */
+    _onChartTabOpened(symbol) {
+        if (this._dataFeedClFeed) {
+            this._dataFeedClFeed.subscribe(symbol);
+        } else {
+            (this._pendingDataFeedClSubscriptions ??= new Set()).add(symbol);
+        }
+    }
+
+    /**
+     * Seeds the asset popover/row list from datafeedcl's catalog (fetched
+     * server-side once per page load — see HomeController /
+     * DataFeedClService::fetchSymbolCatalog) so every symbol is browsable
+     * right away, without needing a live subscription just to know it exists
+     * — datafeedcl doesn't push anything for a symbol until it's actually
+     * subscribed (see _onChartTabOpened). category/payout come straight from
+     * datafeedcl's own catalog (already classified server-side), not a
+     * guess. Rows seeded here are marked _rowRendered so a later live tick
+     * for the same symbol (see _onLiveTicks) updates the price in place
+     * instead of re-adding the row and clobbering its category (datafeedcl's
+     * live ticks carry no category of their own).
+     */
+    _seedAssetCatalog(catalog) {
+        (catalog || []).forEach(({ symbol, name, category, payout }) => {
+            if (!symbol || this.assetsBySymbol.has(symbol)) return;
+            const asset = {
+                symbol, name: name || symbol,
+                asset_group: category || this._inferDataFeedClCategory(symbol),
+                asset_profit_margin: typeof payout === 'number' ? payout : (this.options.initialProfitMargin ?? 0.85),
+                is_otc: false,
+                _rowRendered: true,
+            };
+            this.assetsBySymbol.set(symbol, asset);
+            this._ensureCategoryButton(asset.asset_group);
+            this._addAssetRow(asset);
+        });
+        if (!this.state.currentCat) {
+            const active = this.assetsBySymbol.get(this.state.activeAssetSymbol);
+            if (active?.asset_group) this._selectCategory(active.asset_group);
+        }
+    }
+
+    /** Symbol-pattern heuristic, popover grouping only — see _seedAssetCatalog. */
+    _inferDataFeedClCategory(symbol) {
+        const upper = symbol.toUpperCase();
+        if (/^(XAU|XAG|XPT|XPD)/.test(upper)) return 'metals';
+        if (/^(BTC|ETH|XRP|LTC|BNB|SOL|DOGE|ADA|DOT|AVAX|MATIC|LINK|UNI|AAVE|ATOM|ALGO|APT|ARB)/.test(upper)) return 'crypto';
+        if (upper.length === 6) {
+            const MAJORS = ['EUR', 'USD', 'GBP', 'JPY', 'CHF', 'CAD', 'AUD', 'NZD'];
+            const base = upper.slice(0, 3);
+            const quote = upper.slice(3);
+            if (MAJORS.includes(base) && MAJORS.includes(quote)) return 'majors';
+            return 'minors';
+        }
+        return 'exotics';
     }
 
     /** Ticks arrive several times a second while connected — a gap longer than this means the feed (or its backend process) has gone quiet. */
@@ -1165,7 +1332,7 @@ export default class TradingDashboard {
     _setFeedStatus(status) {
         this.el.sourceDot?.classList.toggle('source-dot--live', status === 'live');
         if (this.el.sourceLabel) {
-            this.el.sourceLabel.textContent = status === 'live' ? 'Live · Brokeret'
+            this.el.sourceLabel.textContent = status === 'live' ? `Live · ${this._liveFeedSourceName}`
                 : status === 'reconnecting' ? 'Reconnecting…' : 'Connecting…';
         }
     }
@@ -1176,11 +1343,18 @@ export default class TradingDashboard {
     }
 
     _onLiveTicks(updates) {
-        updates.forEach(({ symbol, bid, ask, mid, category, t }) => {
+        updates.forEach(({ symbol, name, bid, ask, mid, category, t }) => {
             let asset = this.assetsBySymbol.get(symbol);
             if (!asset) {
+                // Symbol not seeded from the catalog (e.g. Brokeret's
+                // firehose, which has no upfront catalog at all — datafeedcl
+                // symbols are normally already seeded by _seedAssetCatalog
+                // by the time a tick for them arrives). category comes from
+                // the tick itself when the source provides one (Brokeret);
+                // datafeedcl's tick stream doesn't, so fall back to the
+                // pattern heuristic.
                 asset = {
-                    symbol, name: symbol, asset_group: category,
+                    symbol, name: name || symbol, asset_group: category || this._inferDataFeedClCategory(symbol),
                     // No DB payout config exists for a symbol discovered
                     // purely from the stream — fall back to whatever margin
                     // the server-seeded default asset carries.
@@ -1196,14 +1370,15 @@ export default class TradingDashboard {
             asset._lastTickAt = Date.now();
 
             if (!asset._rowRendered) {
-                // Brokeret's own category wins once observed, even for the
-                // server-seeded default asset (whose asset_group otherwise
-                // came from the unrelated DB taxonomy).
-                asset.asset_group = category;
+                // A real per-tick category (Brokeret) wins once observed,
+                // even over the server-seeded default asset's DB taxonomy.
+                // datafeedcl ticks carry none, so the group already assigned
+                // above (catalog or heuristic) is left as-is.
+                if (category) asset.asset_group = category;
                 asset._rowRendered = true;
-                this._ensureCategoryButton(category);
+                this._ensureCategoryButton(asset.asset_group);
                 this._addAssetRow(asset);
-                if (!this.state.currentCat) this._selectCategory(category);
+                if (!this.state.currentCat) this._selectCategory(asset.asset_group);
             } else {
                 this._updateAssetRowPrice(symbol, mid);
             }

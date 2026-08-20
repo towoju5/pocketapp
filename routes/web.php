@@ -49,6 +49,8 @@ Route::get('dashboard-2', function () {
 })->middleware(['auth', 'verified'])->name('dash');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('realtime/token', [\App\Http\Controllers\RealtimeAuthController::class, 'issueToken'])->name('realtime.token');
+
     Route::post('gateway/{provider:slug}/checkout', [GatewayCheckoutController::class, 'redirect'])->name('gateway.checkout');
     Route::get('gateway/return', [GatewayCheckoutController::class, 'return'])->name('gateway.return');
 

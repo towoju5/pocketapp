@@ -417,6 +417,18 @@
             'wsUrl' => $dataFeedClWsUrl,
             'catalog' => $dataFeedClCatalog,
         ],
+        // Feature flag, off by default (PRICEFEED_PUBLIC_URL unset) — see
+        // node-services/README.md. Only takes effect on a page where
+        // 'datafeedcl' above is absent (see TradingDashboard._initLiveFeed);
+        // this view always sets datafeedcl, so it's inert here today, kept
+        // for whenever that changes or another page reuses this branch.
+        'brokeretWsUrl' => config('services.realtime.pricefeed_public_url') ?: null,
+    ],
+    // Feature flag, off by default (TRADESOCKET_PUBLIC_URL unset) — see
+    // node-services/README.md. TradingDashboard._submitTrade falls back to
+    // the existing fetch path whenever this is unset or not yet connected.
+    'realtime' => [
+        'tradeSocketUrl' => config('services.realtime.trade_socket_public_url') ?: null,
     ],
 ]) !!}
 </script>

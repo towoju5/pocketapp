@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Trade;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -56,6 +57,7 @@ class TradeSettlementService
         );
 
         event(new \App\Events\TradeUpdated($trade));
+        $this->pushToTradeSocket($trade);
     }
 
     /** Refunds the stake with no win/lose settlement — an admin cancelling a trade outright. */
@@ -74,5 +76,35 @@ class TradeSettlementService
         );
 
         event(new \App\Events\TradeUpdated($trade));
+        $this->pushToTradeSocket($trade);
+    }
+
+    /**
+     * Additive side-channel alongside the TradeUpdated broadcast above: pushes
+     * the settled trade to node-services/tradesocket so a socket.io-connected
+     * client gets the result over its already-open connection instead of
+     * waiting on Ably/Reverb. Never lets a push failure affect settlement
+     * itself — same try/catch-and-log-only pattern TradeController::placeTrade
+     * already uses for its own broadcasts.
+     */
+    private function pushToTradeSocket(Trade $trade): void
+    {
+        $baseUrl = config('services.realtime.tradesocket_internal_url');
+        $secret = config('services.realtime.api_secret');
+
+        if (!$baseUrl || !$secret) {
+            return;
+        }
+
+        try {
+            Http::withHeaders(['X-Internal-Secret' => $secret])
+                ->timeout(2)
+                ->post("{$baseUrl}/internal/push/trade-updated", [
+                    'user_id' => $trade->user_id, // routing only — tradesocket/index.js reads this to pick the socket room, it's not part of the card payload
+                    ...\App\Events\TradeUpdated::payload($trade),
+                ]);
+        } catch (\Throwable $e) {
+            Log::warning('Trade-socket settlement push failed', ['trade_id' => $trade->id, 'error' => $e->getMessage()]);
+        }
     }
 }
