@@ -1188,8 +1188,21 @@ export default class TradingDashboard {
             this._liveFeedSourceName = 'datafeedcl';
             // The popover/row list is fully browsable immediately off the
             // catalog — no live subscription needed just to list symbols
-            // (see _seedAssetCatalog).
+            // (see _seedAssetCatalog). Seed the DB-backed catalog first and
+            // unconditionally — it has no dependency on datafeedcl.xyz
+            // actually responding, unlike dfc.catalog below, so the popover
+            // is never stuck empty just because that upstream is slow/down.
+            this._seedAssetCatalog(dfc.dbCatalog);
             this._seedAssetCatalog(dfc.catalog);
+            if (!dfc.catalog?.length) {
+                // The server-side catalog fetch (DataFeedClService::
+                // fetchSymbolCatalog, called once at page render) can
+                // silently return [] on a timeout/HTTP error. The DB catalog
+                // above already covers the popover, but retry this too so
+                // datafeedcl-only symbols/payouts eventually fill in once
+                // that upstream recovers.
+                this._retryAssetCatalogFetch();
+            }
 
             this._dataFeedClFeed = new DataFeedClLiveFeed(dfc.wsUrl, {
                 onTicks: (updates) => {
@@ -1291,6 +1304,34 @@ export default class TradingDashboard {
             const active = this.assetsBySymbol.get(this.state.activeAssetSymbol);
             if (active?.asset_group) this._selectCategory(active.asset_group);
         }
+    }
+
+    /**
+     * Retries the one-time server-side catalog fetch (see
+     * DataFeedClService::fetchSymbolCatalog / HomeController) against
+     * /dashboard/datafeedcl-catalog with capped exponential backoff, so a
+     * transient datafeedcl.xyz outage at page-load time doesn't leave the
+     * asset popover empty for the rest of the session. Keeps retrying
+     * (capped at 30s between attempts) until a non-empty catalog seeds.
+     */
+    _retryAssetCatalogFetch(attempt = 1) {
+        const MAX_DELAY_MS = 30000;
+        const delay = Math.min(1000 * 2 ** (attempt - 1), MAX_DELAY_MS);
+        setTimeout(async () => {
+            let catalog = null;
+            try {
+                const res = await fetch('/dashboard/datafeedcl-catalog', { headers: { 'Accept': 'application/json' } });
+                const data = res.ok ? await res.json().catch(() => null) : null;
+                catalog = Array.isArray(data?.catalog) ? data.catalog : null;
+            } catch (e) {
+                // network error — fall through to retry below
+            }
+            if (catalog?.length) {
+                this._seedAssetCatalog(catalog);
+                return;
+            }
+            this._retryAssetCatalogFetch(attempt + 1);
+        }, delay);
     }
 
     /** Symbol-pattern heuristic, popover grouping only — see _seedAssetCatalog. */

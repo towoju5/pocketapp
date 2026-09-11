@@ -408,14 +408,19 @@
         // The browser connects straight to datafeedcl.xyz's WebSocket for
         // both live ticks and their own history backfill (see
         // resources/js/trading/dataFeedClFeed.js) — no backend relay in
-        // between. 'catalog' (fetched server-side once per page load, see
-        // HomeController) tells it which symbols exist and seeds the asset
-        // popover, since unlike Brokeret this feed pushes nothing unsolicited
-        // and datafeedcl's own catalog endpoint can't be called directly
-        // from the browser either (no CORS headers).
+        // between. 'dbCatalog' (the `assets` table, is_otc=false rows —
+        // see HomeController::buildDbAssetCatalog) is the popover's primary
+        // source, seeded first and unconditionally, since it has no
+        // dependency on datafeedcl.xyz actually responding. 'catalog'
+        // (datafeedcl's own remote catalog, fetched server-side once per
+        // page load) is layered on top when reachable — it can't be called
+        // directly from the browser (no CORS headers), and unlike the DB
+        // rows can time out or the upstream can be down, so the popover must
+        // never depend on it alone.
         'datafeedcl' => [
             'wsUrl' => $dataFeedClWsUrl,
             'catalog' => $dataFeedClCatalog,
+            'dbCatalog' => $dbAssetCatalog,
         ],
         // Feature flag, off by default (PRICEFEED_PUBLIC_URL unset) — see
         // node-services/README.md. Only takes effect on a page where

@@ -86,12 +86,17 @@ class HomeController extends Controller
         $signals = Signal::latest()->where('is_active', true)->get();
         ['traders24hours' => $traders24hours, 'tradersTopRanked' => $tradersTopRanked, 'tradersTop100' => $tradersTop100] = TraderLeaderboard::build();
 
-        // Express trading only ever lists assets currently streaming — a
-        // symbol its pipeline has open but this app isn't receiving live
-        // ticks for right now would just place trades against a stale/absent
-        // price. See isAssetOnline() for why this can't just call
-        // $priceFeed->isOnline() for every row.
-        $assets = Assets::where('is_otc', true)->where('is_active', true)->get()->filter(fn ($asset) => $this->isAssetOnline($asset, $priceFeed, $brokeretFeed, $dataFeedCl))->values();
+        // Express trading lists every active asset from the DB, not just
+        // ones currently streaming — see isAssetOnline() for why this can't
+        // just call $priceFeed->isOnline() for every row. Each row is still
+        // tagged with its live online status (consumed in
+        // partials.dashboard._express to disable trading on a symbol whose
+        // pipeline isn't currently ticking, rather than hiding the row
+        // outright — placing a trade against a stale/absent price is what
+        // must be prevented, not the asset being listed).
+        $assets = Assets::where('is_otc', true)->where('is_active', true)->get()
+            ->each(fn ($asset) => $asset->online = $this->isAssetOnline($asset, $priceFeed, $brokeretFeed, $dataFeedCl))
+            ->values();
         $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->where('trade_status', 'open')->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->get();
         $closedExpressTrades = ExpressTrade::where('user_id', $user->id)->whereIn('trade_status', ['win', 'lose'])->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->take(20)->get();
 
@@ -99,9 +104,13 @@ class HomeController extends Controller
         // WebSocket client (see dashboard-ui.blade.php / dataFeedClFeed.js)
         // so it knows which symbols to subscribe to — the browser can't call
         // datafeedcl.xyz's REST API itself (no CORS headers, see
-        // DataFeedClService::fetchSymbolCatalog).
+        // DataFeedClService::fetchSymbolCatalog). This is a live, on-demand
+        // HTTP call with no caching (see that class's docblock) so it can
+        // time out or fail; the popover no longer depends on it — see
+        // $dbAssetCatalog below, seeded first, always.
         $dataFeedClCatalog = $dataFeedCl->fetchSymbolCatalog();
         $dataFeedClWsUrl = config('services.datafeedcl.ws_url');
+        $dbAssetCatalog = $this->buildDbAssetCatalog();
 
         return compact([
             'data',
@@ -119,7 +128,32 @@ class HomeController extends Controller
             'closedExpressTrades',
             'dataFeedClCatalog',
             'dataFeedClWsUrl',
+            'dbAssetCatalog',
         ]);
+    }
+
+    /**
+     * DB-backed symbol catalog for the /ui live chart's asset popover —
+     * seeded synchronously with the page render (see dashboard-ui.blade.php
+     * / TradingDashboard.js's _seedAssetCatalog) so the popover is never
+     * stuck empty waiting on datafeedcl.xyz's REST catalog
+     * (DataFeedClService::fetchSymbolCatalog), which has no caching and can
+     * time out or the upstream can be unreachable. Scoped to is_otc=false
+     * rows: the is_otc=true rows are a disjoint, differently-classified set
+     * (raw STOCK/INDEX/CURRENCY/etc. groups, not this popover's
+     * majors/minors/exotics/metals/crypto/stocks/indices taxonomy) reserved
+     * for the Express Trade panel — see $assets above.
+     */
+    private function buildDbAssetCatalog(): array
+    {
+        return Assets::where('is_active', true)->where('is_otc', false)
+            ->get(['symbol', 'name', 'asset_group', 'asset_profit_margin'])
+            ->map(fn ($asset) => [
+                'symbol' => $asset->symbol,
+                'name' => $asset->name ?: $asset->symbol,
+                'category' => strtolower($asset->asset_group),
+                'payout' => (float) $asset->asset_profit_margin,
+            ])->values()->all();
     }
 
     public function demo(Request $request, PriceFeedService $priceFeed, BrokeretFeedService $brokeretFeed, DataFeedClService $dataFeedCl, $coin = null)
@@ -158,7 +192,9 @@ class HomeController extends Controller
         $signals = Signal::latest()->where('is_active', true)->get();
         ['traders24hours' => $traders24hours, 'tradersTopRanked' => $tradersTopRanked, 'tradersTop100' => $tradersTop100] = TraderLeaderboard::build();
 
-        $assets = Assets::where('is_otc', true)->where('is_active', true)->get()->filter(fn ($asset) => $this->isAssetOnline($asset, $priceFeed, $brokeretFeed, $dataFeedCl))->values();
+        $assets = Assets::where('is_otc', true)->where('is_active', true)->get()
+            ->each(fn ($asset) => $asset->online = $this->isAssetOnline($asset, $priceFeed, $brokeretFeed, $dataFeedCl))
+            ->values();
         $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->where('trade_status', 'open')->where('trade_wallet', 'like', '%demo%')->with('asset')->latest()->get();
         $closedExpressTrades = ExpressTrade::where('user_id', $user->id)->whereIn('trade_status', ['win', 'lose'])->where('trade_wallet', 'like', '%demo%')->with('asset')->latest()->take(20)->get();
 
@@ -166,6 +202,7 @@ class HomeController extends Controller
 
         $dataFeedClCatalog = $dataFeedCl->fetchSymbolCatalog();
         $dataFeedClWsUrl = config('services.datafeedcl.ws_url');
+        $dbAssetCatalog = $this->buildDbAssetCatalog();
 
         return view('dashboard-ui', compact([
             'data',
@@ -184,7 +221,25 @@ class HomeController extends Controller
             'closedExpressTrades',
             'dataFeedClCatalog',
             'dataFeedClWsUrl',
+            'dbAssetCatalog',
         ]));
+    }
+
+    /**
+     * base_url/dashboard/datafeedcl-catalog — client-side retry endpoint for
+     * the asset popover's symbol catalog. The dashboard normally seeds the
+     * popover from `dataFeedClCatalog`, fetched once server-side at page
+     * render (see buildDashboardData); if that one-time
+     * DataFeedClService::fetchSymbolCatalog() call hit a timeout/error it
+     * silently returns [] and the popover is stuck showing "Connecting to
+     * live market data…" forever with nothing to recover it. TradingDashboard
+     * .js polls this endpoint (with backoff) whenever the initial catalog
+     * came back empty, so a transient upstream failure at page-load time
+     * doesn't permanently starve the list for the rest of the session.
+     */
+    public function dataFeedClCatalog(DataFeedClService $dataFeedCl)
+    {
+        return response()->json(['catalog' => $dataFeedCl->fetchSymbolCatalog()]);
     }
 
     public function assetStatus(PriceFeedService $priceFeed, \App\Services\BrokeretFeedService $brokeretFeed)
