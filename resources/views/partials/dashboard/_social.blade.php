@@ -36,12 +36,12 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-xs" style="color: #8ea5c0">Number of trades:</p>
-                                <p class="text-xs text-white">{{ $trader->trades->count() }}</p>
+                                <p class="text-xs text-white">{{ $trader->trades_count }}</p>
                             </div>
                             <div>
                                 @php
-                                $total = $trader->trades->count();
-                                $wins = $trader->trades->where('trade_status', 'win')->count();
+                                $total = $trader->trades_count;
+                                $wins = $trader->win_trades_count;
                                 $percent = $total > 0 ? round(($wins / $total) * 100) : 0;
                                 @endphp
                                 <p class="text-xs text-right" style="color: #8ea5c0">Profitable trades:</p>
@@ -75,12 +75,12 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-xs" style="color: #8ea5c0">Number of trades:</p>
-                                <p class="text-xs text-white">{{ $trader->trades->count() }}</p>
+                                <p class="text-xs text-white">{{ $trader->trades_count }}</p>
                             </div>
                             <div>
                                 @php
-                                $total = $trader->trades->count();
-                                $wins = $trader->trades->where('trade_status', 'win')->count();
+                                $total = $trader->trades_count;
+                                $wins = $trader->win_trades_count;
                                 $percent = $total > 0 ? round(($wins / $total) * 100) : 0;
                                 @endphp
                                 <p class="text-xs text-right" style="color: #8ea5c0">Profitable trades:</p>
@@ -114,12 +114,12 @@
                         <div class="flex items-center justify-between">
                             <div>
                                 <p class="text-xs" style="color: #8ea5c0">Number of trades:</p>
-                                <p class="text-xs text-white">{{ $trader->trades->count() }}</p>
+                                <p class="text-xs text-white">{{ $trader->trades_count }}</p>
                             </div>
                             <div>
                                 @php
-                                $total = $trader->trades->count();
-                                $wins = $trader->trades->where('trade_status', 'win')->count();
+                                $total = $trader->trades_count;
+                                $wins = $trader->win_trades_count;
                                 $percent = $total > 0 ? round(($wins / $total) * 100) : 0;
                                 @endphp
                                 <p class="text-xs text-right" style="color: #8ea5c0">Profitable trades:</p>

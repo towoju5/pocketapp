@@ -5,11 +5,12 @@
 @section('content')
 @php
     // Unlike __dash.blade.php, this page's asset catalog isn't read from the
-    // DB at all — it's seeded from datafeedcl's own catalog (see
-    // DataFeedClService::fetchSymbolCatalog / TradingDashboard._seedAssetCatalog)
+    // DB at all — it's seeded from datafeedcl's own catalog, fetched by the
+    // browser directly over its WebSocket connection (see
+    // resources/js/trading/dataFeedClFeed.js / TradingDashboard._seedAssetCatalog)
     // and filled in further as live ticks arrive. Defaults to Tesla OTC,
-    // using datafeedcl's own raw symbol and real payout (60%, per GET
-    // /api/assets — see DataFeedClService::classify).
+    // using datafeedcl's own raw symbol and real payout (60%, per its
+    // 'assets' catalog message).
     $__coin = '#TSLA_otc';
     $__defaultProfitMargin = 0.60;
 @endphp
@@ -380,7 +381,8 @@
 {!! json_encode([
     // Seeds just the default asset (Tesla OTC) the chart opens on, with its
     // real datafeedcl catalog values — everything else in the popover comes
-    // from $dataFeedClCatalog (see TradingDashboard._seedAssetCatalog).
+    // from $dbAssetCatalog (instant) and then datafeedcl's own WebSocket
+    // 'assets' message (see TradingDashboard._seedAssetCatalog).
     // $__coin is pre-populated into assetsBySymbol before _seedAssetCatalog
     // runs, so _seedAssetCatalog skips it (already present) — these values
     // must match its real catalog entry, not a placeholder, or the popover
@@ -406,20 +408,18 @@
             'metals' => 'Metals', 'crypto' => 'Crypto', 'stocks' => 'Stocks', 'indices' => 'Indices',
         ],
         // The browser connects straight to datafeedcl.xyz's WebSocket for
-        // both live ticks and their own history backfill (see
-        // resources/js/trading/dataFeedClFeed.js) — no backend relay in
-        // between. 'dbCatalog' (the `assets` table, is_otc=false rows —
-        // see HomeController::buildDbAssetCatalog) is the popover's primary
-        // source, seeded first and unconditionally, since it has no
-        // dependency on datafeedcl.xyz actually responding. 'catalog'
-        // (datafeedcl's own remote catalog, fetched server-side once per
-        // page load) is layered on top when reachable — it can't be called
-        // directly from the browser (no CORS headers), and unlike the DB
-        // rows can time out or the upstream can be down, so the popover must
-        // never depend on it alone.
+        // live ticks, their own history backfill, AND the full symbol
+        // catalog (its 'assets' message) — see
+        // resources/js/trading/dataFeedClFeed.js — no backend relay or
+        // proxied REST call for any of it. 'dbCatalog' (the `assets` table,
+        // is_otc=false rows — see HomeController::buildDbAssetCatalog) is
+        // only the popover's instant, no-network seed for the moment before
+        // that WebSocket connects; datafeedcl's own catalog (real payouts,
+        // its own classification) fills in the rest — any symbol it knows
+        // about that isn't already in the DB catalog — once it arrives (see
+        // _seedAssetCatalog: it never overwrites an already-seeded symbol).
         'datafeedcl' => [
             'wsUrl' => $dataFeedClWsUrl,
-            'catalog' => $dataFeedClCatalog,
             'dbCatalog' => $dbAssetCatalog,
         ],
         // Feature flag, off by default (PRICEFEED_PUBLIC_URL unset) — see

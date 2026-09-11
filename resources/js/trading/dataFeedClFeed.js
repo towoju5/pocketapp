@@ -3,13 +3,14 @@
  * for the trading dashboard's chart. Unlike the Brokeret pipeline (backend-
  * mediated — see StreamBrokeretFeed / TradingDashboard.js's legacy
  * 'brokeret-feed' Echo path), this connects straight from the browser:
- * datafeedcl.xyz's REST API sends no Access-Control-Allow-Origin header (so
- * the browser can't call it directly — the one-time symbol catalog stays
- * server-proxied, see HomeController / DataFeedClService::fetchSymbolCatalog),
- * but its WebSocket handshake enforces no such restriction, so live ticks
- * (and their own backfill) reach the tab with no backend relay in between.
+ * datafeedcl.xyz's REST API sends no Access-Control-Allow-Origin header, so
+ * the browser can't call it directly — but its WebSocket handshake enforces
+ * no such restriction, so live ticks, their own backfill, AND the symbol
+ * catalog (see 'assets' below) all reach the tab with no backend relay or
+ * proxied REST call in between.
  *
  * Protocol (confirmed against the live feed, not guessed):
+ *   <- {"type": "assets", "assets": [{"type": "asset", "asset": "EURUSD_otc", "label": "EUR/USD (OTC)", "assetType": "currency", "payout": 92, "isOtc": true, "active": true, ...}, ...]}
  *   -> {"action": "subscribe", "asset": "EURUSD_otc"}
  *   <- {"type": "history", "asset": "EURUSD_otc", "ticks": [{"value": "1.23584", "timestamp": 1787151603.577}, ...]}
  *   <- {"type": "price", "asset": "EURUSD_otc", "value": "1.23602", "timestamp": 1787151628.706}
@@ -23,10 +24,18 @@
  * wired up in TradingDashboard._onChartTabOpened) — never the full
  * ~150-symbol catalog up front — so a customer idly browsing the asset
  * popover doesn't leave a few hundred live subscriptions running for markets
- * they never open. The asset popover itself is still fully browsable
- * immediately, seeded from the server-fetched catalog
- * (TradingDashboard._seedAssetCatalog) — that list needs no subscription,
- * only the live price/chart once something is actually opened does.
+ * they never open.
+ *
+ * 'assets' arrives once per connection (including every reconnect), unasked,
+ * right after the handshake — the full current symbol catalog. This is
+ * fetched straight over this same WebSocket now, not proxied through the
+ * backend: datafeedcl.xyz's REST API has no CORS headers so the browser
+ * can't call GET /api/assets itself, but the WS connection has no such
+ * restriction and already delivers the same data. That replaces what used
+ * to be a server-side HTTP call (DataFeedClService::fetchSymbolCatalog,
+ * with its own 5s timeout) sitting in the dashboard's page-render path on
+ * every single page load, purely to hand the browser a list it can now just
+ * ask datafeedcl for directly.
  *
  * No ticks are stored anywhere server-side for this feed (no Redis, no
  * background daemon) — 'history' is the only backfill source, kept
@@ -34,11 +43,12 @@
  * AssetFeed._rawHistory in chart.js).
  */
 export class DataFeedClLiveFeed {
-    constructor(wsUrl, { onTicks, onHistory, onStatusChange }) {
+    constructor(wsUrl, { onTicks, onHistory, onStatusChange, onCatalog }) {
         this.wsUrl = wsUrl;
         this.onTicks = onTicks;
         this.onHistory = onHistory;
         this.onStatusChange = onStatusChange;
+        this.onCatalog = onCatalog || (() => {});
         this.ws = null;
         /** Symbols a chart tab actually wants ticks for — subscribed on connect/reconnect (see _connect) and the moment subscribe() is first called for a new one. */
         this._wanted = new Set();
@@ -78,7 +88,14 @@ export class DataFeedClLiveFeed {
             } catch (e) {
                 return;
             }
-            if (!payload || typeof payload !== 'object' || !payload.asset) return;
+            if (!payload || typeof payload !== 'object') return;
+
+            if (payload.type === 'assets') {
+                this.onCatalog(this._parseCatalog(payload.assets));
+                return;
+            }
+
+            if (!payload.asset) return;
 
             if (payload.type === 'history') {
                 const ticks = this._parseHistory(payload.ticks);
@@ -102,6 +119,47 @@ export class DataFeedClLiveFeed {
                 // Already closing.
             }
         });
+    }
+
+    /** Major currencies — mirrors DataFeedClService::MAJOR_CURRENCIES on the backend so client- and server-computed categories never disagree. */
+    static MAJOR_CURRENCIES = ['EUR', 'USD', 'GBP', 'JPY', 'CHF', 'CAD', 'AUD', 'NZD'];
+
+    /** Raw WS 'assets' entries -> the {symbol, name, category, payout} shape TradingDashboard._seedAssetCatalog expects — mirrors DataFeedClService::classify()/fetchSymbolCatalog() so switching this catalog from a server-proxied REST call to a direct WS message doesn't change the popover's grouping/payout at all. */
+    _parseCatalog(assets) {
+        if (!Array.isArray(assets)) return [];
+        const catalog = [];
+        for (const row of assets) {
+            if (!row || typeof row.asset !== 'string' || !row.asset) continue;
+            if (row.active !== true) continue;
+            catalog.push({
+                symbol: row.asset,
+                name: typeof row.label === 'string' ? row.label : row.asset,
+                category: this._classifyCatalogEntry(row.assetType, row.asset),
+                payout: typeof row.payout === 'number' ? row.payout / 100 : undefined,
+            });
+        }
+        return catalog;
+    }
+
+    _classifyCatalogEntry(assetType, symbol) {
+        switch (assetType) {
+            case 'commodity': return 'metals';
+            case 'cryptocurrency': return 'crypto';
+            case 'stock': return 'stocks';
+            case 'index': return 'indices';
+            case 'currency': return this._classifyCurrencyPair(symbol);
+            default: return 'exotics';
+        }
+    }
+
+    /** 'EURUSD_otc' -> 'majors', 'EURTRY_otc' -> 'minors' — both sides of the pair are majors, or it isn't. */
+    _classifyCurrencyPair(symbol) {
+        const base = symbol.toUpperCase().replace(/_otc$/i, '');
+        if (base.length !== 6) return 'minors';
+        const left = base.slice(0, 3);
+        const right = base.slice(3);
+        return DataFeedClLiveFeed.MAJOR_CURRENCIES.includes(left) && DataFeedClLiveFeed.MAJOR_CURRENCIES.includes(right)
+            ? 'majors' : 'minors';
     }
 
     /** {value, timestamp}[] (not guaranteed sorted) -> [[epochMs, price], ...] oldest-first, for AssetFeed.ingestHistory. */

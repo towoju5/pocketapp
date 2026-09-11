@@ -100,15 +100,16 @@ class HomeController extends Controller
         $openedExpressTrades = ExpressTrade::where('user_id', $user->id)->where('trade_status', 'open')->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->get();
         $closedExpressTrades = ExpressTrade::where('user_id', $user->id)->whereIn('trade_status', ['win', 'lose'])->where('trade_wallet', 'like', "%{$walletMode}%")->with('asset')->latest()->take(20)->get();
 
-        // Fetched once per page render and handed to the browser's direct
-        // WebSocket client (see dashboard-ui.blade.php / dataFeedClFeed.js)
-        // so it knows which symbols to subscribe to — the browser can't call
-        // datafeedcl.xyz's REST API itself (no CORS headers, see
-        // DataFeedClService::fetchSymbolCatalog). This is a live, on-demand
-        // HTTP call with no caching (see that class's docblock) so it can
-        // time out or fail; the popover no longer depends on it — see
-        // $dbAssetCatalog below, seeded first, always.
-        $dataFeedClCatalog = $dataFeedCl->fetchSymbolCatalog();
+        // The browser's direct WebSocket client (see dashboard-ui.blade.php /
+        // dataFeedClFeed.js) now fetches datafeedcl's own symbol catalog
+        // straight from datafeedcl.xyz itself, over that same WebSocket (the
+        // 'assets' message, sent once per connection) — no backend
+        // round-trip needed for it at all. This used to be a live, uncached,
+        // synchronous HTTP call (DataFeedClService::fetchSymbolCatalog) sitting
+        // in the render path of every single dashboard page load; removing it
+        // is most of why the page (and the chart on it) loads faster now.
+        // $dbAssetCatalog is the instant, no-network fallback the popover
+        // seeds from immediately, before the WebSocket's own catalog arrives.
         $dataFeedClWsUrl = config('services.datafeedcl.ws_url');
         $dbAssetCatalog = $this->buildDbAssetCatalog();
 
@@ -126,7 +127,6 @@ class HomeController extends Controller
             'recent_closed_trades',
             'openedExpressTrades',
             'closedExpressTrades',
-            'dataFeedClCatalog',
             'dataFeedClWsUrl',
             'dbAssetCatalog',
         ]);
@@ -136,13 +136,15 @@ class HomeController extends Controller
      * DB-backed symbol catalog for the /ui live chart's asset popover —
      * seeded synchronously with the page render (see dashboard-ui.blade.php
      * / TradingDashboard.js's _seedAssetCatalog) so the popover is never
-     * stuck empty waiting on datafeedcl.xyz's REST catalog
-     * (DataFeedClService::fetchSymbolCatalog), which has no caching and can
-     * time out or the upstream can be unreachable. Scoped to is_otc=false
-     * rows: the is_otc=true rows are a disjoint, differently-classified set
-     * (raw STOCK/INDEX/CURRENCY/etc. groups, not this popover's
-     * majors/minors/exotics/metals/crypto/stocks/indices taxonomy) reserved
-     * for the Express Trade panel — see $assets above.
+     * stuck empty for the moment before the browser's own WebSocket
+     * connection to datafeedcl.xyz (which delivers the richer, real-payout
+     * catalog directly — see dataFeedClFeed.js) finishes connecting. A
+     * plain local DB read, so unlike that WebSocket it can never time out or
+     * be unreachable. Scoped to is_otc=false rows: the is_otc=true rows are
+     * a disjoint, differently-classified set (raw STOCK/INDEX/CURRENCY/etc.
+     * groups, not this popover's majors/minors/exotics/metals/crypto/
+     * stocks/indices taxonomy) reserved for the Express Trade panel — see
+     * $assets above.
      */
     private function buildDbAssetCatalog(): array
     {
@@ -200,7 +202,9 @@ class HomeController extends Controller
 
         $wallet_balance = $user->getWallet($user->active_wallet_slug ?? 'qt_demo_usd') ?? ["balance" => 0];
 
-        $dataFeedClCatalog = $dataFeedCl->fetchSymbolCatalog();
+        // See buildDashboardData() above — the popover's live catalog now
+        // comes straight from datafeedcl.xyz's own WebSocket 'assets'
+        // message, not a server-side fetchSymbolCatalog() HTTP call.
         $dataFeedClWsUrl = config('services.datafeedcl.ws_url');
         $dbAssetCatalog = $this->buildDbAssetCatalog();
 
@@ -219,27 +223,9 @@ class HomeController extends Controller
             'recent_closed_trades',
             'openedExpressTrades',
             'closedExpressTrades',
-            'dataFeedClCatalog',
             'dataFeedClWsUrl',
             'dbAssetCatalog',
         ]));
-    }
-
-    /**
-     * base_url/dashboard/datafeedcl-catalog — client-side retry endpoint for
-     * the asset popover's symbol catalog. The dashboard normally seeds the
-     * popover from `dataFeedClCatalog`, fetched once server-side at page
-     * render (see buildDashboardData); if that one-time
-     * DataFeedClService::fetchSymbolCatalog() call hit a timeout/error it
-     * silently returns [] and the popover is stuck showing "Connecting to
-     * live market data…" forever with nothing to recover it. TradingDashboard
-     * .js polls this endpoint (with backoff) whenever the initial catalog
-     * came back empty, so a transient upstream failure at page-load time
-     * doesn't permanently starve the list for the rest of the session.
-     */
-    public function dataFeedClCatalog(DataFeedClService $dataFeedCl)
-    {
-        return response()->json(['catalog' => $dataFeedCl->fetchSymbolCatalog()]);
     }
 
     public function assetStatus(PriceFeedService $priceFeed, \App\Services\BrokeretFeedService $brokeretFeed)

@@ -18,8 +18,8 @@
                 <div class="bg-[#171e33] border border-[#2a3350] rounded-xl overflow-hidden">
                     @forelse($traders as $trader)
                         @php
-                            $total = $trader->trades->count();
-                            $wins = $trader->trades->where('trade_status', 'win')->count();
+                            $total = $trader->trades_count;
+                            $wins = $trader->win_trades_count;
                             $winRate = $total > 0 ? round(($wins / $total) * 100) : 0;
                         @endphp
                         <div class="flex items-center justify-between px-5 py-3.5 border-t border-[#1c243c] first:border-t-0">

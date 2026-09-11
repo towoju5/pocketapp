@@ -8,9 +8,7 @@ use Illuminate\Support\Facades\Log;
 
 /**
  * Thin REST client for datafeedcl.xyz (https://datafeedcl.xyz/api/*) — used
- * to resolve entry/settlement prices for price_source='datafeedcl' assets,
- * and to hand the browser a symbol catalog to seed the trading dashboard's
- * asset popover.
+ * to resolve entry/settlement prices for price_source='datafeedcl' assets.
  *
  * Deliberately NOT PriceFeedService or BrokeretFeedService: no Redis, no
  * background streaming daemon, nothing persisted — every call hits
@@ -18,15 +16,12 @@ use Illuminate\Support\Facades\Log;
  * own fully separate pipeline (own price_source tag, no shared state) so it
  * can't interfere with either existing one.
  *
- * datafeedcl.xyz's REST API sends no Access-Control-Allow-Origin header, so
- * the browser can't call it directly (confirmed: a plain `fetch()` from
- * another origin is rejected outright). Its WebSocket handshake has no such
- * restriction, though, so the chart's actual LIVE ticks (and their own
- * backfill, delivered inline on subscribe) come from a direct
- * browser→datafeedcl.xyz connection — see
- * resources/js/trading/dataFeedClFeed.js — and never touch this class. Only
- * the one-time symbol catalog (fetchSymbolCatalog) is proxied through here,
- * purely because CORS leaves no other way to reach it from the browser.
+ * The trading dashboard's asset popover/chart never touches this class: the
+ * browser connects straight to datafeedcl.xyz's own WebSocket for live
+ * ticks, history backfill, AND the symbol catalog (its 'assets' message) —
+ * see resources/js/trading/dataFeedClFeed.js. This service exists only for
+ * server-side price resolution (trade entry/settlement), where datafeedcl.xyz's
+ * REST API is the only option (no browser access needed there anyway).
  *
  * Callers should fetch once per decision via fetchLatestTick() and derive
  * both "is this symbol online" and "what's the price" from that single
@@ -43,9 +38,6 @@ class DataFeedClService
 
     /** HTTP timeout — this sits in the request/settlement critical path, so it must stay short. */
     private const API_TIMEOUT_SECONDS = 5;
-
-    /** Major currencies — used to classify a 'currency'-type catalog symbol as majors vs minors. */
-    private const MAJOR_CURRENCIES = ['EUR', 'USD', 'GBP', 'JPY', 'CHF', 'CAD', 'AUD', 'NZD'];
 
     /**
      * Symbols already confirmed present in the `assets` table this process
@@ -118,97 +110,13 @@ class DataFeedClService
     }
 
     /**
-     * GET {api_url}/api/assets — datafeedcl's symbol catalog:
-     * {type, asset, label, payout, isOtc, active, expTime, min_expiration}.
-     * Fetched once, server-side, at dashboard page render (see
-     * HomeController) and handed to the browser's direct WebSocket client so
-     * it knows which symbols exist — the browser can't call this itself (no
-     * CORS headers). Only currently-active (tradable) symbols are returned;
-     * `active: false` rows are closed-market duplicates of an `_otc` sibling
-     * and aren't worth showing in a live popover.
-     *
-     * @return array<int, array{symbol: string, name: string, category: string, payout: float, isOtc: bool}>
-     */
-    public function fetchSymbolCatalog(): array
-    {
-        $apiUrl = config('services.datafeedcl.api_url');
-        if (!$apiUrl) {
-            return [];
-        }
-
-        try {
-            $response = Http::timeout(self::API_TIMEOUT_SECONDS)->get(rtrim($apiUrl, '/') . '/api/assets');
-            if (!$response->successful()) {
-                return [];
-            }
-            $rows = $response->json();
-        } catch (\Throwable $e) {
-            Log::warning('[DataFeedClService] fetchSymbolCatalog failed', ['error' => $e->getMessage()]);
-
-            return [];
-        }
-
-        if (!is_array($rows)) {
-            return [];
-        }
-
-        $catalog = [];
-        foreach ($rows as $row) {
-            if (!is_array($row) || !isset($row['asset']) || !is_string($row['asset']) || $row['asset'] === '') {
-                continue;
-            }
-            if (($row['active'] ?? false) !== true) {
-                continue;
-            }
-
-            $catalog[] = [
-                'symbol' => $row['asset'],
-                'name' => is_string($row['label'] ?? null) ? $row['label'] : $row['asset'],
-                'category' => self::classify(is_string($row['type'] ?? null) ? $row['type'] : null, $row['asset']),
-                'payout' => is_numeric($row['payout'] ?? null) ? ((float) $row['payout']) / 100 : self::DEFAULT_PROFIT_MARGIN,
-                'isOtc' => (bool) ($row['isOtc'] ?? false),
-            ];
-        }
-
-        return $catalog;
-    }
-
-    /** Maps datafeedcl's catalog `type` to this app's popover category keys (majors/minors/exotics/metals/crypto/stocks/indices). */
-    private static function classify(?string $type, string $symbol): string
-    {
-        return match ($type) {
-            'commodity' => 'metals',
-            'cryptocurrency' => 'crypto',
-            'stock' => 'stocks',
-            'index' => 'indices',
-            'currency' => self::classifyCurrencyPair($symbol),
-            default => 'exotics',
-        };
-    }
-
-    /** 'EURUSD_otc' -> 'majors', 'EURTRY_otc' -> 'minors' — both sides of the pair are majors, or it isn't. */
-    private static function classifyCurrencyPair(string $symbol): string
-    {
-        $base = strtoupper(preg_replace('/_otc$/i', '', $symbol));
-        if (strlen($base) !== 6) {
-            return 'minors';
-        }
-
-        $left = substr($base, 0, 3);
-        $right = substr($base, 3, 3);
-
-        return in_array($left, self::MAJOR_CURRENCIES, true) && in_array($right, self::MAJOR_CURRENCIES, true)
-            ? 'majors'
-            : 'minors';
-    }
-
-    /**
      * Registers `symbol` in the shared `assets` table the first time this
      * process resolves a price for it, so it's tradable without waiting for
      * someone to trade it first. No catalog data (category/payout) is
-     * available at this call site — see fetchSymbolCatalog for the richer,
-     * browser-facing catalog; this is just enough to satisfy the `assets`
-     * table's foreign keys.
+     * available at this call site — the browser's own popover gets that
+     * richer data straight from datafeedcl's WebSocket instead (see
+     * resources/js/trading/dataFeedClFeed.js); this is just enough to
+     * satisfy the `assets` table's foreign keys.
      */
     private function ensureAssetRegistered(string $symbol): void
     {
